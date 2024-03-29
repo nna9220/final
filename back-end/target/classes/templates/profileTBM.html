@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <title>Trang cá nhân</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="/css/styleAdmin.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="container-xxl position-relative bg-white d-flex p-0">
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+
+    <!--Begin: SideBar-->
+    <div th:replace="~{common/SidebarHead :: SidebarHead}"></div>
+    <!--End: SideBar-->
+
+    <!-- Content Start -->
+    <div class="content">
+        <!-- Navbar Start -->
+        <nav class="navbar navbar-expand bg-light navbar-light sticky-top px-4 py-0">
+            <a href="Dashboard_Admin.html" class="navbar-brand d-flex d-lg-none me-4">
+                <h2 class="text-primary mb-0"><i class="fa fa-hashtag"></i></h2>
+            </a>
+            <a href="#" class="sidebar-toggler flex-shrink-0">
+                <i class="fa fa-bars"></i>
+            </a>
+            <form class="d-none d-md-flex ms-4">
+                <input class="form-control border-0" type="search" placeholder="Search">
+            </form>
+            <div class="navbar-nav align-items-center ms-auto">
+                <div class="nav-item dropdown">
+                    <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
+                        <a href="#" class="dropdown-item">
+                            <div class="d-flex align-items-center">
+                                <img class="rounded-circle" src="/img/user.png" alt="" style="width: 40px; height: 40px;">
+                                <div class="ms-2">
+                                    <h6 class="fw-normal mb-0">Jhon send you a message</h6>
+                                    <small>15 minutes ago</small>
+                                </div>
+                            </div>
+                        </a>
+                        <hr class="dropdown-divider">
+                        <a href="#" class="dropdown-item">
+                            <div class="d-flex align-items-center">
+                                <img class="rounded-circle" src="/img/user.png" alt="" style="width: 40px; height: 40px;">
+                                <div class="ms-2">
+                                    <h6 class="fw-normal mb-0">Jhon send you a message</h6>
+                                    <small>15 minutes ago</small>
+                                </div>
+                            </div>
+                        </a>
+                        <hr class="dropdown-divider">
+                        <a href="#" class="dropdown-item">
+                            <div class="d-flex align-items-center">
+                                <img class="rounded-circle" src="/img/user.png" alt="" style="width: 40px; height: 40px;">
+                                <div class="ms-2">
+                                    <h6 class="fw-normal mb-0">Jhon send you a message</h6>
+                                    <small>15 minutes ago</small>
+                                </div>
+                            </div>
+                        </a>
+                        <hr class="dropdown-divider">
+                        <a href="#" class="dropdown-item text-center">See all message</a>
+                    </div>
+                </div>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fa fa-bell me-lg-2"></i>
+                        <span class="d-none d-lg-inline-flex">Thông báo</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
+                        <a href="#" class="dropdown-item">
+                            <h6 class="fw-normal mb-0">Profile updated</h6>
+                            <small>15 minutes ago</small>
+                        </a>
+                        <hr class="dropdown-divider">
+                        <a href="#" class="dropdown-item">
+                            <h6 class="fw-normal mb-0">New user added</h6>
+                            <small>15 minutes ago</small>
+                        </a>
+                        <hr class="dropdown-divider">
+                        <a href="#" class="dropdown-item">
+                            <h6 class="fw-normal mb-0">Password changed</h6>
+                            <small>15 minutes ago</small>
+                        </a>
+                        <hr class="dropdown-divider">
+                        <a href="#" class="dropdown-item text-center">See all notifications</a>
+                    </div>
+                </div>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                        <img class="rounded-circle me-lg-2" src="/img/user.png" alt="" style="width: 40px; height: 40px;">
+                        <span class="d-none d-lg-inline-flex" th:text="${person.firstName + ' ' +person.lastName }"></span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
+                        <a th:href="@{/logout}" class="dropdown-item">Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <!-- Navbar End -->
+
+        <!-- Profile Start -->
+        <div class="container-xl px-4 mt-4">
+            <!-- Account page navigation-->
+            <hr class="mt-0 mb-4">
+            <div class="row">
+                <div class="col-xl-8">
+                    <!-- Account details card-->
+                    <div class="card mb-4">
+                        <div class="card-header">Thông tin cá nhân</div>
+                        <div class="card-body" id="personalInfo">
+                            <form>
+                                <!-- Form Group (username)-->
+                                <div class="mb-3">
+                                    <label class="small mb-1" id="lblFullName">Họ và tên</label>
+                                    <div th:text="${person.firstName + ' ' + person.lastName}"></div>
+                                </div>
+                                <!-- Form Row-->
+                                <div class="row gx-3 mb-3">
+                                    <!-- Form Group (first name)-->
+                                    <div class="col-md-6">
+                                        <label class="small mb-1" id="lblID">ID</label>
+                                        <div th:text="${lec.person.personId}"></div>
+                                    </div>
+                                    <!-- Form Group (last name)-->
+                                    <div class="col-md-6">
+                                        <label class="small mb-1" id="lblGender" >Giới tính</label>
+                                        <div th:text="${lec.person.gender ? 'Nữ':'Nam'}"></div>
+                                    </div>
+                                </div>
+                                <!-- Form Row        -->
+                                <div class="row gx-3 mb-3">
+                                    <!-- Form Group (organization name)-->
+                                    <div class="mb-3">
+                                        <label class="small mb-1" id="lblMajor">Chuyên ngành</label>
+                                        <div th:text="${lec.major}"></div>
+                                    </div>
+                                </div>
+                                <!-- Form Group (email address)-->
+                                <div class="mb-3">
+                                    <label class="small mb-1" id="lblAdress" >Email address</label>
+                                    <div th:text="${lec.person.username}"></div>
+                                </div>
+                                <!-- Form Row-->
+                                <div class="row gx-3 mb-3">
+                                    <!-- Form Group (phone number)-->
+                                    <div class="col-md-6">
+                                        <label class="small mb-1" id="lblPhone">Phone number</label>
+                                        <div th:text="${lec.person.phone}"></div>
+                                    </div>
+                                    <!-- Form Group (birthday)-->
+                                    <div class="col-md-6">
+                                        <label class="small mb-1" id="lblBirth">Birthday</label>
+                                        <div th:text="${lec.person.birthDay}"></div>
+                                    </div>
+                                </div>
+                                <!-- Save changes button-->
+                                <button class="btn btn-primary" type="button" onclick="displayEditFormHd()">Cập nhật thông tin</button>
+                            </form>
+                        </div>
+
+                        <div class="card-body d-none" id="editForm">
+                            <form>
+                                <!-- Editable form inputs -->
+                                <!-- Form Group (username)-->
+                                <div class="mb-3">
+                                    <label class="small mb-1" for="inputUsername">Họ và tên</label>
+                                    <input class="form-control" id="inputUsername" type="text" th:text>
+                                </div>
+                                <!-- Form Row-->
+                                <div class="row gx-3 mb-3">
+                                    <!-- Form Group (first name)-->
+                                    <div class="col-md-6">
+                                        <label class="small mb-1" for="inputID">ID</label>
+                                        <input class="form-control" id="inputID" type="text" value="20110753">
+                                    </div>
+                                    <!-- Form Group (last name)-->
+                                    <div class="col-md-6">
+                                        <label class="small mb-1" for="inputGender">Giới tính</label>
+                                        <input class="form-control" id="inputGender" type="text" value="Nữ">
+                                    </div>
+                                </div>
+                                <!-- Form Row        -->
+                                <div class="row gx-3 mb-3">
+                                    <!-- Form Group (organization name)-->
+                                    <div class="mb-3">
+                                        <label class="small mb-1" for="inputMajor">Chuyên Ngành</label>
+                                        <input class="form-control" id="inputMajor" type="text" value="Bình Phước">
+                                    </div>
+                                </div>
+                                <!-- Form Group (email address)-->
+                                <div class="mb-3">
+                                    <label class="small mb-1" for="inputEmailAddress">Email address</label>
+                                    <input class="form-control" id="inputEmailAddress" type="email" value="trang@gmail.com">
+                                </div>
+                                <!-- Form Row-->
+                                <div class="row gx-3 mb-3">
+                                    <!-- Form Group (phone number)-->
+                                    <div class="col-md-6">
+                                        <label class="small mb-1" for="inputPhone">Phone number</label>
+                                        <input class="form-control" id="inputPhone" type="tel" value="0343 99 8585=4">
+                                    </div>
+                                    <!-- Form Group (birthday)-->
+                                    <div class="col-md-6">
+                                        <label class="small mb-1" for="inputBirthday">Birthday</label>
+                                        <input class="form-control" id="inputBirthday" type="text" value="03/04/2001">
+                                    </div>
+                                </div>
+                                <!-- Save changes button-->
+                                <button class="btn btn-primary" type="button" onclick="updateInfo()">Lưu thông tin</button>
+                                <button class="btn btn-primary" type="button" onclick="cancelEdit()" >Cancel</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Profile End -->
+
+        <!-- Form Edit -->
+        <div class="container-fluid pt-5">
+            <form id="editProfileForm" class="form-container-add-SV" th:action="@{/api/head/edit/{id}(id=${person.personId})}" th:object="${person}" method="post" enctype="application/x-www-form-urlencoded" style="display: none;">
+                <div class="form-group">
+                    <h4>Cập nhật thông tin cá nhân</h4>
+                    <label for=firstName>Họ:</label>
+                    <input id=firstName name="firstName" type="text" class="form-control" th:field="${person.firstName}" required/>
+
+                    <label for=lastName>Tên:</label>
+                    <input id=lastName  type="text" class="form-control" th:field="${person.lastName}" required/>
+
+                    <label for=birthDay>Ngày sinh:</label>
+                    <input id=birthDay name="birthDay" type="text" class="form-control" th:field="${person.birthDay}" required/>
+
+                    <label for=phone>Số điện thoại:</label>
+                    <input id=phone name="phone" type="text" class="form-control" th:field="${person.phone}" required/>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                <button type="submit" class="btn btn-primary" onclick="huyFormEdit()">Hủy</button>
+            </form>
+        </div>
+    </div>
+    <!-- Content End -->
+
+</div>
+
+<script>
+    function displayEditFormHd() {
+        // Lấy giá trị từ các phần tử hiện tại
+        document.getElementById("editProfileForm").style.display = "block";
+    }
+
+    function huyFormEdit() {
+        document.getElementById("editProfileForm").style.display = "none";
+    }
+    // Các hàm khác nếu cần thiết
+</script>
+
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Template Javascript -->
+<script src="/js/main2.js"></script>
+</body>
+
+</html>

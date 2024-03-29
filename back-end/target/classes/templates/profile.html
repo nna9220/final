@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <title>Thông tin giảng viên</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="Free HTML Templates" name="keywords" />
+    <meta content="Free HTML Templates" name="description" />
+
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon" />
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Handlee&family=Nunito&display=swap" rel="stylesheet"/>
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet"/>
+
+    <!-- Flaticon Font -->
+    <link href="/lib/flaticon/font/flaticon.css" rel="stylesheet" />
+
+    <!-- Libraries Stylesheet -->
+    <link href="/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet" />
+    <link href="/lib/lightbox/css/lightbox.min.css" rel="stylesheet" />
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="/css/style.css" rel="stylesheet" />
+</head>
+<body>
+<!--Begin: Header-->
+<div th:replace="~{common/header :: header}"></div>
+<!--End: Header-->
+
+<section class="contact-form-home">
+    <div>
+        <ol class="contact-form-home-ins">
+            <li class="contact-form-come-home">
+                <i class="fas fa-home icon"></i>
+                <a class="come-home" th:href="@{/}">Trang chủ |</a>
+            </li>
+            <li class="contact-form-come-home">
+                <i class="fas fa-list icon"></i>
+                <a class="come-home" th:href="@{/team}">Danh sách giảng viên |</a>
+            </li>
+            <li class="contact-form-come-home">
+                <a th:text="${lecturer.person.firstName + ' ' + lecturer.person.lastName}">Tên giảng viên</a>
+            </li>
+        </ol>
+    </div>
+</section>
+
+
+<!-- Form thông tin giảng viên-->
+<div class="profile-container">
+    <div class="avatar-container">
+        <img src="/img/avater_pf.png" alt="Avatar" class="avatar-info">
+    </div>
+
+    <div class="info-container">
+        <div class="tabs-container">
+            <div class="tab" onclick="showTab('lylich')">Lý lịch sơ lược</div>
+            <div class="tab" onclick="showTab('lienhe')">Hình thức liên hệ</div>
+        </div>
+
+        <div th:action="@{/team/profile/{lecturerId}(lecturerId=${lecturer.lecturerId})}" th:object="${lecturer}" class="tab-content-container">
+            <div class="tab-content" id="lylich-content">
+                <p><strong>Họ và tên:</strong> <span th:text="${lecturer.person.firstName + ' ' + lecturer.person.lastName}"></span></p>
+                <p><strong>Giới tính:</strong> <span th:text="${lecturer.person.gender ? 'Nữ':'Nam'}"></span></p>
+                <p><strong>Ngày sinh:</strong> <span th:text="${lecturer.person.birthDay}"></span></p>
+                <p><strong>Chuyên Ngành:</strong> <span th:text="${lecturer.major}"></span></p>
+
+            </div>
+            <div class="tab-content" id="lienhe-content">
+                <p><strong>Số điện thoại:</strong> <span th:text="${lecturer.person.phone}"></span></p>
+                <p><strong>Email:</strong> <span th:text="${lecturer.person.username}"></span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Begin: Footer-->
+<div th:replace="~{common/footer :: footer}"></div>
+<!--End: Footer-->
+
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+
+<!-- Contact Javascript File -->
+<script src="/mail/jqBootstrapValidation.min.js"></script>
+<script src="/mail/contact.js"></script>
+
+<!-- Template Javascript -->
+<script src="/js/main.js"></script>
+</body>
+</html>

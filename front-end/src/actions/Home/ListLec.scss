@@ -1,0 +1,47 @@
+.listHome {
+    margin: 20px;
+    .listHomeLec{
+        margin: 30px;
+        .cardContainer {
+            display: flex;
+            margin: 30px;
+            .cardItem {
+                width: 20%;
+                border-bottom: 3px solid #92b9e2;
+                border-radius: 50px;
+                margin: 30px;
+                text-align: center;
+                .avatar {
+                    width: 80px; /* Kích thước hình ảnh */
+                    height: 80px; /* Kích thước hình ảnh */
+                    border-radius: 50%; /* Tạo hình tròn */
+                }
+                .name {
+                    padding: 20px;
+                    font-size: large;
+                }
+
+                &:hover {
+                    background-color: #b0d4b8;
+                }
+            }
+        }
+
+        .search{
+            margin: 30px;
+            display: flex;
+            justify-content: flex-end;
+            .formSearch{
+                margin: 30px;
+                
+            }
+
+            .filter {
+                margin: 30px;
+                .selectDr{
+                    height: 30px;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,41 @@
+.home-table {
+    margin-top: 30px;
+    border: 1px solid rgb(164, 156, 156);
+    margin-right: 30px;
+    border-radius: 5px;
+
+    .title-table {
+        margin: 20px;
+        border-bottom: #4eb09b;
+        color: #268f65;
+        font-weight: bold;
+    }
+
+    .table {
+        width: 95%;
+        margin: 10px;
+        padding: 20px;
+        border: 1px solid rgb(160, 152, 152);
+        border-radius: 5px;
+
+        .button-res{
+            border: 1px solid #4eb09b;
+            border-radius: 5px;
+            background-color: white;
+            .text{
+                margin: 2px;
+                font-weight: bold;
+                color: #5d7b6f;
+            }
+
+            &:hover {
+                background-color: #4eb09b;
+                .text{
+                    margin: 2px;
+                    font-weight: bold;
+                    color: white;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,57 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+
+.logo img {
+    width: 100%; /* Điều chỉnh kích thước logo theo nhu cầu */
+    height: auto;
+}
+
+.navigation ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navigation ul li {
+    display: inline;
+    margin-right: 2vw; /* Khoảng cách giữa các mục sẽ thay đổi tương ứng với kích thước của màn hình */
+}
+
+.navigation ul li a {
+    text-decoration: none;
+    color: #4493e7;
+    font-size: 1.2vw; /* Sử dụng vw để điều chỉnh kích thước chữ */
+    font-weight: bold;
+}
+
+.navigation ul li a:hover {
+    color: #0056b3;
+    font-size: 1.4vw;
+}
+
+.navigation ul li a.active {
+    color: #0056b3;
+    font-size: 1.4vw;
+}
+
+.navigation ul li:last-child {
+    margin-right: 0; /* Không có khoảng cách bên phải ở mục cuối cùng */
+}
+
+.login-button .btn {
+    padding: 10px 20px;
+    color: #0056b3;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 5px;
+    border: 1px solid #0056b3;
+}
+
+.login-button .btn:hover {
+    background-color: #0056b3; /* Màu nền nút khi di chuột qua */
+    color: white;
+}

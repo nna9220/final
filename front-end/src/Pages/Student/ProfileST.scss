@@ -1,0 +1,13 @@
+.profileST {
+    display: flex;
+  }
+  
+  .context {
+    flex-grow: 1;  
+    padding: 10px;
+    transition: all 0.3s ease; 
+  }
+  
+  .sidebar-closed .context {
+    margin-left: 0; 
+}

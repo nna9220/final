@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<footer class="site-footer" th:fragment="footer">
+    <!-- Footer Start -->
+    <div class="container-fluid bg-secondary text-white mt-5 py-5 px-sm-3 px-md-5">
+        <div class="row pt-5">
+            <div class="col-lg-3 col-md-6 mb-5">
+                <a href="" class="navbar-brand font-weight-bold text-primary m-0 mb-4 p-0" style="font-size: 40px; line-height: 40px">
+                    <div class="py-5"><img class="img-05" src="/img/logo-lv2-1.png"></div>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h3 class="text-primary mb-4">Thông tin liên hệ</h3>
+                <div class="d-flex">
+                    <h4 class="fa fa-map-marker-alt text-primary"></h4>
+                    <div class="pl-3">
+                        <h5 class="text-white">Địa chỉ</h5>
+                        <p>Số 1 Võ Văn Ngân, phường Linh Chiểu, TP.Thủ Đức, TP. Hồ Chí Minh</p>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <h4 class="fa fa-envelope text-primary"></h4>
+                    <div class="pl-3">
+                        <h5 class="text-white">Email tư vấn viên</h5>
+                        <p>saudaihoc@hcmute.edu.vn</p>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <h4 class="fa fa-phone-alt text-primary"></h4>
+                    <div class="pl-3">
+                        <h5 class="text-white">Phone</h5>
+                        <p> (+84.28) 37225766 hoặc 37221223 (số nội bộ 8125)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h3 class="text-primary mb-4">Quick Links</h3>
+                <div class="d-flex flex-column justify-content-start">
+                    <a class="text-white mb-2" th:href="@{/}"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                    <a class="text-white mb-2" th:href="@{/team}"><i class="fa fa-angle-right mr-2"></i>Our Teachers</a>
+                    <a class="text-white" th:href="@{/contact}"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+</footer>
+</body>
+</html>

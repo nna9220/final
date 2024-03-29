@@ -1,0 +1,59 @@
+<!--<!DOCTYPE html>-->
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
+<body>
+<!-- Begin: Left Panel-->
+<aside id="left-panel" class="left-panel" th:fragment="SidebarAdmin">
+  <!-- Sidebar Start -->
+  <div class="sidebar pe-4 pb-3">
+    <nav class="navbar bg-light navbar-light">
+      <a th:href="@{/api/admin/home}" class="navbar-brand mx-4 mb-3">
+        <img class = "logo-fit" src="/img/logo-cntt2021.png">
+      </a>
+      <div class="d-flex align-items-center ms-4 mb-4">
+        <div class="position-relative">
+          <img class="rounded-circle" src="/img/user.png" alt="" style="width: 40px; height: 40px;">
+          <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
+        </div>
+        <div class="ms-3">
+          <span>Admin</span>
+        </div>
+      </div>
+      <div class="navbar-nav w-100">
+        <a th:href="@{/api/admin/home}" th:class="${#request.getRequestURI().equals('/api/admin/home') ? 'nav-item nav-link active' : 'nav-item nav-link'}">
+          <i class="fa fa-tachometer-alt me-2"></i>Trang của tôi
+        </a>
+        <a th:href="@{/api/admin/profile}" th:class="${#request.getRequestURI().equals('/api/admin/profile') ? 'nav-item nav-link active' : 'nav-item nav-link'}">
+          <i class="fa fa-th me-2"></i>Thông tin cá nhân
+        </a>
+        <a th:href="@{/api/admin/student}" th:class="${#request.getRequestURI().equals('/api/admin/student') ? 'nav-item nav-link active' : 'nav-item nav-link'}">
+          <i class="fa fa-keyboard me-2"></i>Quản lý Sinh Viên
+        </a>
+        <a th:href="@{/api/admin/lecturer}" th:class="${#request.getRequestURI().equals('/api/admin/lecturer') ? 'nav-item nav-link active' : 'nav-item nav-link'}">
+          <i class="fa fa-keyboard me-2"></i>Quản lý Giảng viên
+        </a>
+        <a th:href="@{/api/admin/subject}" th:class="${#request.getRequestURI().equals('/api/admin/subject') ? 'nav-item nav-link active' : 'nav-item nav-link'}">
+          <i class="fa fa-table me-2"></i>Quản lý Đề tài
+        </a>
+        <a th:href="@{/api/admin/Period}" th:class="${#request.getRequestURI().equals('/api/admin/Period') ? 'nav-item nav-link active' : 'nav-item nav-link'}">
+          <i class="fa fa-keyboard me-2"></i>Quản lý Đợt đăng ký SV
+        </a>
+        <a th:href="@{/api/admin/PeriodLecturer}" th:class="${#request.getRequestURI().equals('/api/admin/PeriodLecturer') ? 'nav-item nav-link active' : 'nav-item nav-link'}">
+          <i class="fa fa-keyboard me-2"></i>Quản lý Đợt đăng ký GV
+        </a>
+        <a th:href="@{/api/admin/studentClass}" th:class="${#request.getRequestURI().equals('/api/admin/studentClass') ? 'nav-item nav-link active' : 'nav-item nav-link'}">
+          <i class="fa fa-keyboard me-2"></i>Quản lý lớp học
+        </a>
+        <a th:href="@{/api/admin/schoolYear}" th:class="${#request.getRequestURI().equals('/api/admin/schoolYear') ? 'nav-item nav-link active' : 'nav-item nav-link'}">
+          <i class="fa fa-keyboard me-2"></i>Quản lý Niên khóa
+        </a>
+      </div>
+    </nav>
+  </div>
+  <!-- Sidebar End -->
+</aside>
+<!-- /#left-panel -->
+<script src="/assets/js/main.js"></script>
+</body>
+</html>

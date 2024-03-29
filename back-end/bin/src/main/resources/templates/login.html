@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Đăng nhập</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="Free HTML Templates" name="keywords"/>
+    <meta content="Free HTML Templates" name="description"/>
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon"/>
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Handlee&family=Nunito&display=swap" rel="stylesheet"/>
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet"/>
+
+    <!-- Flaticon Font -->
+    <link href="lib/flaticon/font/flaticon.css" rel="stylesheet"/>
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet"/>
+    <link href="lib/lightbox/css/lightbox.min.css" rel="stylesheet"/>
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/style.css" rel="stylesheet"/>
+</head>
+
+<body>
+
+<!--Begin: Header-->
+<div th:replace="common/header :: header"></div>
+<!--End: Header-->
+
+<!-- Form Login -->
+<div class="container">
+    <div class="row">
+        <div class="col-md-5 mx-auto">
+            <div id="first">
+                <div class="myform form ">
+                    <div class="logo mb-3">
+                        <div class="col-md-12 text-center">
+                            <h2>ĐĂNG NHẬP</h2>
+                        </div>
+                    </div>
+
+                    <form action="" method="post" name="login" class="login-form">
+                        <div class="social-btn">
+                            <a href="http://demo-env.eba-hhcwgutd.ap-southeast-2.elasticbeanstalk.com/oauth2/authorization/google" class="google-btn">
+                                <i class="fab fa-google-plus-g"></i> Đăng nhập bằng Google Host
+                            </a>
+                        </div>
+                    </form>
+
+                    <form action="" method="post" name="login" class="login-form">
+                        <div class="social-btn">
+                            <a href="http://localhost:5000/oauth2/authorization/google" class="google-btn">
+                                <i class="fab fa-google-plus-g"></i> Đăng nhập bằng Google Host
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Begin: Footer-->
+<div th:replace="common/footer :: footer"></div>
+<!--End: Footer-->
+
+<!-- Script đăng nhập bằng Google -->
+<script>
+    document.getElementById('google-login-btn').addEventListener('click', function() {
+        //window.location.href = 'http://localhost:8080/v3/signin/identifier?opparams=%253F&dsh=S-1056912230%3A1701253863224018&client_id=633529221837-p15btranqsdcd0r3ir5t83dop5514otg.apps.googleusercontent.com&nonce=LHcs7O96PeNRAKFIo9B17K3XoTB6RRb5gojwFXi5kD4&o2v=2&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Flogin%2Foauth2%2Fcode%2Fgoogle&response_type=code&scope=openid+profile+email&service=lso&state=QC5CYe1C2VAjlz77230A5dAiMRoqhLtC4RPSaRFE4gc%3D&theme=glif&flowName=GeneralOAuthFlow&continue=https%3A%2F%2Faccounts.google.com%2Fsignin%2Foauth%2Fconsent%3Fauthuser%3Dunknown%26part%3DAJi8hAMW2LppJybKZcnLGpccCYLJfG7uPLSh3b7coHAZmDfamku1WDpsFqcNTB--9NazoIvxswErgnunFAVe2g5vbrwfHeOzhYKTIaSQXeD_O6etZrxHLmNUzu6dTKMOdX9A34XTo5rM52MHe4ckiNx72CuJ7akJ8tE3j5BJf5VNCVv79W0AdGXTxQFl2GXqjmhkUJIFGUwyzcGqe05jwaGIaP7tUVK6haSeJjBOBWdqzi1ymE_p4Sdj1Zxdnv-fwF-Vh47aHbUKqHfymgm8Z5xikOwjXoglJ7mfgbo5LNWDKpI1PxjHOOK-cvGTf6zxL-0KAHqcGrXJGkNcfN19KeQnjy86w8VlHTBtNSDyB6ymCqhuM-Q628pNltJdVw7bc70iJkbGYaIIz6zSKfHvEVm0vEDaC-UqTN1chMXLzSANOn28dKGh14GYRSMJv5HlHVbcoRhl0mniFCu7-oR9ENyo_9Ug3oXL6Q%26as%3DS-1056912230%253A1701253863224018%26client_id%3D633529221837-p15btranqsdcd0r3ir5t83dop5514otg.apps.googleusercontent.com%26theme%3Dglif%23&app_domain=http%3A%2F%2Flocalhost%3A8080&rart=ANgoxccHSecKQnMePaDP8ywk9hRH-r02ur4c9d1bJADucowObLN_jXUtIhKJVf9mqhvXbYqROE_Hyi2HPNxhobyAH2plHhRmj2NLzF1mVyMH8X5yF6t8lkw';
+    });
+</script>
+
+
+
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+<script src="lib/easing/easing.min.js"></script>
+<script src="lib/owlcarousel/owl.carousel.min.js"></script>
+<script src="lib/isotope/isotope.pkgd.min.js"></script>
+<script src="lib/lightbox/js/lightbox.min.js"></script>
+
+<!-- Contact Javascript File -->
+<script src="mail/jqBootstrapValidation.min.js"></script>
+<script src="mail/contact.js"></script>
+
+<!-- Template Javascript -->
+<script src="js/main.js"></script>
+</body>
+</html>
