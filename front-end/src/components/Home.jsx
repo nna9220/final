@@ -1,18 +1,6 @@
-import React, {useEffect} from 'react';
-import axios from 'axios';
+import React from 'react'
 
 function Home() {
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(`http://localhost:5000/api/home`);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-    }, []);
-
     return (
         <div class="hero">
             <div class="card text-bg-white">

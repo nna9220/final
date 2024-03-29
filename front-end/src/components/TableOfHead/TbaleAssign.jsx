@@ -2,12 +2,17 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import './styleTable.scss';
+import { Toast } from 'react-bootstrap';
+import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
+import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 
 function TableAssign() {
   const [topics, setTopics] = useState([]);
   const [lecturers, setLecturers] = useState([]);
-  const [lecturerId, setSelectedLecturerId] = useState(''); // State mới để lưu trữ id của giảng viên được chọn
+  const [lecturerIds, setLecturerIds] = useState([]); // Mảng lưu trữ lecturerId cho mỗi đề tài
   const userToken = getTokenFromUrlAndSaveToStorage();
+  const [showAssignToast, setShowAssignToast] = useState(false);
+  const [showErrorToastAssign, setShowErrorToastAssign] = useState(false);
 
   useEffect(() => {
     console.log("Token: " + userToken);
@@ -22,6 +27,8 @@ function TableAssign() {
           .then(response => {
             console.log("Topic: ", response.data);
             setTopics(response.data.listSubject);
+            // Khởi tạo mảng lecturerIds với độ dài bằng số lượng đề tài
+            setLecturerIds(Array(response.data.listSubject.length).fill(''));
           })
           .catch(error => {
             console.error(error);
@@ -30,11 +37,14 @@ function TableAssign() {
     }
   }, [userToken]);
 
-  const handleSelectChange = (event) => {
-    setSelectedLecturerId(event.target.value); // Cập nhật id của giảng viên được chọn
+  const handleSelectChange = (event, index) => {
+    const { value } = event.target;
+    const newLecturerIds = [...lecturerIds];
+    newLecturerIds[index] = value;
+    setLecturerIds(newLecturerIds);
   };
 
-  const handleAssignGVPB = (subjectId) => {
+  const handleAssignGVPB = (subjectId, index) => {
     axios.get(`http://localhost:5000/api/head/subject/listLecturer/${subjectId}`, {
       headers: {
         'Authorization': `Bearer ${userToken}`,
@@ -43,15 +53,15 @@ function TableAssign() {
       .then(response => {
         console.log("List of lecturers for counter argument: ", response.data.listLecturer);
         setLecturers(response.data.listLecturer);
-        console.log("LecID: ", lecturerId); // Xóa dòng này
       })
       .catch(error => {
         console.error(error);
       });
   };
 
-  const handleGVPB = (subjectId) => { // Loại bỏ lectureId
-    if (lecturerId && subjectId) { // Thay lectureId bằng selectedLecturerId
+  const handleGVPB = (subjectId, index) => {
+    const lecturerId = lecturerIds[index]; // Lấy lecturerId tương ứng với đề tài
+    if (lecturerId && subjectId) {
       axios.post(`http://localhost:5000/api/head/subject/addCounterArgumrnt/${subjectId}/${lecturerId}`, null, {
         headers: {
           'Authorization': `Bearer ${userToken}`
@@ -59,27 +69,45 @@ function TableAssign() {
       })
         .then(response => {
           console.log('Successfully assigned lecturer for counter argument:', response.data);
-          const updatedTopics = topics.map(topic => {
-            if (topic.subjectId === subjectId) {
+          const updatedTopics = topics.map((topic, idx) => {
+            if (idx === index) {
               return { ...topic, counterArgumentLecturer: response.data };
             }
             return topic;
           });
           setTopics(updatedTopics);
+          setShowAssignToast(true);
         })
         .catch(error => {
           console.error('Error assigning lecturer for counter argument:', error);
+          setShowErrorToastAssign(true);
         });
     } else {
       console.error('LectureId or subjectId is undefined or empty');
-      console.log("LectureId: ", lecturerId); // Thay lectureId bằng selectedLecturerId
+      console.log("LectureId: ", lecturerId);
       console.log("SubjectId: ", subjectId);
     }
   };
 
-
   return (
     <div className='home-table'>
+      <Toast show={showAssignToast} onClose={() => setShowAssignToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
+        <Toast.Header>
+          <strong className="me-auto">Thông báo</strong>
+        </Toast.Header>
+        <Toast.Body>
+          <DoneOutlinedIcon /> Phân giảng viên thành công!
+        </Toast.Body>
+      </Toast>
+
+      <Toast show={showErrorToastAssign} onClose={() => setShowErrorToastAssign(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
+        <Toast.Header>
+          <strong className="me-auto" style={{ color: 'red' }}><ErrorOutlineOutlinedIcon /> Lỗi</strong>
+        </Toast.Header>
+        <Toast.Body>
+          Lỗi khi phân giảng viên!
+        </Toast.Body>
+      </Toast>
       <table className="table table-hover">
         <thead>
           <tr>
@@ -100,13 +128,13 @@ function TableAssign() {
               <td>{item.student2}</td>
               <td>{item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName}</td>
               <td>
-                <select className='optionLecs' value={lecturerId} onChange={handleSelectChange} onClick={() => handleAssignGVPB(item.subjectId)}>
+                <select className='optionLecs' value={lecturerIds[index]} onChange={(event) => handleSelectChange(event, index)} onClick={() => handleAssignGVPB(item.subjectId, index)}>
                   <option className='option' value="" >Chọn giảng viên phản biện</option>
-                  {lecturers.map((lecturer, index) => (
-                    <option key={index} value={lecturer.lecturerId}>{lecturer.person.firstName} {lecturer.person.lastName}</option>
+                  {lecturers.map((lecturer, idx) => (
+                    <option key={idx} value={lecturer.lecturerId}>{lecturer.person.firstName} {lecturer.person.lastName}</option>
                   ))}
                 </select>
-                <button onClick={() => handleGVPB(item.subjectId, lecturerId)}>Phân công</button> {/* Truyền subjectId và lectureId vào hàm handleGVPB */}
+                <button className='btn-assign' onClick={() => handleGVPB(item.subjectId, index)}>Phân công</button>
               </td>
             </tr>
           ))}

@@ -27,7 +27,6 @@ function RegisterTopicSt() {
                                     <a href="#">Khóa luận tốt nghiệp</a>
                                 </div>
                             </div>
-                            <h4 style={{ marginLeft: '20PX', color: 'red' }}>CHƯA ĐẾN THỜI GIAN ĐĂNG KÝ ĐỀ TÀI</h4>
                         </div>
                     </div>
                 </div>

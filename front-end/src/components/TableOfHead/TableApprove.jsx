@@ -3,12 +3,21 @@ import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import './styleTable.scss';
 import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
+import { Toast } from 'react-bootstrap';
+import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
+import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import PlaylistRemoveOutlinedIcon from '@mui/icons-material/PlaylistRemoveOutlined';
+import PlaylistAddCheckOutlinedIcon from '@mui/icons-material/PlaylistAddCheckOutlined';
 
 function TableApprove() {
     const [topics, setTopics] = useState([]);
     const [topicsDeleted, setTopicsDeleted] = useState([]);
     const userToken = getTokenFromUrlAndSaveToStorage();
     const [showTable, setShowTable] = useState(false);
+    const [showDeleteToast, setShowDeleteToast] = useState(false);
+    const [showErrorToastDelete, setShowErrorToastDelete] = useState(false);
+    const [showApproveToast, setShowApproveToast] = useState(false);
+    const [showErrorToastApprove, setShowErrorToastApprove] = useState(false);
 
     useEffect(() => {
         console.log("Token: " + userToken);
@@ -44,6 +53,7 @@ function TableApprove() {
         })
             .then(response => {
                 console.log("Topic deleted: ", response.data);
+                loadTopics();
                 setTopicsDeleted(response.data.lstSubject);
             })
             .catch(error => {
@@ -60,9 +70,11 @@ function TableApprove() {
             .then(response => {
                 console.log("Duyệt thành công");
                 loadTopics(); // Load lại danh sách sau khi duyệt thành công
+                setShowApproveToast(true);
             })
             .catch(error => {
                 console.error("Lỗi khi duyệt đề tài: ", error);
+                setShowErrorToastApprove(true);
             });
     };
 
@@ -75,17 +87,54 @@ function TableApprove() {
             .then(response => {
                 console.log("Xóa thành công");
                 loadTopics(); // Load lại danh sách sau khi duyệt thành công
+                setShowDeleteToast(true);
             })
             .catch(error => {
                 console.error("Lỗi khi xóa đề tài: ", error);
+                setShowErrorToastDelete(true);
             });
     }
 
     return (
         <div>
-            <div className='header-table'>
-                <button className='btn-list' onClick={() => setShowTable(!showTable)}><ListAltOutlinedIcon />Danh sách đề tài bị xóa</button>
-            </div>
+             <Toast show={showDeleteToast} onClose={() => setShowDeleteToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
+                <Toast.Header>
+                    <strong className="me-auto">Thông báo</strong>
+                </Toast.Header>
+                <Toast.Body>
+                    <DoneOutlinedIcon /> Đề tài đã được xóa!
+                </Toast.Body>
+            </Toast>
+
+            <Toast show={showErrorToastDelete} onClose={() => setShowErrorToastDelete(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
+                <Toast.Header>
+                    <strong className="me-auto" style={{ color: 'red' }}><ErrorOutlineOutlinedIcon /> Lỗi</strong>
+                </Toast.Header>
+                <Toast.Body>
+                    Xóa đề tài không thành công!
+                </Toast.Body>
+            </Toast>
+            
+            <Toast show={showApproveToast} onClose={() => setShowApproveToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
+                <Toast.Header>
+                    <strong className="me-auto">Thông báo</strong>
+                </Toast.Header>
+                <Toast.Body>
+                    <DoneOutlinedIcon /> Đề tài đã được duyệt!
+                </Toast.Body>
+            </Toast>
+
+            <Toast show={showErrorToastApprove} onClose={() => setShowErrorToastApprove(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
+                <Toast.Header>
+                    <strong className="me-auto" style={{ color: 'red' }}><ErrorOutlineOutlinedIcon /> Lỗi</strong>
+                </Toast.Header>
+                <Toast.Body>
+                    Duyệt đề tài không thành công!
+                </Toast.Body>
+            </Toast>
+            <button className='button-listDelete' onClick={() => setShowTable(!showTable)}>
+                    {showTable ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách đề tài chưa duyệt</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách đề tài đã xóa</>}
+            </button>
 
             {showTable ? (
                 <div>
