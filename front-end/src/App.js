@@ -42,7 +42,7 @@ function App() {
             </>
           }
         >
-          <Route path="/home" element={<Home />} />
+          <Route index element={<Home />} />
           <Route path="/intruction" element={<Intruction />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/info-teacher" element={<Team />} />
