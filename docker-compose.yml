@@ -4,7 +4,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=Nanguyen1206@
     volumes:
-      - /data:/var/lib/mysql
+      - ~/data:/var/lib/mysql
       - ./backupfile.sql:/docker-entrypoint-initdb.d/backup.sql
     command: --init-file /docker-entrypoint-initdb.d/backup.sql
   
