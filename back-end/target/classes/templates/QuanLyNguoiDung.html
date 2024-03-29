@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý người dùng</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <!-- Template Stylesheet -->
+    <link href="/css/styleAdmin.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="container-xxl position-relative bg-white d-flex p-0">
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+
+    <!--Begin: SideBar-->
+    <div th:replace="~{common/SidebarAdmin :: SidebarAdmin}"></div>
+    <!--End: SideBar-->
+
+
+    <!-- Content Start -->
+    <div class="content">
+        <!-- Navbar Start -->
+        <nav class="navbar navbar-expand bg-light navbar-light sticky-top px-4 py-0">
+            <a href="Dashboard_Admin.html" class="navbar-brand d-flex d-lg-none me-4">
+                <h2 class="text-primary mb-0"><i class="fa fa-hashtag"></i></h2>
+            </a>
+            <a href="#" class="sidebar-toggler flex-shrink-0">
+                <i class="fa fa-bars"></i>
+            </a>
+            <form class="d-none d-md-flex ms-4">
+                <input class="form-control border-0" type="search" placeholder="Search">
+            </form>
+            <div class="navbar-nav align-items-center ms-auto">
+                <div class="nav-item dropdown">
+                    <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
+                        <a href="#" class="dropdown-item">
+                            <div class="d-flex align-items-center">
+                                <img class="rounded-circle" src="/img/user.png" alt="" style="width: 40px; height: 40px;">
+                                <div class="ms-2">
+                                    <h6 class="fw-normal mb-0">Jhon send you a message</h6>
+                                    <small>15 minutes ago</small>
+                                </div>
+                            </div>
+                        </a>
+                        <hr class="dropdown-divider">
+                        <a href="#" class="dropdown-item">
+                            <div class="d-flex align-items-center">
+                                <img class="rounded-circle" src="/img/user.png" alt="" style="width: 40px; height: 40px;">
+                                <div class="ms-2">
+                                    <h6 class="fw-normal mb-0">Jhon send you a message</h6>
+                                    <small>15 minutes ago</small>
+                                </div>
+                            </div>
+                        </a>
+                        <hr class="dropdown-divider">
+                        <a href="#" class="dropdown-item">
+                            <div class="d-flex align-items-center">
+                                <img class="rounded-circle" src="/img/user.png" alt="" style="width: 40px; height: 40px;">
+                                <div class="ms-2">
+                                    <h6 class="fw-normal mb-0">Jhon send you a message</h6>
+                                    <small>15 minutes ago</small>
+                                </div>
+                            </div>
+                        </a>
+                        <hr class="dropdown-divider">
+                        <a href="#" class="dropdown-item text-center">See all message</a>
+                    </div>
+                </div>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fa fa-bell me-lg-2"></i>
+                        <span class="d-none d-lg-inline-flex">Thông báo</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
+                        <a href="#" class="dropdown-item">
+                            <h6 class="fw-normal mb-0">Profile updated</h6>
+                            <small>15 minutes ago</small>
+                        </a>
+                        <hr class="dropdown-divider">
+                        <a href="#" class="dropdown-item">
+                            <h6 class="fw-normal mb-0">New user added</h6>
+                            <small>15 minutes ago</small>
+                        </a>
+                        <hr class="dropdown-divider">
+                        <a href="#" class="dropdown-item">
+                            <h6 class="fw-normal mb-0">Password changed</h6>
+                            <small>15 minutes ago</small>
+                        </a>
+                        <hr class="dropdown-divider">
+                        <a href="#" class="dropdown-item text-center">See all notifications</a>
+                    </div>
+                </div>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                        <img class="rounded-circle me-lg-2" src="/img/user.png" alt="" style="width: 40px; height: 40px;">
+                        <span class="d-none d-lg-inline-flex">John Doe</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
+                        <a th:href="@{/logout}" class="dropdown-item">Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <!-- Navbar End -->
+
+        <p>Quản lý Chuyên Ngành</p>
+        <!-- Table Sinh Vien Start-->
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchTable('searchInput', 'ChuyenNganhList')">
+            <button id="add-btn" class="buttonAddFormWrapper" onclick="hienThiForm()">Thêm</button>
+
+        </div>
+
+        <div class="message" id="message"></div>
+        <table id="ChuyenNganhList" class="table-info" style="width:100%" border="1">
+            <tr>
+                <th>ID</th>
+                <th>Họ</th>
+                <th>Tên</th>
+                <th>Email</th>
+                <th>Giới tính</th>
+                <th>Số điện thoại</th>
+                <th>Ngày sinh</th>
+                <th>Trạng thái</th>
+                <th>Actions</th>
+            </tr>
+            <tr th:each="person : ${listPerson}">
+                <td th:text="${person.personId}"></td>
+                <td th:text="${person.lastName}"></td>
+                <td th:text="${person.firstName}"></td>
+                <td th:text="${person.phone}"></td>
+                <td th:text="${person.gender}"></td>
+                <td th:text="${person.phone}"></td>
+                <td th:text="${person.birthDay}"></td>
+                <td th:text="${person.status}"></td>
+                <td>
+                    <button class="edit-btn" onclick="editRow(this)"><i class="fas fa-edit"></i></button>
+                    <button class="delete-btn" onclick="deleteRow(this)"><i class="fas fa-trash-alt"></i></button>
+                </td>
+            </tr>
+            </tr>
+            <!-- Thêm dữ liệu hàng khác tại đây -->
+        </table>
+
+        <!-- Form Thêm dữ liệu -->
+        <div id="add-form" class="form-container-add" style="display: none;">
+            <h2 class="form-title">Thêm Sinh Viên</h2>
+            <input type="text" id="mssv" placeholder="MSSV"><br><br>
+            <input type="text" id="hoTen" placeholder="Họ và tên"><br><br>
+            <input type="date" id="ngaySinh" placeholder="Ngày sinh"><br><br>
+            <input type="email" id="email" placeholder="Email"><br><br>
+            <input type="text" id="diaChi" placeholder="Địa chỉ"><br><br>
+            <input type="tel" id="soDienThoai" placeholder="Số điện thoại"><br><br>
+            <input type="text" id="nganh" placeholder="Ngành"><br><br>
+            <input type="text" id="chuyenNganh" placeholder="Chuyên ngành"><br><br>
+            <button class="form-button save-button" onclick="themSinhVien()">Lưu</button>
+            <button class="form-button cancel-button" onclick="huy()">Hủy</button>
+        </div>
+
+        <!-- Form Edit dữ liệu -->
+        <div id="edit-form" class="form-container-edit" style="display: none;">
+            <h2 class="form-title">Chỉnh Sửa Sinh Viên</h2>
+            <input type="text" id="edit-mssv" placeholder="MSSV" class="form-input"><br><br>
+            <input type="text" id="edit-hoTen" placeholder="Họ và tên" class="form-input"><br><br>
+            <input type="date" id="edit-ngaySinh" placeholder="Ngày sinh" class="form-input"><br><br>
+            <input type="email" id="edit-email" placeholder="Email" class="form-input"><br><br>
+            <input type="text" id="edit-diaChi" placeholder="Địa chỉ" class="form-input"><br><br>
+            <input type="tel" id="edit-soDienThoai" placeholder="Số điện thoại" class="form-input"><br><br>
+            <input type="text" id="edit-nganh" placeholder="Ngành" class="form-input"><br><br>
+            <input type="text" id="edit-chuyenNganh" placeholder="Chuyên ngành" class="form-input"><br><br>
+            <div class="button-container">
+                <button onclick="capNhatSinhVien()" class="form-button save-button">Cập Nhật</button>
+                <button onclick="huyCapNhat()" class="form-button cancel-button">Hủy</button>
+            </div>
+        </div>
+
+        <!-- Table Sinh Vien Start-->
+    </div>
+    <!-- Content End -->
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+</div>
+
+
+
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Template Javascript -->
+<script src="/js/main2.js"></script>
+</body>
+</html>

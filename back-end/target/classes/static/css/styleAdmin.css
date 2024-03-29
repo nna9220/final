@@ -1,0 +1,1090 @@
+/********** Template CSS **********/
+:root {
+    --primary: #009CFF;
+    --light: #F3F6F9;
+    --dark: #191C24;
+}
+
+.back-to-top {
+    position: fixed;
+    display: none;
+    right: 45px;
+    bottom: 45px;
+    z-index: 99;
+}
+
+
+/*** Spinner ***/
+#spinner {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .5s ease-out, visibility 0s linear .5s;
+    z-index: 99999;
+}
+
+#spinner.show {
+    transition: opacity .5s ease-out, visibility 0s linear 0s;
+    visibility: visible;
+    opacity: 1;
+}
+
+
+/*** Button ***/
+.btn {
+    transition: .5s;
+}
+
+
+
+.btn.btn-primary {
+    color: #FFFFFF;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.btn.btn-secondary-nk {
+    color: #ef5b5b;
+    margin-top: 10px;
+}
+
+
+.btn-square {
+    width: 38px;
+    height: 38px;
+}
+
+.btn-sm-square {
+    width: 32px;
+    height: 32px;
+}
+
+.btn-lg-square {
+    width: 48px;
+    height: 48px;
+}
+
+.btn-square,
+.btn-sm-square,
+.btn-lg-square {
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: normal;
+    border-radius: 50px;
+}
+
+
+/*** Layout ***/
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 300px;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--light);
+    transition: 0.5s;
+    z-index: 999;
+}
+
+.content {
+    margin-left: 250px;
+    min-height: 100vh;
+    background: #FFFFFF;
+    transition: 0.5s;
+}
+
+@media (min-width: 992px) {
+    .sidebar {
+        margin-left: 0;
+    }
+
+    .sidebar.open {
+        margin-left: -250px;
+    }
+
+    .content {
+        width: calc(100% - 250px);
+    }
+
+    .content.open {
+        width: 100%;
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .sidebar {
+        margin-left: -250px;
+    }
+
+    .sidebar.open {
+        margin-left: 0;
+    }
+
+    .content {
+        width: 100%;
+        margin-left: 0;
+    }
+}
+
+
+/*** Navbar ***/
+.sidebar .navbar .navbar-nav .nav-link {
+    padding: 7px 20px;
+    color: var(--dark);
+    font-weight: 500;
+    border-left: 3px solid var(--light);
+    border-radius: 0 30px 30px 0;
+    outline: none;
+}
+
+.sidebar .navbar .navbar-nav .nav-link:hover,
+.sidebar .navbar .navbar-nav .nav-link.active {
+    color: var(--primary);
+    background: #FFFFFF;
+    border-color: var(--primary);
+}
+
+.sidebar .navbar .navbar-nav .nav-link i {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #FFFFFF;
+    border-radius: 40px;
+}
+
+.sidebar .navbar .navbar-nav .nav-link:hover i,
+.sidebar .navbar .navbar-nav .nav-link.active i {
+    background: var(--light);
+}
+
+.sidebar .navbar .dropdown-toggle::after {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    border: none;
+    content: "\f107";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    transition: .5s;
+}
+
+.sidebar .navbar .dropdown-toggle[aria-expanded=true]::after {
+    transform: rotate(-180deg);
+}
+
+.sidebar .navbar .dropdown-item {
+    padding-left: 25px;
+    border-radius: 0 30px 30px 0;
+}
+
+.content .navbar .navbar-nav .nav-link {
+    margin-left: 25px;
+    padding: 12px 0;
+    color: var(--dark);
+    outline: none;
+}
+
+.content .navbar .navbar-nav .nav-link:hover,
+.content .navbar .navbar-nav .nav-link.active {
+    color: var(--primary);
+}
+
+.content .navbar .sidebar-toggler,
+.content .navbar .navbar-nav .nav-link i {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #FFFFFF;
+    border-radius: 40px;
+}
+
+.content .navbar .dropdown-toggle::after {
+    margin-left: 6px;
+    vertical-align: middle;
+    border: none;
+    content: "\f107";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    transition: .5s;
+}
+
+.content .navbar .dropdown-toggle[aria-expanded=true]::after {
+    transform: rotate(-180deg);
+}
+
+@media (max-width: 575.98px) {
+    .content .navbar .navbar-nav .nav-link {
+        margin-left: 15px;
+    }
+}
+
+
+/*** Date Picker ***/
+.bootstrap-datetimepicker-widget.bottom {
+    top: auto !important;
+}
+
+.bootstrap-datetimepicker-widget .table * {
+    border-bottom-width: 0px;
+}
+
+.bootstrap-datetimepicker-widget .table th {
+    font-weight: 500;
+}
+
+.bootstrap-datetimepicker-widget.dropdown-menu {
+    padding: 10px;
+    border-radius: 2px;
+}
+
+.bootstrap-datetimepicker-widget table td.active,
+.bootstrap-datetimepicker-widget table td.active:hover {
+    background: var(--primary);
+}
+
+.bootstrap-datetimepicker-widget table td.today::before {
+    border-bottom-color: var(--primary);
+}
+
+
+/*** Testimonial ***/
+.progress .progress-bar {
+    width: 0px;
+    transition: 2s;
+}
+
+
+/*** Testimonial ***/
+.testimonial-carousel .owl-dots {
+    margin-top: 24px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.testimonial-carousel .owl-dot {
+    position: relative;
+    display: inline-block;
+    margin: 0 5px;
+    width: 15px;
+    height: 15px;
+    border: 5px solid var(--primary);
+    border-radius: 15px;
+    transition: .5s;
+}
+
+.testimonial-carousel .owl-dot.active {
+    background: var(--dark);
+    border-color: var(--primary);
+}
+
+.img-account-profile {
+    height: 10rem;
+}
+.rounded-circle {
+    border-radius: 50% !important;
+}
+.card {
+    box-shadow: 0 0.15rem 1.75rem 0 rgb(33 40 50 / 15%);
+}
+.card .card-header {
+    font-weight: 500;
+}
+.card-header:first-child {
+    border-radius: 0.35rem 0.35rem 0 0;
+}
+.card-header {
+    padding: 1rem 1.35rem;
+    margin-bottom: 0;
+    background-color: rgba(33, 40, 50, 0.03);
+    border-bottom: 1px solid rgba(33, 40, 50, 0.125);
+}
+.form-control, .dataTable-input {
+    display: block;
+    width: 100%;
+    padding: 0.875rem 1.125rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1;
+    color: #69707a;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #c5ccd6;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0.35rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.nav-borders .nav-link.active {
+    color: #0061f2;
+    border-bottom-color: #0061f2;
+}
+.nav-borders .nav-link {
+    color: #69707a;
+    border-bottom-width: 0.125rem;
+    border-bottom-style: solid;
+    border-bottom-color: transparent;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+.logo-fit {
+    padding-left: 20px;
+    width: 150px;
+    height: auto;
+}
+
+label {
+    color: #0f6674;
+    font-weight: bold;
+}
+
+.modalWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.buttonEditWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.deleteButtonsWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.buttonDelete {
+    margin-top: 20px;
+}
+
+.buttonAddFormWrapper {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: auto;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.table-info {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-info th, .table-info td {
+    border: 1px solid #dddddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.table-info th {
+    background-color: #f2f2f2;
+}
+
+.table-info tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.table-info tr:hover {
+    background-color: #e2e2e2;
+}
+
+.add-container {
+    margin-left: auto;
+    margin-right: 10px; /* Adjust the margin as needed */
+}
+
+.add-container-status {
+    margin-left: auto;
+    margin-right: 50px; /* Adjust the margin as needed */
+}
+.search-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 20px;
+}
+
+.search-container input[type="text"] {
+    flex-grow: 1; /* Thay đổi giá trị flex-grow để điều chỉnh độ dài của ô tìm kiếm */
+    padding: 6px;
+    border: 1px solid #117a8b;
+    border-radius: 4px;
+}
+
+.edit-btn, .delete-btn {
+    display: inline-block;
+    padding: 5px 10px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+#searchInput {
+    padding: 10px;
+    border: 2px solid #40b9cc;
+    border-radius: 5px;
+    width: 200px;
+    margin-right: 500px;
+}
+
+#add-btn {
+    padding: 10px;
+    background-color: #55a458;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.form-container-add{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 40px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    z-index: 999;
+    width: 60%;
+    max-width: 600px;
+}
+
+.form-title {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.form-input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 100px;
+}
+
+.form-button {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#edit-form {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 40px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    z-index: 999;
+    width: 60%;
+    max-width: 600px;
+    max-height: 80vh; /* Chiều cao tối đa là 80% của chiều cao màn hình */
+    overflow-y: auto; /* Hiển thị thanh cuộn khi nội dung vượt quá chiều cao tối đa */
+}
+
+.form-title {
+    text-align: center;
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.form-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.save-button,
+.cancel-button {
+    display: inline-block;
+    margin: 0 auto; /* Căn giữa theo chiều ngang */
+    margin-top: 10px; /* Thêm khoảng cách từ trên xuống nếu cần */
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+/* CSS cho container của hai nút */
+.button-container {
+    text-align: center; /* Căn giữa theo chiều ngang */
+    margin-top: 10px; /* Thêm khoảng cách từ trên xuống nếu cần */
+}
+
+/* CSS cho nút Lưu */
+.save-button {
+    background-color: #28a745;
+    color: #fff;
+}
+
+/* CSS cho nút Hủy */
+.cancel-button {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+
+#TopicList {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#TopicList th, #TopicList td {
+    border: 1px solid #dddddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#TopicList th {
+    background-color: #f2f2f2;
+}
+
+#TopicList tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#TopicList tr:hover {
+    background-color: #e2e2e2;
+}
+
+.popup-container {
+    display: none;
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.popup {
+    background: #fff;
+    width: 300px;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.popup h2 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.popup button {
+    background: #4caf50;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.popup button:hover {
+    background: #45a049;
+}
+
+
+.hidden {
+    display: none;
+}
+
+.form-container-add-SV{
+    max-height: 600px; /* Đặt chiều cao tối đa của form */
+    overflow-y: auto; /* Sử dụng thanh cuộn khi nội dung vượt quá chiều cao */
+}
+
+.form-container-add-item{
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.form-container-info-task{
+
+}
+.form-container-edit-item{
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.title-table {
+    color: #0f6674;
+    font-weight: bold;
+    font-size: 25px;
+    margin-left: 10px;
+    margin-right: 200px;
+}
+
+.form-container-add-SV{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 40px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    z-index: 999;
+    width: 60%;
+    max-width: 600px;
+    font-size: 15px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.gender-radio {
+    display: flex;
+}
+
+.form-check {
+    margin-right: 20px; /* Khoảng cách giữa các radio buttons */
+}
+
+/* Optional: Để làm cho radio buttons nằm trên cùng một dòng trên màn hình nhỏ */
+@media screen and (max-width: 600px) {
+    .gender-radio {
+        flex-direction: column;
+    }
+
+    .form-check {
+        margin-right: 0;
+    }
+}
+
+.table-container {
+    overflow-x: auto; /* Thanh cuộn ngang */
+    max-width: 100%; /* Chiều rộng tối đa */
+    position: relative;
+}
+
+#GiangVienList {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#NKList {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#ClassList, #DeTaiList{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.sticky-column {
+    position: sticky;
+    left: 0; /* Cố định cột đầu tiên bên trái */
+    z-index: 1;
+    background-color: #f2f2f2; /* Màu nền của cột cố định */
+}
+
+/* Optional: Để làm cho table responsive */
+@media screen and (max-width: 600px) {
+    .table-container {
+        overflow-x: auto;
+    }
+}
+
+.custom-card-topic {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    width: 90%;
+}
+/* CSS cho các class mới */
+.custom-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    width: 80%;
+}
+
+.custom-card-header {
+    background-color: #3e9fbe;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px 5px 0 0;
+    font-size: 18px;
+    text-align: center;
+}
+
+.custom-mb-3 {
+    margin-bottom: 15px;
+}
+
+.custom-small {
+    font-size: 16px;
+    display: inline-block; /* Ngăn label trở thành một block element */
+}
+
+.custom-small-task {
+    font-size: 16px;
+    min-width: 500px; /* Đặt chiều tối thiểu cho kích thước label */
+    display: inline-block; /* Ngăn label trở thành một block element */
+}
+
+.custom-text {
+    font-weight: bold;
+    font-size: 16px;
+    /* Thêm các thiết lập font chữ khác nếu cần thiết */
+}
+
+.custom-button {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.custom-button:hover {
+    background-color: #218838;
+    color: floralwhite;
+}
+
+.custom-mb-3 {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 15px;
+}
+
+.custom-small {
+    flex: 0 0 30%; /* Điều chỉnh chiều rộng của label */
+}
+
+.custom-text {
+    flex: 0 0 70%; /* Điều chỉnh chiều rộng của phần hiển thị thông tin */
+}
+
+.task-button-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 3rem;
+    z-index: 1000;
+}
+
+.mt-5-1 {
+    margin-top: 3rem !important;
+    margin-bottom: 2rem !important;
+}
+
+
+.container-tab {
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.task-overview {
+    margin-bottom: 20px;
+}
+
+.tab-detail button{
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 16px;
+}
+
+.tab-detail button.active{
+    background-color: #40b9cc;
+    color: white;
+
+}
+
+.tab-detail{
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+.text-muted-detail{
+    color: #0a3741 !important;
+    font-weight: bold;
+}
+
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 16px;
+}
+
+.tab button:hover {
+    background-color: #ddd;
+}
+
+.tab button.active {
+    background-color: #ccc;
+}
+
+.tabcontent {
+    display: none;
+    padding: 20px;
+    border: 1px solid #ccc;
+}
+
+.tabcontent.active {
+    display: block;
+}
+
+/* Style for comments */
+.comment {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+/* Style for comment form */
+#commentForm {
+    margin-top: 20px;
+}
+
+#commentText {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#commentList {
+    margin-top: 40px;
+}
+
+#fileUpload {
+    margin-bottom: 10px;
+}
+
+.form-control-mes{
+    display: block;
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1;
+    color: #69707a;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #c5ccd6;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0.35rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.card-text-comment {
+    margin-left: 20px;
+}
+.card-text-file{
+    margin-left: 20px;
+}
+
+.card-body-comment{
+    flex: 1 1 auto;
+    padding: 0.6rem;
+}
+
+/* Chỉnh CSS cho nút "Sửa" */
+button.edit {
+    color: #0a3741; /* Màu chữ */
+    border: none; /* Không có viền */
+    padding: 8px 16px; /* Kích thước lề */
+    text-align: center; /* Căn giữa nội dung */
+    text-decoration: none; /* Không gạch chân cho chữ */
+    display: inline-block;
+    font-size: 14px; /* Kích thước chữ */
+    cursor: pointer;
+}
+
+/* Chỉnh CSS cho nút "Xóa" */
+button.delete {
+    color: #ef5b5b; /* Màu chữ */
+    border: none; /* Không có viền */
+    padding: 8px 16px; /* Kích thước lề */
+    text-align: center; /* Căn giữa nội dung */
+    text-decoration: none; /* Không gạch chân cho chữ */
+    display: inline-block;
+    font-size: 14px; /* Kích thước chữ */
+    cursor: pointer;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.notification-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.notification {
+    border: 1px solid #ddd;
+    margin-top: 20px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    width: 900px; /* Điều chỉnh chiều rộng của ô thông báo */
+}
+
+.notification-header {
+    background-color: #ffffff;
+    color: black;
+    padding: 8px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.notification-name {
+    font-weight: bold;
+}
+
+.notification-time {
+    font-style: italic;
+}
+
+.notification-content {
+    padding: 8px;
+    display: none;
+}
+
+.notification:hover .notification-content {
+    display: block;
+}
+
+/* CSS */
+.custom-status {
+    font-weight: bold; /* làm cho chữ đậm */
+    border-radius: 10%; /* khung bo tròn */
+    padding: 5px 10px; /* tăng padding để tạo khoảng cách từ biên đến nội dung */
+    color: white; /* chữ màu trắng */
+    text-align: center; /* canh giữa nội dung */
+    display: inline-block; /* để đảm bảo khung không tràn qua các phần tử khác */
+}
+
+.status-closed {
+    background-color: #55a458; /* màu nền đỏ cho trạng thái Closed */
+}
+
+.status-mustdo {
+    background-color: orange; /* màu nền cam cho trạng thái MustDo */
+}
+
+.status-doing {
+    background-color: #40b9cc; /* màu nền xanh cho trạng thái Doing */
+}
+
+.custom-status-select{
+    font-weight: bold; /* làm cho chữ đậm */
+    border-radius: 5%; /* khung bo tròn */
+    border-color: #ffffff;
+    padding: 5px 10px; /* tăng padding để tạo khoảng cách từ biên đến nội dung */
+    text-align: center; /* canh giữa nội dung */
+    display: inline-block; /* để đảm bảo khung không tràn qua các phần tử khác */
+    margin-left: 300px;
+}
+
+.status-select-closed {
+    color: #55a458;
+}
+.status-select-mustdo {
+    color: orange;
+}
+.status-select-doing {
+    color: #40b9cc;
+}
+.custom-dropdown {
+    position: absolute;
+    top: 10px;
+    right: 500px;
+    transform: translateX(100%); /* Đẩy về bên phải */
+    /* ... (các thuộc tính khác) */
+}
+
+.task-overview {
+    display: flex;
+    align-items: center; /* Căn giữa theo chiều dọc */
+    justify-content: space-between; /* Các phần tử trong task-overview sẽ được căn đều với nhau */
+}

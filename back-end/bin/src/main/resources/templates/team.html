@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <title>Danh sách giảng viên</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="Free HTML Templates" name="keywords" />
+    <meta content="Free HTML Templates" name="description" />
+
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon" />
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Handlee&family=Nunito&display=swap" rel="stylesheet"/>
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet"/>
+
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="/css/style.css" rel="stylesheet" />
+</head>
+<body>
+    <!--Begin: Header-->
+    <div th:replace="~{common/header :: header}"></div>
+    <!--End: Header-->
+
+    <!-- Header Start -->
+    <div class="container-fluid bg-primary mb-5">
+      <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 400px">
+        <img class="img-teacher" src="/img/Teacher.jpg">
+      </div>
+
+      <section class="contact-form-home">
+        <div>
+          <ol class="contact-form-home-ins">
+            <li class="contact-form-come-home">
+              <i class="fas fa-home icon"></i>
+              <a class="come-home" th:href="@{/}">Trang chủ |</a>
+            </li>
+            <li class="contact-form-come-home">
+              <i class="fas fa-list icon"></i>
+              <a class="come-home" th:href="@{/team}">Danh sách giảng viên |</a>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <form class="form-inline d-flex justify-content-center">
+        <input class="form-control mr-sm-2" type="search" placeholder="Tìm kiếm giáo viên" aria-label="Search">
+      </form>
+    </div>
+    <!-- Header End -->
+
+    <!-- Team Start -->
+    <div class="container-fluid pt-5">
+      <div class="container">
+        <div class="text-center pb-2">
+          <p class="section-title px-5">
+            <span class="px-2">Danh sách giảng viên</span>
+          </p>
+        </div>
+        <div class="row">
+          <div th:each="lecturer : ${listLecturer}" class="col-md-6 col-lg-3 text-center team mb-5">
+            <div class="position-relative overflow-hidden mb-4" style="border-radius: 100%">
+              <img class="img-fluid w-100" src="/img/avatar-1.png" alt="" />
+              <div class="team-social d-flex align-items-center justify-content-center w-100 h-100 position-absolute ">
+                  <a class="btn btn-outline-light text-center px-0" th:href="@{'/team/profile/' + ${lecturer.lecturerId}}">Xem</a>
+              </div>
+            </div>
+            <h4 th:text="${lecturer.person.firstName + ' '+ lecturer.person.lastName} "></h4>
+            <i th:text="${lecturer.major}"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Team End -->
+
+  <!--Begin: Footer-->
+  <div th:replace="~{common/footer :: footer}"></div>
+  <!--End: Footer-->
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary p-3 back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+
+    <script src="/mail/jqBootstrapValidation.min.js"></script>
+    <script src="/mail/contact.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="/js/main.js"></script>
+</body>
+</html>

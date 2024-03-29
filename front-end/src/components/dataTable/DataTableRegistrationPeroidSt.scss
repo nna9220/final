@@ -1,0 +1,21 @@
+.btnView{
+    border: none;
+    padding: 3px;
+    background-color: white;
+    margin-right: 20px;
+    color: #4eb09b;
+    &:hover{
+        background-color: #4eb09b;
+        color: white;
+    }
+}
+.btnDelete{
+    border: none;
+    padding: 3px;
+    background-color: white;
+    color: #b85b56;
+    &:hover{
+        background-color: #b85b56;
+        color: white;
+    }
+}

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Liên hệ</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="Free HTML Templates" name="keywords"/>
+    <meta content="Free HTML Templates" name="description"/>
+
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon"/>
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Handlee&family=Nunito&display=swap" rel="stylesheet"/>
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet"/>
+
+    <!-- Flaticon Font -->
+    <link href="/static/lib/flaticon/font/flaticon.css" rel="stylesheet"/>
+
+    <!-- Libraries Stylesheet -->
+    <link href="/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet"/>
+    <link href="/lib/lightbox/css/lightbox.min.css" rel="stylesheet"/>
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="/css/style.css" rel="stylesheet"/>
+</head>
+
+<body>
+<!--Begin: Header-->
+<div th:replace="~{common/header :: header}"></div>
+<!--End: Header-->
+
+<!-- Header Start -->
+<div class="container-fluid bg-primary mb-5">
+    <img class="img-contact" src="/img/LienHe.webp">
+</div>
+<!-- Header End -->
+
+<!-- Contact Start -->
+<div class="container-fluid pt-5">
+    <div class="container">
+        <div class="text-center pb-2">
+            <p class="section-title px-5">
+                <span class="px-2">LIÊN HỆ VỚI CHÚNG TÔI</span>
+                <span class="px-2">Vui lòng điền đầy đủ thông tin bên dưới</span>
+            </p>
+
+        </div>
+        <div class="row">
+            <div class="col-lg-7 mb-5">
+                <div class="contact-form">
+                    <div id="success"></div>
+                    <form name="sentMessage" id="contactForm" novalidate="novalidate">
+                        <div class="control-group">
+                            <input type="text" class="form-control" id="name" placeholder="Họ và tên"
+                                   required="required" data-validation-required-message="Please enter your name"/>
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            <input type="email" class="form-control" id="email" placeholder="Email" required="required"
+                                   data-validation-required-message="Please enter your email"/>
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            <input type="text" class="form-control" id="subject" placeholder="Số điện thoại"
+                                   required="required" data-validation-required-message="Please enter a subject"/>
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            <textarea class="form-control" rows="6" id="message" placeholder="Nội dung câu hỏi"
+                                      required="required"
+                                      data-validation-required-message="Please enter your message"></textarea>
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary py-2 px-4" type="submit" id="sendMessageButton">Gửi liên hệ
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-5 mb-5">
+                <img class="img-hcmute" src="/img/Hcmute.jpg">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Contact End -->
+
+<!--Begin: Footer-->
+<div th:replace="~{common/footer :: footer}"></div>
+<!--End: Footer-->
+
+<!-- Back to Top -->
+<a href="#" class="btn btn-primary p-3 back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+<script src="/static/lib/easing/easing.min.js"></script>
+<script src="/static/lib/owlcarousel/owl.carousel.min.js"></script>
+<script src="/static/lib/isotope/isotope.pkgd.min.js"></script>
+<script src="/static/lib/lightbox/js/lightbox.min.js"></script>
+
+<!-- Contact Javascript File -->
+<script src="/static/mail/jqBootstrapValidation.min.js"></script>
+<script src="/static/mail/contact.js"></script>
+
+<!-- Template Javascript -->
+<script src="/static/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+.listHome {
+    margin: 40px;
+    background-color: rgb(253, 250, 250);
+    border: 1px solid rgb(197, 191, 191);
+    border-radius: 10px;
+    .listHomeLec{
+        margin: 30px;
+        .cardContainer {
+            display: flex;
+            margin: 30px;
+            .cardItem {
+                width: 20%;
+                border-bottom: 3px solid #d3d4d5;
+                border-radius: 5px;
+                margin: 30px;
+                text-align: center;
+                text-decoration: none;
+                .avatar {
+                    width: 80px; /* Kích thước hình ảnh */
+                    height: 80px; /* Kích thước hình ảnh */
+                    border-radius: 50%; /* Tạo hình tròn */
+                }
+                .name {
+                    font-size: large;
+                    color: black;
+                }
+                .major{
+                    color:black
+                }
+
+                &:hover {
+                    background-color:#d3d4d5;
+                }
+            }
+        }
+
+        .search{
+            margin: 30px;
+            display: flex;
+            justify-content: flex-end;
+            .formSearch{
+                margin: 30px;
+            }
+
+            .filter {
+                margin: 30px;
+                .selectDr{
+    
+                }
+            }
+        }
+    }
+}
