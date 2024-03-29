@@ -89,3 +89,16 @@
         }
     }
 }
+
+.btn-assign{
+    border: 1px solid #268f65;
+    border-radius: 5px;
+    background-color: white;
+    margin-left: 10px;
+    &:hover {
+        color: white;
+        font-weight: bold;
+        background-color: #4eb09b;
+    }
+
+}

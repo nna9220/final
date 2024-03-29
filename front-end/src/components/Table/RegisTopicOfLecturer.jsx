@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './styleRegis.scss'
+import './RegisTopicOfLecturer.scss'
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 
-function TableRegis() {
+function RegisTopicOfLecturer() {
     const [isLoading, setIsLoading] = useState(false);
     const [showAddToast, setShowAddToast] = useState(false);
     const [showErrorToastAdd, setShowErrorToastAdd] = useState(false);
@@ -18,10 +18,11 @@ function TableRegis() {
         student2: '',
     });
 
-    const handleSubmitAdd = () => {
+    const handleSubmitAdd = (event) => {
+        event.preventDefault();
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log(formData)
-        axios.post('http://localhost:5000/api/head/subject/register',
+        axios.post('http://localhost:5000/api/lecturer/subject/register',
             formData
             , {
                 headers: {
@@ -108,4 +109,4 @@ function TableRegis() {
     );
 }
 
-export default TableRegis;
+export default RegisTopicOfLecturer

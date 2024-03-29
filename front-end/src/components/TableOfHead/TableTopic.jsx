@@ -11,7 +11,7 @@ function TableTopic() {
   const [topics, setTopics] = useState([]);
   const [showManagementTask, setShowManagementTask] = useState(false); 
   const [selectedSubjectId, setSelectedSubjectId] = useState(null); 
-  const [selectedSubjectName, setSelectedSubjectName] = useState(""); // Thêm state để lưu trữ tên của đề tài được chọn
+  const [selectedSubjectName, setSelectedSubjectName] = useState("");
   const [showBackButton, setShowBackButton] = useState(false);
   const userToken = getTokenFromUrlAndSaveToStorage();
 
