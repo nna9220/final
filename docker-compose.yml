@@ -17,14 +17,14 @@ services:
     depends_on:
       - back-end
 
-  back-end:
+  backend:
     build:
       context: back-end
       dockerfile: Dockerfile
-    ports:
-      - 5000:5000
+    expose:
+      - "5000"
     environment:
-      - SPRING_DATASOURCE_LINK=jdbc:mysql://mysql-container/registertopic
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-container/registertopic
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=Nanguyen1206@
     depends_on:
