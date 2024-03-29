@@ -18,11 +18,11 @@ RUN npm run build
 
 FROM nginx:alpine
 
-# Sao chép các tệp tĩnh từ giai đoạn build vào thư mục của Nginx
-COPY --from=build /app/build /usr/share/nginx/html
+# Copy thư mục build vào thư mục /usr/share/nginx/html
+COPY /front-end/build /usr/share/nginx/html
 
-# Mở cổng 80 để cho Nginx phục vụ các tệp tĩnh
+# Mở cổng 80 để Nginx phục vụ các tệp tĩnh
 EXPOSE 80
 
-# Khởi động Nginx
+# Khởi động Nginx khi container được chạy
 CMD ["nginx", "-g", "daemon off;"]
