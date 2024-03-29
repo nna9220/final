@@ -35,8 +35,6 @@ services:
     ports:
       - 10072:80
       - 8443:443
-    volumes:
-      - ./nginx/conf/:/etc/nginx/conf.d/:ro
     depends_on:
       - front-end
 
