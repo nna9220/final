@@ -15,4 +15,4 @@ RUN npm install -g npm@latest
 COPY . .
 
 # Starting our application
-RUN npm start
+CMD ["npm", "run", "build"]
