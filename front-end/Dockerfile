@@ -8,7 +8,7 @@ COPY package.json ./
 
 RUN npm install react-scripts --legacy-peer-deps
 
-RUN npm install
+RUN npm install -g npm@latest
 
 
 
