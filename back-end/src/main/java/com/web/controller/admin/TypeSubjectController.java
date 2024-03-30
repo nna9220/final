@@ -26,13 +26,10 @@ public class TypeSubjectController {
     private PersonRepository personRepository;
 
     @GetMapping("/list")
-    public ModelAndView getTypeSub(){
+    public ResponseEntity<?> getTypeSub(){
         List<TypeSubject> typeSubjects = typeSubjectService.findAll();
         List<TypeSubjectResponse> listType = typeSubjectMapper.toTypeSubjectListDTO(typeSubjects);
-        System.out.println("Type: " + listType);
-        ModelAndView model = new ModelAndView("QuanLyDotDK");
-        model.addObject("listType", listType);
-        return model;
+        return new ResponseEntity<>(listType,HttpStatus.OK);
     }
 
     @PostMapping("/create")
