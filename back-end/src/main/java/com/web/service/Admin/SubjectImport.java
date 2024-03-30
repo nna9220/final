@@ -20,9 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -36,45 +34,150 @@ public class SubjectImport {
     private final StudentRepository studentRepository;
     private final TokenUtils tokenUtils;
 
-    public ResponseEntity<?> importSubject(MultipartFile file, @RequestHeader("Authorization") String authorizationHeader) throws IOException {
+    public ResponseEntity<?> importSubject(MultipartFile file) throws IOException {
         try {
-            String token = tokenUtils.extractToken(authorizationHeader);
-            Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-            Person current = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-            Lecturer lecturer = lecturerRepository.findById(current.getPersonId()).orElse(null);
             TypeSubject typeSubject = typeSubjectRepository.findById(1).orElse(null);
-            System.out.println("GV " + lecturer);
+            TypeSubject typeSubject2 = typeSubjectRepository.findById(2).orElse(null);
+
             LocalDate nowYear = LocalDate.now();
             if (checkExcelFormat(file)) {
-                List<Subject> subjects = toSubjects(file.getInputStream());
-                subjects.forEach(subject -> {
+                Map<String, List<?>> result = toSubjects(file.getInputStream());
+                List<Subject> tlcn = (List<Subject>) result.get("tlcn");
+                List<Subject> kltn = (List<Subject>) result.get("kltn");
+                //TLCN
+                tlcn.forEach(subject -> {
                     Subject newSubject = new Subject();
                     newSubject.setSubjectName(subject.getSubjectName());
                     newSubject.setYear(String.valueOf(nowYear));
                     newSubject.setTypeSubject(typeSubject);
                     newSubject.setActive((byte) 1);
-                    newSubject.setMajor(lecturer.getMajor());
-                    newSubject.setStatus(false);
-                    newSubject.setRequirement(subject.getRequirement());
-                    newSubject.setStudent1(subject.getStudent1());
+                    newSubject.setStatus(true);
                     if (subject.getStudent1()!=null) {
                         Student student1 = studentRepository.findById(subject.getStudent1()).orElse(null);
                         if (student1 != null) {
-                            newSubject.setStudent1(subject.getStudent1());
+                            if (student1.getSubjectId() != null) {
+                                newSubject.setStudent1(subject.getStudent1());
+                                student1.setSubjectGraduationId(newSubject);
+                                newSubject.setMajor(student1.getMajor());
+                            }
                         }
                     }
                     if (subject.getStudent2()!=null) {
                         Student student2 = studentRepository.findById(subject.getStudent2()).orElse(null);
                         if (student2 != null) {
-                            newSubject.setStudent2(subject.getStudent2());
+                            if (student2.getSubjectId() != null) {
+                                newSubject.setStudent2(subject.getStudent2());
+                                student2.setSubjectGraduationId(newSubject);
+                            }
                         }
                     }
-                    newSubject.setInstructorId(lecturer);
-                    newSubject.setExpected(subject.getExpected());
-                    subjectRepository.save(newSubject);
-                    System.out.println("Luu Thanh Cong");
+                    if (subject.getStudent3()!=null) {
+                        Student student3 = studentRepository.findById(subject.getStudent3()).orElse(null);
+                        if (student3 != null) {
+                            if (student3.getSubjectId() != null) {
+                                newSubject.setStudent2(subject.getStudent2());
+                                student3.setSubjectGraduationId(newSubject);
+                            }
+                        }
+                    }
+                    if (subject.getInstructorId()!=null) {
+                        newSubject.setInstructorId(subject.getInstructorId());
+                    }
+                    if (subject.getThesisAdvisorId()!=null) {
+                        newSubject.setThesisAdvisorId(subject.getThesisAdvisorId());
+                    }
+                    var subjectNew = subjectRepository.save(newSubject);
+
+                    if (subjectNew.getStudent1()!=null) {
+                        Student student1 = studentRepository.findById(subjectNew.getStudent1()).orElse(null);
+                        if (student1 != null) {
+                            studentRepository.save(student1);
+                        }
+                    }
+                    if (subjectNew.getStudent2()!=null) {
+                        Student student2 = studentRepository.findById(subjectNew.getStudent2()).orElse(null);
+                        if (student2 != null) {
+                            studentRepository.save(student2);
+                        }
+                    }
+                    if (subjectNew.getStudent3()!=null) {
+                        Student student3 = studentRepository.findById(subjectNew.getStudent3()).orElse(null);
+                        if (student3 != null) {
+                            studentRepository.save(student3);
+                        }
+                    }
+
+                    System.out.println("Luu TLCN Thanh Cong");
                 });
-                return ResponseEntity.ok("Imported file to list subject!");
+
+                //KLTN
+
+                kltn.forEach(subject -> {
+                    Subject newSubject = new Subject();
+                    newSubject.setSubjectName(subject.getSubjectName());
+                    newSubject.setYear(String.valueOf(nowYear));
+                    newSubject.setTypeSubject(typeSubject2);
+                    newSubject.setActive((byte) 1);
+                    newSubject.setStatus(true);
+                    if (subject.getStudent1()!=null) {
+                        Student student1 = studentRepository.findById(subject.getStudent1()).orElse(null);
+                        if (student1 != null) {
+                            if (student1.getSubjectGraduationId() != null) {
+                                newSubject.setStudent1(subject.getStudent1());
+                                student1.setSubjectGraduationId(newSubject);
+                                newSubject.setMajor(student1.getMajor());
+                            }
+                        }
+                    }
+                    if (subject.getStudent2()!=null) {
+                        Student student2 = studentRepository.findById(subject.getStudent2()).orElse(null);
+                        if (student2 != null) {
+                            if (student2.getSubjectGraduationId() != null) {
+                                newSubject.setStudent2(subject.getStudent2());
+                                student2.setSubjectGraduationId(newSubject);
+                            }
+                        }
+                    }
+                    if (subject.getStudent3()!=null) {
+                        Student student3 = studentRepository.findById(subject.getStudent3()).orElse(null);
+                        if (student3 != null) {
+                            if (student3.getSubjectGraduationId() != null) {
+                                newSubject.setStudent2(subject.getStudent2());
+                                student3.setSubjectGraduationId(newSubject);
+                            }
+                        }
+                    }
+                    if (subject.getInstructorId()!=null) {
+                        newSubject.setInstructorId(subject.getInstructorId());
+                    }
+                    if (subject.getThesisAdvisorId()!=null) {
+                        newSubject.setThesisAdvisorId(subject.getThesisAdvisorId());
+                    }
+                    var subjectNew = subjectRepository.save(newSubject);
+
+                    if (subjectNew.getStudent1()!=null) {
+                        Student student1 = studentRepository.findById(subjectNew.getStudent1()).orElse(null);
+                        if (student1 != null) {
+                            studentRepository.save(student1);
+                        }
+                    }
+                    if (subjectNew.getStudent2()!=null) {
+                        Student student2 = studentRepository.findById(subjectNew.getStudent2()).orElse(null);
+                        if (student2 != null) {
+                            studentRepository.save(student2);
+                        }
+                    }
+                    if (subjectNew.getStudent3()!=null) {
+                        Student student3 = studentRepository.findById(subjectNew.getStudent3()).orElse(null);
+                        if (student3 != null) {
+                            studentRepository.save(student3);
+                        }
+                    }
+
+                    System.out.println("Luu KLTN Thanh Cong");
+                });
+
+                return ResponseEntity.ok("Imported file to list subject successful!");
             } else
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File upload is not match format, please try again!");
         }catch (Exception e){
@@ -88,13 +191,13 @@ public class SubjectImport {
         if (contentType == null) throw new AssertionError();
         return contentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     }
-    public List<Subject> toSubjects(InputStream inputStream){
-        List<Subject> subjects = new ArrayList<>();
+    public Map<String, List<?>> toSubjects(InputStream inputStream){
+        List<Subject> subjects_TLCN = new ArrayList<>();
+        List<Subject> subjects_KLTN = new ArrayList<>();
         try{
             XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
-            XSSFSheet sheet = workbook.getSheet("subject");
+            XSSFSheet sheet = workbook.getSheet("TLCN");
             int rowNumber = 0;
-
             for (Row row : sheet) {
                 if (rowNumber == 0) {
                     rowNumber++;
@@ -107,9 +210,7 @@ public class SubjectImport {
                     Cell cell = cells.next();
                     switch (cid) {
                         case 0 -> subject.setSubjectName(cell.getStringCellValue());
-                        case 1 -> subject.setRequirement(cell.getStringCellValue());
-                        case 2 -> subject.setExpected(cell.getStringCellValue());
-                        case 3 -> {
+                        case 1 -> {
                             if (cell.getCellType() == CellType.STRING) {
                                 subject.setStudent1(cell.getStringCellValue());
                             } else if (cell.getCellType() == CellType.NUMERIC) {
@@ -125,9 +226,8 @@ public class SubjectImport {
                                         ". Cell type: " + cell.getCellType());
                             }
                         }
-
 // Similar adjustments for student_2
-                        case 4 -> {
+                        case 2 -> {
                             if (cell.getCellType() == CellType.STRING) {
                                 subject.setStudent2(cell.getStringCellValue());
                             } else if (cell.getCellType() == CellType.NUMERIC) {
@@ -143,6 +243,54 @@ public class SubjectImport {
                                         ". Cell type: " + cell.getCellType());
                             }
                         }
+                        case 3 -> {
+                            if (cell.getCellType() == CellType.STRING) {
+                                subject.setStudent3(cell.getStringCellValue());
+                            } else if (cell.getCellType() == CellType.NUMERIC) {
+                                // Xử lý giá trị số nguyên thành chuỗi
+                                int numericValue = (int) cell.getNumericCellValue();
+                                String stringValue = String.valueOf(numericValue);
+                                subject.setStudent2(stringValue);
+                            } else if (cell.getCellType() == CellType.BLANK) {
+                                subject.setStudent3(null); // Hoặc đặt giá trị mặc định phù hợp
+                            } else {
+                                // Xử lý các loại ô khác không được hỗ trợ hoặc ném ra ngoại lệ
+                                throw new IllegalStateException("Unsupported cell type at column 6, row " + row.getRowNum() +
+                                        ". Cell type: " + cell.getCellType());
+                            }
+                        }
+                        case 4 -> {
+                            if (cell.getCellType() == CellType.STRING) {
+                                Lecturer intruc = lecturerRepository.findById(cell.getStringCellValue()).orElse(null);
+                                subject.setInstructorId(intruc);
+                            } else if (cell.getCellType() == CellType.NUMERIC) {
+                                // Xử lý giá trị số nguyên thành chuỗi
+                                int numericValue = (int) cell.getNumericCellValue();
+                                String stringValue = String.valueOf(numericValue);
+                                Lecturer intruc = lecturerRepository.findById(stringValue).orElse(null);
+                                subject.setInstructorId(intruc);
+                            }else {
+                                // Xử lý các loại ô khác không được hỗ trợ hoặc ném ra ngoại lệ
+                                throw new IllegalStateException("Unsupported cell type at column 6, row " + row.getRowNum() +
+                                        ". Cell type: " + cell.getCellType());
+                            }
+                        }
+                        case 5 -> {
+                            if (cell.getCellType() == CellType.STRING) {
+                                Lecturer thesis = lecturerRepository.findById(cell.getStringCellValue()).orElse(null);
+                                subject.setThesisAdvisorId(thesis);
+                            } else if (cell.getCellType() == CellType.NUMERIC) {
+                                // Xử lý giá trị số nguyên thành chuỗi
+                                int numericValue = (int) cell.getNumericCellValue();
+                                String stringValue = String.valueOf(numericValue);
+                                Lecturer thesis = lecturerRepository.findById(stringValue).orElse(null);
+                                subject.setThesisAdvisorId(thesis);
+                            }else {
+                                // Xử lý các loại ô khác không được hỗ trợ hoặc ném ra ngoại lệ
+                                throw new IllegalStateException("Unsupported cell type at column 6, row " + row.getRowNum() +
+                                        ". Cell type: " + cell.getCellType());
+                            }
+                        }
                         default -> {
                             throw new IllegalStateException("Unsupported cell type at column " + cid + ", row " + row.getRowNum() +
                                     ". Cell type: " + cell.getCellType());
@@ -150,15 +298,125 @@ public class SubjectImport {
                     }
                     cid++;
                 }
+                subjects_TLCN.add(subject);
+            }
 
-                subjects.add(subject);
+
+            //Khóa luận TN
+
+            XSSFSheet sheet2 = workbook.getSheet("KLTN");
+            int rowNumber2 = 0;
+            for (Row row : sheet2) {
+                if (rowNumber2 == 0) {
+                    rowNumber2++;
+                    continue;
+                }
+                Iterator<Cell> cells = row.iterator();
+                int cid = 0;
+                Subject subject = new Subject();
+                while (cells.hasNext()) {
+                    Cell cell = cells.next();
+                    switch (cid) {
+                        case 0 -> subject.setSubjectName(cell.getStringCellValue());
+                        case 1 -> {
+                            if (cell.getCellType() == CellType.STRING) {
+                                subject.setStudent1(cell.getStringCellValue());
+                            } else if (cell.getCellType() == CellType.NUMERIC) {
+                                // Xử lý giá trị số nguyên thành chuỗi
+                                int numericValue = (int) cell.getNumericCellValue();
+                                String stringValue = String.valueOf(numericValue);
+                                subject.setStudent1(stringValue);
+                            } else if (cell.getCellType() == CellType.BLANK) {
+                                subject.setStudent1(null); // Hoặc đặt giá trị mặc định phù hợp
+                            } else {
+                                // Xử lý các loại ô khác không được hỗ trợ hoặc ném ra ngoại lệ
+                                throw new IllegalStateException("Unsupported cell type at column 6, row " + row.getRowNum() +
+                                        ". Cell type: " + cell.getCellType());
+                            }
+                        }
+// Similar adjustments for student_2
+                        case 2 -> {
+                            if (cell.getCellType() == CellType.STRING) {
+                                subject.setStudent2(cell.getStringCellValue());
+                            } else if (cell.getCellType() == CellType.NUMERIC) {
+                                // Xử lý giá trị số nguyên thành chuỗi
+                                int numericValue = (int) cell.getNumericCellValue();
+                                String stringValue = String.valueOf(numericValue);
+                                subject.setStudent2(stringValue);
+                            } else if (cell.getCellType() == CellType.BLANK) {
+                                subject.setStudent2(null); // Hoặc đặt giá trị mặc định phù hợp
+                            } else {
+                                // Xử lý các loại ô khác không được hỗ trợ hoặc ném ra ngoại lệ
+                                throw new IllegalStateException("Unsupported cell type at column 6, row " + row.getRowNum() +
+                                        ". Cell type: " + cell.getCellType());
+                            }
+                        }
+                        case 3 -> {
+                            if (cell.getCellType() == CellType.STRING) {
+                                subject.setStudent3(cell.getStringCellValue());
+                            } else if (cell.getCellType() == CellType.NUMERIC) {
+                                // Xử lý giá trị số nguyên thành chuỗi
+                                int numericValue = (int) cell.getNumericCellValue();
+                                String stringValue = String.valueOf(numericValue);
+                                subject.setStudent2(stringValue);
+                            } else if (cell.getCellType() == CellType.BLANK) {
+                                subject.setStudent3(null); // Hoặc đặt giá trị mặc định phù hợp
+                            } else {
+                                // Xử lý các loại ô khác không được hỗ trợ hoặc ném ra ngoại lệ
+                                throw new IllegalStateException("Unsupported cell type at column 6, row " + row.getRowNum() +
+                                        ". Cell type: " + cell.getCellType());
+                            }
+                        }
+                        case 4 -> {
+                            if (cell.getCellType() == CellType.STRING) {
+                                Lecturer intruc = lecturerRepository.findById(cell.getStringCellValue()).orElse(null);
+                                subject.setInstructorId(intruc);
+                            } else if (cell.getCellType() == CellType.NUMERIC) {
+                                // Xử lý giá trị số nguyên thành chuỗi
+                                int numericValue = (int) cell.getNumericCellValue();
+                                String stringValue = String.valueOf(numericValue);
+                                Lecturer intruc = lecturerRepository.findById(stringValue).orElse(null);
+                                subject.setInstructorId(intruc);
+                            }else {
+                                // Xử lý các loại ô khác không được hỗ trợ hoặc ném ra ngoại lệ
+                                throw new IllegalStateException("Unsupported cell type at column 6, row " + row.getRowNum() +
+                                        ". Cell type: " + cell.getCellType());
+                            }
+                        }
+                        case 5 -> {
+                            if (cell.getCellType() == CellType.STRING) {
+                                Lecturer thesis = lecturerRepository.findById(cell.getStringCellValue()).orElse(null);
+                                subject.setThesisAdvisorId(thesis);
+                            } else if (cell.getCellType() == CellType.NUMERIC) {
+                                // Xử lý giá trị số nguyên thành chuỗi
+                                int numericValue = (int) cell.getNumericCellValue();
+                                String stringValue = String.valueOf(numericValue);
+                                Lecturer thesis = lecturerRepository.findById(stringValue).orElse(null);
+                                subject.setThesisAdvisorId(thesis);
+                            }else {
+                                // Xử lý các loại ô khác không được hỗ trợ hoặc ném ra ngoại lệ
+                                throw new IllegalStateException("Unsupported cell type at column 6, row " + row.getRowNum() +
+                                        ". Cell type: " + cell.getCellType());
+                            }
+                        }
+                        default -> {
+                            throw new IllegalStateException("Unsupported cell type at column " + cid + ", row " + row.getRowNum() +
+                                    ". Cell type: " + cell.getCellType());
+                        }
+                    }
+                    cid++;
+                }
+                subjects_KLTN.add(subject);
             }
 
 
         } catch (Exception e){
             throw new RuntimeException("Error when convert file csv!" + e.getMessage());
         }
-        return subjects;
+        HashMap<String, List<?>> map = new HashMap<>();
+        map.put("tlcn", subjects_TLCN);
+        map.put("kltn", subjects_KLTN);
+        return map;
     }
 
 

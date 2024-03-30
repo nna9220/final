@@ -17,9 +17,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -38,23 +40,20 @@ public class SubjectController {
     @Autowired
     private UserUtils userUtils;
     @GetMapping
-    public ModelAndView getAllSubject(HttpSession session){
-        Person personCurrent = CheckRole.getRoleCurrent(session,userUtils,personRepository);
-        if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
-            List<Subject> subjects = subjectService.getAll();
-            ModelAndView modelAndView = new ModelAndView("QuanLyDeTai_Admin");
-            modelAndView.addObject("person", personCurrent);
-            modelAndView.addObject("subjects",subjects);
-            return modelAndView;
-        }else {
-            ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;
-        }
+    public ResponseEntity<?> getAllSubject(HttpSession session){
+
+        List<Subject> subjects = subjectService.getAll();
+        return new ResponseEntity<>(subjects,HttpStatus.OK);
     }
 
     //Import subject
 
+
+    @PostMapping("/import")
+    public ResponseEntity<?> importSubject(@RequestParam("file") MultipartFile file, HttpSession session) throws IOException {
+        subjectImport.importSubject(file);
+        return new ResponseEntity<>(subjectImport.importSubject(file),HttpStatus.OK);
+    }
 
 
 
