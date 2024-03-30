@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-03-29T12:17:53+0700",
-    comments = "version: 1.4.2.Final, compiler: Eclipse JDT (IDE) 3.37.0.v20240206-1609, environment: Java 17.0.10 (Eclipse Adoptium)"
+    date = "2024-03-29T18:01:25+0700",
+    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 17.0.8 (Oracle Corporation)"
 )
 @Component
 public class SchoolYearMapperImpl implements SchoolYearMapper {
@@ -57,12 +57,12 @@ public class SchoolYearMapperImpl implements SchoolYearMapper {
 
         SchoolYear schoolYear = new SchoolYear();
 
+        schoolYear.setYearId( schoolYearRequest.getYearId() );
+        schoolYear.setYear( schoolYearRequest.getYear() );
         List<Student> list = schoolYearRequest.getStudents();
         if ( list != null ) {
             schoolYear.setStudents( new ArrayList<Student>( list ) );
         }
-        schoolYear.setYear( schoolYearRequest.getYear() );
-        schoolYear.setYearId( schoolYearRequest.getYearId() );
 
         return schoolYear;
     }

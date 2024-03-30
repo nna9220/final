@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-03-29T12:17:54+0700",
-    comments = "version: 1.4.2.Final, compiler: Eclipse JDT (IDE) 3.37.0.v20240206-1609, environment: Java 17.0.10 (Eclipse Adoptium)"
+    date = "2024-03-29T18:01:25+0700",
+    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 17.0.8 (Oracle Corporation)"
 )
 @Component
 public class SubjectMapperImpl implements SubjectMapper {
@@ -26,24 +26,24 @@ public class SubjectMapperImpl implements SubjectMapper {
 
         SubjectResponse subjectResponse = new SubjectResponse();
 
-        subjectResponse.setExpected( subject.getExpected() );
-        subjectResponse.setInstructorId( subject.getInstructorId() );
+        subjectResponse.setSubjectId( subject.getSubjectId() );
+        subjectResponse.setSubjectName( subject.getSubjectName() );
         if ( subject.getMajor() != null ) {
             subjectResponse.setMajor( subject.getMajor().name() );
         }
-        subjectResponse.setRequirement( subject.getRequirement() );
         subjectResponse.setReview( subject.getReview() );
+        subjectResponse.setRequirement( subject.getRequirement() );
+        subjectResponse.setExpected( subject.getExpected() );
         subjectResponse.setStatus( subject.isStatus() );
+        subjectResponse.setTypeSubject( subject.getTypeSubject() );
+        subjectResponse.setInstructorId( subject.getInstructorId() );
+        subjectResponse.setThesisAdvisorId( subject.getThesisAdvisorId() );
         subjectResponse.setStudent1( subject.getStudent1() );
         subjectResponse.setStudent2( subject.getStudent2() );
-        subjectResponse.setSubjectId( subject.getSubjectId() );
-        subjectResponse.setSubjectName( subject.getSubjectName() );
         List<Task> list = subject.getTasks();
         if ( list != null ) {
             subjectResponse.setTasks( new ArrayList<Task>( list ) );
         }
-        subjectResponse.setThesisAdvisorId( subject.getThesisAdvisorId() );
-        subjectResponse.setTypeSubject( subject.getTypeSubject() );
         subjectResponse.setYear( subject.getYear() );
 
         return subjectResponse;
@@ -71,24 +71,24 @@ public class SubjectMapperImpl implements SubjectMapper {
 
         Subject subject = new Subject();
 
-        subject.setExpected( subjectRequest.getExpected() );
-        subject.setInstructorId( subjectRequest.getInstructorId() );
+        subject.setSubjectId( subjectRequest.getSubjectId() );
+        subject.setSubjectName( subjectRequest.getSubjectName() );
         if ( subjectRequest.getMajor() != null ) {
             subject.setMajor( Enum.valueOf( Major.class, subjectRequest.getMajor() ) );
         }
-        subject.setRequirement( subjectRequest.getRequirement() );
+        subject.setInstructorId( subjectRequest.getInstructorId() );
+        subject.setThesisAdvisorId( subjectRequest.getThesisAdvisorId() );
         subject.setReview( subjectRequest.getReview() );
+        subject.setRequirement( subjectRequest.getRequirement() );
+        subject.setExpected( subjectRequest.getExpected() );
+        subject.setTypeSubject( subjectRequest.getTypeSubject() );
         subject.setStatus( subjectRequest.isStatus() );
         subject.setStudent1( subjectRequest.getStudent1() );
         subject.setStudent2( subjectRequest.getStudent2() );
-        subject.setSubjectId( subjectRequest.getSubjectId() );
-        subject.setSubjectName( subjectRequest.getSubjectName() );
         List<Task> list = subjectRequest.getTasks();
         if ( list != null ) {
             subject.setTasks( new ArrayList<Task>( list ) );
         }
-        subject.setThesisAdvisorId( subjectRequest.getThesisAdvisorId() );
-        subject.setTypeSubject( subjectRequest.getTypeSubject() );
         subject.setYear( subjectRequest.getYear() );
 
         return subject;
