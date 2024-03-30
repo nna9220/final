@@ -97,11 +97,9 @@ public class StudentRegisterTopic {
                 if (existSubject != null) {
                     if (existSubject.getStudent1() == null) {
                         existSubject.setStudent1(currentStudent.getStudentId());
-                        existSubject.setStudentId1(currentStudent);
                         currentStudent.setSubjectId(existSubject);
                     } else if (existSubject.getStudent2() == null) {
                         existSubject.setStudent2(currentStudent.getStudentId());
-                        existSubject.setStudentId2(currentStudent);
                         currentStudent.setSubjectId(existSubject);
                     } else {
                         /*ModelAndView error = new ModelAndView();

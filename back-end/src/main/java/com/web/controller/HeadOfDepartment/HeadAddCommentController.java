@@ -38,6 +38,8 @@ public class HeadAddCommentController {
     @Autowired
     private CommentRepository commentRepository;
     @Autowired
+    private StudentRepository studentRepository;
+    @Autowired
     private SubjectRepository subjectRepository;
     @Autowired
     private PersonRepository personRepository;
@@ -109,10 +111,13 @@ public class HeadAddCommentController {
                     + "Change task: " + existTask.getRequirement()+"\n"
                     + "Content: " + comment.getContent();
 
-            if (existSubject.getStudentId2()!=null) {
-                mailService.sendMailStudents(existSubject.getStudentId2().getPerson().getUsername(), existSubject.getStudentId1().getPerson().getUsername(), subject, messenger);
+            Student studen1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
+            Student studen2 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
+
+            if (existSubject.getStudent2()!=null) {
+                mailService.sendMailStudents(studen2.getPerson().getUsername(), studen1.getPerson().getUsername(), subject, messenger);
             }else {
-                mailService.sendMailStudent(existSubject.getStudentId1().getPerson().getUsername(),subject,messenger);
+                mailService.sendMailStudent(studen1.getPerson().getUsername(),subject,messenger);
             }
             /*String referer = Contains.URL +  "/api/head/manager/detail/" + taskId;
             return new ModelAndView("redirect:"+referer);*/

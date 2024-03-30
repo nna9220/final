@@ -50,6 +50,8 @@ public class StudentAddCommentController {
     @Autowired
     private SubjectRepository subjectRepository;
     @Autowired
+    private StudentRepository studentRepository;
+    @Autowired
     private FileRepository fileRepository;
 
     private final TokenUtils tokenUtils;
@@ -107,15 +109,17 @@ public class StudentAddCommentController {
                     + "Content: " + comment.getContent();
             newMail.setSubject(subject);
             newMail.setSubject(messenger);
-            if (personCurrent.getPersonId().equals(existSubject.getStudentId1().getStudentId())) {
-                if (existSubject.getStudentId2()!=null) {
-                    mailService.sendMail(existSubject.getStudentId2().getPerson().getUsername(), existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
+            Student studen1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
+            Student studen2 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
+            if (personCurrent.getPersonId().equals(existSubject.getStudent1())) {
+                if (existSubject.getStudent2()!=null) {
+                    mailService.sendMail(studen2.getPerson().getUsername(), existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
                 }else {
                     mailService.sendMailNull(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
                 }
             }else {
-                if (existSubject.getStudentId1()!=null) {
-                    mailService.sendMail(existSubject.getStudentId1().getPerson().getUsername(), existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
+                if (existSubject.getStudent1()!=null) {
+                    mailService.sendMail(studen1.getPerson().getUsername(), existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
                 }else {
                     mailService.sendMailNull(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
                 }

@@ -161,12 +161,10 @@ public class LecturerRegisterTopicController {
                     Student studentId1 = studentRepository.findById(student1).orElse(null);
                     Student studentId2 = studentRepository.findById(student2).orElse(null);
                     if (studentId1 != null) {
-                        newSubject.setStudentId1(studentId1);
                         newSubject.setStudent1(student1);
                         studentId1.setSubjectId(newSubject);
                     }
                     if (studentId2 != null) {
-                        newSubject.setStudentId2(studentId2);
                         newSubject.setStudent2(student2);
                         studentId2.setSubjectId(newSubject);
                     }
