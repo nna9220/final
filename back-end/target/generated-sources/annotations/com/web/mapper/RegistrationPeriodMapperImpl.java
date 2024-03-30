@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-03-29T12:17:52+0700",
-    comments = "version: 1.4.2.Final, compiler: Eclipse JDT (IDE) 3.37.0.v20240206-1609, environment: Java 17.0.10 (Eclipse Adoptium)"
+    date = "2024-03-29T18:01:25+0700",
+    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 17.0.8 (Oracle Corporation)"
 )
 @Component
 public class RegistrationPeriodMapperImpl implements RegistrationPeriodMapper {
@@ -25,9 +25,9 @@ public class RegistrationPeriodMapperImpl implements RegistrationPeriodMapper {
         RegistrationPeriodResponse registrationPeriodResponse = new RegistrationPeriodResponse();
 
         registrationPeriodResponse.setPeriodId( registrationPeriod.getPeriodId() );
-        registrationPeriodResponse.setRegistrationName( registrationPeriod.getRegistrationName() );
-        registrationPeriodResponse.setRegistrationTimeEnd( registrationPeriod.getRegistrationTimeEnd() );
         registrationPeriodResponse.setRegistrationTimeStart( registrationPeriod.getRegistrationTimeStart() );
+        registrationPeriodResponse.setRegistrationTimeEnd( registrationPeriod.getRegistrationTimeEnd() );
+        registrationPeriodResponse.setRegistrationName( registrationPeriod.getRegistrationName() );
         registrationPeriodResponse.setTypeSubjectId( registrationPeriod.getTypeSubjectId() );
 
         return registrationPeriodResponse;
@@ -56,9 +56,9 @@ public class RegistrationPeriodMapperImpl implements RegistrationPeriodMapper {
         RegistrationPeriod registrationPeriod = new RegistrationPeriod();
 
         registrationPeriod.setPeriodId( registrationPeriodRequest.getPeriodId() );
-        registrationPeriod.setRegistrationName( registrationPeriodRequest.getRegistrationName() );
-        registrationPeriod.setRegistrationTimeEnd( registrationPeriodRequest.getRegistrationTimeEnd() );
         registrationPeriod.setRegistrationTimeStart( registrationPeriodRequest.getRegistrationTimeStart() );
+        registrationPeriod.setRegistrationTimeEnd( registrationPeriodRequest.getRegistrationTimeEnd() );
+        registrationPeriod.setRegistrationName( registrationPeriodRequest.getRegistrationName() );
         registrationPeriod.setTypeSubjectId( registrationPeriodRequest.getTypeSubjectId() );
 
         return registrationPeriod;

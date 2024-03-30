@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-03-29T12:17:54+0700",
-    comments = "version: 1.4.2.Final, compiler: Eclipse JDT (IDE) 3.37.0.v20240206-1609, environment: Java 17.0.10 (Eclipse Adoptium)"
+    date = "2024-03-29T18:01:25+0700",
+    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 17.0.8 (Oracle Corporation)"
 )
 @Component
 public class StudentClassMapperImpl implements StudentClassMapper {
@@ -58,8 +58,8 @@ public class StudentClassMapperImpl implements StudentClassMapper {
 
         StudentClass studentClass = new StudentClass();
 
-        studentClass.setClassname( studentClassRequest.getClassname() );
         studentClass.setId( studentClassRequest.getId() );
+        studentClass.setClassname( studentClassRequest.getClassname() );
         studentClass.setStatus( studentClassRequest.isStatus() );
         List<Student> list = studentClassRequest.getStudents();
         if ( list != null ) {

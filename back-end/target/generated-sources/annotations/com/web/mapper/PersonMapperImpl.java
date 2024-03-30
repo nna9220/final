@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-03-29T12:17:53+0700",
-    comments = "version: 1.4.2.Final, compiler: Eclipse JDT (IDE) 3.37.0.v20240206-1609, environment: Java 17.0.10 (Eclipse Adoptium)"
+    date = "2024-03-29T18:01:25+0700",
+    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 17.0.8 (Oracle Corporation)"
 )
 @Component
 public class PersonMapperImpl implements PersonMapper {
@@ -74,22 +74,22 @@ public class PersonMapperImpl implements PersonMapper {
 
         Person person = new Person();
 
+        person.setPersonId( personRequest.getPersonId() );
+        person.setPassword( personRequest.getPassword() );
+        person.setLastName( personRequest.getLastName() );
+        person.setFirstName( personRequest.getFirstName() );
+        person.setPhone( personRequest.getPhone() );
+        person.setEmail( personRequest.getEmail() );
+        person.setImage( personRequest.getImage() );
+        person.setGender( personRequest.isGender() );
         if ( personRequest.getBirthDay() != null ) {
             person.setBirthDay( new SimpleDateFormat().format( personRequest.getBirthDay() ) );
         }
+        person.setStatus( personRequest.isStatus() );
         List<Comment> list = personRequest.getComments();
         if ( list != null ) {
             person.setComments( new ArrayList<Comment>( list ) );
         }
-        person.setEmail( personRequest.getEmail() );
-        person.setFirstName( personRequest.getFirstName() );
-        person.setGender( personRequest.isGender() );
-        person.setImage( personRequest.getImage() );
-        person.setLastName( personRequest.getLastName() );
-        person.setPassword( personRequest.getPassword() );
-        person.setPersonId( personRequest.getPersonId() );
-        person.setPhone( personRequest.getPhone() );
-        person.setStatus( personRequest.isStatus() );
 
         return person;
     }

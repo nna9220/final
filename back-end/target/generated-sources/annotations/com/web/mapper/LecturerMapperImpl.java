@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-03-29T12:17:53+0700",
-    comments = "version: 1.4.2.Final, compiler: Eclipse JDT (IDE) 3.37.0.v20240206-1609, environment: Java 17.0.10 (Eclipse Adoptium)"
+    date = "2024-03-29T18:01:25+0700",
+    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 17.0.8 (Oracle Corporation)"
 )
 @Component
 public class LecturerMapperImpl implements LecturerMapper {
@@ -71,20 +71,20 @@ public class LecturerMapperImpl implements LecturerMapper {
 
         Lecturer lecturer = new Lecturer();
 
-        lecturer.setAuthority( lecturerRequest.getAuthority() );
         lecturer.setLecturerId( lecturerRequest.getLecturerId() );
-        List<Subject> list = lecturerRequest.getListSubCounterArgument();
-        if ( list != null ) {
-            lecturer.setListSubCounterArgument( new ArrayList<Subject>( list ) );
-        }
-        List<Subject> list1 = lecturerRequest.getListSubInstruct();
-        if ( list1 != null ) {
-            lecturer.setListSubInstruct( new ArrayList<Subject>( list1 ) );
-        }
+        lecturer.setPerson( lecturerRequest.getPerson() );
+        lecturer.setAuthority( lecturerRequest.getAuthority() );
         if ( lecturerRequest.getMajor() != null ) {
             lecturer.setMajor( Enum.valueOf( Major.class, lecturerRequest.getMajor() ) );
         }
-        lecturer.setPerson( lecturerRequest.getPerson() );
+        List<Subject> list = lecturerRequest.getListSubInstruct();
+        if ( list != null ) {
+            lecturer.setListSubInstruct( new ArrayList<Subject>( list ) );
+        }
+        List<Subject> list1 = lecturerRequest.getListSubCounterArgument();
+        if ( list1 != null ) {
+            lecturer.setListSubCounterArgument( new ArrayList<Subject>( list1 ) );
+        }
         List<Task> list2 = lecturerRequest.getTasks();
         if ( list2 != null ) {
             lecturer.setTasks( new ArrayList<Task>( list2 ) );

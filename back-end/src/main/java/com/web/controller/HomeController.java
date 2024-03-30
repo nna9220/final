@@ -28,15 +28,16 @@ public class HomeController {
     private LecturerService lecturerService;
     @Autowired
     private LecturerRepository lecturerRepository;
-
     @Autowired
     private LecturerMapper lecturerMapper;
-
     @Autowired
     private SubjectMapper subjectMapper;
-
     @Autowired
     private SubjectService subjectService;
+    @GetMapping("/home")
+    public ResponseEntity<?> getHome(){
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
     @GetMapping("/contact")
     public ModelAndView getContact(){
         ModelAndView model = new ModelAndView("contact");

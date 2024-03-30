@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-03-29T12:17:54+0700",
-    comments = "version: 1.4.2.Final, compiler: Eclipse JDT (IDE) 3.37.0.v20240206-1609, environment: Java 17.0.10 (Eclipse Adoptium)"
+    date = "2024-03-29T18:01:25+0700",
+    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 17.0.8 (Oracle Corporation)"
 )
 @Component
 public class TypeSubjectMapperImpl implements TypeSubjectMapper {
@@ -26,16 +26,16 @@ public class TypeSubjectMapperImpl implements TypeSubjectMapper {
 
         TypeSubjectResponse typeSubjectResponse = new TypeSubjectResponse();
 
-        List<RegistrationPeriod> list = typeSubject.getRegistrationPeriods();
-        if ( list != null ) {
-            typeSubjectResponse.setRegistrationPeriods( new ArrayList<RegistrationPeriod>( list ) );
-        }
-        List<Subject> list1 = typeSubject.getSubjectsList();
-        if ( list1 != null ) {
-            typeSubjectResponse.setSubjectsList( new ArrayList<Subject>( list1 ) );
-        }
         typeSubjectResponse.setTypeId( typeSubject.getTypeId() );
         typeSubjectResponse.setTypeName( typeSubject.getTypeName() );
+        List<Subject> list = typeSubject.getSubjectsList();
+        if ( list != null ) {
+            typeSubjectResponse.setSubjectsList( new ArrayList<Subject>( list ) );
+        }
+        List<RegistrationPeriod> list1 = typeSubject.getRegistrationPeriods();
+        if ( list1 != null ) {
+            typeSubjectResponse.setRegistrationPeriods( new ArrayList<RegistrationPeriod>( list1 ) );
+        }
 
         return typeSubjectResponse;
     }
@@ -62,16 +62,16 @@ public class TypeSubjectMapperImpl implements TypeSubjectMapper {
 
         TypeSubject typeSubject = new TypeSubject();
 
-        List<RegistrationPeriod> list = typeSubjectRequest.getRegistrationPeriods();
-        if ( list != null ) {
-            typeSubject.setRegistrationPeriods( new ArrayList<RegistrationPeriod>( list ) );
-        }
-        List<Subject> list1 = typeSubjectRequest.getSubjectsList();
-        if ( list1 != null ) {
-            typeSubject.setSubjectsList( new ArrayList<Subject>( list1 ) );
-        }
         typeSubject.setTypeId( typeSubjectRequest.getTypeId() );
         typeSubject.setTypeName( typeSubjectRequest.getTypeName() );
+        List<Subject> list = typeSubjectRequest.getSubjectsList();
+        if ( list != null ) {
+            typeSubject.setSubjectsList( new ArrayList<Subject>( list ) );
+        }
+        List<RegistrationPeriod> list1 = typeSubjectRequest.getRegistrationPeriods();
+        if ( list1 != null ) {
+            typeSubject.setRegistrationPeriods( new ArrayList<RegistrationPeriod>( list1 ) );
+        }
 
         return typeSubject;
     }

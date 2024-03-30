@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-03-29T12:17:53+0700",
-    comments = "version: 1.4.2.Final, compiler: Eclipse JDT (IDE) 3.37.0.v20240206-1609, environment: Java 17.0.10 (Eclipse Adoptium)"
+    date = "2024-03-29T18:01:25+0700",
+    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 17.0.8 (Oracle Corporation)"
 )
 @Component
 public class StudentMapperImpl implements StudentMapper {
@@ -26,18 +26,18 @@ public class StudentMapperImpl implements StudentMapper {
 
         StudentResponse studentResponse = new StudentResponse();
 
+        studentResponse.setStudentId( student.getStudentId() );
         if ( student.getMajor() != null ) {
             studentResponse.setMajor( student.getMajor().name() );
         }
-        studentResponse.setPerson( student.getPerson() );
-        studentResponse.setSchoolYear( student.getSchoolYear() );
         studentResponse.setStudentClass( student.getStudentClass() );
-        studentResponse.setStudentId( student.getStudentId() );
+        studentResponse.setSchoolYear( student.getSchoolYear() );
         studentResponse.setSubjectId( student.getSubjectId() );
         List<Task> list = student.getTasks();
         if ( list != null ) {
             studentResponse.setTasks( new ArrayList<Task>( list ) );
         }
+        studentResponse.setPerson( student.getPerson() );
 
         return studentResponse;
     }
@@ -64,12 +64,12 @@ public class StudentMapperImpl implements StudentMapper {
 
         Student student = new Student();
 
+        student.setStudentId( studentRequest.getStudentId() );
         if ( studentRequest.getMajor() != null ) {
             student.setMajor( Enum.valueOf( Major.class, studentRequest.getMajor() ) );
         }
-        student.setSchoolYear( studentRequest.getSchoolYear() );
         student.setStudentClass( studentRequest.getStudentClass() );
-        student.setStudentId( studentRequest.getStudentId() );
+        student.setSchoolYear( studentRequest.getSchoolYear() );
         student.setSubjectId( studentRequest.getSubjectId() );
         List<Task> list = studentRequest.getTasks();
         if ( list != null ) {
