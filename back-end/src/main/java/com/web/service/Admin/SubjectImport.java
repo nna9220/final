@@ -1,4 +1,4 @@
-package com.web.service;
+package com.web.service.Admin;
 
 import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -27,7 +26,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class SubjectImplService {
+public class SubjectImport {
 
     private final SubjectRepository subjectRepository;
     private final TypeSubjectRepository typeSubjectRepository;
@@ -36,7 +35,8 @@ public class SubjectImplService {
     private final LecturerRepository lecturerRepository;
     private final StudentRepository studentRepository;
     private final TokenUtils tokenUtils;
-    public ResponseEntity<?> importSubject(MultipartFile file,  @RequestHeader("Authorization") String authorizationHeader) throws IOException {
+
+    public ResponseEntity<?> importSubject(MultipartFile file, @RequestHeader("Authorization") String authorizationHeader) throws IOException {
         try {
             String token = tokenUtils.extractToken(authorizationHeader);
             Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -60,7 +60,7 @@ public class SubjectImplService {
                     if (subject.getStudent1()!=null) {
                         Student student1 = studentRepository.findById(subject.getStudent1()).orElse(null);
                         if (student1 != null) {
-                           newSubject.setStudent1(subject.getStudent1());
+                            newSubject.setStudent1(subject.getStudent1());
                         }
                     }
                     if (subject.getStudent2()!=null) {

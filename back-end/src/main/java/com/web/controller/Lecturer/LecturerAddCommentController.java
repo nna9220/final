@@ -55,6 +55,9 @@ public class LecturerAddCommentController {
     @Autowired
     private MailServiceImpl mailService;
 
+    @Autowired
+    private StudentRepository studentRepository;
+
     private final TokenUtils tokenUtils;
     @Autowired
     public LecturerAddCommentController(TokenUtils tokenUtils){
@@ -113,10 +116,13 @@ public class LecturerAddCommentController {
                     + "Change task: " + existTask.getRequirement()+"\n"
                     + "Content: " + comment.getContent();
 
-                if (existSubject.getStudentId2()!=null) {
-                    mailService.sendMailStudents(existSubject.getStudentId2().getPerson().getUsername(), existSubject.getStudentId1().getPerson().getUsername(), subject, messenger);
+            Student studen1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
+            Student studen2 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
+
+            if (existSubject.getStudent2()!=null) {
+                    mailService.sendMailStudents(studen2.getPerson().getUsername(), studen1.getPerson().getUsername(), subject, messenger);
                 }else {
-                    mailService.sendMailStudent(existSubject.getStudentId1().getPerson().getUsername(),subject,messenger);
+                    mailService.sendMailStudent(studen1.getPerson().getUsername(),subject,messenger);
                 }
 
             /*String referer = Contains.URL_LOCAL +  "/api/lecturer/subject/detail/" + taskId;

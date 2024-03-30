@@ -8,6 +8,7 @@ import com.web.dto.response.SubjectResponse;
 import com.web.entity.*;
 import com.web.mapper.SubjectMapper;
 import com.web.repository.PersonRepository;
+import com.web.service.Admin.SubjectImport;
 import com.web.service.Admin.SubjectService;
 import com.web.utils.UserUtils;
 import io.jsonwebtoken.Claims;
@@ -32,6 +33,9 @@ public class SubjectController {
     private PersonRepository personRepository;
 
     @Autowired
+    private SubjectImport subjectImport;
+
+    @Autowired
     private UserUtils userUtils;
     @GetMapping
     public ModelAndView getAllSubject(HttpSession session){
@@ -48,13 +52,10 @@ public class SubjectController {
             return error;
         }
     }
-    //Duyệt đề tài
-    @PutMapping("/browse/{id}")
-    public ResponseEntity<?> browseSubjectExisted(@PathVariable int id){
-       /* if (CheckedPermission.isAdmin(personRepository)){*/
-            return ResponseEntity.ok(subjectService.browseSubject(id));
-        /*}else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }*/
-    }
+
+    //Import subject
+
+
+
+
 }

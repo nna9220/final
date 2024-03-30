@@ -51,12 +51,16 @@ public class StudentAddTaskController {
             //ModelAndView modelAndView = new ModelAndView("student_addTask");
             Student currentStudent = studentRepository.findById(personCurrent.getPersonId()).orElse(null);
             Subject currentSubject = subjectRepository.findById(currentStudent.getSubjectId().getSubjectId()).orElse(null);
+
+
             List<Student> studentList = new ArrayList<>();
             if (currentSubject.getStudent1() != null) {
-                studentList.add(currentSubject.getStudentId1());
+                Student studen1 = studentRepository.findById(currentSubject.getStudent1()).orElse(null);
+                studentList.add(studen1);
             }
             if (currentSubject.getStudent2() != null) {
-                studentList.add(currentSubject.getStudentId2());
+                Student studen2 = studentRepository.findById(currentSubject.getStudent2()).orElse(null);
+                studentList.add(studen2);
             }
             /*modelAndView.addObject("student", currentStudent);
             modelAndView.addObject("person", personCurrent);
@@ -145,10 +149,12 @@ public class StudentAddTaskController {
     private List<Student> getStudentListForTaskCreation(Subject currentSubject) {
         List<Student> studentList = new ArrayList<>();
         if (currentSubject.getStudent1() != null) {
-            studentList.add(currentSubject.getStudentId1());
+            Student studen1 = studentRepository.findById(currentSubject.getStudent1()).orElse(null);
+            studentList.add(studen1);
         }
         if (currentSubject.getStudent2() != null) {
-            studentList.add(currentSubject.getStudentId2());
+            Student studen2 = studentRepository.findById(currentSubject.getStudent2()).orElse(null);
+            studentList.add(studen2);
         }
         // Có thể thêm các điều kiện khác nếu còn sinh viên khác
 
@@ -172,15 +178,20 @@ public class StudentAddTaskController {
                         + "Change status task " + existTask.getRequirement() + " to " + selectedOption;
                 newMail.setSubject(subject);
                 newMail.setSubject(messenger);
-                if (personCurrent.getPersonId().equals(existSubject.getStudentId1().getStudentId())) {
-                    if (existSubject.getStudentId2()!=null) {
-                        mailService.sendMail(existSubject.getStudentId2().getPerson().getUsername(), existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
+                Student studen1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
+                Student studen2 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
+
+
+                if (personCurrent.getPersonId().equals(existSubject.getStudent1())) {
+                    if (existSubject.getStudent2()!=null) {
+
+                        mailService.sendMail(studen2.getPerson().getUsername(), existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
                     }else {
                         mailService.sendMailNull(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
                     }
                 }else {
-                    if (existSubject.getStudentId1()!=null) {
-                        mailService.sendMail(existSubject.getStudentId1().getPerson().getUsername(), existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
+                    if (existSubject.getStudent1()!=null) {
+                        mailService.sendMail(studen1.getPerson().getUsername(), existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
                     }else {
                         mailService.sendMailNull(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
                     }
