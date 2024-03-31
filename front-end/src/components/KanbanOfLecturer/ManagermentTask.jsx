@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
-import './styleTable.scss'
+import Booard from './Booard'
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
 import DetailsIcon from '@mui/icons-material/Details';
 import { Link } from 'react-router-dom';
-import ManagementTask from '../KanbanOfHead/ManagementTask';
+import axios from 'axios';
+import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 
-function TableTopic() {
+function ManagermentTask() {
   const [topics, setTopics] = useState([]);
   const [showManagementTask, setShowManagementTask] = useState(false);
   const [selectedSubjectId, setSelectedSubjectId] = useState(null);
@@ -20,7 +19,7 @@ function TableTopic() {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axios.get('http://localhost:5000/api/head/manager', {
+        axios.get('http://localhost:5000/api/lecturer/subject', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },
@@ -60,7 +59,7 @@ function TableTopic() {
       )}
       <hr />
       {showManagementTask ? (
-        <ManagementTask subjectId={selectedSubjectId} />
+        <Booard subjectId={selectedSubjectId} />
       ) : (
         <table className="table table-hover">
           <thead>
@@ -107,4 +106,4 @@ function TableTopic() {
   )
 }
 
-export default TableTopic;
+export default ManagermentTask
