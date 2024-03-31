@@ -19,7 +19,7 @@ public class TypeSubject implements Serializable {
     @Column(name="type_id")
     private int typeId;
 
-    @Column(name="type_name")
+    @Column(name="type_name", unique = true)
     private String typeName;
 
     @OneToMany(mappedBy = "typeSubject", cascade = CascadeType.ALL)

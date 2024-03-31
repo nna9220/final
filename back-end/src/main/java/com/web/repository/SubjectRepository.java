@@ -3,6 +3,7 @@ package com.web.repository;
 import com.web.entity.Lecturer;
 import com.web.entity.Major;
 import com.web.entity.Subject;
+import com.web.entity.TypeSubject;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -33,5 +34,5 @@ public interface SubjectRepository extends JpaRepository<Subject, Integer> {
     public List<Subject> findSubjectByAsisAdvisorAndMajor(boolean status,Major major);
 
     @Query("select s from Subject s where s.typeSubject=:id")
-    public List<Subject> findSubjectByType(int id);
+    public List<Subject> findSubjectByType(TypeSubject id);
 }

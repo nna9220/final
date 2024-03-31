@@ -40,7 +40,7 @@ public class SubjectImportKLTN {
 
     public ResponseEntity<?> importSubject(MultipartFile file) throws IOException {
         try {
-            TypeSubject typeSubject2 = typeSubjectRepository.findById(2).orElse(null);
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
             List<Subject> saveSub = new ArrayList<>();
             Set<Student> saveStudent = new HashSet<>();
             LocalDate nowYear = LocalDate.now();
@@ -55,7 +55,7 @@ public class SubjectImportKLTN {
                     Subject newSubject = new Subject();
                     newSubject.setSubjectName(subject.getSubjectName());
                     newSubject.setYear(String.valueOf(nowYear));
-                    newSubject.setTypeSubject(typeSubject2);
+                    newSubject.setTypeSubject(typeSubject);
                     newSubject.setActive((byte) 1);
                     newSubject.setStatus(true);
                     if (subject.getStudent1()!=null) {
