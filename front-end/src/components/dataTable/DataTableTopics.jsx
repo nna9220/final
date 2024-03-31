@@ -200,6 +200,7 @@ function DataTableTopics() {
                             <th scope='col'>Loại đề tài</th>
                             <th scope='col'>SV 1</th>
                             <th scope='col'>SV 2</th>
+                            <th scope='col'>SV 3</th>
                             <th scope='col'>Yêu cầu</th>
                             <th scope='col'>Action</th>
                         </tr>
@@ -214,6 +215,7 @@ function DataTableTopics() {
                                 <td>{item.typeSubject?.typeName}</td>
                                 <td>{item.student1}</td>
                                 <td>{item.student2}</td>
+                                <td>{item.student3}</td>
                                 <td>{item.requirement}</td>
                                 <td>
                                     <button className='btnView'>View</button>
