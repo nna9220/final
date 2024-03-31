@@ -32,6 +32,7 @@ F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\dto\response\Stude
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\repository\RegistrationPeriodRepository.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\service\Admin\LecturerService.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\admin\TypeSubjectController.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\service\Admin\SubjectImportKLTN.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\dto\request\StudentClassRequest.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\utils\CommonPage.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\mapper\StudentMapper.java

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-03-31T04:39:08+0700",
+    date = "2024-03-31T16:18:57+0700",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 17.0.8 (Oracle Corporation)"
 )
 @Component
@@ -76,13 +76,13 @@ public class SubjectMapperImpl implements SubjectMapper {
         if ( subjectRequest.getMajor() != null ) {
             subject.setMajor( Enum.valueOf( Major.class, subjectRequest.getMajor() ) );
         }
-        subject.setInstructorId( subjectRequest.getInstructorId() );
-        subject.setThesisAdvisorId( subjectRequest.getThesisAdvisorId() );
         subject.setReview( subjectRequest.getReview() );
         subject.setRequirement( subjectRequest.getRequirement() );
         subject.setExpected( subjectRequest.getExpected() );
         subject.setTypeSubject( subjectRequest.getTypeSubject() );
         subject.setStatus( subjectRequest.isStatus() );
+        subject.setInstructorId( subjectRequest.getInstructorId() );
+        subject.setThesisAdvisorId( subjectRequest.getThesisAdvisorId() );
         subject.setStudent1( subjectRequest.getStudent1() );
         subject.setStudent2( subjectRequest.getStudent2() );
         List<Task> list = subjectRequest.getTasks();
