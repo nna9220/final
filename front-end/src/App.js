@@ -27,6 +27,8 @@ import RegisterHead from './Pages/Head/RegisterHead';
 import TopicOfHead from './Pages/Head/TopicOfHead';
 import Team from './components/Team';
 import Intruction from './components/Intruction';
+import ManagementTopics from './Pages/Admin/ManagementTopics';
+import ManagementType from './Pages/Admin/ManagementType';
 
 function App() {
   return (
@@ -57,6 +59,8 @@ function App() {
         <Route path="/managermentLec" element={<ManagementLec />} />
         <Route path="/managermentPeriod" element={<ManagementPeriod />} />
         <Route path="/managermentYears" element={<ManagementYears />} />
+        <Route path='/managermentTopics' element={<ManagementTopics/>}/>
+        <Route path='/managermentType' element={<ManagementType/>}/>
 
 
         <Route path="/homeStudent" element={<HomeStudent />} />
