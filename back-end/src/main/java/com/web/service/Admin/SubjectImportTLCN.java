@@ -37,8 +37,8 @@ public class SubjectImportTLCN {
 
     public ResponseEntity<?> importSubject(MultipartFile file) throws IOException {
         try {
-            TypeSubject typeSubject = typeSubjectRepository.findById(1).orElse(null);
-            TypeSubject typeSubject2 = typeSubjectRepository.findById(2).orElse(null);
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+
             List<Subject> saveSub = new ArrayList<>();
             Set<Student> saveStudent = new HashSet<>();
             LocalDate nowYear = LocalDate.now();

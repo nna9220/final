@@ -9,6 +9,7 @@ import com.web.entity.*;
 import com.web.mapper.SubjectMapper;
 import com.web.repository.PersonRepository;
 import com.web.repository.SubjectRepository;
+import com.web.repository.TypeSubjectRepository;
 import com.web.service.Admin.SubjectImportKLTN;
 import com.web.service.Admin.SubjectImportTLCN;
 import com.web.service.Admin.SubjectService;
@@ -42,12 +43,22 @@ public class SubjectController {
     private SubjectImportTLCN subjectImport;
     @Autowired
     private SubjectImportKLTN subjectImportKLTN;
+    @Autowired
+    private TypeSubjectRepository typeSubjectRepository;
 
     @Autowired
     private UserUtils userUtils;
     @GetMapping("/tlcn")
     public ResponseEntity<?> getAllSubject(HttpSession session){
-        List<Subject> subjects = subjectRepository.findSubjectByType(1);
+        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+        List<Subject> subjects = subjectRepository.findSubjectByType(typeSubject);
+        return new ResponseEntity<>(subjects,HttpStatus.OK);
+    }
+
+    @GetMapping("/kltn")
+    public ResponseEntity<?> getAllSubjectKLTN(HttpSession session){
+        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
+        List<Subject> subjects = subjectRepository.findSubjectByType(typeSubject);
         return new ResponseEntity<>(subjects,HttpStatus.OK);
     }
 
