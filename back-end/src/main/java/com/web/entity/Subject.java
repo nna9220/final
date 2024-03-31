@@ -29,14 +29,6 @@ public class Subject implements Serializable {
     @Enumerated(EnumType.STRING)
     private Major major;
 
-    @ManyToOne
-    @JoinColumn(name="instructor_id")
-    private Lecturer instructorId;
-
-    @ManyToOne
-    @JoinColumn(name="thesisAdvisor_id")
-    private Lecturer thesisAdvisorId;
-
     //Điểm GVHD
     @Column(name="score_instruct")
     private Double scoreInstruct;
@@ -60,6 +52,14 @@ public class Subject implements Serializable {
 
     @Column(name="status")
     private boolean status = false;
+
+    @ManyToOne
+    @JoinColumn(name="instructor_id")
+    private Lecturer instructorId;
+
+    @ManyToOne
+    @JoinColumn(name="thesisAdvisor_id")
+    private Lecturer thesisAdvisorId;
 
     @Column(name = "student_1")
     private String student1;

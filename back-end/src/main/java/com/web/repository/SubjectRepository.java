@@ -31,4 +31,7 @@ public interface SubjectRepository extends JpaRepository<Subject, Integer> {
 
     @Query("select s from Subject s where s.thesisAdvisorId IS NULL and s.major=:major and s.status=:status")
     public List<Subject> findSubjectByAsisAdvisorAndMajor(boolean status,Major major);
+
+    @Query("select s from Subject s where s.typeSubject=:id")
+    public List<Subject> findSubjectByType(int id);
 }

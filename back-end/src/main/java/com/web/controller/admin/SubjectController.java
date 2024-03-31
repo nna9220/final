@@ -8,7 +8,9 @@ import com.web.dto.response.SubjectResponse;
 import com.web.entity.*;
 import com.web.mapper.SubjectMapper;
 import com.web.repository.PersonRepository;
-import com.web.service.Admin.SubjectImport;
+import com.web.repository.SubjectRepository;
+import com.web.service.Admin.SubjectImportKLTN;
+import com.web.service.Admin.SubjectImportTLCN;
 import com.web.service.Admin.SubjectService;
 import com.web.utils.UserUtils;
 import io.jsonwebtoken.Claims;
@@ -33,28 +35,36 @@ public class SubjectController {
     private SubjectMapper subjectMapper;
     @Autowired
     private PersonRepository personRepository;
+    @Autowired
+    private SubjectRepository subjectRepository;
 
     @Autowired
-    private SubjectImport subjectImport;
+    private SubjectImportTLCN subjectImport;
+    @Autowired
+    private SubjectImportKLTN subjectImportKLTN;
 
     @Autowired
     private UserUtils userUtils;
-    @GetMapping
+    @GetMapping("/tlcn")
     public ResponseEntity<?> getAllSubject(HttpSession session){
-
-        List<Subject> subjects = subjectService.getAll();
+        List<Subject> subjects = subjectRepository.findSubjectByType(1);
         return new ResponseEntity<>(subjects,HttpStatus.OK);
     }
+
+
 
     //Import subject
 
 
-    @PostMapping("/import")
-    public ResponseEntity<?> importSubject(@RequestParam("file") MultipartFile file, HttpSession session) throws IOException {
-        subjectImport.importSubject(file);
+    @PostMapping("/importTLCN")
+    public ResponseEntity<?> importSubject(@RequestParam("file") MultipartFile file) throws IOException {
         return new ResponseEntity<>(subjectImport.importSubject(file),HttpStatus.OK);
     }
 
+    @PostMapping("/importKLTN")
+    public ResponseEntity<?> importSubjectKLTN(@RequestParam("file") MultipartFile file) throws IOException {
+        return new ResponseEntity<>(subjectImportKLTN.importSubject(file),HttpStatus.OK);
+    }
 
 
 }
