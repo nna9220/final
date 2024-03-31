@@ -3,40 +3,29 @@ package com.web.controller.Lecturer;
 //import hcmute.edu.vn.registertopic_be.authentication.CheckedPermission;
 import com.web.config.CheckRole;
 import com.web.config.CompareTime;
-import com.web.config.JwtUtils;
 import com.web.config.TokenUtils;
 import com.web.controller.admin.LecturerController;
 import com.web.entity.*;
 import com.web.mapper.SubjectMapper;
-import com.web.dto.request.SubjectRequest;
 import com.web.repository.*;
 import com.web.service.Admin.StudentService;
 import com.web.service.Admin.SubjectService;
-import com.web.service.ImportFileTest;
 import com.web.service.Lecturer.LecturerSubjectService;
 import com.web.service.SubjectImplService;
-import com.web.utils.Contains;
 import com.web.utils.UserUtils;
-import io.jsonwebtoken.Claims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Year;
 import java.util.*;
 
 @RestController
@@ -45,8 +34,7 @@ public class LecturerRegisterTopicController {
 
     @Autowired
     private SubjectImplService service;
-    @Autowired
-    private ImportFileTest test;
+
     @Autowired
     private FileRepository fileRepository;
     @Autowired
@@ -257,10 +245,10 @@ public class LecturerRegisterTopicController {
     }
 
     @PostMapping("/import")
-    public ResponseEntity<?> importSubject(@RequestParam("file") MultipartFile file, HttpSession session) throws IOException {
-        test.importSubject(file);
+    public ResponseEntity<?> importSubject(@RequestHeader("Authorization") String authorizationHeader, @RequestParam("file") MultipartFile file, HttpSession session) throws IOException {
+        service.importSubject(file,authorizationHeader);
         /*String referer = Contains.URL +  "/api/lecturer/subject";
         return new ModelAndView("redirect:" + referer);*/
-        return new ResponseEntity<>(test.importSubject(file),HttpStatus.OK);
+        return new ResponseEntity<>(service.importSubject(file,authorizationHeader),HttpStatus.OK);
     }
 }
