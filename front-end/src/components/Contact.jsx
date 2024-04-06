@@ -15,7 +15,7 @@ function Contact() {
                                         <div class="card-body p-0">
                                             <div class="row g-0">
                                                 <div class="col-sm-6 d-none d-sm-block bg-image">
-                                                    <img src='/assets/email2.jpg' width='560px' style={{marginTop:'80px', marginLeft:'30px'}}></img>
+                                                    <img src='/assets/email2.jpg' width='500vw' style={{marginTop:'80px', marginLeft:'30px'}}></img>
                                                 </div>
                                                 <div class="col-sm-6 p-4">
                                                     <div class="text-center">

@@ -84,11 +84,11 @@ const Card = ({ task, index }) => {
                             <MoreHorizTwoToneIcon />
                         </button>
                       <ul class="dropdown-menu">
-                      <li><a className="dropdown-item" data-bs-toggle="modal" data-bs-target={`#${modalId}`} href="#" onClick={() => handleViewTask(task.taskId)}>View</a></li>
+                      <li><a className="dropdown-item" data-bs-toggle="modal" data-bs-target={`#${task}`} href="#" >View</a></li>
                           <li><a class="dropdown-item" href="#">Delete</a></li>
                       </ul>
                   </div>
-                  <div class="modal fade" id={modalId} tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal fade" id={task} tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                       <div class="modal-dialog modal-dialog-scrollable modal-xl">
                           <div class="modal-content">
                               <div class="modal-header">
@@ -135,7 +135,7 @@ const Card = ({ task, index }) => {
                                       </button>
                                   </div>
                                   <div className='comment-items'>
-                                      {detail.listComment && detail.listComment.map((comment, index) => (
+                                      {taskDetail.listComment && taskDetail.listComment.map((comment, index) => (
                                           <div key={index}>
                                               <div className='comment-item'>
                                                   <div className='header-comment'>
