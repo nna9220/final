@@ -30,7 +30,7 @@ function EditProfileSt() {
             const tokenSt = sessionStorage.getItem(userToken);
 
             if (!tokenSt) {
-                axios.get('http://localhost:5000/api/student/home', {
+                axios.get('/api/student/home', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
