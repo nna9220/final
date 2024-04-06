@@ -26,7 +26,7 @@ function SidebarLec() {
           const tokenSt = sessionStorage.getItem(userToken);
     
           if (!tokenSt) {
-            axios.get('http://localhost:5000/api/lecturer/home', {
+            axios.get('/api/lecturer/home', {
               headers: {
                 'Authorization': `Bearer ${userToken}`,
               },

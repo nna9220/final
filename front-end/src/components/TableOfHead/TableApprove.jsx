@@ -31,7 +31,7 @@ function TableApprove() {
     }, [userToken]);
 
     const loadTopics = () => {
-        axios.get('http://localhost:5000/api/head/subject', {
+        axios.get('/api/head/subject', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -46,7 +46,7 @@ function TableApprove() {
     };
 
     const loadListDelete = () => {
-        axios.get('http://localhost:5000/api/head/subject/delete', {
+        axios.get('/api/head/subject/delete', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -62,7 +62,7 @@ function TableApprove() {
     }
 
     const handleApprove = (id) => {
-        axios.post(`http://localhost:5000/api/head/subject/browse/${id}`, null, {
+        axios.post(`/api/head/subject/browse/${id}`, null, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -79,7 +79,7 @@ function TableApprove() {
     };
 
     const handleDelete = (id) => {
-        axios.post(`http://localhost:5000/api/head/subject/delete/${id}`, null, {
+        axios.post(`/api/head/subject/delete/${id}`, null, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },

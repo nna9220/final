@@ -10,7 +10,7 @@ const KanbanBoard = () => {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axios.get('http://localhost:5000/api/student/task/list', {
+        axios.get('/api/student/task/list', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },

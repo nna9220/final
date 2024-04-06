@@ -21,7 +21,7 @@ const Card = ({ task, index }) => {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axios.get(`http://localhost:5000/api/head/manager/detail/${taskId}`, {
+        axios.get(`/api/head/manager/detail/${taskId}`, {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },
@@ -45,7 +45,7 @@ const Card = ({ task, index }) => {
   const handleCommentSubmit = () => {  
     const userToken = getTokenFromUrlAndSaveToStorage();
     if (userToken) {
-      axios.post(`http://localhost:5000/api/head/comment/create/${task.taskId}`, {
+      axios.post(`/api/head/comment/create/${task.taskId}`, {
         headers: {
           'Authorization': `Bearer ${userToken}`,
           'Content-Type': 'multipart/form-data',

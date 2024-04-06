@@ -20,7 +20,7 @@ function TableTopic() {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axios.get('http://localhost:5000/api/head/manager', {
+        axios.get('/api/head/manager', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },

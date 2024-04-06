@@ -33,7 +33,7 @@ function EditProfileLec() {
             const tokenSt = sessionStorage.getItem(userToken);
 
             if (!tokenSt) {
-                axios.get('http://localhost:5000/api/lecturer/home', {
+                axios.get('/api/lecturer/home', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -65,7 +65,7 @@ function EditProfileLec() {
             const tokenSt = sessionStorage.getItem(userToken);
 
             if (!tokenSt) {
-                axios.get('http://localhost:5000/api/lecturer/edit', {
+                axios.get('/api/lecturer/edit', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
