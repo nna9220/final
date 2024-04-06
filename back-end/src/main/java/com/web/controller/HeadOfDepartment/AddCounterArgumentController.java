@@ -196,16 +196,12 @@ public class AddCounterArgumentController {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
             List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) 1,typeSubject);
-            /*model.addObject("listSubject",subjectByCurrentLecturer);
-            return model;*/
+
             Map<String,Object> response = new HashMap<>();
             response.put("person", personCurrent);
             response.put("listSubject", subjectByCurrentLecturer);
             return new ResponseEntity<>(response,HttpStatus.OK);
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
