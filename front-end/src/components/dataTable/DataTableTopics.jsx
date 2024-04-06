@@ -23,7 +23,7 @@ function DataTableTopics() {
 
     const handleListTLCN = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
-        axios.get('/api/admin/subject/tlcn', {
+        axios.get('http://localhost:5000/api/admin/subject/tlcn', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -42,7 +42,7 @@ function DataTableTopics() {
 
     const handleListKLTN = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
-        axios.get('/api/admin/subject/kltn', {
+        axios.get('http://localhost:5000/api/admin/subject/kltn', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -74,7 +74,7 @@ function DataTableTopics() {
         const formData = new FormData(); // Khởi tạo formData
         formData.append('file', file); // Thêm file vào formData
 
-        axios.post('/api/admin/subject/importTLCN', formData, {
+        axios.post('http://localhost:5000/api/admin/subject/importTLCN', formData, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
                 'Content-Type': 'multipart/form-data',
@@ -102,7 +102,7 @@ function DataTableTopics() {
         const formData = new FormData(); // Khởi tạo formData
         formData.append('file', file); // Thêm file vào formData
 
-        axios.post('/api/admin/subject/importKLTN', formData, {
+        axios.post('http://localhost:5000/api/admin/subject/importKLTN', formData, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
                 'Content-Type': 'multipart/form-data',

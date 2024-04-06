@@ -16,14 +16,14 @@ function DataClass() {
         console.log("Token SV2: " + tokenSt);
         if (tokenSt) {
             console.log("Test: " + tokenSt);
-            axios.get('/api/admin/studentClass', {
+            axios.get('http://localhost:5000/api/admin/studentClass', {
                 headers: {
                     'Authorization': `Bearer ${tokenSt}`,
                 },
             })
                 .then(response => {
                     console.log("DataTable: ", response.data);
-                    const classArray = response.data.class || [];
+                    const classArray = response.data.listClass || [];
                     setClasses(classArray);
                 })
                 .catch(error => {
@@ -39,7 +39,7 @@ function DataClass() {
         const userToken = getTokenFromUrlAndSaveToStorage();
         const newClassValue = document.getElementById('exampleFormControlInput1').value;
     
-        axios.post('/api/admin/studentClass/create', null, {
+        axios.post('http://localhost:5000/api/admin/studentClass/create', null, {
             params: {
                 className: newClassValue
             },
@@ -64,7 +64,7 @@ function DataClass() {
         const userToken = getTokenFromUrlAndSaveToStorage();
         const updatedClassValue = document.getElementById('exampleFormControlInput1').value;
     
-        axios.post(`/api/admin/studentClass/edit/${selectedClass.id}`, null, {
+        axios.post(`http://localhost:5000/api/admin/studentClass/edit/${selectedClass.id}`, null, {
             params: {
                 classId: selectedClass.id,
                 classname: updatedClassValue
