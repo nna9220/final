@@ -1,5 +1,6 @@
 package com.web.repository;
 
+import com.web.entity.Authority;
 import com.web.entity.Person;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
@@ -17,6 +18,9 @@ public interface PersonRepository extends JpaRepository<Person,String> {
     @Query("SELECT p FROM Person p")
     List<Person> findAllPerson();
     Optional<Person> findByEmail(String email);
+
+    @Query("select p from Person p where p.authorities=:authorities")
+    public List<Person> findGuest(Authority authorities);
 
     @Query("SELECT p FROM Person p WHERE p.username=:email")
     public Person findUserByEmail(@Param("email") String email);
