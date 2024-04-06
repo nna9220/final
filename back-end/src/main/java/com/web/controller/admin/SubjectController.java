@@ -3,10 +3,12 @@ package com.web.controller.admin;
 //import hcmute.edu.vn.registertopic_be.authentication.CheckedPermission;
 import com.web.config.CheckRole;
 import com.web.config.JwtUtils;
+import com.web.config.TokenUtils;
 import com.web.dto.response.StudentClassResponse;
 import com.web.dto.response.SubjectResponse;
 import com.web.entity.*;
 import com.web.mapper.SubjectMapper;
+import com.web.repository.LecturerRepository;
 import com.web.repository.PersonRepository;
 import com.web.repository.SubjectRepository;
 import com.web.repository.TypeSubjectRepository;
@@ -15,6 +17,7 @@ import com.web.service.Admin.SubjectImportTLCN;
 import com.web.service.Admin.SubjectService;
 import com.web.utils.UserUtils;
 import io.jsonwebtoken.Claims;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,15 +28,20 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/subject")
+@RequiredArgsConstructor
 public class SubjectController {
     @Autowired
     private SubjectService subjectService;
     @Autowired
     private SubjectMapper subjectMapper;
+    private final TokenUtils tokenUtils;
     @Autowired
     private PersonRepository personRepository;
     @Autowired
@@ -45,6 +53,8 @@ public class SubjectController {
     private SubjectImportKLTN subjectImportKLTN;
     @Autowired
     private TypeSubjectRepository typeSubjectRepository;
+    @Autowired
+    private LecturerRepository lecturerRepository;
 
     @Autowired
     private UserUtils userUtils;
@@ -60,6 +70,55 @@ public class SubjectController {
         TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
         List<Subject> subjects = subjectRepository.findSubjectByType(typeSubject);
         return new ResponseEntity<>(subjects,HttpStatus.OK);
+    }
+
+
+    //Add GVPB
+    @PostMapping("/addCounterArgumrnt/{subjectId}/{lecturerId}")
+    public ResponseEntity<?> addCounterArgumrnt(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String lecturerId){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+            Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
+            if (existedSubject != null) {
+                Lecturer currentLecturer = lecturerRepository.findById(lecturerId).orElse(null);
+                List<Subject> addSub = new ArrayList<>();
+                addSub.add(existedSubject);
+                if (currentLecturer != null) {
+                    currentLecturer.setListSubCounterArgument(addSub);
+                    existedSubject.setThesisAdvisorId(currentLecturer);
+                    lecturerRepository.save(currentLecturer);
+                    subjectRepository.save(existedSubject);
+                }
+            }
+            return new ResponseEntity<>(existedSubject, HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    //Add GVHD
+    @PostMapping("/addInstructor/{subjectId}/{lecturerId}")
+    public ResponseEntity<?> addIntructor(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String lecturerId){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+            Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
+            if (existedSubject != null) {
+                Lecturer currentLecturer = lecturerRepository.findById(lecturerId).orElse(null);
+                List<Subject> addSub = new ArrayList<>();
+                addSub.add(existedSubject);
+                if (currentLecturer != null) {
+                    currentLecturer.setListSubInstruct(addSub);
+                    existedSubject.setInstructorId(currentLecturer);
+                    lecturerRepository.save(currentLecturer);
+                    subjectRepository.save(existedSubject);
+                }
+            }
+            return new ResponseEntity<>(existedSubject, HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
 

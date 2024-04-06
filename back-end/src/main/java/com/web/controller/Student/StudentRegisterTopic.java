@@ -45,11 +45,11 @@ public class StudentRegisterTopic {
             Optional<Student> currentStudentOptional = studentRepository.findById(personCurrent.getPersonId());
             if (currentStudentOptional.isPresent()) {
                 Student currentStudent = currentStudentOptional.get();
-                if (currentStudent.getSubjectId() == null) {
+                if (currentStudent.getSubjectGraduationId() == null) {
                     List<RegistrationPeriod> periodList = registrationPeriodRepository.findAllPeriod();
                     if (CompareTime.isCurrentTimeInPeriodStudent(periodList)) {
                         //ModelAndView modelAndView = new ModelAndView("QuanLyDeTai_SV");
-                        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+                        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
                         List<Subject> subjectList = subjectRepository.findSubjectByStatusAndMajorAndStudent(true, currentStudent.getMajor(),typeSubject);
                         /*modelAndView.addObject("subjectList", subjectList);
                         modelAndView.addObject("person", personCurrent);
@@ -63,9 +63,10 @@ public class StudentRegisterTopic {
                         response.put("person",personCurrent);
                         return new ResponseEntity<>(response,HttpStatus.OK);
                     }
-                } else {
+                }
+                else {
                     //ModelAndView modelAndView = new ModelAndView("QuanLyDeTaiDaDK_SV");
-                    Subject existSubject = subjectRepository.findById(currentStudent.getSubjectId().getSubjectId()).orElse(null);
+                    Subject existSubject = subjectRepository.findById(currentStudent.getSubjectGraduationId().getSubjectId()).orElse(null);
                     Map<String,Object> response = new HashMap<>();
                     response.put("person",personCurrent);
                     response.put("subject", existSubject);

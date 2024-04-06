@@ -97,7 +97,7 @@ function EditProfileLec() {
                 formData.append('phone', userEdit.phone);
                 formData.append('gender', gender);
 
-                axios.post(`http://localhost:5000/api/lecturer/edit/${id}`, formData, {
+                axios.post(`/api/lecturer/edit/${id}`, formData, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                         'Content-Type': 'multipart/form-data'

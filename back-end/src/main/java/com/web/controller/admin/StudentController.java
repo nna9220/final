@@ -8,10 +8,7 @@ import com.web.entity.*;
 import com.web.mapper.StudentMapper;
 import com.web.dto.request.PersonRequest;
 import com.web.dto.request.StudentRequest;
-import com.web.repository.PersonRepository;
-import com.web.repository.SchoolYearRepository;
-import com.web.repository.StudentClassRepository;
-import com.web.repository.StudentRepository;
+import com.web.repository.*;
 import com.web.service.Admin.PersonService;
 import com.web.service.Admin.SchoolYearService;
 import com.web.service.Admin.StudentClassService;
@@ -59,6 +56,8 @@ public class StudentController {
     private StudentRepository studentRepository;
     private final TokenUtils tokenUtils;
     @Autowired
+    private AuthorityRepository authorityRepository;
+    @Autowired
     public StudentController (TokenUtils tokenUtils){
         this.tokenUtils = tokenUtils;
     }
@@ -71,23 +70,16 @@ public class StudentController {
             List<StudentClass> studentClasses = studentClassService.findAll();
             List<SchoolYear> schoolYears = schoolYearService.findAll();
             List<Student> studentList = studentService.getAllStudent();
+            Authority authority = authorityRepository.findByName(Contains.ROLE_GUEST);
+            List<Person> personList = personRepository.findGuest(authority);
             System.out.println(personCurrent.getUsername());
-            /*ModelAndView modelAndView = new ModelAndView("QuanLySV");
-
-
-            modelAndView.addObject("listClass", studentClasses);
-            modelAndView.addObject("person", personCurrent);
-            modelAndView.addObject("major", Major.values());
-            modelAndView.addObject("listYear", schoolYears);
-            modelAndView.addObject("students",studentList);
-            System.out.println("Sinh viên: "+ studentList.get(0).getPerson().getFirstName());
-            return modelAndView;*/
             Map<String,Object> response = new HashMap<>();
             response.put("person", personCurrent);
             response.put("listClass", studentClasses);
             response.put("major", Major.values());
             response.put("listYear", schoolYears);
             response.put("students", studentList);
+            response.put("guest", personList);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }else {
             /*ModelAndView error = new ModelAndView();
@@ -244,4 +236,22 @@ public class StudentController {
            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
+/*    @PostMapping("/delete/{id}")
+    public ResponseEntity<?> deleteStudent(@PathVariable String id, @RequestHeader("Authorization") String authorizationHeader) {
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
+            Person editPerson = personRepository.findById(id).orElse(null);
+            if (editPerson != null) {
+                editPerson.setStatus(false);
+                personRepository.delete(editPerson);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }*/
 }

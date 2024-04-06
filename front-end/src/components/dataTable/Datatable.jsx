@@ -15,6 +15,7 @@ import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 function DataTable() {
     const [students, setStudents] = useState([]);
     const [classes, setClasses] = useState([]);
+    const [guest, setGuest] = useState([]);
     const [years, setYear] = useState([]);
     const [major, setMajr] = useState([]);
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -103,6 +104,7 @@ function DataTable() {
     };
 
     const confirmDelete = () => {
+        /*const studentId = selectedRow.studentId;*/
         const studentId = selectedRow.studentId;
         axios.post(`/api/admin/student/delete/${studentId}`, {}, {
             headers: {
@@ -145,6 +147,8 @@ function DataTable() {
                     .then(response => {
                         const studentsArray = response.data.students || [];
                         setStudents(studentsArray);
+                        const GuestArray = response.data.guest || [];
+                        setGuest(GuestArray);
                         const classArray = response.data.listClass || [];
                         setClasses(classArray);
                         const yearsArray = response.data.listYear || [];

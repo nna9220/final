@@ -8,7 +8,7 @@ function ListLec() {
     const [user, setUser] = useState([]);
 
     useEffect(() => {
-        axios.get("http://localhost:5000/team")
+        axios.get("/api/team")
             .then(response => {
                 console.log("API response:", response.data);
                 setUser(response.data);

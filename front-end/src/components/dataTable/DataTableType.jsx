@@ -8,7 +8,7 @@ function DataTableType() {
     useEffect(() => {
         const tokenSt = sessionStorage.getItem('userToken');
         if (tokenSt) {
-            axios.get('http://localhost:5000/api/admin/typeSubject/list', {
+            axios.get('/api/admin/typeSubject/list', {
                 headers: {
                     'Authorization': `Bearer ${tokenSt}`,
                 },
@@ -27,7 +27,7 @@ function DataTableType() {
     const handleAddType = () => {
         const tokenSt = sessionStorage.getItem('userToken');
         if (tokenSt) {
-            axios.post('http://localhost:5000/api/admin/typeSubject/create', { typeName: newTypeName }, {
+            axios.post('/api/admin/typeSubject/create', { typeName: newTypeName }, {
                 headers: {
                     'Authorization': `Bearer ${tokenSt}`,
                 },
