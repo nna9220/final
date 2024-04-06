@@ -28,7 +28,7 @@ function SidebarAdmin() {
       const tokenSt = sessionStorage.getItem(userToken);
 
       if (!tokenSt) {
-        axios.get('http://localhost:5000/api/admin/home', {
+        axios.get('/api/admin/home', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },
