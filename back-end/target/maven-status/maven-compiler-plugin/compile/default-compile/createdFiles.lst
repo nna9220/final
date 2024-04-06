@@ -12,6 +12,7 @@ com\web\dto\response\RegistrationPeriodResponse.class
 com\web\mapper\TypeSubjectMapperImpl.class
 com\web\utils\CloudinaryService.class
 com\web\controller\ProfileLecturerController.class
+com\web\controller\admin\GraduationThesis\RegistrationPeriodGraduationStudentController.class
 com\web\exception\SuccessMessage$SuccessMessageBuilder.class
 com\web\dto\response\StudentClassResponse.class
 com\web\entity\Person.class
@@ -80,6 +81,7 @@ com\web\entity\MailStructure.class
 com\web\dto\CustomUserDetails.class
 com\web\config\OpenAIConfig.class
 com\web\dto\request\RegistrationPeriodLecturerRequest.class
+com\web\controller\admin\GraduationThesis\RegistrationPeriodGraduationLecturerController.class
 com\web\entity\Lecturer.class
 com\web\service\Admin\RegistrationPeriodService.class
 com\web\controller\View.class
@@ -127,6 +129,7 @@ com\web\entity\Roles.class
 com\web\mapper\SchoolYearMapper.class
 com\web\controller\Student\StudentAddTaskController.class
 com\web\config\CloudConfig.class
+com\web\controller\Lecturer\Graduation\LecturerRegisterGraduationTopicController.class
 com\web\dto\response\TaskResponse.class
 com\web\dto\UserDto.class
 com\web\entity\Notification.class
@@ -150,6 +153,7 @@ com\web\service\HeaderOdDepartment\AddCounterArgumentService.class
 com\web\dto\request\RegistrationPeriodRequest.class
 com\web\config\FileStorageProperties.class
 com\web\controller\LogoutController.class
+com\web\controller\Lecturer\Graduation\LecturerAddCommentGraduationController.class
 com\web\repository\RegistrationPeriodRepository.class
 com\web\repository\SubjectRepository.class
 com\web\repository\TypeSubjectRepository.class

@@ -29,4 +29,5 @@ public class TypeSubject implements Serializable {
     @OneToMany(mappedBy = "typeSubjectId",orphanRemoval = true)
     @JsonIgnore
     private List<RegistrationPeriod> registrationPeriods;
+
 }

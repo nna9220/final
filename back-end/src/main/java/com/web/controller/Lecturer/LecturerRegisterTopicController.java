@@ -34,7 +34,8 @@ public class LecturerRegisterTopicController {
 
     @Autowired
     private SubjectImplService service;
-
+    @Autowired
+    private TypeSubjectRepository typeSubjectRepository;
     @Autowired
     private FileRepository fileRepository;
     @Autowired
@@ -51,8 +52,6 @@ public class LecturerRegisterTopicController {
     private LecturerSubjectService lecturerSubjectService;
     @Autowired
     private PersonRepository personRepository;
-    @Autowired
-    private TypeSubjectRepository typeSubjectRepository;
     @Autowired
     private StudentRepository studentRepository;
     @Autowired
@@ -77,11 +76,8 @@ public class LecturerRegisterTopicController {
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            /*ModelAndView model = new ModelAndView("DeTaiBiXoa_GV");
-            model.addObject("person", personCurrent);*/
-            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) 0);
-            /*model.addObject("listSubject",subjectByCurrentLecturer);
-            return model;*/
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) 0,typeSubject);
             Map<String,Object> response = new HashMap<>();
             response.put("person", personCurrent);
             response.put("listSubject",subjectByCurrentLecturer);
@@ -101,8 +97,8 @@ public class LecturerRegisterTopicController {
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            //ModelAndView model = new ModelAndView("QuanLyDeTai_GV");
-            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByLecturerIntro(existedLecturer, true);
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByLecturerIntro(existedLecturer, true,typeSubject);
             /*model.addObject("listSubject",subjectByCurrentLecturer);
             model.addObject("person", personCurrent);
             return model;*/
@@ -121,12 +117,14 @@ public class LecturerRegisterTopicController {
 
     @PostMapping("/register")
     public ResponseEntity<?> lecturerRegisterTopic(@RequestParam("subjectName") String name,
-                                              @RequestParam("requirement") String requirement,
-                                              @RequestParam("expected") String expected,
-                                              @RequestParam(value = "student1", required = false) String student1,
-                                              @RequestParam(value = "student2", required = false) String student2,
-                                              @RequestHeader("Authorization") String authorizationHeader,
-                                              HttpServletRequest request) {
+                                                   @RequestParam("requirement") String requirement,
+                                                   @RequestParam("expected") String expected,
+                                                   @RequestParam("typeSubject") TypeSubject typeSubject,
+                                                   @RequestParam(value = "student1", required = false) String student1,
+                                                   @RequestParam(value = "student2", required = false) String student2,
+                                                   @RequestParam(value = "student3", required = false) String student3,
+                                                   @RequestHeader("Authorization") String authorizationHeader,
+                                                   HttpServletRequest request) {
         try {
             LocalDateTime current = LocalDateTime.now();
             System.out.println(current);
@@ -148,6 +146,7 @@ public class LecturerRegisterTopicController {
                     //Tìm sinh viên qua mã sinh viên
                     Student studentId1 = studentRepository.findById(student1).orElse(null);
                     Student studentId2 = studentRepository.findById(student2).orElse(null);
+                    Student studentId3 = studentRepository.findById(student3).orElse(null);
                     if (studentId1 != null) {
                         newSubject.setStudent1(student1);
                         studentId1.setSubjectId(newSubject);
@@ -156,36 +155,27 @@ public class LecturerRegisterTopicController {
                         newSubject.setStudent2(student2);
                         studentId2.setSubjectId(newSubject);
                     }
+                    if (studentId3 != null) {
+                        newSubject.setStudent3(student3);
+                        studentId3.setSubjectId(newSubject);
+                    }
                     LocalDate nowDate = LocalDate.now();
                     newSubject.setYear(String.valueOf(nowDate));
-                    TypeSubject typeSubject = typeSubjectRepository.findById(1).orElse(null);
                     newSubject.setTypeSubject(typeSubject);
                     subjectRepository.save(newSubject);
                     studentRepository.save(studentId1);
                     studentRepository.save(studentId2);
-                    /*String referer = Contains.URL + "/api/lecturer/subject";
-                    // Thực hiện redirect trở lại trang trước đó
-                    System.out.println("Url: " + referer);
-                    // Thực hiện redirect trở lại trang trước đó
-                    return new ModelAndView("redirect:" + referer);*/
+                    studentRepository.save(studentId3);
+
                     return new ResponseEntity<>(newSubject,HttpStatus.CREATED);
                 }else {
-                /*ModelAndView modelAndView = new ModelAndView("lecturer_registerError");
-                modelAndView.addObject("person", personCurrent);
-                return modelAndView;*/
                     return new ResponseEntity<>(personCurrent,HttpStatus.OK);
-            }
+                }
             }
             else {
-                /*ModelAndView error = new ModelAndView();
-                error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-                return error;*/
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
         }catch (Exception e){
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "lỗi.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
     }

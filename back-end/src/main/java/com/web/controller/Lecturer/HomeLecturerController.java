@@ -4,14 +4,12 @@ import com.web.config.CheckRole;
 import com.web.config.JwtUtils;
 import com.web.config.TokenUtils;
 import com.web.dto.request.PersonRequest;
-import com.web.entity.Lecturer;
-import com.web.entity.Person;
-import com.web.entity.Student;
-import com.web.entity.Subject;
+import com.web.entity.*;
 import com.web.exception.NotFoundException;
 import com.web.repository.LecturerRepository;
 import com.web.repository.PersonRepository;
 import com.web.repository.SubjectRepository;
+import com.web.repository.TypeSubjectRepository;
 import com.web.service.Admin.PersonService;
 import com.web.utils.Contains;
 import com.web.utils.UserUtils;
@@ -36,6 +34,8 @@ import java.util.Optional;
 public class HomeLecturerController {
     @Autowired
     private UserUtils userUtils;
+    @Autowired
+    private TypeSubjectRepository typeSubjectRepository;
     @Autowired
     private PersonService personService;
     @Autowired
@@ -95,7 +95,8 @@ public class HomeLecturerController {
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent != null && personCurrent.getAuthorities().getName().equals("ROLE_LECTURER")) {
             Lecturer currentLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            List<Subject> listSubject = subjectRepository.findSubjectsByThesisAdvisorId(currentLecturer);
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            List<Subject> listSubject = subjectRepository.findSubjectsByThesisAdvisorId(currentLecturer,typeSubject);
             /*ModelAndView modelAndView = new ModelAndView("lecturer_listReviewTopic");
             modelAndView.addObject("person", personCurrent);
             modelAndView.addObject("lec", currentLecturer);

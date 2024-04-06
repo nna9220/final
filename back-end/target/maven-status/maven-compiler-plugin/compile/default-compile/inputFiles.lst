@@ -71,6 +71,7 @@ F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\config\WebSecurity
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\config\TokenAuthenticationFilter.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\exception\FileStorageException.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\dto\request\PersonRequest.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\admin\GraduationThesis\RegistrationPeriodGraduationLecturerController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\utils\MailService.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\LoginController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\repository\AuthorityRepository.java
@@ -102,6 +103,7 @@ F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\exception\MessageE
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\repository\StudentClassRepository.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\repository\CommentRepository.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\service\Lecturer\LecturerSubjectService.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\Lecturer\Graduation\LecturerAddCommentGraduationController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\Lecturer\LecturerRegisterTopicController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\service\Admin\SubjectService.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\config\CompareTime.java
@@ -117,6 +119,7 @@ F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\config\PasswordCon
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\admin\StudentClassController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\mapper\StudentClassMapper.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\repository\StudentRepository.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\Lecturer\Graduation\LecturerRegisterGraduationTopicController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\repository\SchoolYearRepository.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\exception\RestErrorHandler.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\dto\request\SchoolYearRequest.java
@@ -153,6 +156,7 @@ F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\config\MailSenderC
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\admin\LecturerController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\exception\MyFileNotFoundException.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\mapper\PersonMapper.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\admin\GraduationThesis\RegistrationPeriodGraduationStudentController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\Major.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\admin\PersonController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\Lecturer\HomeLecturerController.java
