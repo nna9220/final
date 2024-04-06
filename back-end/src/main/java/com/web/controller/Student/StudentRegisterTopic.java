@@ -63,7 +63,26 @@ public class StudentRegisterTopic {
                         response.put("person",personCurrent);
                         return new ResponseEntity<>(response,HttpStatus.OK);
                     }
-                } else {
+                }else if (currentStudent.getSubjectGraduationId() == null) {
+                    List<RegistrationPeriod> periodList = registrationPeriodRepository.findAllPeriod();
+                    if (CompareTime.isCurrentTimeInPeriodStudent(periodList)) {
+                        //ModelAndView modelAndView = new ModelAndView("QuanLyDeTai_SV");
+                        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
+                        List<Subject> subjectList = subjectRepository.findSubjectByStatusAndMajorAndStudent(true, currentStudent.getMajor(),typeSubject);
+                        /*modelAndView.addObject("subjectList", subjectList);
+                        modelAndView.addObject("person", personCurrent);
+                        return modelAndView;*/
+                        Map<String,Object> response = new HashMap<>();
+                        response.put("person",personCurrent);
+                        response.put("subjectList", subjectList);
+                        return new ResponseEntity<>(response, HttpStatus.OK);
+                    }else {
+                        Map<String,Object> response = new HashMap<>();
+                        response.put("person",personCurrent);
+                        return new ResponseEntity<>(response,HttpStatus.OK);
+                    }
+                }
+                else {
                     //ModelAndView modelAndView = new ModelAndView("QuanLyDeTaiDaDK_SV");
                     Subject existSubject = subjectRepository.findById(currentStudent.getSubjectId().getSubjectId()).orElse(null);
                     Map<String,Object> response = new HashMap<>();
