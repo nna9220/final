@@ -316,6 +316,7 @@ function DataTable() {
                         <th scope="col">#</th>
                         <th scope="col">Guest ID</th>
                         <th scope="col">Name</th>
+                        <th scope="col">Action</th>
                         {/* Add more columns as needed */}
                     </tr>
                     </thead>
@@ -326,6 +327,14 @@ function DataTable() {
                             <td>{guest.username}</td>
                             <td>{guest.personId}</td>
                             {/* Add more cells for additional guest data */}
+                            <td>
+                                <button className="btnView" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(guest)}>
+                                    <EditOutlinedIcon />
+                                </button>
+                                <button className='btnDelete' onClick={() => handleDelete(guest)}>
+                                    <DeleteRoundedIcon />
+                                </button>
+                            </td>
                         </tr>
                     ))}
                     </tbody>
