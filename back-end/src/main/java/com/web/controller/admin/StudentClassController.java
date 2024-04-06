@@ -3,9 +3,8 @@ package com.web.controller.admin;
 //import hcmute.edu.vn.registertopic_be.authentication.CheckedPermission;
 import com.web.config.CheckRole;
 import com.web.config.JwtUtils;
-import com.web.entity.Person;
-import com.web.entity.Student;
-import com.web.entity.StudentClass;
+import com.web.config.TokenUtils;
+import com.web.entity.*;
 import com.web.exception.NotFoundException;
 import com.web.mapper.StudentClassMapper;
 import com.web.dto.request.StudentClassRequest;
@@ -43,15 +42,17 @@ public class StudentClassController {
     private UserUtils userUtils;
     @Autowired
     private StudentClassRepository studentClassRepository;
-
+    private final TokenUtils tokenUtils;
+    @Autowired
+    public StudentClassController (TokenUtils tokenUtils){
+        this.tokenUtils = tokenUtils;
+    }
     @GetMapping
-    public ResponseEntity<Map<String,Object>> getStudentClass(HttpSession session){
-        String token = (String) session.getAttribute("token");
-        Claims claims = JwtUtils.extractClaims(token, "f2f1035db6a255e7885838b020f370d702d4bb0f35a368f06ded1ce8e6684a27");
-        UserDetails email = userUtils.loadUserByUsername(claims.getSubject());
-        Person person = personRepository.findUserByEmail(email.getUsername());
-        if (person.getAuthorities().getName().equals("ROLE_ADMIN")){
-        List<StudentClass> studentClasses = studentClassService.findAll();
+    public ResponseEntity<Map<String,Object>> getStudentClass(@RequestHeader("Authorization") String authorizationHeader){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person person = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
+        if (person.getAuthorities().getName().equals("ROLE_ADMIN")) {
+            List<StudentClass> studentClasses = studentClassService.findAll();
         /*ModelAndView model = new ModelAndView("QuanLyLopHoc");
         model.addObject("listClass", studentClasses);
         model.addObject("person", person);
@@ -61,13 +62,12 @@ public class StudentClassController {
             response.put("person", person);
             return new ResponseEntity<>(response,HttpStatus.OK);
         }else {
-           /* ModelAndView error = new ModelAndView();
+            /*ModelAndView error = new ModelAndView();
             error.addObject("errorMessage", "Bạn không có quyền truy cập.");
             return error;*/
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
-
     @PostMapping("/create")
     public ResponseEntity<?> saveClass(@RequestParam("className") String className, HttpServletRequest request, RedirectAttributes redirectAttributes){
 

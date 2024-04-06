@@ -72,7 +72,7 @@ function DataTable() {
 
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log(formData)
-        axios.post('/api/admin/student/create',
+        axios.post('http://localhost:5000/api/admin/student/create',
             formData
             , {
                 headers: {
@@ -106,7 +106,7 @@ function DataTable() {
     const confirmDelete = () => {
         /*const studentId = selectedRow.studentId;*/
         const studentId = selectedRow.studentId;
-        axios.post(`/api/admin/student/delete/${studentId}`, {}, {
+        axios.post(`http://localhost:5000/api/admin/student/delete/${studentId}`, {}, {
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
             }
@@ -139,7 +139,7 @@ function DataTable() {
         if (!isDataFetched) {
             const tokenSt = sessionStorage.getItem('userToken');
             if (tokenSt) {
-                axios.get('/api/admin/student', {
+                axios.get('http://localhost:5000/api/admin/student', {
                     headers: {
                         'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
                     },
@@ -183,7 +183,7 @@ function DataTable() {
         formDataEdit.append('phone', userEdit.phone);
         formDataEdit.append('gender', gender);
 
-        axios.post(`/api/admin/student/edit/${id}`, formDataEdit, {
+        axios.post(`http://localhost:5000/api/admin/student/edit/${id}`, formDataEdit, {
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
                 'Content-Type': 'multipart/form-data'

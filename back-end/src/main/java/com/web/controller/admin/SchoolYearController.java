@@ -2,6 +2,7 @@ package com.web.controller.admin;
 
 //import hcmute.edu.vn.registertopic_be.authentication.CheckedPermission;
 import com.web.config.CheckRole;
+import com.web.config.TokenUtils;
 import com.web.dto.response.LecturerResponse;
 import com.web.dto.response.SchoolYearResponse;
 import com.web.entity.*;
@@ -43,19 +44,24 @@ public class SchoolYearController {
     @Autowired
     private UserUtils userUtils;
 
-
-
+    private final TokenUtils tokenUtils;
+    @Autowired
+    public SchoolYearController (TokenUtils tokenUtils){
+        this.tokenUtils = tokenUtils;
+    }
     @GetMapping
-    public ResponseEntity<Map<String,Object>> getAllSubject(HttpSession session){
-        Person personCurrent = CheckRole.getRoleCurrent(session,userUtils,personRepository);
-        if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
+    public ResponseEntity<Map<String,Object>> getSchoolYear(@RequestHeader("Authorization") String authorizationHeader){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person person = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
+        if (person.getAuthorities().getName().equals("ROLE_ADMIN")) {
             List<SchoolYear> schoolYears = schoolYearService.findAll();
-            /*ModelAndView modelAndView = new ModelAndView("QuanLyNienKhoa");
-            modelAndView.addObject("person", personCurrent);
-            modelAndView.addObject("listYear",schoolYears);*/
+        /*ModelAndView model = new ModelAndView("QuanLyLopHoc");
+        model.addObject("listClass", studentClasses);
+        model.addObject("person", person);
+        return model;*/
             Map<String,Object> response = new HashMap<>();
-            response.put("person", personCurrent);
             response.put("listYear", schoolYears);
+            response.put("person", person);
             return new ResponseEntity<>(response,HttpStatus.OK);
         }else {
             /*ModelAndView error = new ModelAndView();
