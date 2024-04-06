@@ -3,6 +3,7 @@
     height: 50px;
     min-width: 100%;
     display: flex;
+    justify-content: flex-end;
     font-size: 18px;
     color: #555;
 
@@ -13,6 +14,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        margin-right: auto;
 
         .items {
             display: flex;
@@ -97,4 +99,7 @@
 
 .link-profile {
     text-decoration: none;
+}
+.dropdown-center {
+    margin-left: auto; /* Chuyển đến phía bên phải */
 }

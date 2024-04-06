@@ -8,10 +8,6 @@ import './HomeAdmin.scss';
 function HomeAdmin() {
     const [isSidebarClosed, setSidebarClosed] = useState(false);
 
-    const handleSidebarToggle = () => {
-        setSidebarClosed(!isSidebarClosed);
-    };
-
     return (
         <div className="HomeAdmin">
             <Sidebar />
