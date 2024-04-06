@@ -4,9 +4,11 @@ import com.web.config.CheckRole;
 import com.web.entity.Lecturer;
 import com.web.entity.Person;
 import com.web.entity.Subject;
+import com.web.entity.TypeSubject;
 import com.web.repository.LecturerRepository;
 import com.web.repository.PersonRepository;
 import com.web.repository.SubjectRepository;
+import com.web.repository.TypeSubjectRepository;
 import com.web.utils.UserUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -31,12 +33,15 @@ public class ReportService {
     private UserUtils userUtils;
     @Autowired
     private LecturerRepository lecturerRepository;
+    @Autowired
+    private TypeSubjectRepository typeSubjectRepository;
 
 
     public void generateExcel(HttpServletResponse response, HttpSession session) throws IOException {
         Person current = CheckRole.getRoleCurrent(session,userUtils,personRepository);
         Lecturer lec = lecturerRepository.findById(current.getPersonId()).orElse(null);
-        List<Subject> subjects  = subjectRepository.getSubjectByMajor(lec.getMajor());
+        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+        List<Subject> subjects  = subjectRepository.getSubjectByMajor(lec.getMajor(),typeSubject);
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet("Subject");
         HSSFRow row = sheet.createRow(0);

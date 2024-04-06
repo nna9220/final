@@ -5,5 +5,6 @@ public enum Major {
     CongNghePhanMem,
     AnToanThongTin,
     KyThuatDuLieu,
-    CLC
+    CLC,
+    QuocTe
 }
