@@ -105,7 +105,7 @@ function DataTable() {
 
     const confirmDelete = () => {
         /*const studentId = selectedRow.studentId;*/
-        const studentId = selectedRow.personId;
+        const studentId = selectedRow.studentId;
         axios.post(`/api/admin/student/delete/${studentId}`, {}, {
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
@@ -306,38 +306,6 @@ function DataTable() {
                                     </td>
                                 </tr>
                             ))}
-                    </tbody>
-                </table>
-            )}
-
-            {!showDeletedStudents && (
-                <table className="table table-hover">
-                    <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Guest ID</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Action</th>
-                        {/* Add more columns as needed */}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {guest.map((guest, index) => (
-                        <tr key={index}>
-                            <th scope="row">{index + 1}</th>
-                            <td>{guest.username}</td>
-                            <td>{guest.personId}</td>
-                            {/* Add more cells for additional guest data */}
-                            <td>
-                                <button className="btnView" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(guest)}>
-                                    <EditOutlinedIcon />
-                                </button>
-                                <button className='btnDelete' onClick={() => handleDelete(guest)}>
-                                    <DeleteRoundedIcon />
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
                     </tbody>
                 </table>
             )}
