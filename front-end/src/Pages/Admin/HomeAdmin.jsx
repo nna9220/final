@@ -1,26 +1,29 @@
-import React, { useState } from 'react'
-import Navbar from '../../components/Navbar/Navbar'
-import Sidebar from '../../components/Sidebar/SidebarAdmin'
-import Context from '../../components/Context/Context'
+import React, { useState } from 'react';
+import Navbar from '../../components/Navbar/Navbar';
+import Sidebar from '../../components/Sidebar/SidebarAdmin';
+import Context from '../../components/Context/Context';
 import './HomeAdmin.scss';
-import ManagementStudent from './ManagementStudent';
-import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 
 
 function HomeAdmin() {
+    const [isSidebarClosed, setSidebarClosed] = useState(false);
+
+    const handleSidebarToggle = () => {
+        setSidebarClosed(!isSidebarClosed);
+    };
+
     return (
-        <div className='HomeAdmin'>
-          <Sidebar />
-          <div className='homeContainer'>
-            <Navbar/>
-            <hr/>
-            <div className='widgets'>
-                <Context/>
+        <div className="HomeAdmin">
+            <Sidebar />
+            <div className='homeContainer'>
+                <Navbar />
+                <hr />
+                <div className='widgets'>
+                    <Context />
+                </div>
             </div>
-          </div>
         </div>
-      );
-      
+    );
 }
 
-export default HomeAdmin
+export default HomeAdmin;

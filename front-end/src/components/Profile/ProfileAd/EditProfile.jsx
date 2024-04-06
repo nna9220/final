@@ -31,7 +31,7 @@ function EditProfile() {
             const tokenSt = sessionStorage.getItem(userToken);
 
             if (!tokenSt) {
-                axios.get('http://localhost:5000/api/admin/home', {
+                axios.get('/api/admin/home', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -63,7 +63,7 @@ function EditProfile() {
             const tokenSt = sessionStorage.getItem(userToken);
 
             if (!tokenSt) {
-                axios.get('http://localhost:5000/api/admin/edit', {
+                axios.get('/api/admin/edit', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -95,7 +95,7 @@ function EditProfile() {
                 formData.append('phone', userEdit.phone);
                 formData.append('gender', gender);
 
-                axios.post(`http://localhost:5000/api/admin/edit/${id}`, formData, {
+                axios.post(`/api/admin/edit/${id}`, formData, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                         'Content-Type': 'multipart/form-data'

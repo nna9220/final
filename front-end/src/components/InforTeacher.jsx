@@ -13,7 +13,7 @@ function InforTeacher() {
     useEffect(() => {
         const fetchTeacherInfo = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/team/profile/${lecturerId}`);
+                const response = await axios.get(`/team/profile/${lecturerId}`);
                 console.log("profile: ", response.data);
                 setTeacher(response.data);
             } catch (error) {
@@ -31,7 +31,10 @@ function InforTeacher() {
     return (
         <div>
             <div>
-                <div style={{ margin: '20px' }}>
+                <div className="card text-bg-white">
+                    <img src="/assets/Teacher.jpg" height='400px' className="card-img" alt="..." />
+                </div>
+                <div className='breadcrumb-menu'>
                     <nav aria-label="breadcrumb">
                         <ol className="breadcrumb" style={{ fontSize: '15px' }}>
                             <li className="breadcrumb-item" style={{ alignItems: 'center' }}>

@@ -12,7 +12,7 @@ function Team() {
     const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
-        axios.get("http://localhost:5000/team")
+        axios.get("/api/team")
             .then(response => {
                 console.log("API response:", response.data);
                 setUser(response.data);
@@ -42,7 +42,7 @@ function Team() {
             <div className="card text-bg-white">
                 <img src="/assets/Teacher.jpg" height='400px' className="card-img" alt="..." />
             </div>
-            <div style={{ margin: '20px' }}>
+            <div className='breadcrumb-menu'>
                 <nav aria-label="breadcrumb">
                     <ol className="breadcrumb" style={{ fontSize: '15px' }}>
                         <li className="breadcrumb-item" style={{ alignItems: 'center' }}>
@@ -60,15 +60,18 @@ function Team() {
                     <div className='listHomeLec'>
                         <div className='search'>
                             <div className='filter'>
-                                <h6>Ngành</h6>
+                                <h6>NGÀNH</h6>
                                 <select className='selectDr form-control' value={selectedMajor} onChange={handleMajorChange}>
                                     <option className='option' value="all">Tất cả</option>
                                     <option className='option' value="CongNghePhanMem">Công nghệ phần mềm</option>
                                     <option className='option' value="AnToanThongTin">An toàn thông tin</option>
+                                    <option className='option' value="HeThongThongTin">Hệ thống thông tin</option>
+                                    <option className='option' value="KyThuatDuLieu">Kỹ thuật dữ liệu</option>
+                                    <option className='option' value="CLC">Chất lượng cao</option>
                                 </select>
                             </div>
                             <div className='formSearch'>
-                                <h6>Họ và tên</h6>
+                                <h6>HỌ VÀ TÊN</h6>
                                 <input type="text" className='form-control' value={searchTerm} onChange={handleSearchTermChange} />
                             </div>
                         </div>

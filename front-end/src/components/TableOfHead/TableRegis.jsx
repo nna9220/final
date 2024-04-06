@@ -21,7 +21,7 @@ function TableRegis() {
     const handleSubmitAdd = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log(formData)
-        axios.post('http://localhost:5000/api/head/subject/register',
+        axios.post('/api/head/subject/register',
             formData
             , {
                 headers: {

@@ -14,7 +14,7 @@ function DataTableRegistrationPeroidSt() {
         console.log("Token SV2: " + tokenSt);
         if (tokenSt) {
             console.log("Test: " + tokenSt);
-            axios.get('http://localhost:5000/api/admin/Period', {
+            axios.get('/api/admin/Period', {
                 headers: {
                     'Authorization': `Bearer ${tokenSt}`,
                 },
@@ -42,7 +42,7 @@ function DataTableRegistrationPeroidSt() {
     const handleSaveChanges = () => {
         const tokenSt = sessionStorage.getItem('userToken');
         if (tokenSt && selectedPeriodId) {
-            axios.post(`http://localhost:5000/api/admin/Period/${selectedPeriodId}`, {
+            axios.post(`/api/admin/Period/${selectedPeriodId}`, {
                 registrationTimeStart: editedStartTime,
                 registrationTimeEnd: editedEndTime,
             }, {

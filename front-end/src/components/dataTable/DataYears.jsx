@@ -13,7 +13,7 @@ function DataYears() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axios.get('http://localhost:5000/api/admin/schoolYear', {
+                axios.get('/api/admin/schoolYear', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -33,7 +33,7 @@ function DataYears() {
         const userToken = getTokenFromUrlAndSaveToStorage();
         const newYearValue = document.getElementById('exampleFormControlInput1').value;
     
-        axios.post('http://localhost:5000/api/admin/schoolYear/create', null, {
+        axios.post('/api/admin/schoolYear/create', null, {
             params: {
                 year: newYearValue
             },
@@ -58,7 +58,7 @@ function DataYears() {
         const userToken = getTokenFromUrlAndSaveToStorage();
         const updatedYearValue = document.getElementById('exampleFormControlInput1').value;
     
-        axios.post(`http://localhost:5000/api/admin/schoolYear/edit/${selectedYear.yearId}`, null, {
+        axios.post(`/api/admin/schoolYear/edit/${selectedYear.yearId}`, null, {
             params: {
                 yearId: selectedYear.yearId,
                 year: updatedYearValue
