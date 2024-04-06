@@ -45,25 +45,7 @@ public class StudentRegisterTopic {
             Optional<Student> currentStudentOptional = studentRepository.findById(personCurrent.getPersonId());
             if (currentStudentOptional.isPresent()) {
                 Student currentStudent = currentStudentOptional.get();
-                if (currentStudent.getSubjectId() == null) {
-                    List<RegistrationPeriod> periodList = registrationPeriodRepository.findAllPeriod();
-                    if (CompareTime.isCurrentTimeInPeriodStudent(periodList)) {
-                        //ModelAndView modelAndView = new ModelAndView("QuanLyDeTai_SV");
-                        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
-                        List<Subject> subjectList = subjectRepository.findSubjectByStatusAndMajorAndStudent(true, currentStudent.getMajor(),typeSubject);
-                        /*modelAndView.addObject("subjectList", subjectList);
-                        modelAndView.addObject("person", personCurrent);
-                        return modelAndView;*/
-                        Map<String,Object> response = new HashMap<>();
-                        response.put("person",personCurrent);
-                        response.put("subjectList", subjectList);
-                        return new ResponseEntity<>(response, HttpStatus.OK);
-                    }else {
-                        Map<String,Object> response = new HashMap<>();
-                        response.put("person",personCurrent);
-                        return new ResponseEntity<>(response,HttpStatus.OK);
-                    }
-                }else if (currentStudent.getSubjectGraduationId() == null) {
+                if (currentStudent.getSubjectGraduationId() == null) {
                     List<RegistrationPeriod> periodList = registrationPeriodRepository.findAllPeriod();
                     if (CompareTime.isCurrentTimeInPeriodStudent(periodList)) {
                         //ModelAndView modelAndView = new ModelAndView("QuanLyDeTai_SV");
