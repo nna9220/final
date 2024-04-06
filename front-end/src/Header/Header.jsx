@@ -8,7 +8,7 @@ const Navbar = () => {
     const handleLoginClick = () => {
         window.location.href = 'http://localhost:5000/oauth2/authorization/google';
     };
-
+    
     return (
         <div>
             <header class="header">
