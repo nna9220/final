@@ -20,13 +20,11 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**").allowedOrigins("*")
                 .allowCredentials(false)
-                .allowedOriginPatterns("http://*","https://*")
-                .allowedOrigins("http://test-env.eba-2tbbdpy7.ap-southeast-2.elasticbeanstalk.com/")
-                .allowedMethods("*")
+                .allowedOrigins("https://hcmute.workon.space")
                 .allowedHeaders("*")
-                .maxAge(1800).exposedHeaders("Authorization,Link,X-Total-Count,X-${jhipster.clientApp.name}-alert,X-${jhipster.clientApp.name}-error,X-${jhipster.clientApp.name}-params");
-
-    }
+                .allowedOriginPatterns("http://*","https://*")
+                .allowedMethods("*");
+                }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
