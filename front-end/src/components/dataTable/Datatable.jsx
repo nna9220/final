@@ -104,7 +104,8 @@ function DataTable() {
     };
 
     const confirmDelete = () => {
-        const studentId = selectedRow.studentId;
+        /*const studentId = selectedRow.studentId;*/
+        const studentId = selectedRow.personId;
         axios.post(`/api/admin/student/delete/${studentId}`, {}, {
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
