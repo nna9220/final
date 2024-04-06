@@ -21,7 +21,7 @@ const Card = ({ task, index }) => {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axios.get(`http://localhost:5000/api/lecturer/subject/detail/${taskId}`, {
+                axios.get(`api/lecturer/subject/detail/${taskId}`, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },

@@ -19,7 +19,7 @@ function ManagermentTask() {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axios.get('http://localhost:5000/api/lecturer/subject', {
+        axios.get('/api/lecturer/subject', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },
