@@ -218,7 +218,7 @@ public class StudentController {
         }
     }
 
-    @PostMapping("/delete/{id}")
+    /*@PostMapping("/delete/{id}")
     public ResponseEntity<?> deleteStudent(@PathVariable String id, @RequestHeader("Authorization") String authorizationHeader) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -234,6 +234,24 @@ public class StudentController {
             }
         } else {
            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }*/
+
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<?> deleteStudent(@PathVariable String id, @RequestHeader("Authorization") String authorizationHeader) {
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
+            Person editPerson = personRepository.findById(id).orElse(null);
+            if (editPerson != null) {
+                editPerson.setStatus(false);
+                personRepository.delete(editPerson);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
 }
