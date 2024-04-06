@@ -18,13 +18,15 @@
         border: 1px solid rgb(160, 152, 152);
         border-radius: 5px;
 
-        .button-res{
+        .button-res {
             border: 1px solid #4eb09b;
             border-radius: 5px;
             background-color: white;
+
             &:hover {
                 background-color: #4eb09b;
-                .text{
+
+                .text {
                     margin: 2px;
                     font-weight: bold;
                     color: white;
@@ -32,4 +34,54 @@
             }
         }
     }
+
+    h4 {
+        font-size: 24px;
+        color: #333;
+        margin-top: 30px;
+    }
+
+    a {
+        color: #333;
+        font-weight: bold;
+    }
+
+    label {
+        color: #000;
+        font-weight: bold;
+        font-size: 1vw;
+        p {
+            font-size: 1vw;
+            color: #6c6a6a;
+            margin-bottom: 10px;
+            font-weight: lighter;
+            margin-left: 2vw;
+        }
+    }
+    color: #000;
+    overflow-x: hidden;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: 100% 100%
+}
+
+.card {
+    padding: 30px 40px;
+    border: none !important;
+    box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.2)
+}
+
+.btn-block {
+    font-size: 1.2vw;
+    width: 10vw;
+    height: auto;
+    border-radius: 5px;
+    padding: 5px;
+    cursor: pointer
+}
+
+.btn-block:hover {
+    background-color: #afb7b4 !important;
+    color: white;
+    font-weight: bold;
 }

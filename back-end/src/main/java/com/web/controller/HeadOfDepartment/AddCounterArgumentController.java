@@ -50,6 +50,8 @@ public class AddCounterArgumentController {
     @Autowired
     private PersonRepository personRepository;
     @Autowired
+    private TypeSubjectRepository typeSubjectRepository;
+    @Autowired
     private SubjectRepository subjectRepository;
     @Autowired
     private LecturerRepository lecturerRepository;
@@ -59,8 +61,6 @@ public class AddCounterArgumentController {
     private MailServiceImpl mailService;
     @Autowired
     private ReportService reportService;
-    @Autowired
-    private TypeSubjectRepository typeSubjectRepository;
     @Autowired
     private StudentRepository studentRepository;
     @Autowired
@@ -117,9 +117,8 @@ public class AddCounterArgumentController {
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            /*ModelAndView model = new ModelAndView("PhanGVPhanBien");
-            model.addObject("person", personCurrent);*/
-            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByAsisAdvisorAndMajor(true,existedLecturer.getMajor());
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByAsisAdvisorAndMajor(true,existedLecturer.getMajor(),typeSubject);
             /*model.addObject("listSubject",subjectByCurrentLecturer);
             return model;*/
             Map<String,Object> response = new HashMap<>();
@@ -173,9 +172,8 @@ public class AddCounterArgumentController {
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            /*ModelAndView model = new ModelAndView("DeTaidaXoa_TBM");
-            model.addObject("person", personCurrent);*/
-            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) 0);
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) 0,typeSubject);
             /*model.addObject("listSubject",subjectByCurrentLecturer);
             return model;*/
             Map<String,Object> response = new HashMap<>();
@@ -196,9 +194,8 @@ public class AddCounterArgumentController {
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            /*ModelAndView model = new ModelAndView("Duyet_TBM");
-            model.addObject("person", personCurrent);*/
-            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) 1);
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) 1,typeSubject);
             /*model.addObject("listSubject",subjectByCurrentLecturer);
             return model;*/
             Map<String,Object> response = new HashMap<>();

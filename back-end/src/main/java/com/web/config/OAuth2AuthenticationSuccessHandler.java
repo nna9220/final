@@ -168,8 +168,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         // xu ly chuyen trang khi login thanh cong(dinh kem token vao url
         // hoặc set vào session hay cookie sẽ đảm bảo hơn)
-        HttpSession session = request.getSession();
-        session.setAttribute("token", token);
+
         response.addHeader("Authorization", "Bearer " + token);
         if(person.getAuthorities().getName().equals(Contains.ROLE_ADMIN)){
             response.sendRedirect(Contains.URL_HOST  + "/homeAdmin?token="+token);

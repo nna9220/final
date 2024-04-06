@@ -96,7 +96,7 @@ function TableApprove() {
     }
 
     return (
-        <div>
+        <div style={{display:'block'}}>
              <Toast show={showDeleteToast} onClose={() => setShowDeleteToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
                 <Toast.Header>
                     <strong className="me-auto">Thông báo</strong>

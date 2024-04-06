@@ -1,10 +1,98 @@
-.column {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    overflow-y: scroll;
+/*Board*/
+.kanban-board{
+    display: flex; 
+    justify-content: center;
+    margin-top: 20px;
+    background-color: white;
+    .column{
+        border: none;
+        background-color: rgb(219, 198, 198);
+        text-align: center;
+    }
 }
 
-.column::-webkit-scrollbar {
-    display: none;
-    
+.header-board{
+    .btn-add{
+        background-color: white;
+        border: none;
+        &:active{
+            border: none;
+        }
+        &:hover{
+            color: #2d99ae;
+        }
+    }
 }
+
+
+/*Card*/
+.modal-body{
+    text-align: start;
+    .lable-items{
+        text-align: start;
+    }
+
+    .button-container{
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 10px;
+        .btn-comment{
+            border-radius: 5px;
+            border: none;
+            background-color: #2d99ae;
+            color: aliceblue;
+            padding: 5px;
+            &:hover {
+                background-color: #156575;
+            }
+        }
+    }
+
+
+    .comment-items{
+        border: none;
+        .comment-item
+        {
+            padding: 10px;
+            border: 1px solid rgb(215, 206, 206);
+            border-radius: 5px;
+            .header-comment{
+                justify-content: space-between;
+                display: flex;
+                .name-post{
+                    font-weight: bold;
+                    color: #2d99ae;
+                }
+                
+            }
+            .body-comment{
+                margin-top: 20px;
+                margin-bottom: 20px;
+                
+            }
+        }
+
+        .navbar-comment{
+            margin-bottom: 20px;
+        }
+
+    }
+}
+
+.info-modal{
+    display: flex;
+    justify-content: space-between;
+    .lable-items{
+        color: #156575;
+        margin: 10px;
+        .name-label{
+            color: black;
+            padding-left: 10px;
+            .name{
+                margin-left: 10px;
+                font-weight: medium;
+            }
+        }
+    }
+}
+

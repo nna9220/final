@@ -34,4 +34,8 @@ public class RegistrationPeriodLectuer implements Serializable {
     @Column(name="registration_name")
     private String registrationName;
 
+    @ManyToOne
+    @JoinColumn(name="type_subject_id")
+    private TypeSubject typeSubjectId;
+
 }
