@@ -15,6 +15,7 @@ import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 function DataTable() {
     const [students, setStudents] = useState([]);
     const [classes, setClasses] = useState([]);
+    const [guest, setGuest] = useState([]);
     const [years, setYear] = useState([]);
     const [major, setMajr] = useState([]);
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -145,6 +146,8 @@ function DataTable() {
                     .then(response => {
                         const studentsArray = response.data.students || [];
                         setStudents(studentsArray);
+                        const GuestArray = response.data.guest || [];
+                        setGuest(GuestArray);
                         const classArray = response.data.listClass || [];
                         setClasses(classArray);
                         const yearsArray = response.data.listYear || [];
@@ -302,6 +305,29 @@ function DataTable() {
                                     </td>
                                 </tr>
                             ))}
+                    </tbody>
+                </table>
+            )}
+
+            {!showDeletedStudents && (
+                <table className="table table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Guest ID</th>
+                        <th scope="col">Name</th>
+                        {/* Add more columns as needed */}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {guests.map((guest, index) => (
+                        <tr key={index}>
+                            <th scope="row">{index + 1}</th>
+                            <td>{guest.username}</td>
+                            <td>{guest.personId}</td>
+                            {/* Add more cells for additional guest data */}
+                        </tr>
+                    ))}
                     </tbody>
                 </table>
             )}
