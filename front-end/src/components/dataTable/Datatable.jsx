@@ -320,7 +320,7 @@ function DataTable() {
                     </tr>
                     </thead>
                     <tbody>
-                    {guests.map((guest, index) => (
+                    {guest.map((guest, index) => (
                         <tr key={index}>
                             <th scope="row">{index + 1}</th>
                             <td>{guest.username}</td>
