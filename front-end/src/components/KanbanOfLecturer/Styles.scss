@@ -1,0 +1,51 @@
+/*Board*/
+.kanban-board{
+    display: flex; 
+    justify-content: center;
+    margin-top: 20px;
+    background-color: white;
+    .column{
+        border: none;
+        background-color: rgb(219, 198, 198);
+        text-align: center;
+    }
+}
+
+.header-board{
+    .btn-add{
+        background-color: white;
+        border: none;
+        &:active{
+            border: none;
+        }
+        &:hover{
+            color: #2d99ae;
+        }
+    }
+}
+
+
+/*Card*/
+.btn-menutask{
+    border: none;
+    background-color: white;
+}
+
+
+.info-modal{
+    display: flex;
+    justify-content: space-between;
+    .lable-items{
+        color: #156575;
+        margin: 10px;
+        .name-label{
+            color: black;
+            padding-left: 10px;
+            .name{
+                margin-left: 10px;
+                font-weight: medium;
+            }
+        }
+    }
+}
+

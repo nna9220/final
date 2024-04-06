@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
+import { DragDropContext } from 'react-beautiful-dnd';
+import Column from './Column';
+import './scroll.scss'
 
 const KanbanBoard = () => {
-  const [taskList, setTaskList] = useState([]);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     const userToken = getTokenFromUrlAndSaveToStorage();
@@ -17,46 +20,27 @@ const KanbanBoard = () => {
         })
           .then(response => {
             console.log("detailTaskSt: ", response.data.listTask);
-            setTaskList(response.data.listTask);
+            setData(response.data.listTask);
           })
           .catch(error => {
             console.error("Error fetching task list:", error);
-            // Xử lý lỗi ở đây, ví dụ:
-            // setErrorMessage("Error fetching task list. Please try again later.");
+            
           });
       }
     }
   }, []);
+  const onDragEnd = (result) => {
+  };
 
   return (
-    <div>
+    <DragDropContext onDragEnd={onDragEnd}>
       <div className="kanban-board">
-        <div className="column">
-          <h3>Must Do</h3>
-          {taskList.filter(task => task.status === 'Must Do').map(task => (
-            <div key={task.task_id} className="task">
-              <p>{task.requirement}</p>
-            </div>
-          ))}
-        </div>
-        <div className="column">
-          <h3>Doing</h3>
-          {taskList.filter(task => task.status === 'Doing').map(task => (
-            <div key={task.task_id} className="task">
-              <p>{task.requirement}</p>
-            </div>
-          ))}
-        </div>
-        <div className="column">
-          <h3>Closed</h3>
-          {taskList.filter(task => task.status === 'Closed').map(task => (
-            <div key={task.task_id} className="task">
-              <p>{task.requirement}</p>
-            </div>
-          ))}
-        </div>
+        <Column className='column' title="Must Do" tasks={data.filter(task => task.status === 'MustDo')} droppableId="MustDo" />
+        <Column className='column' title="Doing" tasks={data.filter(task => task.status === 'Doing')} droppableId="Doing" />
+        <Column className='column' title="Closed" tasks={data.filter(task => task.status === 'Closed')} droppableId="Closed" />
+        {/* Các cột khác */}
       </div>
-    </div>
+    </DragDropContext>
   );
 };
 

@@ -3,14 +3,8 @@ package com.web.controller.Student;
 import com.web.config.CheckRole;
 import com.web.config.CompareTime;
 import com.web.config.TokenUtils;
-import com.web.entity.Person;
-import com.web.entity.RegistrationPeriod;
-import com.web.entity.Student;
-import com.web.entity.Subject;
-import com.web.repository.PersonRepository;
-import com.web.repository.RegistrationPeriodRepository;
-import com.web.repository.StudentRepository;
-import com.web.repository.SubjectRepository;
+import com.web.entity.*;
+import com.web.repository.*;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,6 +28,8 @@ public class StudentRegisterTopic {
     private PersonRepository personRepository;
     @Autowired
     private RegistrationPeriodRepository registrationPeriodRepository;
+    @Autowired
+    private TypeSubjectRepository typeSubjectRepository;
 
     private final TokenUtils tokenUtils;
     @Autowired
@@ -53,7 +49,8 @@ public class StudentRegisterTopic {
                     List<RegistrationPeriod> periodList = registrationPeriodRepository.findAllPeriod();
                     if (CompareTime.isCurrentTimeInPeriodStudent(periodList)) {
                         //ModelAndView modelAndView = new ModelAndView("QuanLyDeTai_SV");
-                        List<Subject> subjectList = subjectRepository.findSubjectByStatusAndMajorAndStudent(true, currentStudent.getMajor());
+                        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+                        List<Subject> subjectList = subjectRepository.findSubjectByStatusAndMajorAndStudent(true, currentStudent.getMajor(),typeSubject);
                         /*modelAndView.addObject("subjectList", subjectList);
                         modelAndView.addObject("person", personCurrent);
                         return modelAndView;*/

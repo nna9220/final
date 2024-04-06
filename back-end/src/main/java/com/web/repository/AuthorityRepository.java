@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface AuthorityRepository extends JpaRepository<Authority,String> {
 
-    @Query("select a from Authority a where a.name = ?1")
+    @Query("select a from Authority a where a.name =:name")
     public Authority findByName(String name);
 
     @Query("select a from Authority a")

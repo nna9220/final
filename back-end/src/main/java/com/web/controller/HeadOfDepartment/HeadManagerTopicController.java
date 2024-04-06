@@ -33,6 +33,8 @@ public class HeadManagerTopicController {
     @Autowired
     private TaskRepository taskRepository;
     @Autowired
+    private TypeSubjectRepository typeSubjectRepository;
+    @Autowired
     private SubjectService subjectService;
     @Autowired
     private SubjectMapper subjectMapper;
@@ -44,8 +46,6 @@ public class HeadManagerTopicController {
     private LecturerSubjectService lecturerSubjectService;
     @Autowired
     private PersonRepository personRepository;
-    @Autowired
-    private TypeSubjectRepository typeSubjectRepository;
     @Autowired
     private StudentRepository studentRepository;
     @Autowired
@@ -67,8 +67,8 @@ public class HeadManagerTopicController {
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            //ModelAndView model = new ModelAndView("QuanLyDeTai_TBM");
-            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByLecturerIntro(existedLecturer, true);
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByLecturerIntro(existedLecturer, true, typeSubject);
             /*model.addObject("listSubject",subjectByCurrentLecturer);
             model.addObject("person", personCurrent);
             return model;*/

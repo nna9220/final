@@ -10,7 +10,6 @@ import javax.persistence.*;
 @Table(name = "authority")
 @Getter
 @Setter
-@ToString
 public class Authority {
     @Id
     private String name;
