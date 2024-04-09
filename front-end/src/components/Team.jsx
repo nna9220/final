@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 import './Team.scss'
-import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+
 
 function Team() {
     const [user, setUser] = useState([]);

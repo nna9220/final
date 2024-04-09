@@ -31,7 +31,6 @@
     background-color: white;
 }
 
-
 .info-modal{
     display: flex;
     justify-content: space-between;
@@ -47,5 +46,36 @@
             }
         }
     }
+}
+
+.comment-items{
+    border: none;
+    
+    .comment-item
+    {
+        padding: 10px;
+        border: 1px solid rgb(215, 206, 206);
+        border-radius: 5px;
+        margin-bottom: 5px;
+        .header-comment{
+            justify-content: space-between;
+            display: flex;
+            .name-post{
+                font-weight: bold;
+                color: #2d99ae;
+            }
+            
+        }
+        .body-comment{
+            margin-top: 20px;
+            margin-bottom: 20px;
+            
+        }
+    }
+
+    .navbar-comment{
+        margin-bottom: 20px;
+    }
+
 }
 

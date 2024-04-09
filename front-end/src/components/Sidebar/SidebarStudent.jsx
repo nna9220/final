@@ -21,7 +21,7 @@ function SidebarStudent() {
       const tokenSt = sessionStorage.getItem(userToken);
 
       if (!tokenSt) {
-        axios.get('/api/student/home', {
+        axios.get('http://localhost:5000/api/student/home', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },

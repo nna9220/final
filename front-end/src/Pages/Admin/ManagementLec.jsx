@@ -13,7 +13,12 @@ function ManagementLec() {
                     <Navbar />
                     <hr />
                     <div className="widgets">
-                        <DatatableLec />
+                        <div className='titleMana'>
+                            <h3>Quản lý giảng viên</h3>
+                        </div>
+                        <div className='homeMana'>
+                            <DatatableLec />
+                        </div>
                     </div>
                 </div>
             </div>
