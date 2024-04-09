@@ -1,4 +1,5 @@
 import React from 'react'
+import Chatbot from './ChatBot/Chatbot'
 
 function Home() {
     return (

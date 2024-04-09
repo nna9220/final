@@ -13,7 +13,7 @@ const KanbanBoard = () => {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axios.get('/api/student/task/list', {
+        axios.get('http://localhost:5000/api/student/task/list', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },
@@ -24,16 +24,19 @@ const KanbanBoard = () => {
           })
           .catch(error => {
             console.error("Error fetching task list:", error);
-            
+            // Xử lý lỗi ở đây, ví dụ:
+            // setErrorMessage("Error fetching task list. Please try again later.");
           });
       }
     }
   }, []);
   const onDragEnd = (result) => {
+    // Code xử lý kéo và thả task tại đây
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
+    <div>
+        <DragDropContext onDragEnd={onDragEnd}>
       <div className="kanban-board">
         <Column className='column' title="Must Do" tasks={data.filter(task => task.status === 'MustDo')} droppableId="MustDo" />
         <Column className='column' title="Doing" tasks={data.filter(task => task.status === 'Doing')} droppableId="Doing" />
@@ -41,6 +44,7 @@ const KanbanBoard = () => {
         {/* Các cột khác */}
       </div>
     </DragDropContext>
+    </div>
   );
 };
 

@@ -6,7 +6,6 @@ function DataTableRegistrationPeroidLec() {
     const [dataRegis, setDataRegis] = useState([]);
     const [editedStartTime, setEditedStartTime] = useState('');
     const [editedEndTime, setEditedEndTime] = useState('');
-    const [period, existedPeriod] = useState('');
     const [selectedPeriodId, setSelectedPeriodId] = useState(null); // Lưu ID của đợt đăng ký đang được chỉnh sửa
 
     useEffect(() => {

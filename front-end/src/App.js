@@ -29,6 +29,8 @@ import Team from './components/Team';
 import Intruction from './components/Intruction';
 import ManagementTopics from './Pages/Admin/ManagementTopics';
 import ManagementType from './Pages/Admin/ManagementType';
+import ManageTopicPB from './Pages/Teacher/ManageTopicPB';
+import ManageTopicPBOfHead from './Pages/Head/ManageTopicPBOfHead';
 
 function App() {
   return (
@@ -73,11 +75,14 @@ function App() {
         <Route path='/registerHead' element={<RegisterHead/>}/>
         <Route path="/managermentHead" element={<ManageHead />} />
         <Route path="/managermentTopicHead" element={<TopicOfHead />} />
+        <Route path="/managermentHeadPB" element={<ManageTopicPBOfHead />} />
+
 
         <Route path='/homeLecturer' element={<HomeLec/>}/>
         <Route path='/profleLecturer' element={<ProfileLec/>}/>
         <Route path='/registerTopicofLec' element={<RegisTopicLec/>}/>
         <Route path='/managermentTopicLec' element={<ManageLec/>}/>
+        <Route path='/managermentTopicPBLec' element={<ManageTopicPB/>}/>
 
       </Routes>
     </>

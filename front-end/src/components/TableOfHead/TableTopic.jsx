@@ -9,8 +9,8 @@ import ManagementTask from '../KanbanOfHead/ManagementTask';
 
 function TableTopic() {
   const [topics, setTopics] = useState([]);
-  const [showManagementTask, setShowManagementTask] = useState(false);
-  const [selectedSubjectId, setSelectedSubjectId] = useState(null);
+  const [showManagementTask, setShowManagementTask] = useState(false); 
+  const [selectedSubjectId, setSelectedSubjectId] = useState(null); 
   const [selectedSubjectName, setSelectedSubjectName] = useState("");
   const [showBackButton, setShowBackButton] = useState(false);
   const userToken = getTokenFromUrlAndSaveToStorage();
@@ -20,7 +20,7 @@ function TableTopic() {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axios.get('/api/head/manager', {
+        axios.get('http://localhost:5000/api/head/manager', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },
@@ -44,7 +44,7 @@ function TableTopic() {
   };
 
   const handleGoBack = () => {
-    setShowManagementTask(false);
+    setShowManagementTask(false); 
     setShowBackButton(false);
   };
 
@@ -58,7 +58,7 @@ function TableTopic() {
           </ol>
         </nav>
       )}
-      <hr />
+      <hr/>
       {showManagementTask ? (
         <ManagementTask subjectId={selectedSubjectId} />
       ) : (
@@ -80,26 +80,25 @@ function TableTopic() {
               <tr key={index}>
                 <th scope='row'>{index + 1}</th>
                 <td>{item.subjectName}</td>
-                <td>{item.instructorId?.person?.firstName + ' ' + item.instructorId?.person?.lastName}</td>
-                <td>{item.thesisAdvisorId?.person?.firstName + ' ' + item.thesisAdvisorId?.person?.lastName}</td>
-                <td>{item.student1 || ''}</td>
-                <td>{item.student2 || ''}</td>
+                <td>{item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName}</td>
+                <td>{item.thesisAdvisorId.person.firstName + ' ' + item.thesisAdvisorId.person.lastName}</td>
+                <td>{item.student1}</td>
+                <td>{item.student2}</td>
                 <td>{item.requirement}</td>
                 <td>
                   <button
                     style={{ marginRight: '20px' }}
                     className='button-res'
-                    onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}
+                    onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)} // Truyền tên đề tài vào hàm
                   >
-                    <p className='text'><DetailsIcon /></p>
+                    <p className='text'><DetailsIcon/></p>
                   </button>
                   <button className='button-res'>
-                    <p className='text'><ModeEditOutlineOutlinedIcon /></p>
+                    <p className='text'><ModeEditOutlineOutlinedIcon/></p>
                   </button>
                 </td>
               </tr>
             ))}
-
           </tbody>
         </table>
       )}

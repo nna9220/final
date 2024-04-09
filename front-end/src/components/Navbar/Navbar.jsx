@@ -2,10 +2,29 @@ import React, { useState, useEffect } from 'react';
 import './navbar.scss';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
+import axios from 'axios';
 
 function Navbar() {
+    const handleLogout = () => {
+        axios.post('http://localhost:5000/logout', null, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+            }
+        })
+        .then(response => {
+            // Xóa token từ Local Storage sau khi đăng xuất thành công
+            localStorage.removeItem('accessToken');
+            // Chuyển hướng đến trang chủ hoặc thực hiện bất kỳ hành động nào khác sau khi đăng xuất thành công
+            window.location.href = '/';
+        })
+        .catch(error => {
+            console.error('Error occurred while logging out:', error);
+            // Xử lý lỗi đăng xuất nếu cần thiết
+        });
+    };
+
     return (
-        <div className='navbar'>
+        <div className='navbarRe'>
             <div className='wrapper'>
                 <div className='items'>
                     <div className='item'>
@@ -25,7 +44,7 @@ function Navbar() {
                             <li><a class="dropdown-items" href="#">Dự án mới...</a></li>
                             <li><a class="dropdown-items" href="#">Cài đặt hệ thống</a></li>
                             <li><hr class="dropdown-divider" /></li>
-                            <li><a class="dropdown-items" href="#">Đăng xuất</a></li>
+                            <li><a class="dropdown-items" onClick={handleLogout} >Đăng xuất</a></li>
                         </ul>
                     </div>
                 </div>
