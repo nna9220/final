@@ -5,9 +5,12 @@ import com.web.dto.response.SubjectResponse;
 import com.web.entity.Lecturer;
 import com.web.entity.Person;
 import com.web.entity.Subject;
+import com.web.entity.TypeSubject;
 import com.web.mapper.LecturerMapper;
 import com.web.mapper.SubjectMapper;
 import com.web.repository.LecturerRepository;
+import com.web.repository.SubjectRepository;
+import com.web.repository.TypeSubjectRepository;
 import com.web.service.Admin.LecturerService;
 import com.web.service.Admin.SubjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,10 @@ public class HomeController {
     private SubjectMapper subjectMapper;
     @Autowired
     private SubjectService subjectService;
+    @Autowired
+    private SubjectRepository subjectRepository;
+    @Autowired
+    private TypeSubjectRepository typeSubjectRepository;
     @GetMapping("/home")
     public ResponseEntity<?> getHome(){
         return new ResponseEntity<>(HttpStatus.OK);
@@ -51,15 +58,22 @@ public class HomeController {
         return new ResponseEntity<>(lecturers, HttpStatus.OK);
     }
 
-    @GetMapping("/intruction")
-    public ModelAndView getIntruction(){
-        ModelAndView model = new ModelAndView("intruction");
-        return model;
+    @GetMapping("/instruction")
+    public ResponseEntity<?> getInstruction(){
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/essay")
-    private List<Subject> getEssay() {
-        List<Subject> subjects = subjectService.getAll();
+    @GetMapping("/essay/tlcn")
+    public List<Subject> getEssayTLCN() {
+        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+        List<Subject> subjects = subjectRepository.findAllSubject(typeSubject);
+        return subjects;
+    }
+
+    @GetMapping("/essay/kltn")
+    public List<Subject> getEssayKLTN() {
+        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
+        List<Subject> subjects = subjectRepository.findAllSubject(typeSubject);
         return subjects;
     }
 }

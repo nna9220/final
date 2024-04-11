@@ -181,7 +181,6 @@ public class StudentAddTaskController {
                 Student studen1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
                 Student studen2 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
 
-
                 if (personCurrent.getPersonId().equals(existSubject.getStudent1())) {
                     if (existSubject.getStudent2()!=null) {
 
