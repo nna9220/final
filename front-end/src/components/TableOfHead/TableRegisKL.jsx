@@ -15,9 +15,9 @@ function TableRegisKL() {
         subjectName: '',
         requirement: '',
         expected: '',
-        student1: '',
-        student2: '',
-        student3: '',
+        student1: null,
+        student2: null,
+        student3: null,
     });
     const [students, setStudents]= useState([]);
 
@@ -136,7 +136,7 @@ function TableRegisKL() {
                             <select className="form-select" aria-label="Default select example" name="student3" value={formData.student3} onChange={handleChange}>
                                 <option selected disabled>Chọn sinh viên</option>
                                 {students.map(student => (
-                                    <option key={student.id} value={student.id}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
+                                    <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
                                 ))}
                             </select>   
                         </div>
