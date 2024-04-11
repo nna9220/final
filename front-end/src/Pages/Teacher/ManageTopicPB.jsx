@@ -3,8 +3,11 @@ import SidebarLec from '../../components/Sidebar/SidebarLec'
 import Navbar from '../../components/Navbar/Navbar'
 import TopicPBTable from '../../components/Table/TopicPBTable'
 import './ManageTopicPB.scss'
-
+import { useEffect } from 'react'
 function ManageTopicPB() {
+    useEffect(() => {
+        document.title = "Quản lý đề tài phản biện";
+      }, []);
     return (
         <div className='homeLec'>
             <SidebarLec></SidebarLec>

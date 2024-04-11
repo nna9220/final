@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect} from 'react';
 import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
-import axiosInstance from '../../API/axios';
 
 
 function SidebarHead() {
@@ -30,7 +29,7 @@ function SidebarHead() {
           const tokenSt = sessionStorage.getItem(userToken);
     
           if (!tokenSt) {
-            axiosInstance.get('/head/home', {
+            axios.get('http://localhost:5000/api/head/home', {
               headers: {
                 'Authorization': `Bearer ${userToken}`,
               },

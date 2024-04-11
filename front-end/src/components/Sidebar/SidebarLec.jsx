@@ -5,7 +5,6 @@ import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import axiosInstance from '../../API/axios';
 
 function SidebarLec() {
     const [isSidebarToggled, setSidebarToggled] = useState(true);
@@ -27,7 +26,7 @@ function SidebarLec() {
           const tokenSt = sessionStorage.getItem(userToken);
     
           if (!tokenSt) {
-            axiosInstance.get('/lecturer/home', {
+            axios.get('http://localhost:5000/api/lecturer/home', {
               headers: {
                 'Authorization': `Bearer ${userToken}`,
               },

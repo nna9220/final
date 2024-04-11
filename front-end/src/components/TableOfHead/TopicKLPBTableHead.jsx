@@ -15,7 +15,7 @@ function TopicKLPBTableHead() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axiosInstance.get('/head/graduation/manager/counterArgumentSubject', {
+                axios.get('http://localhost:5000/api/head/graduation/manager/counterArgumentSubject', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -37,7 +37,7 @@ function TopicKLPBTableHead() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axiosInstance.get(`/head/graduation/manager/counterArgumentSubject/detail/${id}`, {
+                axios.get(`http://localhost:5000/api/head/graduation/manager/counterArgumentSubject/detail/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -59,7 +59,7 @@ function TopicKLPBTableHead() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axiosInstance.post(`/head/graduation/manager/addScore/${id}`, {
+                axios.post(`http://localhost:5000/api/head/graduation/manager/addScore/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },

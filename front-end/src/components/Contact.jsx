@@ -1,6 +1,10 @@
 import React from 'react'
-
+import { useEffect } from 'react';
 function Contact() {
+    useEffect(() => {
+        document.title = "Liên hệ";
+      }, []);
+      
     return (
         <div className="hero">
             <div className="card text-bg-white">

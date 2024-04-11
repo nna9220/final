@@ -3,9 +3,13 @@ import SidebarLec from '../../components/Sidebar/SidebarLec'
 import Navbar from '../../components/Navbar/Navbar'
 import './RegisTopicLec.scss'
 import RegisTopicOfLecturer from '../../components/Table/RegisTopicOfLecturer'
-import { useState } from 'react'
+import { useState, useEffect} from 'react'
 
 function RegisTopicLec() {
+  useEffect(() => {
+    document.title = "Đăng ký đề tài";
+  }, []);
+
   const [selectedTitle, setSelectedTitle] = useState("Tiểu luận chuyên ngành");
 
   const handleDropdownChange = (e) => {

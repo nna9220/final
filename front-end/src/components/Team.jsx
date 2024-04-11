@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 import './Team.scss'
-import axiosInstance from '../API/axios'
 
 
 function Team() {
@@ -12,7 +11,8 @@ function Team() {
     const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
-        axiosInstance.get("/team")
+        document.title = "Danh sách giảng viên";
+        axios.get("http://localhost:5000/api/team")
             .then(response => {
                 console.log("API response:", response.data);
                 setUser(response.data);

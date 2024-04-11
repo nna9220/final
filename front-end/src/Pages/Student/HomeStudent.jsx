@@ -3,8 +3,11 @@ import './homeStudent.scss'
 import SidebarStudent from '../../components/Sidebar/SidebarStudent'
 import Navbar from '../../components/Navbar/Navbar'
 import Context from '../../components/Context/Context'
-
+import { useEffect } from 'react'
 function HomeStudent() {
+  useEffect(() => {
+    document.title = "Trang chủ sinh viên";
+  }, []);
   return (
     <div className='HomeStudent'>
         <SidebarStudent/>

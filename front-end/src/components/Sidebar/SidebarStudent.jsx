@@ -4,7 +4,6 @@ import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import './SidebarStudent.scss';
 import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
-import axiosInstance from '../../API/axios';
 
 function SidebarStudent() {
   const [selectedMenuItem, setSelectedMenuItem] = useState(false);
@@ -22,7 +21,7 @@ function SidebarStudent() {
       const tokenSt = sessionStorage.getItem(userToken);
 
       if (!tokenSt) {
-        axiosInstance.get('/student/home', {
+        axios.get('http://localhost:5000/api/student/home', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },

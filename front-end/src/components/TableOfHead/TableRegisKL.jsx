@@ -24,7 +24,7 @@ function TableRegisKL() {
     const handleSubmitAdd = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log(formData)
-        axiosInstance.post('/head/subjectGraduation/register',
+        axios.post('http://localhost:5000/api/head/subjectGraduation/register',
             formData
             , {
                 headers: {
@@ -49,7 +49,7 @@ function TableRegisKL() {
 
     const loadStudents = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
-        axiosInstance.get('/head/subjectGraduation/listStudent', {
+        axios.get('http://localhost:5000/api/head/subjectGraduation/listStudent', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -136,7 +136,7 @@ function TableRegisKL() {
                             <select className="form-select" aria-label="Default select example" name="student3" value={formData.student3} onChange={handleChange}>
                                 <option selected disabled>Chọn sinh viên</option>
                                 {students.map(student => (
-                                    <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
+                                    <option key={student.id} value={student.id}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
                                 ))}
                             </select>   
                         </div>

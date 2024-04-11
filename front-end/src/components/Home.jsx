@@ -1,7 +1,10 @@
 import React from 'react'
 import Chatbot from './ChatBot/Chatbot'
-
+import { useEffect } from 'react';
 function Home() {
+    useEffect(() => {
+        document.title = "Trang chủ";
+      }, []);
     return (
         <div class="hero">
             <div class="card text-bg-white">
