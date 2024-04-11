@@ -15,9 +15,9 @@ function TableRegisKL() {
         subjectName: '',
         requirement: '',
         expected: '',
-        student1: '',
-        student2: '',
-        student3: '',
+        student1: null,
+        student2: null,
+        student3:null,
     });
     const [students, setStudents]= useState([]);
 
