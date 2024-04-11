@@ -158,8 +158,8 @@ function TableApproveKL() {
                                         <th scope="row">{index + 1}</th>
                                         <td>{itemDelete.subjectName}</td>
                                         <td>{itemDelete.instructorId.person.firstName + ' ' + itemDelete.instructorId.person.lastName}</td>
-                                        <td>{itemDelete.student1 === null ? 'Trống' : ''}</td>
-                                        <td>{itemDelete.student2 === null ? 'Trống' : ''}</td>
+                                        <td>{itemDelete.student1}</td>
+                                        <td>{itemDelete.student2}</td>
                                         <td>{itemDelete.requirement}</td>
                                     </tr>
                                 ))}

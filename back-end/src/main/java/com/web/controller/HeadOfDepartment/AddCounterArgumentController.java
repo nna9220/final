@@ -206,6 +206,18 @@ public class AddCounterArgumentController {
         }
     }
 
+    @GetMapping("/listStudent")
+    public ResponseEntity<?> getListStudent(@RequestHeader("Authorization") String authorizationHeader){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
+            List<Student> studentList = studentRepository.getStudentSubjectNull();
+            return new ResponseEntity<>(studentList, HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> lecturerRegisterTopic(@RequestParam("subjectName") String name,
                                               @RequestParam("requirement") String requirement,
