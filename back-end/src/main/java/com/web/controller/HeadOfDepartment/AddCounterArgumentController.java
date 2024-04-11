@@ -207,7 +207,7 @@ public class AddCounterArgumentController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> lecturerRegisterTopic(@RequestParam("subjectName") String name,
+    public ResponseEntity<Map<String, Object>> lecturerRegisterTopic(@RequestParam(value = "subjectName") String name,
                                               @RequestParam("requirement") String requirement,
                                               @RequestParam("expected") String expected,
                                               @RequestParam(value = "student1", required = false) String student1,
