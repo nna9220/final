@@ -187,8 +187,8 @@ function TableApprove() {
                                     <th scope="row">{index + 1}</th>
                                     <td>{item.subjectName}</td>
                                     <td>{item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName}</td>
-                                    <td>{item.student1 === null ? 'Trống' : ''}</td>
-                                    <td>{item.student2 === null ? 'Trống' : ''}</td>
+                                    <td>{item.student1}</td>
+                                    <td>{item.student2}</td>
                                     <td>{item.requirement}</td>
                                     <td style={{ display: 'flex' }}>
                                         <button style={{ marginRight: '20px' }} className='button-res' onClick={() => handleApprove(item.subjectId)}>
