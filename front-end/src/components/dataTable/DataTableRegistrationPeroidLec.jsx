@@ -6,13 +6,12 @@ function DataTableRegistrationPeroidLec() {
     const [dataRegis, setDataRegis] = useState([]);
     const [editedStartTime, setEditedStartTime] = useState('');
     const [editedEndTime, setEditedEndTime] = useState('');
-    const [period, existedPeriod] = useState('');
     const [selectedPeriodId, setSelectedPeriodId] = useState(null); // Lưu ID của đợt đăng ký đang được chỉnh sửa
 
     useEffect(() => {
         const tokenSt = sessionStorage.getItem('userToken');
         if (tokenSt) {
-            axios.get('/api/admin/PeriodLecturer', {
+            axios.get('http://localhost:5000/api/admin/PeriodLecturer', {
                 headers: {
                     'Authorization': `Bearer ${tokenSt}`,
                 },
@@ -44,7 +43,7 @@ function DataTableRegistrationPeroidLec() {
 
         if (tokenSt && selectedPeriodId) {
             console.log("Data: ", updatedEndValue,updatedStartValue);
-            axios.put(`/api/admin/PeriodLecturer/edit/${selectedPeriodId}`,{
+            axios.put(`http://localhost:5000/api/admin/PeriodLecturer/edit/${selectedPeriodId}`,{
                 params:{
                 periodId: selectedPeriodId,
                 start: updatedStartValue,

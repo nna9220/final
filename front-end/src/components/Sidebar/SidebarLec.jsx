@@ -26,7 +26,7 @@ function SidebarLec() {
           const tokenSt = sessionStorage.getItem(userToken);
     
           if (!tokenSt) {
-            axios.get('/api/lecturer/home', {
+            axios.get('http://localhost:5000/api/lecturer/home', {
               headers: {
                 'Authorization': `Bearer ${userToken}`,
               },
@@ -75,6 +75,7 @@ function SidebarLec() {
                             <li className={selectedMenuItem === 'thongTinCaNhan' ? 'active' : ''}><Link to="/profleLecturer" onClick={() => handleMenuItemClick('thongTinCaNhan')}><i className="fa fa-user"></i><span>Thông tin cá nhân</span></Link></li>
                             <li className={selectedMenuItem === 'dangkiDeTai' ? 'active' : ''}><Link to="/registerTopicofLec" onClick={() => handleMenuItemClick('dangkiDeTai')}><i className="fa fa-book"></i><span>Đăng ký đề tài</span></Link></li>
                             <li className={selectedMenuItem === 'quanlydetai' ? 'active' : ''}><Link to="/managermentTopicLec" onClick={() => handleMenuItemClick('quanlydetai')}><i className="fa fa-folder"></i><span>Quản lý đề tài</span></Link></li>
+                            <li className={selectedMenuItem === 'quanlydetaiPB' ? 'active' : ''}><Link to="/managermentTopicPBLec" onClick={() => handleMenuItemClick('quanlydetaiPB')}><i className="fa fa-folder"></i><span>Quản lý đề tài phản biện</span></Link></li>
                         </ul>
                     </div>
                 </div>

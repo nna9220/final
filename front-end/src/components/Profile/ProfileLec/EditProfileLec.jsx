@@ -4,7 +4,6 @@ import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import './EditProfileLec.scss'
 import { Toast } from 'react-bootstrap';
-import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 
 function EditProfileLec() {
     const [user, setUser] = useState([]);
@@ -33,7 +32,7 @@ function EditProfileLec() {
             const tokenSt = sessionStorage.getItem(userToken);
 
             if (!tokenSt) {
-                axios.get('/api/lecturer/home', {
+                axios.get('http://localhost:5000/api/lecturer/home', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -65,7 +64,7 @@ function EditProfileLec() {
             const tokenSt = sessionStorage.getItem(userToken);
 
             if (!tokenSt) {
-                axios.get('/api/lecturer/edit', {
+                axios.get('http://localhost:5000/api/lecturer/edit', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -97,7 +96,7 @@ function EditProfileLec() {
                 formData.append('phone', userEdit.phone);
                 formData.append('gender', gender);
 
-                axios.post(`/api/lecturer/edit/${id}`, formData, {
+                axios.post(`http://localhost:5000/api/lecturer/edit/${id}`, formData, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                         'Content-Type': 'multipart/form-data'

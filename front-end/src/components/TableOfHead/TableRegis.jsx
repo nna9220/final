@@ -16,6 +16,7 @@ function TableRegis() {
         expected: '',
         student1: '',
         student2: '',
+        student3: '',
     });
 
     const handleSubmitAdd = () => {
@@ -31,7 +32,7 @@ function TableRegis() {
             })
             .then(response => {
                 console.log('Đề tài đã được tạo thành công:', response.data);
-                setShowAddToast(true);          
+                setShowAddToast(true);
             })
             .catch(error => {
                 console.error(error);
@@ -86,6 +87,14 @@ function TableRegis() {
                             <label htmlFor="expected" className="form-label">Kết quả mong muốn</label>
                             <input type="text" className="form-control" id="expected" name="expected" value={formData.expected} onChange={handleChange} />
                         </div>
+                        <div className="mb-3">
+                            <label htmlFor="major" className="form-label">Loại đề tài </label>
+                            <select class="form-select" aria-label="Default select example">
+                                <option selected disabled>Loại đề tài</option>
+                                <option value="1">Tiểu luận chuyên ngành</option>
+                                <option value="2">Khóa luận tốt nghiệp</option>
+                            </select>
+                        </div>
                         <h5>Nhóm sinh viên thực hiện: </h5>
                         <div className="mb-3">
                             <label htmlFor="student1" className="form-label">Sinh viên 1</label>
@@ -95,7 +104,10 @@ function TableRegis() {
                             <label htmlFor="student2" className="form-label">Sinh viên 2</label>
                             <input type="text" className="form-control" id="student2" name="student2" value={formData.student2} onChange={handleChange} />
                         </div>
-
+                        <div className="mb-3">
+                            <label htmlFor="student2" className="form-label">Sinh viên 3</label>
+                            <input type="text" className="form-control" id="student3" name="student3" value={formData.student3} onChange={handleChange} />
+                        </div>
                         <div className='footerForm'>
                             <div>
                                 <button type="submit" onClick={handleSubmitAdd}>Đăng ký</button>

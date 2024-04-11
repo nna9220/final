@@ -121,7 +121,26 @@ public class SubjectController {
         }
     }
 
-
+    @GetMapping("/listLecturer/{subjectId}")
+    public ResponseEntity<Map<String,Object>> getAddCounterArgument(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
+            Subject currentSubject = subjectRepository.findById(subjectId).orElse(null);
+            if (currentSubject != null) {
+                List<Lecturer> lecturerList = lecturerRepository.findAll(); // Lấy tất cả giảng viên
+                Map<String,Object> response = new HashMap<>();
+                response.put("listLecturer", lecturerList);
+                response.put("person",personCurrent);
+                response.put("subject", currentSubject);
+                return new ResponseEntity<>(response,HttpStatus.OK);
+            } else {
+                return null;
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
 
     //Import subject
 

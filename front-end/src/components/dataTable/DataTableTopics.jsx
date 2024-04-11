@@ -11,11 +11,13 @@ import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 
 function DataTableTopics() {
     const [topics, setTopics] = useState([]);
-    const [file, setFile] = useState(null);    
+    const [file, setFile] = useState(null);
     const [activeTLChuyenNganh, setActiveTLChuyenNganh] = useState(false);
     const [activeKhoaLuan, setActiveKhoaLuan] = useState(false);
     const [showAddToast, setShowAddToast] = useState(false);
     const [showErrorToastAdd, setShowErrorToastAdd] = useState(false);
+    const [lecturers, setLecturers] = useState([]);
+    const [lecturerIds, setLecturerIds] = useState([]);
 
     useEffect(() => {
         handleListTLCN();
@@ -23,40 +25,40 @@ function DataTableTopics() {
 
     const handleListTLCN = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
-        axios.get('/api/admin/subject/tlcn', {
+        axios.get('http://localhost:5000/api/admin/subject/tlcn', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
         })
-        .then(response => {
-            console.log("DataTableSubject: ", response.data);
-            const topicArray = response.data || [];
-            setTopics(topicArray);
-            setActiveTLChuyenNganh(true);
-            setActiveKhoaLuan(false);
-        })
-        .catch(error => {
-            console.error("error: ", error);
-        });
+            .then(response => {
+                console.log("DataTableSubject: ", response.data);
+                const topicArray = response.data || [];
+                setTopics(topicArray);
+                setActiveTLChuyenNganh(true);
+                setActiveKhoaLuan(false);
+            })
+            .catch(error => {
+                console.error("error: ", error);
+            });
     };
 
     const handleListKLTN = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
-        axios.get('/api/admin/subject/kltn', {
+        axios.get('http://localhost:5000/api/admin/subject/kltn', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
         })
-        .then(response => {
-            console.log("DataTableSubject: ", response.data);
-            const topicArray = response.data || [];
-            setTopics(topicArray);
-            setActiveKhoaLuan(true);
-            setActiveTLChuyenNganh(false);
-        })
-        .catch(error => {
-            console.error("error: ", error);
-        });
+            .then(response => {
+                console.log("DataTableSubject: ", response.data);
+                const topicArray = response.data || [];
+                setTopics(topicArray);
+                setActiveKhoaLuan(true);
+                setActiveTLChuyenNganh(false);
+            })
+            .catch(error => {
+                console.error("error: ", error);
+            });
     };
 
     const handleFileChangeTLCN = (event) => {
@@ -69,12 +71,19 @@ function DataTableTopics() {
         setFile(file); // Lưu file vào state
     };
 
+    const handleSelectChange = (event, index) => {
+        const { value } = event.target;
+        const newLecturerIds = [...lecturerIds];
+        newLecturerIds[index] = value;
+        setLecturerIds(newLecturerIds);
+    };
+
     const handleImportFileTLCN = () => {
         const userToken = getTokenFromUrlAndSaveToStorage(); // Lấy userToken
         const formData = new FormData(); // Khởi tạo formData
         formData.append('file', file); // Thêm file vào formData
 
-        axios.post('/api/admin/subject/importTLCN', formData, {
+        axios.post('http://localhost:5000/api/admin/subject/importTLCN', formData, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
                 'Content-Type': 'multipart/form-data',
@@ -102,7 +111,7 @@ function DataTableTopics() {
         const formData = new FormData(); // Khởi tạo formData
         formData.append('file', file); // Thêm file vào formData
 
-        axios.post('/api/admin/subject/importKLTN', formData, {
+        axios.post('http://localhost:5000/api/admin/subject/importKLTN', formData, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
                 'Content-Type': 'multipart/form-data',
@@ -123,6 +132,66 @@ function DataTableTopics() {
                 console.error(error);
                 console.log("Lỗi");
             });
+    };
+
+    const handleAssignGVPB = (subjectId, index) => {
+        const userToken = getTokenFromUrlAndSaveToStorage();
+        axios.get(`http://localhost:5000/api/admin/subject/listLecturer/${subjectId}`, {
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+            },
+        })
+            .then(response => {
+                console.log("List of lecturers for counter argument: ", response.data.listLecturer);
+                setLecturers(response.data.listLecturer);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    };
+
+    const handleGVPB = (subjectId, index) => {
+        const userToken = getTokenFromUrlAndSaveToStorage();
+        const lecturerId = lecturerIds[index]; // Lấy lecturerId tương ứng với đề tài
+        if (lecturerId && subjectId) {
+            axios.post(`http://localhost:5000/api/admin/subject/addCounterArgumrnt/${subjectId}/${lecturerId}`, null, {
+                headers: {
+                    'Authorization': `Bearer ${userToken}`
+                }
+            })
+                .then(response => {
+                    console.log('Successfully assigned lecturer for counter argument:', response.data);
+                })
+                .catch(error => {
+                    console.error('Error assigning lecturer for counter argument:', error);
+                });
+        } else {
+            console.error('LectureId or subjectId is undefined or empty');
+            console.log("LectureId: ", lecturerId);
+            console.log("SubjectId: ", subjectId);
+        }
+    };
+
+    const handleGVHD = (subjectId, index) => {
+        const userToken = getTokenFromUrlAndSaveToStorage();
+        const lecturerId = lecturerIds[index]; // Lấy lecturerId tương ứng với đề tài
+        if (lecturerId && subjectId) {
+            axios.post(`http://localhost:5000/api/admin/subject/addInstructor/${subjectId}/${lecturerId}`, null, {
+                headers: {
+                    'Authorization': `Bearer ${userToken}`
+                }
+            })
+                .then(response => {
+                    console.log('Phân giảng viên hướng dẫn thành công:', response.data);
+                })
+                .catch(error => {
+                    console.error('Thêm giảng viên HD thất bại:', error);
+                });
+        } else {
+            console.error('LectureId or subjectId is undefined or empty');
+            console.log("LectureId: ", lecturerId);
+            console.log("SubjectId: ", subjectId);
+        }
     };
 
     return (
@@ -175,7 +244,7 @@ function DataTableTopics() {
                         <TopicOutlinedIcon /> Tiểu luận chuyên ngành
                     </button>
                     <button className={`button-listDelete ${activeKhoaLuan ? 'active' : ''}`} onClick={handleListKLTN}>
-                        <SummarizeOutlinedIcon  /> Khóa luận tốt nghiệp
+                        <SummarizeOutlinedIcon /> Khóa luận tốt nghiệp
                     </button>
                 </div>
             </div>
@@ -197,7 +266,6 @@ function DataTableTopics() {
                             <th scope="col">Tên đề tài</th>
                             <th scope='col'>GVHD</th>
                             <th scope='col'>GVPB</th>
-                            <th scope='col'>Loại đề tài</th>
                             <th scope='col'>SV 1</th>
                             <th scope='col'>SV 2</th>
                             <th scope='col'>SV 3</th>
@@ -206,13 +274,30 @@ function DataTableTopics() {
                         </tr>
                     </thead>
                     <tbody>
-                    {Array.isArray(topics) && topics.map((item, index)=> (
+                        {Array.isArray(topics) && topics.map((item, index) => (
                             <tr key={index}>
                                 <th scope="row">{index + 1}</th>
                                 <td>{item.subjectName}</td>
-                                <td>{item.instructorId?.person?.firstName + ' ' + item.instructorId?.person?.lastName}</td>
-                                <td>{item.thesisAdvisorId?.person?.firstName + ' ' + item.thesisAdvisorId?.person?.lastName}</td>
-                                <td>{item.typeSubject?.typeName}</td>
+                                <td>
+                                    {item.instructorId?.person?.firstName + ' ' + item.instructorId?.person?.lastName}
+                                    <select className='optionLecs' value={lecturerIds[index]} onChange={(event) => handleSelectChange(event, index)} onClick={() => handleAssignGVPB(item.subjectId, index)}>
+                                        <option className='option' value="" >Chọn giảng viên hướng dẫn</option>
+                                        {lecturers.map((lecturer, idx) => (
+                                            <option key={idx} value={lecturer.lecturerId}>{lecturer.person?.firstName} {lecturer.person?.lastName}</option>
+                                        ))}
+                                    </select>
+                                    <button className='btn-assign' onClick={() => handleGVHD(item.subjectId, index)}>Phân công</button>
+                                </td>
+                                <td>
+                                    {item.thesisAdvisorId?.person?.firstName + ' ' + item.thesisAdvisorId?.person?.lastName}
+                                    <select className='optionLecs' value={lecturerIds[index]} onChange={(event) => handleSelectChange(event, index)} onClick={() => handleAssignGVPB(item.subjectId, index)}>
+                                        <option className='option' value="" >Chọn giảng viên phản biện</option>
+                                        {lecturers.map((lecturer, idx) => (
+                                            <option key={idx} value={lecturer.lecturerId}>{lecturer.person?.firstName} {lecturer.person?.lastName}</option>
+                                        ))}
+                                    </select>
+                                    <button className='btn-assign' onClick={() => handleGVPB(item.subjectId, index)}>Phân công</button>
+                                </td>                                
                                 <td>{item.student1}</td>
                                 <td>{item.student2}</td>
                                 <td>{item.student3}</td>

@@ -24,6 +24,14 @@
     }
 }
 
+.button-add-task{
+    border: none;
+    background-color: white;
+    &:hover {
+        color: #156575;
+    }
+}
+
 
 /*Card*/
 .modal-body{
@@ -51,11 +59,13 @@
 
     .comment-items{
         border: none;
+        
         .comment-item
         {
             padding: 10px;
             border: 1px solid rgb(215, 206, 206);
             border-radius: 5px;
+            margin-bottom: 5px;
             .header-comment{
                 justify-content: space-between;
                 display: flex;
@@ -94,5 +104,10 @@
             }
         }
     }
+}
+
+.list-button{
+    display: flex;
+    justify-content: space-between;
 }
 

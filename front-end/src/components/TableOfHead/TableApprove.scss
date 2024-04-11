@@ -1,0 +1,58 @@
+.body-table {
+    display: grid;
+    .button-listDelete{
+        display: flex;
+        justify-content: flex-end;
+        &:hover {
+            color: #4eb09b;
+        }
+    }
+
+    .home-table{
+        margin: 5px;
+        .table {
+            width: 95%;
+            margin: 20px;
+            padding: 20px;
+            border: none;
+            .button-res{
+                border: 1px solid #4eb09b;
+                border-radius: 5px;
+                background-color: white;
+                .text{
+                    margin: 2px;
+                    font-weight: bold;
+                    color: #4eb09b;
+                }
+    
+                &:hover {
+                    background-color: #4eb09b;
+                    .text{
+                        margin: 2px;
+                        font-weight: bold;
+                        color: white;
+                    }
+                }
+            }
+            .button-res-de{
+                border: 1px solid #ee6457;
+                border-radius: 5px;
+                background-color: white;
+                .text{
+                    margin: 2px;
+                    font-weight: bold;
+                    color: #ee6457;
+                }
+    
+                &:hover {
+                    background-color: #ee6457;
+                    .text{
+                        margin: 2px;
+                        font-weight: bold;
+                        color: white;
+                    }
+                }
+            }
+        }
+    }
+}

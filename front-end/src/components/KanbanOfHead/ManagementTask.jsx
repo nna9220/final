@@ -6,14 +6,14 @@ import Column from './Column';
 import './styleKanban.scss'
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 
-const ManagementTask = ({ subjectId }) => {
+const ManagementTask = ({subjectId}) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
     const userToken = getTokenFromUrlAndSaveToStorage();
     const fetchData = async () => {
       try {
-        const response = await axios.get(`/api/head/manager/listTask/${subjectId}`, {
+        const response = await axios.get(`http://localhost:5000/api/head/manager/listTask/${subjectId}`, {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },
