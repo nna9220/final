@@ -31,9 +31,6 @@ const KanbanBoard = () => {
     }))
   }
 
-  const parseDateStringToDate = (dateString) => {
-    return parseISO(dateString);
-  }
 
   const toggleTimeline = () => {
     setShowTimeLine(!showTimeLine);
