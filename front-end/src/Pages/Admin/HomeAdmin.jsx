@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import Sidebar from '../../components/Sidebar/SidebarAdmin';
 import Context from '../../components/Context/Context';
 import './HomeAdmin.scss';
 
-
 function HomeAdmin() {
     const [isSidebarClosed, setSidebarClosed] = useState(false);
-
+    useEffect(() => {
+        document.title = "Trang chủ Admin";
+      }, []);
     return (
         <div className="HomeAdmin">
             <Sidebar />
