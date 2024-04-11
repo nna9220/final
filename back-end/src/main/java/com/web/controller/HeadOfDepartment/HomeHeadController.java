@@ -128,15 +128,9 @@ public class HomeHeadController {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
-            // Trả về trang HTML với ModelAndView
-            /*ModelAndView modelAndView = new ModelAndView("Dashboard_TBM"); // lecturer-home là tên trang HTML
-            modelAndView.addObject("person", personCurrent);
-            return modelAndView;*/
+
             return new ResponseEntity<>(personCurrent,HttpStatus.OK);
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
@@ -147,10 +141,7 @@ public class HomeHeadController {
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent != null && personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer currentLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            /*ModelAndView modelAndView = new ModelAndView("profileTBM");
-            modelAndView.addObject("person", personCurrent);
-            modelAndView.addObject("lec", currentLecturer);
-            return modelAndView;*/
+
             Map<String,Object> response = new HashMap<>();
             response.put("person",personCurrent);
             response.put("lec",currentLecturer);

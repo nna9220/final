@@ -78,7 +78,7 @@ public class SubjectController {
     public ResponseEntity<?> addCounterArgumrnt(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String lecturerId){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-        if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+        if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
             if (existedSubject != null) {
                 Lecturer currentLecturer = lecturerRepository.findById(lecturerId).orElse(null);
@@ -102,7 +102,7 @@ public class SubjectController {
     public ResponseEntity<?> addIntructor(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String lecturerId){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-        if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+        if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
             if (existedSubject != null) {
                 Lecturer currentLecturer = lecturerRepository.findById(lecturerId).orElse(null);
