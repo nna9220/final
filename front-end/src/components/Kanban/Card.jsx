@@ -144,11 +144,6 @@ const Card = ({ task, index }) => {
                       <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
                   </div>
-                  <div className='button-container'>
-                    <button className='btn-comment' >
-                      Comment
-                    </button>
-                  </div>
                   <div className='comment-items'>
                     {detail.listComment && detail.listComment.map((comment, commentIndex) => (
                       <div key={commentIndex}>
