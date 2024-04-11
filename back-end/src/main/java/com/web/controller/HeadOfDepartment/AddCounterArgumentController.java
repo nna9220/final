@@ -207,7 +207,7 @@ public class AddCounterArgumentController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> lecturerRegisterTopic(@RequestParam("subjectName") String name,
+    public ResponseEntity<Map<String, Object>> lecturerRegisterTopic(@RequestParam("subjectName") String name,
                                               @RequestParam("requirement") String requirement,
                                               @RequestParam("expected") String expected,
                                               @RequestParam(value = "student1", required = false) String student1,
@@ -220,6 +220,7 @@ public class AddCounterArgumentController {
             System.out.println(current);
             String token = tokenUtils.extractToken(authorizationHeader);
             Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+            List<Student> studentList = studentRepository.getStudentSubjectNull();
             if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
                 List<RegistrationPeriodLectuer> periodList = registrationPeriodLecturerRepository.findAllPeriod();
                 if (CompareTime.isCurrentTimeInPeriodSLecturer(periodList)) {
@@ -251,17 +252,15 @@ public class AddCounterArgumentController {
                     subjectRepository.save(newSubject);
                     studentRepository.save(studentId1);
                     studentRepository.save(studentId2);
-                   /* String referer = Contains.URL_LOCAL + "/api/lecturer/subject";
-                    // Thực hiện redirect trở lại trang trước đó
-                    System.out.println("Url: " + referer);
-                    // Thực hiện redirect trở lại trang trước đó
-                    return new ModelAndView("redirect:" + referer);*/
-                    return new ResponseEntity<>(newSubject, HttpStatus.CREATED);
+                    Map<String,Object> response = new HashMap<>();
+                    response.put("newSubject", newSubject);
+                    response.put("studentList",studentList);
+                    return new ResponseEntity<>(response, HttpStatus.CREATED);
                 }else {
-                    /*ModelAndView modelAndView = new ModelAndView("lecturer_registerError");
-                    modelAndView.addObject("person", personCurrent);
-                    return modelAndView;*/
-                    return new ResponseEntity<>(personCurrent,HttpStatus.OK);
+                    Map<String,Object> response2 = new HashMap<>();
+                    response2.put("person", personCurrent);
+                    response2.put("studentList",studentList);
+                    return new ResponseEntity<>(response2,HttpStatus.OK);
                 }
             }
             else {
