@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './DataTableRegistrationPeroidLec.scss';
-import axiosInstance from '../../API/axios';
 
 function DataTableRegistrationPeroidLec() {
     const [dataRegis, setDataRegis] = useState([]);
@@ -12,7 +11,7 @@ function DataTableRegistrationPeroidLec() {
     useEffect(() => {
         const tokenSt = sessionStorage.getItem('userToken');
         if (tokenSt) {
-            axiosInstance.get('/admin/PeriodLecturer', {
+            axios.get('http://localhost:5000/api/admin/PeriodLecturer', {
                 headers: {
                     'Authorization': `Bearer ${tokenSt}`,
                 },

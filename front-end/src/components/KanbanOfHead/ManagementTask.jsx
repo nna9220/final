@@ -5,7 +5,6 @@ import { DragDropContext } from 'react-beautiful-dnd';
 import Column from './Column';
 import './styleKanban.scss'
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
-import axiosInstance from '../../API/axios';
 
 const ManagementTask = ({subjectId}) => {
   const [data, setData] = useState([]);
@@ -14,7 +13,7 @@ const ManagementTask = ({subjectId}) => {
     const userToken = getTokenFromUrlAndSaveToStorage();
     const fetchData = async () => {
       try {
-        const response = await axiosInstance.get(`/head/manager/listTask/${subjectId}`, {
+        const response = await axios.get(`http://localhost:5000/api/head/manager/listTask/${subjectId}`, {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },

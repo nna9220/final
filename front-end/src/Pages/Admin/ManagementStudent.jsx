@@ -4,9 +4,12 @@ import Sidebar from '../../components/Sidebar/SidebarAdmin'
 import Datatable from '../../components/dataTable/Datatable'
 import './ManagementStudent.scss'
 import { Kanban } from '@syncfusion/ej2-react-kanban'
-
+import { useEffect } from 'react'
 
 function ManagementStudent() {
+  useEffect(() => {
+    document.title = "Quản lý sinh viên";
+  }, []);
   return (
     <div className='manaStudentOfAdmin'>
       <Sidebar />
