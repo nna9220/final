@@ -11,11 +11,11 @@ import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import { DataGrid } from '@mui/x-data-grid';
 
 function DataTable() {
     const [students, setStudents] = useState([]);
     const [classes, setClasses] = useState([]);
-    const [guest, setGuest] = useState([]);
     const [years, setYear] = useState([]);
     const [major, setMajr] = useState([]);
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -50,9 +50,11 @@ function DataTable() {
         year: '',
     });
 
+
     const handleChangeAdd = (e) => {
         const { name, value } = e.target;
         // Nếu trường nhập liệu là giới tính, cập nhật trực tiếp vào state formData
+        const intValue = (name === 'id' || name === 'year') ? parseInt(value) : value;
         if (name === 'gender') {
             setFormData(prevState => ({
                 ...prevState,
@@ -67,12 +69,10 @@ function DataTable() {
         }
     };
 
-
     const handleSubmitAdd = () => {
-
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log(formData)
-        axios.post('/api/admin/student/create',
+        axios.post('http://localhost:5000/api/admin/student/create',
             formData
             , {
                 headers: {
@@ -89,7 +89,6 @@ function DataTable() {
                 console.error(error);
                 console.log("Lỗi");
                 setShowErrorToastAdd(true);
-
             });
     };
 
@@ -104,9 +103,8 @@ function DataTable() {
     };
 
     const confirmDelete = () => {
-        /*const studentId = selectedRow.studentId;*/
         const studentId = selectedRow.studentId;
-        axios.post(`/api/admin/student/delete/${studentId}`, {}, {
+        axios.post(`http://localhost:5000/api/admin/student/delete/${studentId}`, {}, {
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
             }
@@ -139,7 +137,7 @@ function DataTable() {
         if (!isDataFetched) {
             const tokenSt = sessionStorage.getItem('userToken');
             if (tokenSt) {
-                axios.get('/api/admin/student', {
+                axios.get('http://localhost:5000/api/admin/student', {
                     headers: {
                         'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
                     },
@@ -147,8 +145,6 @@ function DataTable() {
                     .then(response => {
                         const studentsArray = response.data.students || [];
                         setStudents(studentsArray);
-                        const GuestArray = response.data.guest || [];
-                        setGuest(GuestArray);
                         const classArray = response.data.listClass || [];
                         setClasses(classArray);
                         const yearsArray = response.data.listYear || [];
@@ -165,12 +161,12 @@ function DataTable() {
         }
     }, [isDataFetched]);
 
-
-
     const handleEdit = (student) => {
-        setUserEdit(student.person);
-        setGender(student.person.gender);
-        setShowModal(true);
+        if (student && student.person) { // Kiểm tra xem student và student.person có tồn tại không
+            setUserEdit(student.person);
+            setGender(student.person.gender);
+            setShowModal(true);
+        }
     };
 
     const handleSubmitEdit = () => {
@@ -183,7 +179,7 @@ function DataTable() {
         formDataEdit.append('phone', userEdit.phone);
         formDataEdit.append('gender', gender);
 
-        axios.post(`/api/admin/student/edit/${id}`, formDataEdit, {
+        axios.post(`http://localhost:5000/api/admin/student/edit/${id}`, formDataEdit, {
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
                 'Content-Type': 'multipart/form-data'
@@ -201,7 +197,7 @@ function DataTable() {
                                 lastName: userEdit.lastName,
                                 birthDay: userEdit.birthDay,
                                 phone: userEdit.phone,
-                                gender: gender
+                                gender: userEdit.gender
                             }
                         };
                     }
@@ -225,11 +221,36 @@ function DataTable() {
         }));
     };
 
+    const columns = [
+        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'studentId', headerName: 'MSSV', width: 130 },
+        { field: 'fullName', headerName: 'Họ và tên', width: 200 },
+        { field: 'gender', headerName: 'Giới tính', width: 130 },
+        { field: 'phone', headerName: 'Số điện thoại', width: 160 },
+        { field: 'class', headerName: 'Lớp', width: 130 },
+        { field: 'schoolYear', headerName: 'Niên khóa', width: 130 },
+        {
+            field: 'action',
+            headerName: 'Action',
+            width: 150,
+            renderCell: (params) => (
+                <>
+                    <button className="btnView" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(params.row)}>
+                        <EditOutlinedIcon />
+                    </button>
+                    <button className='btnDelete' onClick={() => handleDelete(params.row)}>
+                        <DeleteRoundedIcon />
+                    </button>
+                </>
+            ),
+        },
+    ];
+
     return (
-        <div>
+        <div className='homeContainerSt'>
             <div className='header-table'>
                 <div className='btn-add'>
-                    <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddStudent">
+                    <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddStudent" style={{marginBottom:'10px'}}>
                         Add
                     </button>
                 </div>
@@ -238,76 +259,36 @@ function DataTable() {
                 </button>
             </div>
             {showDeletedStudents && (
-                <table className="table table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">MSSV</th>
-                            <th scope="col">Họ và tên</th>
-                            <th scope="col">Giới tính</th>
-                            <th scope="col">Số điện thoại</th>
-                            <th scope="col">Lớp</th>
-                            <th scope="col">Niên khóa</th>
-                            <th scope="col">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {students.filter(student => student.person.status === false)
-                            .map((student, index) => (
-                                <tr key={index}>
-                                    <th scope="row">{index + 1}</th>
-                                    <td>{student.studentId}</td>
-                                    <td>{student.person.firstName} {student.person.lastName}</td>
-                                    <td>{student.person.gender ? 'Nữ' : 'Nam'}</td>
-                                    <td>{student.person.phone}</td>
-                                    <td>{student.studentClass.classname}</td>
-                                    <td>{student.schoolYear.year}</td>
-                                    <td>
-                                        <button className='btnView'><RestoreOutlinedIcon /></button>
-                                    </td>
-                                </tr>
-                            ))}
-                    </tbody>
-                </table>
+                <DataGrid
+                    rows={students.filter(student => !student.person.status).map((student, index) => ({
+                        id: index + 1,
+                        studentId: student.studentId,
+                        fullName: `${student.person.firstName} ${student.person.lastName}`,
+                        gender: student.person.gender ? 'Nữ' : 'Nam',
+                        phone: student.person.phone,
+                        class: student.studentClass.classname,
+                        schoolYear: student.schoolYear.year,
+                    }))}
+                    columns={columns}
+                    pageSizeOptions={[10, 100, { value: 1000, label: '1,000' }]}
+
+                />
             )}
 
             {!showDeletedStudents && (
-                <table className="table table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">MSSV</th>
-                            <th scope="col">Họ và tên</th>
-                            <th scope="col">Giới tính</th>
-                            <th scope="col">Số điện thoại</th>
-                            <th scope="col">Lớp</th>
-                            <th scope="col">Niên khóa</th>
-                            <th scope="col">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {students.filter(student => student.person.status === true)
-                            .map((student, index) => (
-                                <tr key={index}>
-                                    <th scope="row">{index + 1}</th>
-                                    <td>{student.studentId}</td>
-                                    <td>{student.person.firstName} {student.person.lastName}</td>
-                                    <td>{student.person.gender ? 'Nữ' : 'Nam'}</td>
-                                    <td>{student.person.phone}</td>
-                                    <td>{student.studentClass.classname}</td>
-                                    <td>{student.schoolYear.year}</td>
-                                    <td>
-                                        <button className="btnView" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(student)}>
-                                            <EditOutlinedIcon />
-                                        </button>
-                                        <button className='btnDelete' onClick={() => handleDelete(student)}>
-                                            <DeleteRoundedIcon />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                    </tbody>
-                </table>
+                <DataGrid
+                    rows={students.filter(student => student.person.status).map((student, index) => ({
+                        id: index + 1,
+                        studentId: student.studentId,
+                        fullName: `${student.person.firstName} ${student.person.lastName}`,
+                        gender: student.person.gender ? 'Nữ' : 'Nam',
+                        phone: student.person.phone,
+                        class: student.studentClass.classname,
+                        schoolYear: student.schoolYear.year,
+                    }))}
+                    columns={columns}
+                    pageSizeOptions={[10, 50, 100]}
+                />
             )}
 
             <Modal show={showConfirmation} onHide={cancelDelete}>
@@ -489,15 +470,13 @@ function DataTable() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModalAdd(false)}>Close</button>
-                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitAdd}>
-                                Add
-                            </button>
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModalAdd(false)}>Đóng</button>
+                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitAdd}>Thêm</button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div >
+        </div>
     );
 }
 

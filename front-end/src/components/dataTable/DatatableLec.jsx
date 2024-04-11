@@ -48,7 +48,7 @@ function DatatableLec() {
         birthDay: '',
         phone: '',
         major: '',
-        author:''
+        author: ''
     });
 
     const handleChangeAdd = (e) => {
@@ -70,7 +70,7 @@ function DatatableLec() {
     const handleSubmitAdd = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log(formData)
-        axios.post('/api/admin/lecturer/create',
+        axios.post('http://localhost:5000/api/admin/lecturer/create',
             formData
             , {
                 headers: {
@@ -82,7 +82,7 @@ function DatatableLec() {
                 console.log('Giảng viên đã được tạo thành công:', response.data);
                 setShowModalAdd(false);
                 setShowAddToast(true);
-                
+
             })
             .catch(error => {
                 console.error(error);
@@ -97,7 +97,7 @@ function DatatableLec() {
 
     const confirmDelete = () => {
         const lecturerId = selectedRow.lecturerId;
-        axios.post(`/api/admin/lecturer/delete/${lecturerId}`, {}, {
+        axios.post(`http://localhost:5000/api/admin/lecturer/delete/${lecturerId}`, {}, {
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
             }
@@ -130,7 +130,7 @@ function DatatableLec() {
         if (!isDataFetched) {
             const tokenSt = sessionStorage.getItem('userToken');
             if (tokenSt) {
-                axios.get('/api/admin/lecturer', {
+                axios.get('http://localhost:5000/api/admin/lecturer', {
                     headers: {
                         'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
                     },
@@ -152,9 +152,14 @@ function DatatableLec() {
     }, [isDataFetched]);
 
     const handleEdit = (lecture) => {
-        setUserEdit(lecture.person);
-        setGender(lecture.person.gender);
-        setShowModal(true);
+        if (lecture.person && lecture.person.gender) {
+            setUserEdit(lecture.person);
+            setGender(lecture.person.gender);
+            setShowModal(true);
+            console.log(lecture.person.gender);
+        } else {
+            console.error("Không thể chỉnh sửa. Thông tin giới tính không tồn tại.");
+        }
     };
 
     const handleSubmitEdit = () => {
@@ -169,7 +174,7 @@ function DatatableLec() {
         formDataEdit.append('authority', userEdit.authority);
 
         console.log(userEdit);
-        axios.post(`/api/admin/lecturer/edit/${id}`, formDataEdit, {
+        axios.post(`http://localhost:5000/api/admin/lecturer/edit/${id}`, formDataEdit, {
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
                 'Content-Type': 'multipart/form-data'
@@ -217,11 +222,33 @@ function DatatableLec() {
         setGender(value);
     };
 
+    const columns = [
+        { field: 'lecturerId', headerName: 'MSGV', width: 100 },
+        { field: 'fullName', headerName: 'Họ và tên', width: 200 },
+        { field: 'gender', headerName: 'Giới tính', width: 100, valueGetter: (params) => params.row.person?.gender ? 'Nữ' : 'Nam' },
+        { field: 'phone', headerName: 'Số điện thoại', width: 200 },
+        { field: 'major', headerName: 'Chuyên ngành', width: 200 },
+        { field: 'authority', headerName: 'Role', width: 150 },
+        {
+            field: 'action', headerName: 'Action', width: 200, renderCell: (params) => (
+                <div>
+                    <button className="btnView" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(params.row)}>
+                        <EditOutlinedIcon />
+                    </button>
+                    <button className='btnDelete' onClick={() => handleDelete(params.row)}>
+                        <DeleteRoundedIcon />
+                    </button>
+                </div>
+            )
+        },
+    ];
+    
+
     return (
         <div>
-            <div className='header-table'>           
+            <div className='header-table'>
                 <div className='btn-add'>
-                    <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddLecturere">
+                    <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddLecturere" style={{marginBottom:'20px'}}>
                         Add
                     </button>
                 </div>
@@ -230,76 +257,37 @@ function DatatableLec() {
                 </button>
             </div>
             {showDeletedLecturers && (
-                <table className="table table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">MSGV</th>
-                            <th scope="col">Họ và tên</th>
-                            <th scope="col">Giới tính</th>
-                            <th scope="col">Số điện thoại</th>
-                            <th scope="col">Chuyên ngành</th>
-                            <th scope="col">Role</th>
-                            <th scope="col">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {lectures.filter(lecture => lecture.person.status === false)
-                            .map((lecture, index) => (
-                                <tr key={index}>
-                                    <th scope="row">{index + 1}</th>
-                                    <td>{lecture.lecturerId}</td>
-                                    <td>{lecture.person.firstName} {lecture.person.lastName}</td>
-                                    <td>{lecture.person.gender ? 'Nữ' : 'Nam'}</td>
-                                    <td>{lecture.person.phone}</td>
-                                    <td>{lecture.major}</td>
-                                    <td>{lecture.authority.name}</td>
-                                    <td>
-                                        <button className='btnView'><RestoreOutlinedIcon /></button>
-                                    </td>
-                                </tr>
-                            ))}
-                    </tbody>
-                </table>
+                <DataGrid
+                    rows={lectures.filter(lecture => lecture.person.status === false).map((lecture, index) => ({
+                        id: index + 1,
+                        lecturerId: lecture.lecturerId,
+                        fullName: lecture.person.firstName,
+                        gender: lecture.person.gender ? 'Nữ' : 'Nam',
+                        phone: lecture.person.phone,
+                        major: lecture.major,
+                        authority: lecture.authority.name,
+                    }
+                    ))}
+                    columns={columns}
+                    pageSizeOptions={[10, 100, { value: 1000, label: '1,000' }]}
+                />
             )}
 
             {!showDeletedLecturers && (
-                <table className="table table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">MSGV</th>
-                            <th scope="col">Họ và tên</th>
-                            <th scope="col">Giới tính</th>
-                            <th scope="col">Số điện thoại</th>
-                            <th scope="col">Chuyên ngành</th>
-                            <th scope="col">Role</th>
-                            <th scope="col">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {lectures.filter(lecture => lecture.person.status === true)
-                            .map((lecture, index) => (
-                                <tr key={index}>
-                                    <th scope="row">{index + 1}</th>
-                                    <td>{lecture.lecturerId}</td>
-                                    <td>{lecture.person.firstName} {lecture.person.lastName}</td>
-                                    <td>{lecture.person.gender ? 'Nữ' : 'Nam'}</td>
-                                    <td>{lecture.person.phone}</td>
-                                    <td>{lecture.major}</td>
-                                    <td>{lecture.authority.name}</td>
-                                    <td>
-                                        <button className="btnView" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(lecture)}>
-                                            <EditOutlinedIcon />
-                                        </button>
-                                        <button className='btnDelete' onClick={() => handleDelete(lecture)}>
-                                            <DeleteRoundedIcon />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                    </tbody>
-                </table>
+                <DataGrid
+                    rows={lectures.filter(lecture => lecture.person.status === true).map((lecture, index) => ({
+                        id: index + 1,
+                        lecturerId: lecture.lecturerId,
+                        fullName: lecture.person.firstName,
+                        gender: lecture.person.gender ? 'Nữ' : 'Nam',
+                        phone: lecture.person.phone,
+                        major: lecture.major,
+                        authority: lecture.authority.name,
+                    }
+                    ))}
+                    columns={columns}
+                    pageSizeOptions={[10, 100, { value: 1000, label: '1,000' }]}
+                />
             )}
 
             <Modal show={showConfirmation} onHide={cancelDelete}>
@@ -472,7 +460,7 @@ function DatatableLec() {
                             <div className="mb-3">
                                 <label htmlFor="author" className="form-label">Role</label>
                                 <select className="form-select" id="author" value={formData.author} onChange={handleChangeAdd} name="author">
-                                    {author.filter(Item => Item.name ==="ROLE_LECTURER" || Item.name ==="ROLE_HEAD").map((Item, index) => (
+                                    {author.filter(Item => Item.name === "ROLE_LECTURER" || Item.name === "ROLE_HEAD").map((Item, index) => (
                                         <option key={index} value={Item.name}>{Item.name}</option>
                                     ))}
                                 </select>

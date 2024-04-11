@@ -19,7 +19,7 @@ function ManagermentTask() {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axios.get('/api/lecturer/subject', {
+        axios.get('http://localhost:5000/api/lecturer/subject', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },
@@ -57,7 +57,6 @@ function ManagermentTask() {
           </ol>
         </nav>
       )}
-      <hr />
       {showManagementTask ? (
         <Booard subjectId={selectedSubjectId} />
       ) : (

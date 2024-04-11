@@ -44,66 +44,48 @@
                     border-radius: 5px;
                     width: 95%;
                     height: 50%;
-
+                    display: grid;
                     .table-items{
                         margin-left: 100px;
                         margin-right: 100px;
                     }
-    
-                    .dropdown {
-                        border: 2px solid #4eb09b;
-                        position: relative;
-                        display: inline-block;
-                        width: 50%;
+
+                    .title-major {
                         margin-top: 40px;
                         margin-left: 30px;
                         border-radius: 50px;
+                        padding: 10px;
+                    }
+    
+                    .dropdown {
+                        border: 2px solid #4eb09b;
+                        width: 50%;
+                        margin-left: 30px;
+                        margin-top: 10px;
+                        border-radius: 50px;
                         margin-bottom: 30px;
-    
-                        .dropdown-title {
-                            background-color: white;
-                            color: black;
-                            padding: 10px;
-                            border-radius: 50px;
-                            cursor: pointer;
-                            position: relative;
-    
-                            &:after {
-                                content: "\25BC"; /* Mũi tên xuống */
-                                font-size: 16px;
-                                margin-left: 5px;
-                                position: absolute;
-                                top: 50%;
-                                right: 10px;
-                                transform: translateY(-50%);
-                                color: #4eb09b ;
-                            }
-                        }
-    
-                        .dropdown-content {
-                            display: none;
-                            position: absolute;
-                            right: 0;
-                            width: 100%;
-                            background-color: #f9f9f9;
-                            min-width: 160px;
-                            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-                            z-index: 1;
-    
-                            a {
-                                color: black;
-                                padding: 12px 16px;
-                                text-decoration: none;
-                                display: block;
-                            }
-    
-                            a:hover {
-                                background-color: #ddd;
-                            }
-                        }
-    
-                        &:hover .dropdown-content {
-                            display: block;
+                        padding: 10px;
+                        
+                        .form-se{
+                           width: 100%;
+                           border: none;
+                           &:focus {
+                            outline: none;
+                          }
+                        
+                          &:focus::-ms-value {
+                            background-color: transparent;
+                          }
+                        
+                          option {
+                            border: none;
+                            padding:5px;
+                          }
+                        
+                          option:checked {
+                            border: none;
+                            padding: 5px;
+                          }
                         }
                     }
                 }

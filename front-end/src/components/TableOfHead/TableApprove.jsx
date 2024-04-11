@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
-import './styleTable.scss';
+import './TableApprove.scss';
 import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
 import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
@@ -31,7 +31,7 @@ function TableApprove() {
     }, [userToken]);
 
     const loadTopics = () => {
-        axios.get('/api/head/subject', {
+        axios.get('http://localhost:5000/api/head/subject', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -46,7 +46,7 @@ function TableApprove() {
     };
 
     const loadListDelete = () => {
-        axios.get('/api/head/subject/delete', {
+        axios.get('http://localhost:5000/api/head/subject/delete', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -62,7 +62,7 @@ function TableApprove() {
     }
 
     const handleApprove = (id) => {
-        axios.post(`/api/head/subject/browse/${id}`, null, {
+        axios.post(`http://localhost:5000/api/head/subject/browse/${id}`, null, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -79,7 +79,7 @@ function TableApprove() {
     };
 
     const handleDelete = (id) => {
-        axios.post(`/api/head/subject/delete/${id}`, null, {
+        axios.post(`http://localhost:5000/api/head/subject/delete/${id}`, null, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -96,7 +96,7 @@ function TableApprove() {
     }
 
     return (
-        <div style={{display:'block'}}>
+        <div className='body-table'>
              <Toast show={showDeleteToast} onClose={() => setShowDeleteToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
                 <Toast.Header>
                     <strong className="me-auto">Thông báo</strong>
@@ -132,6 +132,7 @@ function TableApprove() {
                     Duyệt đề tài không thành công!
                 </Toast.Body>
             </Toast>
+
             <button className='button-listDelete' onClick={() => setShowTable(!showTable)}>
                     {showTable ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách đề tài chưa duyệt</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách đề tài đã xóa</>}
             </button>
@@ -192,7 +193,7 @@ function TableApprove() {
                                         <button style={{ marginRight: '20px' }} className='button-res' onClick={() => handleApprove(item.subjectId)}>
                                             <p className='text'>Duyệt</p>
                                         </button>
-                                        <button className='button-res' onClick={() => handleDelete(item.subjectId)}>
+                                        <button className='button-res-de' onClick={() => handleDelete(item.subjectId)}>
                                             <p className='text'>Xóa</p>
                                         </button>
                                     </td>

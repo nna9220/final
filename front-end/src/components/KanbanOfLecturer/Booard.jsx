@@ -4,8 +4,6 @@ import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import { DragDropContext } from 'react-beautiful-dnd';
 import Column from './Column';
 import './Styles.scss'
-import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
-
 
 const Booard=({subjectId})=>{
     const [data, setData] = useState([]);
@@ -13,7 +11,7 @@ const Booard=({subjectId})=>{
         const userToken = getTokenFromUrlAndSaveToStorage();
         const fetchData = async () => {
           try {
-            const response = await axios.get(`/api/lecturer/subject/listTask/${subjectId}`, {
+            const response = await axios.get(`http://localhost:5000/api/lecturer/subject/listTask/${subjectId}`, {
               headers: {
                 'Authorization': `Bearer ${userToken}`,
               },

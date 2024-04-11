@@ -76,9 +76,11 @@ function SidebarAdmin() {
               <li><NavLink to="/homeAdmin" onClick={() => handleMenuItemClick('trangCuaBan')} activeClassName={selectedMenuItem === 'trangCuaBan' ? 'active' : ''}><i className="fa fa-home"></i><span>Trang của bạn</span></NavLink></li>
               <li className={selectedMenuItem === 'thongTinCaNhan' ? 'active' : ''}><Link to="/profileAdmin" onClick={() => handleMenuItemClick('thongTinCaNhan')}><i className="fa fa-user"></i><span>Thông tin cá nhân</span></Link></li>
               <li className={selectedMenuItem === 'quanLySV' ? 'active' : ''}><Link to="/managermentStudent" href="#" onClick={() => handleMenuItemClick('quanLySV')}><i className="fa fa-book"></i><span>Quản lý sinh viên</span></Link></li>
-              <li className={selectedMenuItem === 'quanLyGV' ? 'active' : ''}><Link to='/managermentLec' onClick={() => handleMenuItemClick('quanLyGV')}><i className="fa fa-folder"></i><span>Quản lý giảng viên</span></Link></li>
-              <li className={selectedMenuItem === 'quanlydetai' ? 'active' : ''}><Link to='/managermentPeriod' onClick={() => handleMenuItemClick('quanlydetai')}><i className="fa fa-folder"></i><span>Quản lý Đợt đăng ký đề tài</span></Link></li>
-              <li className={selectedMenuItem === 'quanlydetai' ? 'active' : ''}><Link to='/managermentYears' onClick={() => handleMenuItemClick('quanlynienkhoa')}><i className="fa fa-folder"></i><span>Quản lý niên khóa-lớp học</span></Link></li>
+              <li className={selectedMenuItem === 'quanLyGV' ? 'active' : ''}><Link to='/managermentLec' onClick={() => handleMenuItemClick('quanLyGV')}><i className="fa fa-address-book-o"></i><span>Quản lý giảng viên</span></Link></li>
+              <li className={selectedMenuItem === 'quanlytopic' ? 'active' : ''}><Link to='/managermentTopics' onClick={() => handleMenuItemClick('quanlytopic')}><i className="fa fa-address-card"></i><span>Quản lý đề tài</span></Link></li>
+              <li className={selectedMenuItem === 'quanlyloaidetai' ? 'active' : ''}><Link to='/managermentType' onClick={() => handleMenuItemClick('quanlyloaidetai')}><i className="fa fa-list-alt"></i><span>Quản lý loại đề tài</span></Link></li>
+              <li className={selectedMenuItem === 'quanlydetai' ? 'active' : ''}><Link to='/managermentPeriod' onClick={() => handleMenuItemClick('quanlydetai')}><i className="fa fa-folder"></i><span>Quản lý đợt đăng ký đề tài</span></Link></li>
+              <li className={selectedMenuItem === 'quanlynienkhoa' ? 'active' : ''}><Link to='/managermentYears' onClick={() => handleMenuItemClick('quanlynienkhoa')}><i className="fa fa-list-alt"></i><span>Quản lý niên khóa-lớp học</span></Link></li>
             </ul>
           </div>
         </div>

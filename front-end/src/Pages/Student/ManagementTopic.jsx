@@ -15,7 +15,7 @@ function ManagementTopic() {
             <div className='header-notification'>
               <h4 className='title'>QUẢN LÝ ĐỀ TÀI</h4>
             </div>
-                <KanbanBoard/>
+              <KanbanBoard/>
             </div>
         </div>
     </div>

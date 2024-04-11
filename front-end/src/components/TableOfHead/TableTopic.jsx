@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
-import './styleTable.scss'
+import './TableTopic.scss'
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
 import DetailsIcon from '@mui/icons-material/Details';
 import { Link } from 'react-router-dom';
@@ -20,7 +20,7 @@ function TableTopic() {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axios.get('/api/head/manager', {
+        axios.get('http://localhost:5000/api/head/manager', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },
@@ -58,7 +58,6 @@ function TableTopic() {
           </ol>
         </nav>
       )}
-      <hr />
       {showManagementTask ? (
         <ManagementTask subjectId={selectedSubjectId} />
       ) : (
@@ -80,26 +79,19 @@ function TableTopic() {
               <tr key={index}>
                 <th scope='row'>{index + 1}</th>
                 <td>{item.subjectName}</td>
-                <td>{item.instructorId?.person?.firstName + ' ' + item.instructorId?.person?.lastName}</td>
-                <td>{item.thesisAdvisorId?.person?.firstName + ' ' + item.thesisAdvisorId?.person?.lastName}</td>
-                <td>{item.student1 || ''}</td>
-                <td>{item.student2 || ''}</td>
+                <td>{item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName}</td>
+                <td>{item.thesisAdvisorId.person.firstName + ' ' + item.thesisAdvisorId.person.lastName}</td>
+                <td>{item.student1}</td>
+                <td>{item.student2}</td>
                 <td>{item.requirement}</td>
                 <td>
-                  <button
-                    style={{ marginRight: '20px' }}
-                    className='button-res'
-                    onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}
-                  >
-                    <p className='text'><DetailsIcon /></p>
-                  </button>
-                  <button className='button-res'>
+                  <button style={{ marginRight: '20px' }} class="btn btn-primary" type="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Đi đến chi tiết để quản lý đề tài" onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}><DetailsIcon /></button>
+                  <button className='button-res-de'>
                     <p className='text'><ModeEditOutlineOutlinedIcon /></p>
                   </button>
                 </td>
               </tr>
             ))}
-
           </tbody>
         </table>
       )}
