@@ -9,7 +9,6 @@ import TimelineOutlinedIcon from '@mui/icons-material/TimelineOutlined';
 
 import TimeLineOfStudent from '../Timeline/TimeLineOfStudent';
 import DnsOutlinedIcon from '@mui/icons-material/DnsOutlined';
-import axiosInstance from '../../API/axios';
 
 const KanbanBoard = () => {
   const [data, setData] = useState([]);
@@ -47,7 +46,7 @@ const KanbanBoard = () => {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axiosInstance.get('/student/task/list', {
+        axios.get('http://localhost:5000/api/student/task/list', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },
@@ -67,7 +66,7 @@ const KanbanBoard = () => {
 
   const handleNewTask = () => {
     const userToken = getTokenFromUrlAndSaveToStorage();
-    axiosInstance.get('/student/task/new', {
+    axios.get('http://localhost:5000/api/student/task/new', {
       headers: {
         'Authorization': `Bearer ${userToken}`,
       },
@@ -87,7 +86,7 @@ const KanbanBoard = () => {
 
     console.log("Start: ",formNewTask.timeStart);
     console.log("Requirement: ",formNewTask.requirement);
-    axiosInstance.post('/student/task/create', formNewTask, {
+    axios.post('http://localhost:5000/api/student/task/create', formNewTask, {
       headers: {
         'Authorization': `Bearer ${userToken}`,
         'Content-Type': 'multipart/form-data',

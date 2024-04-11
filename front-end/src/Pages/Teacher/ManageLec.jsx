@@ -3,8 +3,11 @@ import SidebarLec from '../../components/Sidebar/SidebarLec'
 import Navbar from '../../components/Navbar/Navbar'
 import './ManageLec.scss'
 import ManagermentTask from '../../components/KanbanOfLecturer/ManagermentTask'
-
+import { useEffect } from 'react'
 function ManageLec() {
+  useEffect(() => {
+    document.title = "Quản lý đề tài";
+  }, []);
   return (
     <div className='homeLec'>
       <SidebarLec></SidebarLec>

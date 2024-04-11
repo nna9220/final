@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import Sidebar from '../../components/Sidebar/SidebarAdmin';
 import './ManagementPeriod.scss';
@@ -6,6 +6,9 @@ import DataTableRegistrationPeroidLec from '../../components/dataTable/DataTable
 import DataTableRegistrationPeroidSt from '../../components/dataTable/DataTableRegistrationPeroidSt';
 
 function ManagementPeriod() {
+    useEffect(() => {
+        document.title = "Quản lý đợt đăng ký đề tài";
+      }, []);
     const [regis, setRegis] = useState('student');
     const [selectedTitle, setSelectedTitle] = useState({
         title1: 'Đợt đăng ký đề tài cho sinh viên',
