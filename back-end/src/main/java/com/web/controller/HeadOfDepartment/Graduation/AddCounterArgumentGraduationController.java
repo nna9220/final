@@ -31,7 +31,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/head/subjectGraduation")
 @RequiredArgsConstructor
-public class AddCounterArgumentController {
+public class AddCounterArgumentGraduationController {
     @Autowired
     private SubjectImplService service;
     @Autowired

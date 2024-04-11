@@ -5,6 +5,7 @@ import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import axiosInstance from '../../API/axios';
 
 function TableRegis() {
     const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +23,7 @@ function TableRegis() {
     const handleSubmitAdd = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log(formData)
-        axios.post('/api/head/subject/register',
+        axiosInstance.post('/head/subject/register',
             formData
             , {
                 headers: {
@@ -86,14 +87,6 @@ function TableRegis() {
                         <div className="mb-3">
                             <label htmlFor="expected" className="form-label">Kết quả mong muốn</label>
                             <input type="text" className="form-control" id="expected" name="expected" value={formData.expected} onChange={handleChange} />
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="major" className="form-label">Loại đề tài </label>
-                            <select class="form-select" aria-label="Default select example">
-                                <option selected disabled>Loại đề tài</option>
-                                <option value="1">Tiểu luận chuyên ngành</option>
-                                <option value="2">Khóa luận tốt nghiệp</option>
-                            </select>
                         </div>
                         <h5>Nhóm sinh viên thực hiện: </h5>
                         <div className="mb-3">

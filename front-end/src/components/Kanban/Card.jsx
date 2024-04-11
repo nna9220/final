@@ -8,6 +8,7 @@ import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined
 import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import './scroll.scss'
+import axiosInstance from '../../API/axios';
 
 const Card = ({ task, index }) => {
   const [selectedTask, setSelectedTask] = useState(null);
@@ -38,7 +39,7 @@ const Card = ({ task, index }) => {
 
       console.log("Comment-post: ", formData);
       // Gửi yêu cầu POST để tạo comment
-      const response = await axios.post(`http://localhost:5000/api/student/comment/create/${task.taskId}`, formData, {
+      const response = await axiosInstance.post(`/student/comment/create/${task.taskId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${userToken}`, // Thay thế userToken bằng cách lấy từ storage hoặc một cách thích hợp khác

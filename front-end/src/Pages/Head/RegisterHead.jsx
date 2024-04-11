@@ -3,9 +3,14 @@ import './RegisterHead.scss';
 import SidebarHead from '../../components/Sidebar/SidebarHead';
 import Navbar from '../../components/Navbar/Navbar';
 import TableRegis from '../../components/TableOfHead/TableRegis';
+import TableRegisKL from '../../components/TableOfHead/TableRegisKL';
 
 function RegisterHead() {
     const [selectedTitle, setSelectedTitle] = useState("Tiểu luận chuyên ngành");
+
+    const handleDropdownClick = (title1, title2, table) => {
+        setSelectedTitle({ title1, title2, table });
+      };
 
     const handleDropdownChange = (e) => {
         setSelectedTitle(e.target.value);
@@ -42,7 +47,7 @@ function RegisterHead() {
                         </div>
                         <div className='card-nd' style={{ display: 'block' }}>
                             <div className='table-items'>
-                                <TableRegis />
+                            {selectedTitle === "Tiểu luận chuyên ngành" ? <TableRegis /> : <TableRegisKL />}
                             </div>
                         </div>
                     </div>
