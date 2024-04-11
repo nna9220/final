@@ -1,14 +1,7 @@
-.HomeAdmin {
+.HomeAdmin{
     display: flex;
 
-    .homeContainer {
-        flex: 1; /* Chiếm phần còn lại của không gian */
-        overflow: auto; /* Xử lý trường hợp nội dung vượt quá kích thước */
-    }
-
-    &.sidebar-closed {
-        .homeContainer {
-            flex: 1 0 100%; /* Chiếm toàn bộ không gian */
-        }
+    .homeContainer{
+        flex: 6;
     }
 }
