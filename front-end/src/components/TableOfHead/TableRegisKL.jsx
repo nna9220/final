@@ -23,7 +23,8 @@ function TableRegisKL() {
 
     const handleSubmitAdd = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
-        console.log(formData)
+        console.log("Data: " + formData)
+
         axios.post('/api/head/subjectGraduation/register',
             formData
             , {
@@ -116,7 +117,7 @@ function TableRegisKL() {
                         <div className="mb-3">
                             <label htmlFor="student1" className="form-label">Sinh viên 1</label>
                             <select className="form-select" aria-label="Default select example" name="student1" value={formData.student1} onChange={handleChange}>
-                                <option selected disabled>Chọn sinh viên</option>
+                                <option value="" selected disabled>Chọn sinh viên</option>
                                 {students.map(student => (
                                     <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
                                 ))}
@@ -125,7 +126,7 @@ function TableRegisKL() {
                         <div className="mb-3">
                             <label htmlFor="student2" className="form-label">Sinh viên 2</label>
                             <select className="form-select" aria-label="Default select example" name="student2" value={formData.student2} onChange={handleChange}>
-                                <option selected disabled>Chọn sinh viên</option>
+                                <option value="" selected disabled>Chọn sinh viên</option>
                                 {students.map(student => (
                                     <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
                                 ))}
@@ -134,9 +135,9 @@ function TableRegisKL() {
                         <div className="mb-3">
                             <label htmlFor="student3" className="form-label">Sinh viên 3</label>
                             <select className="form-select" aria-label="Default select example" name="student3" value={formData.student3} onChange={handleChange}>
-                                <option selected disabled>Chọn sinh viên</option>
+                                <option value="" selected disabled>Chọn sinh viên</option>
                                 {students.map(student => (
-                                    <option key={student.id} value={student.id}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
+                                    <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
                                 ))}
                             </select>   
                         </div>
