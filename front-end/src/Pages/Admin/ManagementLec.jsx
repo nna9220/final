@@ -3,8 +3,11 @@ import Navbar from '../../components/Navbar/Navbar'
 import Sidebar from '../../components/Sidebar/SidebarAdmin'
 import './ManagementLec.scss'
 import DatatableLec from '../../components/dataTable/DatatableLec'
-
+import { useEffect } from 'react'
 function ManagementLec() {
+    useEffect(() => {
+        document.title = "Quản lý giảng viên";
+      }, []);
     return (
         <div>
             <div className='manaStudentOfAdmin'>

@@ -5,8 +5,11 @@ import './ManagementYears.scss'
 import DatatableLec from '../../components/dataTable/DatatableLec'
 import DataYears from '../../components/dataTable/DataYears'
 import DataClass from '../../components/dataTable/DataClass'
-
+import { useEffect } from 'react'
 function ManagementYears() {
+    useEffect(() => {
+        document.title = "Quản lý niên khóa";
+      }, []);
     const [yearClass, setYearClass] = useState('years');
     const [selectedTitle, setSelectedTitle] = useState({
         title1: 'Quản lý niên khóa',

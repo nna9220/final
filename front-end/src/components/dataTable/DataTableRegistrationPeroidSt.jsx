@@ -2,7 +2,6 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './DataTableRegistrationPeroidSt.scss'
-import axiosInstance from '../../API/axios';
 
 function DataTableRegistrationPeroidSt() {
     const [dataRegis, setDataRegis] = useState([])
@@ -15,7 +14,7 @@ function DataTableRegistrationPeroidSt() {
         console.log("Token SV2: " + tokenSt);
         if (tokenSt) {
             console.log("Test: " + tokenSt);
-            axiosInstance.get('/admin/Period', {
+            axios.get('http://localhost:5000/api/admin/Period', {
                 headers: {
                     'Authorization': `Bearer ${tokenSt}`,
                 },
@@ -43,7 +42,7 @@ function DataTableRegistrationPeroidSt() {
     const handleSaveChanges = () => {
         const tokenSt = sessionStorage.getItem('userToken');
         if (tokenSt && selectedPeriodId) {
-            axiosInstance.post(`/admin/Period/${selectedPeriodId}`, {
+            axios.post(`http://localhost:5000/api/admin/Period/${selectedPeriodId}`, {
                 registrationTimeStart: editedStartTime,
                 registrationTimeEnd: editedEndTime,
             }, {

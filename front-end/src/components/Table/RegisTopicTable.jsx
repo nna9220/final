@@ -4,7 +4,6 @@ import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import EditCalendarOutlinedIcon from '@mui/icons-material/EditCalendarOutlined';
 import { Link, NavLink } from 'react-router-dom';
-import axiosInstance from '../../API/axios';
 
 function RegisTopicTable() {
     const [topics, setTopics] = useState([]);
@@ -17,7 +16,7 @@ function RegisTopicTable() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axiosInstance.get('/student/subject', {
+                axios.get('http://localhost:5000/api/student/subject', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -41,7 +40,7 @@ function RegisTopicTable() {
     const dangKyDeTai = (subjectId) => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         if (userToken) {
-            axiosInstance.post(`/student/subject/registerTopic/${subjectId}`, null, {
+            axios.post(`http://localhost:5000/api/student/subject/registerTopic/${subjectId}`, null, {
                 headers: {
                     'Authorization': `Bearer ${userToken}`,
                 },

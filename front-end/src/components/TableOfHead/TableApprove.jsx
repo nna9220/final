@@ -8,7 +8,6 @@ import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import PlaylistRemoveOutlinedIcon from '@mui/icons-material/PlaylistRemoveOutlined';
 import PlaylistAddCheckOutlinedIcon from '@mui/icons-material/PlaylistAddCheckOutlined';
-import axiosInstance from '../../API/axios';
 
 function TableApprove() {
     const [topics, setTopics] = useState([]);
@@ -32,7 +31,7 @@ function TableApprove() {
     }, [userToken]);
 
     const loadTopics = () => {
-        axiosInstance.get('/head/subject', {
+        axios.get('http://localhost:5000/api/head/subject', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -47,7 +46,7 @@ function TableApprove() {
     };
 
     const loadListDelete = () => {
-        axiosInstance.get('/head/subject/delete', {
+        axios.get('http://localhost:5000/api/head/subject/delete', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -63,7 +62,7 @@ function TableApprove() {
     }
 
     const handleApprove = (id) => {
-        axiosInstance.post(`/head/subject/browse/${id}`, null, {
+        axios.post(`http://localhost:5000/api/head/subject/browse/${id}`, null, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -80,7 +79,7 @@ function TableApprove() {
     };
 
     const handleDelete = (id) => {
-        axiosInstance.post(`/head/subject/delete/${id}`, null, {
+        axios.post(`http://localhost:5000/api/head/subject/delete/${id}`, null, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -158,8 +157,8 @@ function TableApprove() {
                                         <th scope="row">{index + 1}</th>
                                         <td>{itemDelete.subjectName}</td>
                                         <td>{itemDelete.instructorId.person.firstName + ' ' + itemDelete.instructorId.person.lastName}</td>
-                                        <td>{itemDelete.student1 === null ? 'Trống' : ''}</td>
-                                        <td>{itemDelete.student2 === null ? 'Trống' : ''}</td>
+                                        <td>{itemDelete.student1}</td>
+                                        <td>{itemDelete.student2}</td>
                                         <td>{itemDelete.requirement}</td>
                                     </tr>
                                 ))}

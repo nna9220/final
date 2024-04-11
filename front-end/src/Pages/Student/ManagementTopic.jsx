@@ -3,8 +3,11 @@ import KanbanBoard from '../../components/Kanban/Board'
 import SidebarStudent from '../../components/Sidebar/SidebarStudent'
 import Navbar from '../../components/Navbar/Navbar'
 import Context from '../../components/Context/Context'
-
+import { useEffect } from 'react'
 function ManagementTopic() {
+  useEffect(() => {
+    document.title = "Quản lý đề tài";
+  }, []);
   return (
     <div className='HomeStudent'>
         <SidebarStudent/>

@@ -5,7 +5,9 @@ import './RegisterTopicSt.scss'
 import RegisTopicTable from '../../components/Table/RegisTopicTable'
 
 function RegisterTopicSt() {
-    
+    useEffect(() => {
+        document.title = "Đăng ký đề tài";
+      }, []);
     return (
         <div className='RegisterHome'>
             <SidebarStudent />

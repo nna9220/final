@@ -4,9 +4,11 @@ import { useParams } from 'react-router-dom';
 import './InforTeacher.scss';
 import { Link } from 'react-router-dom';
 import { Home } from '@mui/icons-material';
-import axiosInstanceHome from '../API/axiosHome';
 
 function InforTeacher() {
+    useEffect(() => {
+        document.title = "Thông tin giảng viên";
+      }, []);
     const [teacher, setTeacher] = useState(null);
     const { lecturerId } = useParams();
     const [selectedTab, setSelectedTab] = useState('profile');
@@ -14,7 +16,7 @@ function InforTeacher() {
     useEffect(() => {
         const fetchTeacherInfo = async () => {
             try {
-                const response = await axiosInstanceHome.get(`/team/profile/${lecturerId}`);
+                const response = await axios.get(`http://localhost:5000/team/profile/${lecturerId}`);
                 console.log("profile: ", response.data);
                 setTeacher(response.data);
             } catch (error) {
