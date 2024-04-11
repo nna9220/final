@@ -69,9 +69,7 @@ public class HeadManagerTopicController {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
             List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByLecturerIntro(existedLecturer, true, typeSubject);
-            /*model.addObject("listSubject",subjectByCurrentLecturer);
-            model.addObject("person", personCurrent);
-            return model;*/
+
             Map<String,Object> response = new HashMap<>();
             response.put("person", personCurrent);
             response.put("listSubject",subjectByCurrentLecturer);
