@@ -30,11 +30,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/head/graduation/comment")
-public class HeadAddCommentGraduationController {
-
+public class HeadAddCommentController {
     private static final Logger logger = LoggerFactory.getLogger(StudentAddCommentController.class);
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private StudentRepository studentRepository;
+    @Autowired
+    private SubjectRepository subjectRepository;
     @Autowired
     private PersonRepository personRepository;
     @Autowired
@@ -46,17 +49,11 @@ public class HeadAddCommentGraduationController {
     @Autowired
     private LecturerRepository lecturerRepository;
     @Autowired
-    private SubjectRepository subjectRepository;
-
-    @Autowired
     private MailServiceImpl mailService;
-
-    @Autowired
-    private StudentRepository studentRepository;
 
     private final TokenUtils tokenUtils;
     @Autowired
-    public HeadAddCommentGraduationController(TokenUtils tokenUtils){
+    public HeadAddCommentController(TokenUtils tokenUtils){
         this.tokenUtils = tokenUtils;
     }
 
@@ -66,8 +63,7 @@ public class HeadAddCommentGraduationController {
     @PostMapping("/create/{taskId}")
     public ResponseEntity<?> createComment(@PathVariable int taskId,
                                       @RequestParam("content") String content,
-                                      @RequestParam("fileInput") List<MultipartFile> files,
-                                      @RequestHeader("Authorization") String authorizationHeader){
+                                      @RequestParam("fileInput") List<MultipartFile> files, @RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
@@ -87,7 +83,7 @@ public class HeadAddCommentGraduationController {
                         FileComment newFile = new FileComment();
                         newFile.setName(fileName);
                         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                                .path("/api/lecturer/comment/fileUpload/")
+                                .path("/api/head/comment/fileUpload/")
                                 .path(fileName)
                                 .toUriString();
                         newFile.setUrl(fileDownloadUri);
@@ -116,14 +112,13 @@ public class HeadAddCommentGraduationController {
             Student studen2 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
 
             if (existSubject.getStudent2()!=null) {
-                    mailService.sendMailStudents(studen2.getPerson().getUsername(), studen1.getPerson().getUsername(), subject, messenger);
-                }else {
-                    mailService.sendMailStudent(studen1.getPerson().getUsername(),subject,messenger);
-                }
-
-            /*String referer = Contains.URL_LOCAL +  "/api/lecturer/subject/detail/" + taskId;
+                mailService.sendMailStudents(studen2.getPerson().getUsername(), studen1.getPerson().getUsername(), subject, messenger);
+            }else {
+                mailService.sendMailStudent(studen1.getPerson().getUsername(),subject,messenger);
+            }
+            /*String referer = Contains.URL +  "/api/head/manager/detail/" + taskId;
             return new ModelAndView("redirect:"+referer);*/
-            return new ResponseEntity<>(comment, HttpStatus.CREATED);
+            return new ResponseEntity<>(existSubject, HttpStatus.OK);
         }else{
             /*ModelAndView error = new ModelAndView();
             error.addObject("errorMessage", "Bạn không có quyền truy cập.");
@@ -152,6 +147,6 @@ public class HeadAddCommentGraduationController {
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
-    }
 
+    }
 }
