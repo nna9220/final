@@ -199,7 +199,7 @@ public class AddCounterArgumentGraduationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String,Object>> lecturerRegisterTopic(@RequestParam("subjectName") String name,
+    public ResponseEntity<?> lecturerRegisterTopic(@RequestParam("subjectName") String name,
                                               @RequestParam("requirement") String requirement,
                                               @RequestParam("expected") String expected,
                                               @RequestParam(value = "student1", required = false) String student1,
@@ -245,15 +245,9 @@ public class AddCounterArgumentGraduationController {
                     subjectRepository.save(newSubject);
                     studentRepository.save(studentId1);
                     studentRepository.save(studentId2);
-                    Map<String,Object> response = new HashMap<>();
-                    response.put("newSubject", newSubject);
-                    response.put("studentList",studentList);
-                    return new ResponseEntity<>(response, HttpStatus.CREATED);
+                    return new ResponseEntity<>(newSubject, HttpStatus.CREATED);
                 }else {
-                    Map<String,Object> response2 = new HashMap<>();
-                    response2.put("person", personCurrent);
-                    response2.put("studentList",studentList);
-                    return new ResponseEntity<>(response2,HttpStatus.OK);
+                    return new ResponseEntity<>(personCurrent,HttpStatus.OK);
                 }
             }
             else {
