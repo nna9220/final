@@ -25,23 +25,23 @@ function TableRegisKL() {
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log("Data: " + formData)
 
-        axios.post('/api/head/subjectGraduation/register',
-            formData
-            , {
-                headers: {
-                    'Authorization': `Bearer ${userToken}`,
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-            .then(response => {
-                console.log('Đề tài đã được tạo thành công:', response.data);
-                setShowAddToast(true);
-            })
-            .catch(error => {
-                console.error(error);
-                console.log("Lỗi");
-                setShowErrorToastAdd(true);
-            });
+        // axios.post('/api/head/subjectGraduation/register',
+        //     formData
+        //     , {
+        //         headers: {
+        //             'Authorization': `Bearer ${userToken}`,
+        //             'Content-Type': 'multipart/form-data',
+        //         },
+        //     })
+        //     .then(response => {
+        //         console.log('Đề tài đã được tạo thành công:', response.data);
+        //         setShowAddToast(true);
+        //     })
+        //     .catch(error => {
+        //         console.error(error);
+        //         console.log("Lỗi");
+        //         setShowErrorToastAdd(true);
+        //     });
     };
 
     useEffect(() => {
