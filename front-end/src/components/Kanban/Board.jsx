@@ -85,17 +85,14 @@ const KanbanBoard = () => {
 
   const handleAddNewTask = () => {
     const userToken = getTokenFromUrlAndSaveToStorage();
-    // Chuyển đổi giá trị timeStart và timeEnd từ string sang Date
-    const formNewTaskWithDates = {
-      ...formNewTask,
-      timeStart: parseDateStringToDate(formNewTask.timeStart),
-      timeEnd: parseDateStringToDate(formNewTask.timeEnd),
-    };
-    console.log(formNewTaskWithDates);
-    axios.post('http://localhost:5000/api/student/task/create', formNewTaskWithDates, {
+
+
+    console.log("Start: ",formNewTask.timeStart);
+    console.log("Requirement: ",formNewTask.requirement);
+    axios.post('http://localhost:5000/api/student/task/create', formNewTask, {
       headers: {
         'Authorization': `Bearer ${userToken}`,
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
       },
     })
       .then(response => {

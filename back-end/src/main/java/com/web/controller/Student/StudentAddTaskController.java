@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.crypto.Data;
 import java.util.*;
+import java.sql.Date;
 
 @RestController
 @RequestMapping("/api/student/task")
@@ -109,10 +110,10 @@ public class StudentAddTaskController {
                                    @RequestParam("requirement") String requirement,
                                    @RequestParam("timeStart") Date timeStart,
                                    @RequestParam("timeEnd") Date timeEnd,
-                                   @RequestParam("assignTo") String assignTo,
-                                   HttpServletRequest request) {
+                                   @RequestParam("assignTo") String assignTo) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        System.out.println("Requirement: " + requirement);
         if (personCurrent.getAuthorities().getName().equals("ROLE_STUDENT")) {
             Student currentStudent = studentRepository.findById(personCurrent.getPersonId()).orElse(null);
             Subject currentSubject = subjectRepository.findById(currentStudent.getSubjectId().getSubjectId()).orElse(null);
