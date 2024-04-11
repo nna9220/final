@@ -9,6 +9,7 @@ import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurned
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 
 import './Styles.scss';
+import axiosInstance from '../../API/axios';
 
 const Card = ({ task, index }) => {
     const [selectedTask, setSelectedTask] = useState(null);
@@ -21,7 +22,7 @@ const Card = ({ task, index }) => {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axios.get(`http://localhost:5000/api/lecturer/subject/detail/${taskId}`, {
+                axiosInstance.get(`/lecturer/subject/detail/${taskId}`, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },

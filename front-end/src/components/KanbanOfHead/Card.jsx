@@ -8,6 +8,7 @@ import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined
 import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import './styleKanban.scss'
+import axiosInstance from '../../API/axios';
 
 const Card = ({ task, index }) => {
   const [taskDetail, setTaskDetail] = useState({});
@@ -45,7 +46,7 @@ const Card = ({ task, index }) => {
   const handleCommentSubmit = () => {
     const userToken = getTokenFromUrlAndSaveToStorage();
     if (userToken) {
-      axios.post(`http://localhost:5000/api/head/comment/create/${task.taskId}`, {
+      axiosInstance.post(`/head/comment/create/${task.taskId}`, {
         headers: {
           'Authorization': `Bearer ${userToken}`,
           'Content-Type': 'multipart/form-data',

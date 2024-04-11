@@ -13,6 +13,7 @@ import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import Item from 'antd/es/list/Item';
+import axiosInstance from '../../API/axios';
 
 function DatatableLec() {
     const [lectures, setLectures] = useState([]);
@@ -70,7 +71,7 @@ function DatatableLec() {
     const handleSubmitAdd = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log(formData)
-        axios.post('http://localhost:5000/api/admin/lecturer/create',
+        axiosInstance.post('/admin/lecturer/create',
             formData
             , {
                 headers: {
@@ -97,7 +98,7 @@ function DatatableLec() {
 
     const confirmDelete = () => {
         const lecturerId = selectedRow.lecturerId;
-        axios.post(`http://localhost:5000/api/admin/lecturer/delete/${lecturerId}`, {}, {
+        axiosInstance.post(`/admin/lecturer/delete/${lecturerId}`, {}, {
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
             }
@@ -130,7 +131,7 @@ function DatatableLec() {
         if (!isDataFetched) {
             const tokenSt = sessionStorage.getItem('userToken');
             if (tokenSt) {
-                axios.get('http://localhost:5000/api/admin/lecturer', {
+                axiosInstance.get('/admin/lecturer', {
                     headers: {
                         'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
                     },
@@ -174,7 +175,7 @@ function DatatableLec() {
         formDataEdit.append('authority', userEdit.authority);
 
         console.log(userEdit);
-        axios.post(`http://localhost:5000/api/admin/lecturer/edit/${id}`, formDataEdit, {
+        axiosInstance.post(`/admin/lecturer/edit/${id}`, formDataEdit, {
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
                 'Content-Type': 'multipart/form-data'

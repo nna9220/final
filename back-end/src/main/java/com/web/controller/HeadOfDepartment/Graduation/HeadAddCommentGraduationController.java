@@ -30,7 +30,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/head/graduation/comment")
-public class HeadAddCommentController {
+public class HeadAddCommentGraduationController {
     private static final Logger logger = LoggerFactory.getLogger(StudentAddCommentController.class);
     @Autowired
     private CommentRepository commentRepository;
@@ -53,7 +53,7 @@ public class HeadAddCommentController {
 
     private final TokenUtils tokenUtils;
     @Autowired
-    public HeadAddCommentController(TokenUtils tokenUtils){
+    public HeadAddCommentGraduationController(TokenUtils tokenUtils){
         this.tokenUtils = tokenUtils;
     }
 

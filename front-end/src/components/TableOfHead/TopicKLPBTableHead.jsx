@@ -3,8 +3,9 @@ import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import CreditScoreOutlinedIcon from '@mui/icons-material/CreditScoreOutlined';
 import axiosInstance from '../../API/axios';
+import './styleTable.scss';
 
-function TopicPBTableHead() {
+function TopicKLPBTableHead() {
     const [topics, setTopics] = useState([]);
     const [detail, setDetail] = useState('');
     const userToken = getTokenFromUrlAndSaveToStorage();
@@ -14,7 +15,7 @@ function TopicPBTableHead() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axiosInstance.get('/head/counterArgumentSubject', {
+                axiosInstance.get('/head/graduation/manager/counterArgumentSubject', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -36,7 +37,7 @@ function TopicPBTableHead() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axiosInstance.get(`/head/counterArgumentSubject/detail/${id}`, {
+                axiosInstance.get(`/head/graduation/manager/counterArgumentSubject/detail/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -58,7 +59,7 @@ function TopicPBTableHead() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axiosInstance.post(`/head/addScore/${id}`, {
+                axiosInstance.post(`/head/graduation/manager/addScore/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -95,7 +96,7 @@ function TopicPBTableHead() {
                                 <tr key={index}>
                                     <th scope="row">{index + 1}</th>
                                     <td>{item.subjectName}</td>
-                                    <td>{item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName}</td>
+                                    <td>{item.instructorId?.person?.firstName + ' ' + item.instructorId?.person?.lastName}</td>
                                     <td>{item.student1}</td>
                                     <td>{item.student2}</td>
                                     <td>{item.student3}</td>
@@ -158,6 +159,6 @@ function TopicPBTableHead() {
             </div>
         </div>
     )
-}
+ }
 
-export default TopicPBTableHead
+export default TopicKLPBTableHead

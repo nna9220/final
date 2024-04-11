@@ -24,7 +24,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/head/graduation/manager")
-public class HeadManagerTopicController {
+public class HeadManagerTopicGraduationController {
     @Autowired
     private FileRepository fileRepository;
     @Autowired
@@ -55,7 +55,7 @@ public class HeadManagerTopicController {
 
     private final TokenUtils tokenUtils;
     @Autowired
-    public HeadManagerTopicController(TokenUtils tokenUtils){
+    public HeadManagerTopicGraduationController(TokenUtils tokenUtils){
         this.tokenUtils = tokenUtils;
     }
     @GetMapping
@@ -129,6 +129,64 @@ public class HeadManagerTopicController {
             /*ModelAndView error = new ModelAndView();
             error.addObject("errorMessage", "Bạn không có quyền truy cập.");
             return error;*/
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+
+    @GetMapping("/counterArgumentSubject/detail/{id}")
+    public ResponseEntity<Map<String,Object>> getDetailCounterArgument(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent != null && personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+            Lecturer currentLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+            Subject existSubject = subjectRepository.findById(id).orElse(null);
+            Map<String,Object> response = new HashMap<>();
+            response.put("person",personCurrent);
+            response.put("lec",currentLecturer);
+            response.put("subject",existSubject);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            /*return new ModelAndView("error").addObject("errorMessage", "Bạn không có quyền truy cập.");*/
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @PostMapping("/addScore/{id}")
+    public ResponseEntity<?> addScore(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader, @RequestParam Double score){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+            Subject existSubject = subjectRepository.findById(id).orElse(null);
+            if (existSubject!=null){
+                existSubject.setScoreThesis(score);
+                subjectRepository.save(existSubject);
+
+                return new ResponseEntity<>(existSubject,HttpStatus.OK);
+
+            }else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @GetMapping("/counterArgumentSubject")
+    public ResponseEntity<Map<String,Object>> getCounterArgument(@RequestHeader("Authorization") String authorizationHeader){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent != null && personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+            Lecturer currentLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
+            List<Subject> listSubject = subjectRepository.findSubjectsByThesisAdvisorId(currentLecturer,typeSubject);
+            Map<String,Object> response = new HashMap<>();
+            response.put("person", personCurrent);
+            response.put("lec",currentLecturer);
+            response.put("listSubject", listSubject);
+            return new ResponseEntity<>(response,HttpStatus.OK);
+        } else {
+            /* return new ModelAndView("error").addObject("errorMessage", "Bạn không có quyền truy cập.");*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }

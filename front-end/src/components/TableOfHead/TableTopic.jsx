@@ -4,8 +4,10 @@ import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import './TableTopic.scss'
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
 import DetailsIcon from '@mui/icons-material/Details';
+import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import { Link } from 'react-router-dom';
 import ManagementTask from '../KanbanOfHead/ManagementTask';
+import axiosInstance from '../../API/axios';
 
 function TableTopic() {
   const [topics, setTopics] = useState([]);
@@ -14,13 +16,14 @@ function TableTopic() {
   const [selectedSubjectName, setSelectedSubjectName] = useState("");
   const [showBackButton, setShowBackButton] = useState(false);
   const userToken = getTokenFromUrlAndSaveToStorage();
+  const [scores, setScores] = useState({}); // Sử dụng object để lưu trữ điểm cho mỗi đề tài
 
   useEffect(() => {
     console.log("TokenTopic: " + userToken);
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axios.get('http://localhost:5000/api/head/manager', {
+        axiosInstance.get('/head/manager', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },
@@ -28,6 +31,12 @@ function TableTopic() {
           .then(response => {
             console.log("Topic: ", response.data);
             setTopics(response.data.listSubject);
+            // Khởi tạo điểm mặc định cho mỗi đề tài
+            const initialScores = {};
+            response.data.listSubject.forEach(topic => {
+              initialScores[topic.subjectId] = 0;
+            });
+            setScores(initialScores);
           })
           .catch(error => {
             console.error(error);
@@ -47,6 +56,14 @@ function TableTopic() {
     setShowManagementTask(false);
     setShowBackButton(false);
   };
+
+  const handleScoreChange = (subjectId, event) => {
+    const value = parseFloat(event.target.value);
+    setScores(prevScores => ({
+      ...prevScores,
+      [subjectId]: value
+    }));
+  }
 
   return (
     <div className='home-table'>
@@ -72,6 +89,7 @@ function TableTopic() {
               <th scope="col">Sinh viên 2</th>
               <th scope="col">Yêu cầu</th>
               <th scope="col">Action</th>
+              <th scope="col">Chấm điểm</th>
             </tr>
           </thead>
           <tbody>
@@ -86,9 +104,12 @@ function TableTopic() {
                 <td>{item.requirement}</td>
                 <td>
                   <button style={{ marginRight: '20px' }} class="btn btn-primary" type="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Đi đến chi tiết để quản lý đề tài" onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}><DetailsIcon /></button>
-                  <button className='button-res-de'>
-                    <p className='text'><ModeEditOutlineOutlinedIcon /></p>
-                  </button>
+                </td>
+                <td>
+                  <div style={{display:'flex',}}>
+                    <input type="number" value={scores[item.subjectId]} onChange={(e) => handleScoreChange(item.subjectId, e)} min={0} max={10} step={0.1}/>
+                    <button style={{marginLeft:'5px'}} class="btn btn-success" type="button"><CheckCircleOutlineOutlinedIcon/></button>
+                  </div>
                 </td>
               </tr>
             ))}
