@@ -24,7 +24,7 @@ function TableTopicKL() {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axios.get('/api/head/graduation/manager', {
+        axiosInstance.get('/head/graduation/manager', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },

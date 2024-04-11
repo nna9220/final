@@ -24,7 +24,7 @@ function TableRegis() {
     const handleSubmitAdd = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log(formData)
-        axios.post('/api/head/subject/register',
+        axiosInstance.post('/head/subject/register',
             formData
             , {
                 headers: {
@@ -49,7 +49,7 @@ function TableRegis() {
 
     const loadStudents = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
-        axios.get('/api/head/subject/listStudent', {
+        axiosInstance.get('/head/subject/listStudent', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },

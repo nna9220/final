@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import { Toast } from 'react-bootstrap';
+import axiosInstance from '../../../API/axios';
 
 function EditProfileSt() {
     const [user, setUser] = useState([]);
@@ -30,7 +31,7 @@ function EditProfileSt() {
             const tokenSt = sessionStorage.getItem(userToken);
 
             if (!tokenSt) {
-                axios.get('/api/student/home', {
+                axiosInstance.get('/student/home', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -62,7 +63,7 @@ function EditProfileSt() {
             const tokenSt = sessionStorage.getItem(userToken);
 
             if (!tokenSt) {
-                axios.get('/api/student/edit', {
+                axiosInstance.get('/student/edit', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -94,7 +95,7 @@ function EditProfileSt() {
                 formData.append('phone', userEdit.phone);
                 formData.append('gender', gender);
 
-                axios.post(`/api/student/edit/${id}`, formData, {
+                axiosInstance.post(`/student/edit/${id}`, formData, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                         'Content-Type': 'multipart/form-data'

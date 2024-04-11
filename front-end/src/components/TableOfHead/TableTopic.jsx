@@ -23,7 +23,7 @@ function TableTopic() {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axios.get('/api/head/manager', {
+        axiosInstance.get('/head/manager', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },

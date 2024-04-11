@@ -4,6 +4,7 @@ import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import { DragDropContext } from 'react-beautiful-dnd';
 import Column from './Column';
 import './Styles.scss'
+import axiosInstance from '../../API/axios';
 
 const Booard=({subjectId})=>{
     const [data, setData] = useState([]);
@@ -11,7 +12,7 @@ const Booard=({subjectId})=>{
         const userToken = getTokenFromUrlAndSaveToStorage();
         const fetchData = async () => {
           try {
-            const response = await axios.get(`/api/lecturer/subject/listTask/${subjectId}`, {
+            const response = await axiosInstance.get(`/lecturer/subject/listTask/${subjectId}`, {
               headers: {
                 'Authorization': `Bearer ${userToken}`,
               },

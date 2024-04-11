@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { error } from 'jquery';
 import './ListLec.scss'
+import axiosInstance from '../../API/axios';
 
 
 function ListLec() {
     const [user, setUser] = useState([]);
 
     useEffect(() => {
-        axios.get("/api/team")
+        axiosInstance.get("/api/team")
             .then(response => {
                 console.log("API response:", response.data);
                 setUser(response.data);

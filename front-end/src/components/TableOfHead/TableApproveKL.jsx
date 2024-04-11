@@ -8,6 +8,7 @@ import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import PlaylistRemoveOutlinedIcon from '@mui/icons-material/PlaylistRemoveOutlined';
 import PlaylistAddCheckOutlinedIcon from '@mui/icons-material/PlaylistAddCheckOutlined';
+import axiosInstance from '../../API/axios';
 
 function TableApproveKL() {
   const [topics, setTopics] = useState([]);
@@ -31,7 +32,8 @@ function TableApproveKL() {
     }, [userToken]);
 
     const loadTopics = () => {
-        axios.get('/api/head/subjectGraduation', {
+    
+        axiosInstance.get('/head/subjectGraduation', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -46,7 +48,7 @@ function TableApproveKL() {
     };
 
     const loadListDelete = () => {
-        axios.get('/api/head/subject/delete', {
+        axiosInstance.get('/head/subject/delete', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -62,7 +64,7 @@ function TableApproveKL() {
     }
 
     const handleApprove = (id) => {
-        axios.post(`/api/head/subjectGraduation/browse/${id}`, null, {
+        axiosInstance.post(`/head/subjectGraduation/browse/${id}`, null, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -79,7 +81,7 @@ function TableApproveKL() {
     };
 
     const handleDelete = (id) => {
-        axios.post(`/api/head/subject/delete/${id}`, null, {
+        axiosInstance.post(`/head/subject/delete/${id}`, null, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },

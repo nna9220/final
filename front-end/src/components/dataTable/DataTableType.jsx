@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import axiosInstance from '../../API/axios';
 
 function DataTableType() {
     const [type, setType] = useState([]);
@@ -8,7 +9,7 @@ function DataTableType() {
     useEffect(() => {
         const tokenSt = sessionStorage.getItem('userToken');
         if (tokenSt) {
-            axios.get('/api/admin/typeSubject/list', {
+            axiosInstance.get('/admin/typeSubject/list', {
                 headers: {
                     'Authorization': `Bearer ${tokenSt}`,
                 },
@@ -27,7 +28,7 @@ function DataTableType() {
     const handleAddType = () => {
         const tokenSt = sessionStorage.getItem('userToken');
         if (tokenSt) {
-            axios.post('/api/admin/typeSubject/create', { typeName: newTypeName }, {
+            axiosInstance.post('/admin/typeSubject/create', { typeName: newTypeName }, {
                 headers: {
                     'Authorization': `Bearer ${tokenSt}`,
                 },

@@ -3,6 +3,7 @@ import './DataClass.scss'
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
+import axiosInstance from '../API/axios';
 
 function DataClass() {
     const [classes, setClasses] = useState([])
@@ -16,7 +17,7 @@ function DataClass() {
         console.log("Token SV2: " + tokenSt);
         if (tokenSt) {
             console.log("Test: " + tokenSt);
-            axios.get('/api/admin/studentClass', {
+            axiosInstance.get('/admin/studentClass', {
                 headers: {
                     'Authorization': `Bearer ${tokenSt}`,
                 },
@@ -39,7 +40,7 @@ function DataClass() {
         const userToken = getTokenFromUrlAndSaveToStorage();
         const newClassValue = document.getElementById('exampleFormControlInput1').value;
     
-        axios.post('/api/admin/studentClass/create', null, {
+        axiosInstance.post('/admin/studentClass/create', null, {
             params: {
                 className: newClassValue
             },
@@ -64,7 +65,7 @@ function DataClass() {
         const userToken = getTokenFromUrlAndSaveToStorage();
         const updatedClassValue = document.getElementById('exampleFormControlInput1').value;
     
-        axios.post(`/api/admin/studentClass/edit/${selectedClass.id}`, null, {
+        axiosInstance.post(`/admin/studentClass/edit/${selectedClass.id}`, null, {
             params: {
                 classId: selectedClass.id,
                 classname: updatedClassValue
