@@ -4,7 +4,8 @@ import { useParams } from 'react-router-dom';
 import './InforTeacher.scss';
 import { Link } from 'react-router-dom';
 import { Home } from '@mui/icons-material';
-import axiosInstance from '../API/axios';
+import axiosInstance from '../../API/axios';
+
 
 function InforTeacher() {
     useEffect(() => {

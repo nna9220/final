@@ -3,7 +3,7 @@ import './DataClass.scss'
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
-import axiosInstance from '../API/axios';
+import axiosInstance from '../../API/axios';
 
 function DataClass() {
     const [classes, setClasses] = useState([])
