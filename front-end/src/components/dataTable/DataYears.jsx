@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
+import axiosInstance from '../../API/axios';
 
 function DataYears() {
     const [years, setYears] = useState([]);
@@ -13,7 +14,7 @@ function DataYears() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axios.get('/api/admin/schoolYear', {
+                axiosInstance.get('/admin/schoolYear', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -33,7 +34,7 @@ function DataYears() {
         const userToken = getTokenFromUrlAndSaveToStorage();
         const newYearValue = document.getElementById('exampleFormControlInput1').value;
     
-        axios.post('/api/admin/schoolYear/create', null, {
+        axiosInstance.post('/admin/schoolYear/create', null, {
             params: {
                 year: newYearValue
             },
@@ -58,7 +59,7 @@ function DataYears() {
         const userToken = getTokenFromUrlAndSaveToStorage();
         const updatedYearValue = document.getElementById('exampleFormControlInput1').value;
     
-        axios.post(`/api/admin/schoolYear/edit/${selectedYear.yearId}`, null, {
+        axiosInstance.post(`/admin/schoolYear/edit/${selectedYear.yearId}`, null, {
             params: {
                 yearId: selectedYear.yearId,
                 year: updatedYearValue

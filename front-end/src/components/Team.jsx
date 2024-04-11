@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 import './Team.scss'
+import axiosInstance from '../API/axios'
 
 
 function Team() {
@@ -12,7 +13,7 @@ function Team() {
 
     useEffect(() => {
         document.title = "Danh sách giảng viên";
-        axios.get("/api/team")
+        axiosInstance.get("/api/team")
             .then(response => {
                 console.log("API response:", response.data);
                 setUser(response.data);
