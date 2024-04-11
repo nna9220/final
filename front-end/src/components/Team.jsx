@@ -12,7 +12,7 @@ function Team() {
     const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
-        axios.get("/api/team")
+        axios.get("http://localhost:5000/api/team")
             .then(response => {
                 console.log("API response:", response.data);
                 setUser(response.data);
