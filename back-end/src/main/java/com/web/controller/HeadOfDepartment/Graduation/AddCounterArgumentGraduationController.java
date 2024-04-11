@@ -204,6 +204,7 @@ public class AddCounterArgumentGraduationController {
                                               @RequestParam("expected") String expected,
                                               @RequestParam(value = "student1", required = false) String student1,
                                               @RequestParam(value = "student2", required = false) String student2,
+                                                   @RequestParam(value = "student3", required = false) String student3,
                                               @RequestHeader("Authorization") String authorizationHeader,
                                               HttpServletRequest request) {
 
@@ -229,6 +230,8 @@ public class AddCounterArgumentGraduationController {
                     //Tìm sinh viên qua mã sinh viên
                     Student studentId1 = studentRepository.findById(student1).orElse(null);
                     Student studentId2 = studentRepository.findById(student2).orElse(null);
+                    Student studentId3 = studentRepository.findById(student3).orElse(null);
+
                     if (studentId1 != null) {
                         newSubject.setStudent1(student1);
                         studentId1.setSubjectId(newSubject);
@@ -237,14 +240,18 @@ public class AddCounterArgumentGraduationController {
                         newSubject.setStudent2(student2);
                         studentId2.setSubjectId(newSubject);
                     }
+                    if (studentId3 != null) {
+                        newSubject.setStudent3(student3);
+                        studentId3.setSubjectId(newSubject);
+                    }
                     LocalDate nowDate = LocalDate.now();
                     newSubject.setYear(String.valueOf(nowDate));
-
                     TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
                     newSubject.setTypeSubject(typeSubject);
                     subjectRepository.save(newSubject);
                     studentRepository.save(studentId1);
                     studentRepository.save(studentId2);
+                    studentRepository.save(studentId3);
                     return new ResponseEntity<>(newSubject, HttpStatus.CREATED);
                 }else {
                     return new ResponseEntity<>(personCurrent,HttpStatus.OK);
