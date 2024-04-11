@@ -5,6 +5,7 @@ import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import axiosInstance from '../../API/axios';
 
 function TableRegis() {
     const [isLoading, setIsLoading] = useState(false);
@@ -18,11 +19,12 @@ function TableRegis() {
         student2: '',
         student3: '',
     });
+    const [students, setStudents]= useState([]);
 
     const handleSubmitAdd = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log(formData)
-        axios.post('/api/head/subject/register',
+        axiosInstance.post('/head/subject/register',
             formData
             , {
                 headers: {
@@ -40,6 +42,29 @@ function TableRegis() {
                 setShowErrorToastAdd(true);
             });
     };
+
+    useEffect(() => {
+        loadStudents();
+    }, []);
+
+    const loadStudents = () => {
+        const userToken = getTokenFromUrlAndSaveToStorage();
+        axiosInstance.get('/head/subject/listStudent', {
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+            },
+        })
+        .then(response => {
+            console.log('Danh sách sinh viên:', response.data);
+            setStudents(response.data);
+            setIsLoading(false);
+        })
+        .catch(error => {
+            console.error(error);
+            console.log("Lỗi");
+        });
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prevState => ({
@@ -87,26 +112,33 @@ function TableRegis() {
                             <label htmlFor="expected" className="form-label">Kết quả mong muốn</label>
                             <input type="text" className="form-control" id="expected" name="expected" value={formData.expected} onChange={handleChange} />
                         </div>
-                        <div className="mb-3">
-                            <label htmlFor="major" className="form-label">Loại đề tài </label>
-                            <select class="form-select" aria-label="Default select example">
-                                <option selected disabled>Loại đề tài</option>
-                                <option value="1">Tiểu luận chuyên ngành</option>
-                                <option value="2">Khóa luận tốt nghiệp</option>
-                            </select>
-                        </div>
                         <h5>Nhóm sinh viên thực hiện: </h5>
                         <div className="mb-3">
                             <label htmlFor="student1" className="form-label">Sinh viên 1</label>
-                            <input type="text" className="form-control" id="student1" name="student1" value={formData.student1} onChange={handleChange} />
+                            <select className="form-select" aria-label="Default select example" name="student1" value={formData.student1} onChange={handleChange}>
+                                <option selected disabled>Chọn sinh viên</option>
+                                {students.map(student => (
+                                    <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
+                                ))}
+                            </select>                        
                         </div>
                         <div className="mb-3">
                             <label htmlFor="student2" className="form-label">Sinh viên 2</label>
-                            <input type="text" className="form-control" id="student2" name="student2" value={formData.student2} onChange={handleChange} />
+                            <select className="form-select" aria-label="Default select example" name="student2" value={formData.student2} onChange={handleChange}>
+                                <option selected disabled>Chọn sinh viên</option>
+                                {students.map(student => (
+                                    <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
+                                ))}
+                            </select>                           
                         </div>
                         <div className="mb-3">
-                            <label htmlFor="student2" className="form-label">Sinh viên 3</label>
-                            <input type="text" className="form-control" id="student3" name="student3" value={formData.student3} onChange={handleChange} />
+                            <label htmlFor="student3" className="form-label">Sinh viên 3</label>
+                            <select className="form-select" aria-label="Default select example" name="student3" value={formData.student3} onChange={handleChange}>
+                                <option selected disabled>Chọn sinh viên</option>
+                                {students.map(student => (
+                                    <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
+                                ))}
+                            </select>   
                         </div>
                         <div className='footerForm'>
                             <div>

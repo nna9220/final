@@ -5,6 +5,7 @@ import DetailsIcon from '@mui/icons-material/Details';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
+import axiosInstance from '../../API/axios';
 
 function ManagermentTask() {
   const [topics, setTopics] = useState([]);
@@ -19,7 +20,7 @@ function ManagermentTask() {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axios.get('http://localhost:5000/api/lecturer/subject', {
+        axiosInstance.get('/lecturer/subject', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },

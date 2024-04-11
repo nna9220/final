@@ -8,6 +8,7 @@ import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import PlaylistRemoveOutlinedIcon from '@mui/icons-material/PlaylistRemoveOutlined';
 import PlaylistAddCheckOutlinedIcon from '@mui/icons-material/PlaylistAddCheckOutlined';
+import axiosInstance from '../../API/axios';
 
 function TableApprove() {
     const [topics, setTopics] = useState([]);
@@ -31,7 +32,7 @@ function TableApprove() {
     }, [userToken]);
 
     const loadTopics = () => {
-        axios.get('http://localhost:5000/api/head/subject', {
+        axiosInstance.get('/head/subject', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -46,7 +47,7 @@ function TableApprove() {
     };
 
     const loadListDelete = () => {
-        axios.get('http://localhost:5000/api/head/subject/delete', {
+        axiosInstance.get('/head/subject/delete', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -62,7 +63,7 @@ function TableApprove() {
     }
 
     const handleApprove = (id) => {
-        axios.post(`http://localhost:5000/api/head/subject/browse/${id}`, null, {
+        axiosInstance.post(`/head/subject/browse/${id}`, null, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -79,7 +80,7 @@ function TableApprove() {
     };
 
     const handleDelete = (id) => {
-        axios.post(`http://localhost:5000/api/head/subject/delete/${id}`, null, {
+        axiosInstance.post(`/head/subject/delete/${id}`, null, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -186,8 +187,8 @@ function TableApprove() {
                                     <th scope="row">{index + 1}</th>
                                     <td>{item.subjectName}</td>
                                     <td>{item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName}</td>
-                                    <td>{item.student1 === null ? 'Trống' : ''}</td>
-                                    <td>{item.student2 === null ? 'Trống' : ''}</td>
+                                    <td>{item.student1}</td>
+                                    <td>{item.student2}</td>
                                     <td>{item.requirement}</td>
                                     <td style={{ display: 'flex' }}>
                                         <button style={{ marginRight: '20px' }} className='button-res' onClick={() => handleApprove(item.subjectId)}>
