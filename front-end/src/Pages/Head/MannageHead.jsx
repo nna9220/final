@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import SidebarHead from '../../components/Sidebar/SidebarHead';
 import Navbar from '../../components/Navbar/Navbar';
 import './MannageHead.scss';
@@ -11,6 +11,9 @@ import TableAssignKL from '../../components/TableOfHead/TableAssignKL';
 import TableTopicKL from '../../components/TableOfHead/TableTopicKL';
 
 function MannageHead() {
+  useEffect(() => {
+    document.title = "Quản lý đề tài";
+  }, []);
   const [selectedTitle, setSelectedTitle] = useState({ title1: 'Duyệt đề tài', title2: '', table: null });
 
   const handleDropdownClick = (title1, title2, table) => {

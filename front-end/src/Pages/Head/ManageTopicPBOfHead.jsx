@@ -3,11 +3,15 @@ import SidebarHead from '../../components/Sidebar/SidebarHead'
 import Navbar from '../../components/Navbar/Navbar'
 import TopicPBTableHead from '../../components/TableOfHead/TopicPBTableHead'
 import './ManageTopicPBOfHead.scss'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import RegisTopicLec from '../Teacher/RegisTopicLec'
 import TopicKLPBTableHead from '../../components/TableOfHead/TopicKLPBTableHead'
 
 function ManageTopicPBOfHead() {
+  useEffect(() => {
+    document.title = "Quản lý đề tài phản biện";
+  }, []);
+
   const [selectedTitle, setSelectedTitle] = useState("Tiểu luận chuyên ngành");
 
   const handleDropdownChange = (e) => {
