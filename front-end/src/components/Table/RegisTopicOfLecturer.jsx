@@ -23,7 +23,7 @@ function RegisTopicOfLecturer() {
         event.preventDefault();
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log(formData)
-        axios.post('http://localhost:5000/api/lecturer/subject/register',
+        axios.post('/api/lecturer/subject/register',
             formData
             , {
                 headers: {

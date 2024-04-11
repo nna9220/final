@@ -38,7 +38,7 @@ const Card = ({ task, index }) => {
 
       console.log("Comment-post: ", formData);
       // Gửi yêu cầu POST để tạo comment
-      const response = await axios.post(`http://localhost:5000/api/student/comment/create/${task.taskId}`, formData, {
+      const response = await axios.post(`/api/student/comment/create/${task.taskId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${userToken}`, // Thay thế userToken bằng cách lấy từ storage hoặc một cách thích hợp khác
@@ -59,7 +59,7 @@ const Card = ({ task, index }) => {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axios.get(`http://localhost:5000/api/student/task/detail/${taskId}`, {
+        axios.get(`/api/student/task/detail/${taskId}`, {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },

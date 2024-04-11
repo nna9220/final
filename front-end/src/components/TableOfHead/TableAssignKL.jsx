@@ -19,7 +19,7 @@ function TableAssignKL() {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axios.get('http://localhost:5000/api/head/subjectGraduation/listAdd', {
+        axios.get('/api/head/subjectGraduation/listAdd', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },
@@ -45,7 +45,7 @@ function TableAssignKL() {
   };
 
   const handleAssignGVPB = (subjectId, index) => {
-    axios.get(`http://localhost:5000/api/head/subjectGraduation/listLecturer/${subjectId}`, {
+    axios.get(`/api/head/subjectGraduation/listLecturer/${subjectId}`, {
       headers: {
         'Authorization': `Bearer ${userToken}`,
       },
@@ -62,7 +62,7 @@ function TableAssignKL() {
   const handleGVPB = (subjectId, index) => {
     const lecturerId = lecturerIds[index]; // Lấy lecturerId tương ứng với đề tài
     if (lecturerId && subjectId) {
-      axios.post(`http://localhost:5000/api/head/subjectGraduation/addCounterArgumrnt/${subjectId}/${lecturerId}`, null, {
+      axios.post(`/api/head/subjectGraduation/addCounterArgumrnt/${subjectId}/${lecturerId}`, null, {
         headers: {
           'Authorization': `Bearer ${userToken}`
         }

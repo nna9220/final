@@ -46,7 +46,7 @@ const KanbanBoard = () => {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axios.get('http://localhost:5000/api/student/task/list', {
+        axios.get('/api/student/task/list', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },
@@ -66,7 +66,7 @@ const KanbanBoard = () => {
 
   const handleNewTask = () => {
     const userToken = getTokenFromUrlAndSaveToStorage();
-    axios.get('http://localhost:5000/api/student/task/new', {
+    axios.get('/api/student/task/new', {
       headers: {
         'Authorization': `Bearer ${userToken}`,
       },
@@ -86,7 +86,7 @@ const KanbanBoard = () => {
 
     console.log("Start: ",formNewTask.timeStart);
     console.log("Requirement: ",formNewTask.requirement);
-    axios.post('http://localhost:5000/api/student/task/create', formNewTask, {
+    axios.post('/api/student/task/create', formNewTask, {
       headers: {
         'Authorization': `Bearer ${userToken}`,
         'Content-Type': 'multipart/form-data',

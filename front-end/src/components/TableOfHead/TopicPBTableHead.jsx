@@ -13,7 +13,7 @@ function TopicPBTableHead() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axios.get('http://localhost:5000/api/head/counterArgumentSubject', {
+                axios.get('/api/head/counterArgumentSubject', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -35,7 +35,7 @@ function TopicPBTableHead() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axios.get(`http://localhost:5000/api/head/counterArgumentSubject/detail/${id}`, {
+                axios.get(`/api/head/counterArgumentSubject/detail/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -57,7 +57,7 @@ function TopicPBTableHead() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axios.post(`http://localhost:5000/api/head/addScore/${id}`, {
+                axios.post(`/api/head/addScore/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
