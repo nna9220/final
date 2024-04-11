@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
-import './styleTable.scss';
+import './TableApprove.scss';
 import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
 import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
@@ -96,7 +96,7 @@ function TableApprove() {
     }
 
     return (
-        <div>
+        <div className='body-table'>
              <Toast show={showDeleteToast} onClose={() => setShowDeleteToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
                 <Toast.Header>
                     <strong className="me-auto">Thông báo</strong>
@@ -132,6 +132,7 @@ function TableApprove() {
                     Duyệt đề tài không thành công!
                 </Toast.Body>
             </Toast>
+
             <button className='button-listDelete' onClick={() => setShowTable(!showTable)}>
                     {showTable ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách đề tài chưa duyệt</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách đề tài đã xóa</>}
             </button>
@@ -192,7 +193,7 @@ function TableApprove() {
                                         <button style={{ marginRight: '20px' }} className='button-res' onClick={() => handleApprove(item.subjectId)}>
                                             <p className='text'>Duyệt</p>
                                         </button>
-                                        <button className='button-res' onClick={() => handleDelete(item.subjectId)}>
+                                        <button className='button-res-de' onClick={() => handleDelete(item.subjectId)}>
                                             <p className='text'>Xóa</p>
                                         </button>
                                     </td>

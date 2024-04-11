@@ -52,7 +52,6 @@ public class StudentAddTaskController {
             Student currentStudent = studentRepository.findById(personCurrent.getPersonId()).orElse(null);
             Subject currentSubject = subjectRepository.findById(currentStudent.getSubjectId().getSubjectId()).orElse(null);
 
-
             List<Student> studentList = new ArrayList<>();
             if (currentSubject.getStudent1() != null) {
                 Student studen1 = studentRepository.findById(currentSubject.getStudent1()).orElse(null);

@@ -24,6 +24,14 @@
     }
 }
 
+.button-add-task{
+    border: none;
+    background-color: white;
+    &:hover {
+        color: #156575;
+    }
+}
+
 
 /*Card*/
 .modal-body{
@@ -96,5 +104,10 @@
             }
         }
     }
+}
+
+.list-button{
+    display: flex;
+    justify-content: space-between;
 }
 

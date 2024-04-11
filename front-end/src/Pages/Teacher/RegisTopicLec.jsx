@@ -1,15 +1,22 @@
 import React from 'react'
 import SidebarLec from '../../components/Sidebar/SidebarLec'
 import Navbar from '../../components/Navbar/Navbar'
-import './HomeLec.scss'
+import './RegisTopicLec.scss'
 import RegisTopicOfLecturer from '../../components/Table/RegisTopicOfLecturer'
+import { useState } from 'react'
 
 function RegisTopicLec() {
+  const [selectedTitle, setSelectedTitle] = useState("Tiểu luận chuyên ngành");
+
+  const handleDropdownChange = (e) => {
+    setSelectedTitle(e.target.value);
+  };
+
   return (
     <div className='homeLec'>
       <SidebarLec></SidebarLec>
       <div className='context'>
-        <Navbar/>
+        <Navbar />
         <hr />
         <div className='context-menu'>
           <div className='contaxt-title'>
@@ -19,12 +26,12 @@ function RegisTopicLec() {
           </div>
           <div className='context-nd'>
             <div className='card-nd'>
-              <div class="dropdown">
-                <div class="dropdown-title">Chọn loại luận văn</div>
-                <div class="dropdown-content">
-                  <a href="#">Tiểu luận chuyên ngành</a>
-                  <a href="#">Khóa luận tốt nghiệp</a>
-                </div>
+              <label htmlFor="selectTitle" style={{ marginTop: '20px', marginLeft: '30px' }}>Chọn loại đề tài</label>
+              <div className="dropdown">
+                <select id="selectTitle" className="form-se" aria-label="Default select example" onChange={handleDropdownChange}>
+                  <option className='optionSe' value="Tiểu luận chuyên ngành">Tiểu luận chuyên ngành</option>
+                  <option className='optionSe' value="Khóa luận tốt nghiệp">Khóa luận tốt nghiệp</option>
+                </select>
               </div>
             </div>
           </div>

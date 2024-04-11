@@ -16,6 +16,7 @@ function TableRegis() {
         expected: '',
         student1: '',
         student2: '',
+        student3: '',
     });
 
     const handleSubmitAdd = () => {
@@ -102,6 +103,10 @@ function TableRegis() {
                         <div className="mb-3">
                             <label htmlFor="student2" className="form-label">Sinh viên 2</label>
                             <input type="text" className="form-control" id="student2" name="student2" value={formData.student2} onChange={handleChange} />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="student2" className="form-label">Sinh viên 3</label>
+                            <input type="text" className="form-control" id="student3" name="student3" value={formData.student3} onChange={handleChange} />
                         </div>
                         <div className='footerForm'>
                             <div>

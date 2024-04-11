@@ -6,6 +6,9 @@ import TableApprove from '../../components/TableOfHead/TableApprove';
 import TbaleAssign from '../../components/TableOfHead/TbaleAssign';
 import TableRegis from '../../components/TableOfHead/TableRegis';
 import TableTopic from '../../components/TableOfHead/TableTopic';
+import TableApproveKL from '../../components/TableOfHead/TableApproveKL';
+import TableAssignKL from '../../components/TableOfHead/TableAssignKL';
+import TableTopicKL from '../../components/TableOfHead/TableTopicKL';
 
 function MannageHead() {
   const [selectedTitle, setSelectedTitle] = useState({ title1: 'Duyệt đề tài', title2: '', table: null });
@@ -32,21 +35,21 @@ function MannageHead() {
                 <div className="dropdown-title">Duyệt đề tài</div>
                 <div className="dropdown-content">
                   <a href="#" onClick={() => handleDropdownClick('Duyệt đề tài', 'Tiểu luận chuyên ngành', <TableApprove />)}>Tiểu luận chuyên ngành</a>
-                  <a href="#" onClick={() => handleDropdownClick('Duyệt đề tài', 'Khóa luận tốt nghiệp')}>Khóa luận tốt nghiệp</a>
+                  <a href="#" onClick={() => handleDropdownClick('Duyệt đề tài', 'Khóa luận tốt nghiệp', <TableApproveKL/>)}>Khóa luận tốt nghiệp</a>
                 </div>
               </div>
               <div className="dropdown">
                 <div className="dropdown-title">Phân Giảng viên phản biện</div>
                 <div className="dropdown-content">
                   <a href="#" onClick={() => handleDropdownClick('Phân giảng viên phản biện', 'Tiểu luận chuyên ngành',<TbaleAssign/>)}>Tiểu luận chuyên ngành</a>
-                  <a href="#" onClick={() => handleDropdownClick('Phân giảng viên phản biện', 'Khóa luận tốt nghiệp')}>Khóa luận tốt nghiệp</a>
+                  <a href="#" onClick={() => handleDropdownClick('Phân giảng viên phản biện', 'Khóa luận tốt nghiệp', <TableAssignKL/>)}>Khóa luận tốt nghiệp</a>
                 </div>
               </div>
               <div className="dropdown">
                 <div className="dropdown-title">Đề tài của tôi</div>
                 <div className="dropdown-content">
                   <a href="#" onClick={() => handleDropdownClick('Đề tài của tôi', 'Tiểu luận chuyên ngành', <TableTopic/>)}>Tiểu luận chuyên ngành</a>
-                  <a href="#" onClick={() => handleDropdownClick('Đề tài của tôi', 'Khóa luận tốt nghiệp')}>Khóa luận tốt nghiệp</a>
+                  <a href="#" onClick={() => handleDropdownClick('Đề tài của tôi', 'Khóa luận tốt nghiệp', <TableTopicKL/>)}>Khóa luận tốt nghiệp</a>
                 </div>
               </div>
             </div>
