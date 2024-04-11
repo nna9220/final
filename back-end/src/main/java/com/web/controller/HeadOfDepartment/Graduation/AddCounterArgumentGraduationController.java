@@ -31,7 +31,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/head/subjectGraduation")
 @RequiredArgsConstructor
-public class AddCounterArgumentController {
+public class AddCounterArgumentGraduationController {
     @Autowired
     private SubjectImplService service;
     @Autowired
@@ -181,6 +181,18 @@ public class AddCounterArgumentController {
             response.put("person", personCurrent);
             response.put("listSubject", subjectByCurrentLecturer);
             return new ResponseEntity<>(response,HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @GetMapping("/listStudent")
+    public ResponseEntity<?> getListStudent(@RequestHeader("Authorization") String authorizationHeader){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
+            List<Student> studentList = studentRepository.getStudentSubjectGraduationNull();
+            return new ResponseEntity<>(studentList, HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

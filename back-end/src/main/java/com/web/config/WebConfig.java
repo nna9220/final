@@ -18,9 +18,9 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedOrigins("*")
+        registry.addMapping("/**")
                 .allowCredentials(false)
-                .allowedOrigins("https://hcmute.workon.space")
+                .allowedOrigins("https://hcmute.workon.space","http://localhost:3000")
                 .allowedHeaders("*")
                 .allowedOriginPatterns("http://*","https://*")
                 .allowedMethods("*");
