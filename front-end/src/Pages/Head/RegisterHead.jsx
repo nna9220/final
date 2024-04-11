@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import './RegisterHead.scss';
 import SidebarHead from '../../components/Sidebar/SidebarHead';
 import Navbar from '../../components/Navbar/Navbar';
@@ -6,6 +6,9 @@ import TableRegis from '../../components/TableOfHead/TableRegis';
 import TableRegisKL from '../../components/TableOfHead/TableRegisKL';
 
 function RegisterHead() {
+    useEffect(() => {
+        document.title = "Đăng ký đề tài";
+      }, []);
     const [selectedTitle, setSelectedTitle] = useState("Tiểu luận chuyên ngành");
 
     const handleDropdownClick = (title1, title2, table) => {
