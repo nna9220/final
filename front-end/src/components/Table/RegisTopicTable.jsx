@@ -16,7 +16,7 @@ function RegisTopicTable() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axios.get('http://localhost:5000/api/student/subject', {
+                axios.get('/api/student/subject', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -40,7 +40,7 @@ function RegisTopicTable() {
     const dangKyDeTai = (subjectId) => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         if (userToken) {
-            axios.post(`http://localhost:5000/api/student/subject/registerTopic/${subjectId}`, null, {
+            axios.post(`/api/student/subject/registerTopic/${subjectId}`, null, {
                 headers: {
                     'Authorization': `Bearer ${userToken}`,
                 },

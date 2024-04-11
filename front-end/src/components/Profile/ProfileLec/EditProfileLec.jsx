@@ -32,7 +32,7 @@ function EditProfileLec() {
             const tokenSt = sessionStorage.getItem(userToken);
 
             if (!tokenSt) {
-                axios.get('http://localhost:5000/api/lecturer/home', {
+                axios.get('/api/lecturer/home', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -64,7 +64,7 @@ function EditProfileLec() {
             const tokenSt = sessionStorage.getItem(userToken);
 
             if (!tokenSt) {
-                axios.get('http://localhost:5000/api/lecturer/edit', {
+                axios.get('/api/lecturer/edit', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -96,7 +96,7 @@ function EditProfileLec() {
                 formData.append('phone', userEdit.phone);
                 formData.append('gender', gender);
 
-                axios.post(`http://localhost:5000/api/lecturer/edit/${id}`, formData, {
+                axios.post(`/api/lecturer/edit/${id}`, formData, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                         'Content-Type': 'multipart/form-data'

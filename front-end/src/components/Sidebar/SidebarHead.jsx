@@ -29,7 +29,7 @@ function SidebarHead() {
           const tokenSt = sessionStorage.getItem(userToken);
     
           if (!tokenSt) {
-            axios.get('http://localhost:5000/api/head/home', {
+            axios.get('/api/head/home', {
               headers: {
                 'Authorization': `Bearer ${userToken}`,
               },

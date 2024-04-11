@@ -12,7 +12,7 @@ function Team() {
 
     useEffect(() => {
         document.title = "Danh sách giảng viên";
-        axios.get("http://localhost:5000/api/team")
+        axios.get("/api/team")
             .then(response => {
                 console.log("API response:", response.data);
                 setUser(response.data);

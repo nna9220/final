@@ -70,7 +70,7 @@ function DatatableLec() {
     const handleSubmitAdd = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log(formData)
-        axios.post('http://localhost:5000/api/admin/lecturer/create',
+        axios.post('/api/admin/lecturer/create',
             formData
             , {
                 headers: {
@@ -97,7 +97,7 @@ function DatatableLec() {
 
     const confirmDelete = () => {
         const lecturerId = selectedRow.lecturerId;
-        axios.post(`http://localhost:5000/api/admin/lecturer/delete/${lecturerId}`, {}, {
+        axios.post(`/api/admin/lecturer/delete/${lecturerId}`, {}, {
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
             }
@@ -130,7 +130,7 @@ function DatatableLec() {
         if (!isDataFetched) {
             const tokenSt = sessionStorage.getItem('userToken');
             if (tokenSt) {
-                axios.get('http://localhost:5000/api/admin/lecturer', {
+                axios.get('/api/admin/lecturer', {
                     headers: {
                         'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
                     },
@@ -174,7 +174,7 @@ function DatatableLec() {
         formDataEdit.append('authority', userEdit.authority);
 
         console.log(userEdit);
-        axios.post(`http://localhost:5000/api/admin/lecturer/edit/${id}`, formDataEdit, {
+        axios.post(`/api/admin/lecturer/edit/${id}`, formDataEdit, {
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
                 'Content-Type': 'multipart/form-data'

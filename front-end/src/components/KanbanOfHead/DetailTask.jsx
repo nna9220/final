@@ -11,7 +11,7 @@ const EditTaskForm = ({ subjectId }) => {
     console.log("subjectID2:", subjectId);
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/head/manager/listTask/${subjectId}`, {
+        const response = await axios.get(`/api/head/manager/listTask/${subjectId}`, {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },
