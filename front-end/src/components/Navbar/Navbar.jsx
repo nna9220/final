@@ -11,16 +11,16 @@ function Navbar() {
                 'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
             }
         })
-        .then(response => {
-            // Xóa token từ Local Storage sau khi đăng xuất thành công
-            localStorage.removeItem('accessToken');
-            // Chuyển hướng đến trang chủ hoặc thực hiện bất kỳ hành động nào khác sau khi đăng xuất thành công
-            window.location.href = '/';
-        })
-        .catch(error => {
-            console.error('Error occurred while logging out:', error);
-            // Xử lý lỗi đăng xuất nếu cần thiết
-        });
+            .then(response => {
+                // Xóa token từ Local Storage sau khi đăng xuất thành công
+                localStorage.removeItem('accessToken');
+                // Chuyển hướng đến trang chủ hoặc thực hiện bất kỳ hành động nào khác sau khi đăng xuất thành công
+                window.location.href = '/';
+            })
+            .catch(error => {
+                console.error('Error occurred while logging out:', error);
+                // Xử lý lỗi đăng xuất nếu cần thiết
+            });
     };
 
     return (
@@ -31,11 +31,13 @@ function Navbar() {
                         <DarkModeOutlinedIcon className='icon' />
                     </div>
 
-                    <div className='item'>
-                        <NotificationsNoneOutlinedIcon className='icon' />
-                        <div className="counter">1</div>
-                    </div>
-
+                    <button class="btn position-relative item">
+                        <NotificationsNoneOutlinedIcon className='icon-noti' />
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            9+
+                            <span class="visually-hidden">unread messages</span>
+                        </span>
+                    </button>
                     <div class="dropdown-center">
                         <a href="#" class="p-3 link-dark dropdown-toggle" id="dropdownUser3" data-bs-toggle="dropdown" aria-expanded="false">
                             <img src="\assets\user.jpg" alt="mdo" width="24" height="24" class="rounded-circle" />

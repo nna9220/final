@@ -6,7 +6,7 @@ import Column from './Column';
 import './styleKanban.scss'
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 
-const ManagementTask = ({ subjectId }) => {
+const ManagementTask = ({subjectId}) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
