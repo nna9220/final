@@ -1,4 +1,4 @@
-package com.web.controller.Student;
+package com.web.controller.Student.Graduation;
 
 import com.web.config.CheckRole;
 import com.web.config.CompareTime;
@@ -12,11 +12,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/student/subject")
-public class StudentRegisterTopic {
+@RequestMapping("/api/student/subjectGraduation")
+public class StudentRegisterTopicGraduation {
     @Autowired
     private StudentRepository studentRepository;
 
@@ -33,7 +36,7 @@ public class StudentRegisterTopic {
 
     private final TokenUtils tokenUtils;
     @Autowired
-    public StudentRegisterTopic(TokenUtils tokenUtils){
+    public StudentRegisterTopicGraduation(TokenUtils tokenUtils){
         this.tokenUtils = tokenUtils;
     }
 
@@ -45,15 +48,13 @@ public class StudentRegisterTopic {
             Optional<Student> currentStudentOptional = studentRepository.findById(personCurrent.getPersonId());
             if (currentStudentOptional.isPresent()) {
                 Student currentStudent = currentStudentOptional.get();
-                if (currentStudent.getSubjectId() == null) {
+                if (currentStudent.getSubjectGraduationId() == null && currentStudent.getSubjectId() !=null) {
                     List<RegistrationPeriod> periodList = registrationPeriodRepository.findAllPeriod();
                     if (CompareTime.isCurrentTimeInPeriodStudent(periodList)) {
                         //ModelAndView modelAndView = new ModelAndView("QuanLyDeTai_SV");
-                        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+                        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
                         List<Subject> subjectList = subjectRepository.findSubjectByStatusAndMajorAndStudent(true, currentStudent.getMajor(),typeSubject);
-                        /*modelAndView.addObject("subjectList", subjectList);
-                        modelAndView.addObject("person", personCurrent);
-                        return modelAndView;*/
+
                         Map<String,Object> response = new HashMap<>();
                         response.put("person",personCurrent);
                         response.put("subjectList", subjectList);
@@ -95,14 +96,11 @@ public class StudentRegisterTopic {
                 if (existSubject != null) {
                     if (existSubject.getStudent1() == null) {
                         existSubject.setStudent1(currentStudent.getStudentId());
-                        currentStudent.setSubjectId(existSubject);
+                        currentStudent.setSubjectGraduationId(existSubject);
                     } else if (existSubject.getStudent2() == null) {
                         existSubject.setStudent2(currentStudent.getStudentId());
-                        currentStudent.setSubjectId(existSubject);
+                        currentStudent.setSubjectGraduationId(existSubject);
                     } else {
-                        /*ModelAndView error = new ModelAndView();
-                        error.addObject("errorMessage", "Đã đủ số lượng SVTH");
-                        return error;*/
                         return new ResponseEntity<>("Đã đủ SVTH", HttpStatus.BAD_REQUEST);
                     }
                     subjectRepository.save(existSubject);
