@@ -103,6 +103,11 @@ function DataTable() {
         setShowConfirmation(true);
     };
 
+    const handleRestore = (row) => {
+        setSelectedRow(row);
+        setShowConfirmation(true);
+    };
+
     const confirmDelete = () => {
         const studentId = selectedRow.studentId;
         axiosInstance.post(`/admin/student/delete/${studentId}`, {}, {
@@ -235,14 +240,24 @@ function DataTable() {
             headerName: 'Action',
             width: 150,
             renderCell: (params) => (
-                <>
-                    <button className="btnView" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(params.row)}>
-                        <EditOutlinedIcon />
-                    </button>
-                    <button className='btnDelete' onClick={() => handleDelete(params.row)}>
-                        <DeleteRoundedIcon />
-                    </button>
-                </>
+                <div>
+                    {!showDeletedStudents && (
+                        <>
+                            <button className="btnView" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(params.row)}>
+                                <EditOutlinedIcon />
+                            </button>
+                            <button className='btnDelete' onClick={() => handleDelete(params.row)}>
+                                <DeleteRoundedIcon />
+                            </button>
+                        </>
+                    )}
+
+                    {showDeletedStudents && (
+                        <button className='btnView' onClick={() => handleRestore(params.row)}>
+                            <RestoreOutlinedIcon />
+                        </button>
+                    )}
+                </div>
             ),
         },
     ];
@@ -251,7 +266,7 @@ function DataTable() {
         <div className='homeContainerSt'>
             <div className='header-table'>
                 <div className='btn-add'>
-                    <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddStudent" style={{marginBottom:'10px'}}>
+                    <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddStudent" style={{ marginBottom: '10px' }}>
                         Add
                     </button>
                 </div>
@@ -271,7 +286,7 @@ function DataTable() {
                         schoolYear: student.schoolYear.year,
                     }))}
                     columns={columns}
-                    pageSizeOptions={[10, 100, { value: 1000, label: '1,000' }]}
+                    pageSizeOptions={[10, 50, 100]}
 
                 />
             )}

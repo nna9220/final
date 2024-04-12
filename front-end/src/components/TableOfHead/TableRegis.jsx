@@ -5,6 +5,7 @@ import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
 import axiosInstance from '../../API/axios';
 
 function TableRegis() {
@@ -19,11 +20,27 @@ function TableRegis() {
         student2: null,
         student3: null,
     });
-    const [students, setStudents]= useState([]);
+    const [students, setStudents] = useState([]);
 
-    const handleSubmitAdd = () => {
+    useEffect(() => {
+        loadStudents();
+    }, []);
+
+    const reloadForm = () => {
+        setFormData({
+            subjectName: '',
+            requirement: '',
+            expected: '',
+            student1: null,
+            student2: null,
+            student3: null,
+        });
+        setShowAddToast(false);
+    };
+
+    const handleSubmitAdd = (e) => {
+        e.preventDefault();
         const userToken = getTokenFromUrlAndSaveToStorage();
-        console.log(formData)
         axiosInstance.post('/head/subject/register',
             formData
             , {
@@ -43,9 +60,6 @@ function TableRegis() {
             });
     };
 
-    useEffect(() => {
-        loadStudents();
-    }, []);
 
     const loadStudents = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
@@ -54,15 +68,14 @@ function TableRegis() {
                 'Authorization': `Bearer ${userToken}`,
             },
         })
-        .then(response => {
-            console.log('Danh sách sinh viên:', response.data);
-            setStudents(response.data);
-            setIsLoading(false);
-        })
-        .catch(error => {
-            console.error(error);
-            console.log("Lỗi");
-        });
+            .then(response => {
+                console.log('Danh sách sinh viên:', response.data);
+                setStudents(response.data);
+            })
+            .catch(error => {
+                console.error(error);
+                console.log("Lỗi");
+            });
     };
 
     const handleChange = (e) => {
@@ -75,14 +88,15 @@ function TableRegis() {
 
     return (
         <div className='homeRegis'>
-            <Toast show={showAddToast} onClose={() => setShowAddToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
+            <Toast show={showAddToast} style={{ position: 'fixed', top: '80px', right: '10px' }}>
                 <Toast.Header>
                     <strong className="me-auto">Thông báo</strong>
                 </Toast.Header>
                 <Toast.Body>
-                    <DoneOutlinedIcon /> Đăng ký đề tài thành công!
+                    Đăng ký đề tài thành công! Nhấn vào <button style={{border:'none', backgroundColor:'green', color:'white'}} onClick={reloadForm}><CheckOutlinedIcon/></button> để xác nhận.
                 </Toast.Body>
             </Toast>
+
 
             <Toast show={showErrorToastAdd} onClose={() => setShowErrorToastAdd(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
                 <Toast.Header>
@@ -120,7 +134,7 @@ function TableRegis() {
                                 {students.map(student => (
                                     <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
                                 ))}
-                            </select>                        
+                            </select>
                         </div>
                         <div className="mb-3">
                             <label htmlFor="student2" className="form-label">Sinh viên 2</label>
@@ -129,7 +143,7 @@ function TableRegis() {
                                 {students.map(student => (
                                     <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
                                 ))}
-                            </select>                           
+                            </select>
                         </div>
                         <div className="mb-3">
                             <label htmlFor="student3" className="form-label">Sinh viên 3</label>
@@ -138,7 +152,7 @@ function TableRegis() {
                                 {students.map(student => (
                                     <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
                                 ))}
-                            </select>   
+                            </select>
                         </div>
                         <div className='footerForm'>
                             <div>

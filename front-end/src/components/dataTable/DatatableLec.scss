@@ -35,6 +35,19 @@
         }
     }
 
+    .btnRestor{
+        background-color: white;
+        padding: 5px;
+        margin-right: 20px;
+        border: none;
+        color: #4eb09b;
+
+        &:hover {
+            color: white;
+            background-color: #4eb09b;
+        }
+    }
+
     .btnDelete {
         background-color: white;
         padding: 5px;
