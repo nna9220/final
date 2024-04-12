@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './DataTableRegistrationPeroidLec.scss';
+import axiosInstance from '../../API/axios';
 
 function DataTableRegistrationPeroidLec() {
     const [dataRegis, setDataRegis] = useState([]);
@@ -11,7 +12,7 @@ function DataTableRegistrationPeroidLec() {
     useEffect(() => {
         const tokenSt = sessionStorage.getItem('userToken');
         if (tokenSt) {
-            axios.get('http://localhost:5000/api/admin/PeriodLecturer', {
+            axiosInstance.get('/admin/PeriodLecturer', {
                 headers: {
                     'Authorization': `Bearer ${tokenSt}`,
                 },
@@ -43,7 +44,7 @@ function DataTableRegistrationPeroidLec() {
 
         if (tokenSt && selectedPeriodId) {
             console.log("Data: ", updatedEndValue,updatedStartValue);
-            axios.put(`http://localhost:5000/api/admin/PeriodLecturer/edit/${selectedPeriodId}`,{
+            axios.put(`/api/admin/PeriodLecturer/edit/${selectedPeriodId}`,{
                 params:{
                 periodId: selectedPeriodId,
                 start: updatedStartValue,

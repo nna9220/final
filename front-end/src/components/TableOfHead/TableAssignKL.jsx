@@ -5,6 +5,7 @@ import './styleTable.scss';
 import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import axiosInstance from '../../API/axios';
 
 function TableAssignKL() {
   const [topics, setTopics] = useState([]);
@@ -19,7 +20,7 @@ function TableAssignKL() {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axios.get('http://localhost:5000/api/head/subjectGraduation/listAdd', {
+        axiosInstance.get('/head/subjectGraduation/listAdd', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },
@@ -45,7 +46,7 @@ function TableAssignKL() {
   };
 
   const handleAssignGVPB = (subjectId, index) => {
-    axios.get(`http://localhost:5000/api/head/subjectGraduation/listLecturer/${subjectId}`, {
+    axiosInstance.get(`/head/subjectGraduation/listLecturer/${subjectId}`, {
       headers: {
         'Authorization': `Bearer ${userToken}`,
       },
@@ -62,7 +63,7 @@ function TableAssignKL() {
   const handleGVPB = (subjectId, index) => {
     const lecturerId = lecturerIds[index]; // Lấy lecturerId tương ứng với đề tài
     if (lecturerId && subjectId) {
-      axios.post(`http://localhost:5000/api/head/subjectGraduation/addCounterArgumrnt/${subjectId}/${lecturerId}`, null, {
+      axiosInstance.post(`/head/subjectGraduation/addCounterArgumrnt/${subjectId}/${lecturerId}`, null, {
         headers: {
           'Authorization': `Bearer ${userToken}`
         }

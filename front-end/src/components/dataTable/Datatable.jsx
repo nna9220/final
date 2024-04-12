@@ -12,6 +12,7 @@ import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import { DataGrid } from '@mui/x-data-grid';
+import axiosInstance from '../../API/axios';
 
 function DataTable() {
     const [students, setStudents] = useState([]);
@@ -72,7 +73,7 @@ function DataTable() {
     const handleSubmitAdd = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log(formData)
-        axios.post('http://localhost:5000/api/admin/student/create',
+        axiosInstance.post('/admin/student/create',
             formData
             , {
                 headers: {
@@ -109,7 +110,7 @@ function DataTable() {
 
     const confirmDelete = () => {
         const studentId = selectedRow.studentId;
-        axios.post(`http://localhost:5000/api/admin/student/delete/${studentId}`, {}, {
+        axiosInstance.post(`/admin/student/delete/${studentId}`, {}, {
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
             }
@@ -142,7 +143,7 @@ function DataTable() {
         if (!isDataFetched) {
             const tokenSt = sessionStorage.getItem('userToken');
             if (tokenSt) {
-                axios.get('http://localhost:5000/api/admin/student', {
+                axiosInstance.get('/admin/student', {
                     headers: {
                         'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
                     },
@@ -184,7 +185,7 @@ function DataTable() {
         formDataEdit.append('phone', userEdit.phone);
         formDataEdit.append('gender', gender);
 
-        axios.post(`http://localhost:5000/api/admin/student/edit/${id}`, formDataEdit, {
+        axiosInstance.post(`/admin/student/edit/${id}`, formDataEdit, {
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
                 'Content-Type': 'multipart/form-data'
