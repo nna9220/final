@@ -213,8 +213,10 @@ public class AddCounterArgumentGraduationController {
             String token = tokenUtils.extractToken(authorizationHeader);
             Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
             System.out.println("Trước if check role");
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
+
             if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
-                List<RegistrationPeriodLectuer> periodList = registrationPeriodLecturerRepository.findAllPeriod();
+                List<RegistrationPeriodLectuer> periodList = registrationPeriodLecturerRepository.findAllPeriodEssay(typeSubject);
                 System.out.println("Sau if check role, trước if check time");
                 System.out.println(CompareTime.isCurrentTimeInPeriodSLecturer(periodList));
                 if (CompareTime.isCurrentTimeInPeriodSLecturer(periodList)) {
@@ -253,7 +255,6 @@ public class AddCounterArgumentGraduationController {
 
                     LocalDate nowDate = LocalDate.now();
                     newSubject.setYear(String.valueOf(nowDate));
-                    TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
                     newSubject.setTypeSubject(typeSubject);
                     subjectRepository.save(newSubject);
                     studentRepository.saveAll(studentList);

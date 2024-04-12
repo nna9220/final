@@ -126,7 +126,6 @@ public class LecturerRegisterGraduationTopicController {
     public ResponseEntity<?> lecturerRegisterTopic(@RequestParam("subjectName") String name,
                                               @RequestParam("requirement") String requirement,
                                               @RequestParam("expected") String expected,
-                                              @RequestParam("typeSubject") TypeSubject typeSubject,
                                               @RequestParam(value = "student1", required = false) String student1,
                                               @RequestParam(value = "student2", required = false) String student2,
                                                    @RequestParam(value = "student3", required = false) String student3,
@@ -137,8 +136,9 @@ public class LecturerRegisterGraduationTopicController {
             System.out.println(current);
             String token = tokenUtils.extractToken(authorizationHeader);
             Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
             if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
-                List<RegistrationPeriodLectuer> periodList = registrationPeriodLecturerRepository.findAllPeriod();
+                List<RegistrationPeriodLectuer> periodList = registrationPeriodLecturerRepository.findAllPeriodEssay(typeSubject);
                 if (CompareTime.isCurrentTimeInPeriodSLecturer(periodList)) {
                     Subject newSubject = new Subject();
                     newSubject.setSubjectName(name);
