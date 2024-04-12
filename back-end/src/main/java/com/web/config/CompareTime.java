@@ -17,7 +17,7 @@ public class CompareTime {
         Date currentTime = new Date(System.currentTimeMillis()); // Lấy thời gian hiện tại
 
         // So sánh thời gian hiện tại với thời gian bắt đầu và kết thúc
-        return currentTime.after(start) && currentTime.before(end);
+        return currentTime.after(end) && currentTime.before(start);
 
     }
 
