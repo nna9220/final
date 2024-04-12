@@ -219,23 +219,27 @@ public class AddCounterArgumentController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> lecturerRegisterTopic(@RequestParam("subjectName") String name,
-                                              @RequestParam("requirement") String requirement,
-                                              @RequestParam("expected") String expected,
-                                              @RequestParam(value = "student1", required = false) String student1,
-                                              @RequestParam(value = "student2", required = false) String student2,
-                                              @RequestHeader("Authorization") String authorizationHeader,
-                                              HttpServletRequest request) {
+    public ResponseEntity<?> lecturerRegisterTopic(@RequestParam("subjectName") String name,
+                                                   @RequestParam("requirement") String requirement,
+                                                   @RequestParam("expected") String expected,
+                                                   @RequestParam(value = "student1", required = false) String student1,
+                                                   @RequestParam(value = "student2", required = false) String student2,
+                                                   @RequestParam(value = "student3", required = false) String student3,
+                                                   @RequestHeader("Authorization") String authorizationHeader,
+                                                   HttpServletRequest request) {
 
         try {
             LocalDateTime current = LocalDateTime.now();
             System.out.println(current);
             String token = tokenUtils.extractToken(authorizationHeader);
             Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-            List<Student> studentList = studentRepository.getStudentSubjectNull();
+            System.out.println("Trước if check role");
             if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
                 List<RegistrationPeriodLectuer> periodList = registrationPeriodLecturerRepository.findAllPeriod();
+                System.out.println("Sau if check role, trước if check time");
+                System.out.println(CompareTime.isCurrentTimeInPeriodSLecturer(periodList));
                 if (CompareTime.isCurrentTimeInPeriodSLecturer(periodList)) {
+                    System.out.println("sau if check time");
                     Subject newSubject = new Subject();
                     newSubject.setSubjectName(name);
                     newSubject.setRequirement(requirement);
@@ -244,35 +248,39 @@ public class AddCounterArgumentController {
                     newSubject.setStatus(false);
                     //Tìm kiếm giảng viên hiện tại
                     Lecturer existLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+                    System.out.println("GV: " + existLecturer);
                     newSubject.setInstructorId(existLecturer);
                     newSubject.setMajor(existLecturer.getMajor());
+                    List<Student> studentList = new ArrayList<>();
                     //Tìm sinh viên qua mã sinh viên
-                    Student studentId1 = studentRepository.findById(student1).orElse(null);
-                    Student studentId2 = studentRepository.findById(student2).orElse(null);
-                    if (studentId1 != null) {
+                    if (student1!=null) {
+                        Student studentId1 = studentRepository.findById(student1).orElse(null);
                         newSubject.setStudent1(student1);
                         studentId1.setSubjectId(newSubject);
+                        studentList.add(studentId1);
                     }
-                    if (studentId2 != null) {
+                    if (student2!=null) {
+                        Student studentId2 = studentRepository.findById(student2).orElse(null);
                         newSubject.setStudent2(student2);
                         studentId2.setSubjectId(newSubject);
+                        studentList.add(studentId2);
+                    }
+                    if (student3!=null) {
+                        Student studentId3 = studentRepository.findById(student3).orElse(null);
+                        newSubject.setStudent1(student3);
+                        studentId3.setSubjectId(newSubject);
+                        studentList.add(studentId3);
                     }
                     LocalDate nowDate = LocalDate.now();
                     newSubject.setYear(String.valueOf(nowDate));
-                    TypeSubject typeSubject = typeSubjectRepository.findById(1).orElse(null);
+                    TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
                     newSubject.setTypeSubject(typeSubject);
                     subjectRepository.save(newSubject);
-                    studentRepository.save(studentId1);
-                    studentRepository.save(studentId2);
-                    Map<String,Object> response = new HashMap<>();
-                    response.put("newSubject", newSubject);
-                    response.put("studentList",studentList);
-                    return new ResponseEntity<>(response, HttpStatus.CREATED);
+                    studentRepository.saveAll(studentList);
+                    System.out.println("Đề tài: "+newSubject.getSubjectName());
+                    return new ResponseEntity<>(newSubject, HttpStatus.CREATED);
                 }else {
-                    Map<String,Object> response2 = new HashMap<>();
-                    response2.put("person", personCurrent);
-                    response2.put("studentList",studentList);
-                    return new ResponseEntity<>(response2,HttpStatus.OK);
+                    return new ResponseEntity<>(personCurrent,HttpStatus.OK);
                 }
             }
             else {

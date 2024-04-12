@@ -5,6 +5,8 @@ import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import axiosInstance from "../../API/axios";
+
 
 function RegisTopicOfLecturer() {
     const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +25,7 @@ function RegisTopicOfLecturer() {
         event.preventDefault();
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log(formData)
-        axios.post('http://localhost:5000/api/lecturer/subject/register',
+        axiosInstance.post('/lecturer/subject/register',
             formData
             , {
                 headers: {

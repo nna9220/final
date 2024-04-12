@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
+import axiosInstance from '../../API/axios';
 
 const EditTaskForm = ({ subjectId }) => {
   const [taskList, setTaskList] = useState([]);
@@ -11,7 +12,7 @@ const EditTaskForm = ({ subjectId }) => {
     console.log("subjectID2:", subjectId);
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/head/manager/listTask/${subjectId}`, {
+        const response = await axiosInstance.get(`/head/manager/listTask/${subjectId}`, {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },

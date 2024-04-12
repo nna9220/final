@@ -4,6 +4,9 @@ import { useParams } from 'react-router-dom';
 import './InforTeacher.scss';
 import { Link } from 'react-router-dom';
 import { Home } from '@mui/icons-material';
+import axiosInstance from "../API/axios";
+
+
 
 function InforTeacher() {
     useEffect(() => {
@@ -16,7 +19,7 @@ function InforTeacher() {
     useEffect(() => {
         const fetchTeacherInfo = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/team/profile/${lecturerId}`);
+                const response = await axiosInstance.get(`/team/profile/${lecturerId}`);
                 console.log("profile: ", response.data);
                 setTeacher(response.data);
             } catch (error) {

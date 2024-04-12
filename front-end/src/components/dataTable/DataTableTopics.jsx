@@ -8,6 +8,7 @@ import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined';
 import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import axiosInstance from '../../API/axios';
 
 function DataTableTopics() {
     const [topics, setTopics] = useState([]);
@@ -25,7 +26,7 @@ function DataTableTopics() {
 
     const handleListTLCN = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
-        axios.get('http://localhost:5000/api/admin/subject/tlcn', {
+        axiosInstance.get('/admin/subject/tlcn', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -44,7 +45,7 @@ function DataTableTopics() {
 
     const handleListKLTN = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
-        axios.get('http://localhost:5000/api/admin/subject/kltn', {
+        axiosInstance.get('/admin/subject/kltn', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -83,7 +84,7 @@ function DataTableTopics() {
         const formData = new FormData(); // Khởi tạo formData
         formData.append('file', file); // Thêm file vào formData
 
-        axios.post('http://localhost:5000/api/admin/subject/importTLCN', formData, {
+        axiosInstance.post('/admin/subject/importTLCN', formData, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
                 'Content-Type': 'multipart/form-data',
@@ -111,7 +112,7 @@ function DataTableTopics() {
         const formData = new FormData(); // Khởi tạo formData
         formData.append('file', file); // Thêm file vào formData
 
-        axios.post('http://localhost:5000/api/admin/subject/importKLTN', formData, {
+        axiosInstance.post('/admin/subject/importKLTN', formData, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
                 'Content-Type': 'multipart/form-data',
@@ -136,7 +137,7 @@ function DataTableTopics() {
 
     const handleAssignGVPB = (subjectId, index) => {
         const userToken = getTokenFromUrlAndSaveToStorage();
-        axios.get(`http://localhost:5000/api/admin/subject/listLecturer/${subjectId}`, {
+        axiosInstance.get(`/admin/subject/listLecturer/${subjectId}`, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -154,7 +155,7 @@ function DataTableTopics() {
         const userToken = getTokenFromUrlAndSaveToStorage();
         const lecturerId = lecturerIds[index]; // Lấy lecturerId tương ứng với đề tài
         if (lecturerId && subjectId) {
-            axios.post(`http://localhost:5000/api/admin/subject/addCounterArgumrnt/${subjectId}/${lecturerId}`, null, {
+            axiosInstance.post(`/admin/subject/addCounterArgumrnt/${subjectId}/${lecturerId}`, null, {
                 headers: {
                     'Authorization': `Bearer ${userToken}`
                 }
@@ -176,7 +177,7 @@ function DataTableTopics() {
         const userToken = getTokenFromUrlAndSaveToStorage();
         const lecturerId = lecturerIds[index]; // Lấy lecturerId tương ứng với đề tài
         if (lecturerId && subjectId) {
-            axios.post(`http://localhost:5000/api/admin/subject/addInstructor/${subjectId}/${lecturerId}`, null, {
+            axiosInstance.post(`/admin/subject/addInstructor/${subjectId}/${lecturerId}`, null, {
                 headers: {
                     'Authorization': `Bearer ${userToken}`
                 }

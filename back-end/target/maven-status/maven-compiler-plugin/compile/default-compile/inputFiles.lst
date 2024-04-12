@@ -24,6 +24,7 @@ F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\MailCon
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\Comment.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\exception\NotFoundException.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\service\Admin\RegistrationPeriodService.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\HeadOfDepartment\Graduation\AddCounterArgumentGraduationController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\repository\TaskRepository.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\service\MailServiceImpl.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\ProfileLecturerController.java
@@ -83,6 +84,7 @@ F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\config\SecurityUti
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\dto\request\TaskRequest.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\repository\SubjectRepository.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\service\HeaderOdDepartment\AddCounterArgumentService.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\HeadOfDepartment\Graduation\HeadManagerTopicGraduationController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\config\OAuth2AuthenticationSuccessHandler.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\FileComment.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\KhungggApplication.java
@@ -112,6 +114,7 @@ F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\config\JwtUtils.ja
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\Task.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\service\Admin\TypeSubjectService.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\RoleName.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\HeadOfDepartment\Graduation\HeadAddCommentGraduationController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\Student\StudentRegisterTopic.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\dto\request\NotificationRequest.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\Subject.java

@@ -38,6 +38,7 @@ com\web\dto\request\TaskRequest.class
 com\web\dto\request\FileRequest.class
 com\web\controller\admin\SchoolYearController.class
 com\web\exception\ErrorResponse$ErrorResponseBuilder.class
+com\web\controller\HeadOfDepartment\Graduation\HeadManagerTopicGraduationController.class
 com\web\entity\Provider.class
 com\web\repository\CommentRepository.class
 com\web\repository\AuthorityRepository.class
@@ -89,6 +90,7 @@ com\web\mapper\RegistrationPeriodMapperImpl.class
 com\web\repository\FileRepository.class
 com\web\service\ReportService.class
 com\web\entity\Comment.class
+com\web\controller\HeadOfDepartment\Graduation\AddCounterArgumentGraduationController.class
 com\web\entity\RegistrationPeriodLectuer.class
 com\web\KhungggApplication.class
 com\web\exception\BaseException.class
@@ -170,3 +172,4 @@ com\web\config\CheckRole.class
 com\web\repository\TaskRepository.class
 com\web\entity\Major.class
 com\web\mapper\PersonMapper.class
+com\web\controller\HeadOfDepartment\Graduation\HeadAddCommentGraduationController.class

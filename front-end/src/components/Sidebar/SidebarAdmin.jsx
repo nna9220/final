@@ -7,6 +7,7 @@ import { getAdminUser } from '../../actions/Admin/ActionOf Admin';
 import { data } from 'jquery';
 import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
+import axiosInstance from '../../API/axios';
 
 function SidebarAdmin() {
   const [isSidebarToggled, setSidebarToggled] = useState(true);
@@ -28,7 +29,7 @@ function SidebarAdmin() {
       const tokenSt = sessionStorage.getItem(userToken);
 
       if (!tokenSt) {
-        axios.get('http://localhost:5000/api/admin/home', {
+        axiosInstance.get('/admin/home', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },

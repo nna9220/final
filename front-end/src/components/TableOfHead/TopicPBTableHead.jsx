@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import CreditScoreOutlinedIcon from '@mui/icons-material/CreditScoreOutlined';
+import axiosInstance from '../../API/axios';
 
 function TopicPBTableHead() {
     const [topics, setTopics] = useState([]);
@@ -13,7 +14,7 @@ function TopicPBTableHead() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axios.get('http://localhost:5000/api/head/counterArgumentSubject', {
+                axiosInstance.get('/head/counterArgumentSubject', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -35,7 +36,7 @@ function TopicPBTableHead() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axios.get(`http://localhost:5000/api/head/counterArgumentSubject/detail/${id}`, {
+                axiosInstance.get(`/head/counterArgumentSubject/detail/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -57,7 +58,7 @@ function TopicPBTableHead() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axios.post(`http://localhost:5000/api/head/addScore/${id}`, {
+                axiosInstance.post(`/head/addScore/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },

@@ -6,9 +6,10 @@ import Column from './Column';
 import './scroll.scss'
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import TimelineOutlinedIcon from '@mui/icons-material/TimelineOutlined';
-import { parseISO } from 'date-fns';
+
 import TimeLineOfStudent from '../Timeline/TimeLineOfStudent';
 import DnsOutlinedIcon from '@mui/icons-material/DnsOutlined';
+import axiosInstance from '../../API/axios';
 
 const KanbanBoard = () => {
   const [data, setData] = useState([]);
@@ -30,9 +31,6 @@ const KanbanBoard = () => {
     }))
   }
 
-  const parseDateStringToDate = (dateString) => {
-    return parseISO(dateString);
-  }
 
   const toggleTimeline = () => {
     setShowTimeLine(!showTimeLine);
@@ -49,7 +47,7 @@ const KanbanBoard = () => {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axios.get('http://localhost:5000/api/student/task/list', {
+        axiosInstance.get('/student/task/list', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },
@@ -69,7 +67,7 @@ const KanbanBoard = () => {
 
   const handleNewTask = () => {
     const userToken = getTokenFromUrlAndSaveToStorage();
-    axios.get('http://localhost:5000/api/student/task/new', {
+    axiosInstance.get('/student/task/new', {
       headers: {
         'Authorization': `Bearer ${userToken}`,
       },
@@ -89,7 +87,7 @@ const KanbanBoard = () => {
 
     console.log("Start: ",formNewTask.timeStart);
     console.log("Requirement: ",formNewTask.requirement);
-    axios.post('http://localhost:5000/api/student/task/create', formNewTask, {
+    axiosInstance.post('/student/task/create', formNewTask, {
       headers: {
         'Authorization': `Bearer ${userToken}`,
         'Content-Type': 'multipart/form-data',
