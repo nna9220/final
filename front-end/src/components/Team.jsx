@@ -14,7 +14,7 @@ function Team() {
 
     useEffect(() => {
         document.title = "Danh sách giảng viên";
-        axiosInstance.get("/api/team")
+        axiosInstance.get("/team")
             .then(response => {
                 console.log("API response:", response.data);
                 setUser(response.data);
