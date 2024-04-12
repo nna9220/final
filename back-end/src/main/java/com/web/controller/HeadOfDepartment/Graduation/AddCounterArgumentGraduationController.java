@@ -176,7 +176,6 @@ public class AddCounterArgumentGraduationController {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
             List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) 1,typeSubject);
-
             Map<String,Object> response = new HashMap<>();
             response.put("person", personCurrent);
             response.put("listSubject", subjectByCurrentLecturer);
