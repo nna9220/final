@@ -6,6 +6,7 @@ import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import axiosInstance from '../../API/axios';
+import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
 
 function TableRegisKL() {
     const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +22,8 @@ function TableRegisKL() {
     });
     const [students, setStudents]= useState([]);
 
-    const handleSubmitAdd = () => {
+    const handleSubmitAdd = (e) => {
+        e.preventDefault();
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log(formData)
         axios.post('http://localhost:5000/api/head/subjectGraduation/register',
@@ -41,6 +43,18 @@ function TableRegisKL() {
                 console.log("Lỗi");
                 setShowErrorToastAdd(true);
             });
+    };
+
+    const reloadForm = () => {
+        setFormData({
+            subjectName: '',
+            requirement: '',
+            expected: '',
+            student1: null,
+            student2: null,
+            student3: null,
+        });
+        setShowAddToast(false);
     };
 
     useEffect(() => {
@@ -75,15 +89,14 @@ function TableRegisKL() {
 
     return (
         <div className='homeRegis'>
-            <Toast show={showAddToast} onClose={() => setShowAddToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
+            <Toast show={showAddToast} style={{ position: 'fixed', top: '80px', right: '10px' }}>
                 <Toast.Header>
                     <strong className="me-auto">Thông báo</strong>
                 </Toast.Header>
                 <Toast.Body>
-                    <DoneOutlinedIcon /> Đăng ký đề tài thành công!
+                    Đăng ký đề tài thành công! Nhấn vào <button style={{border:'none', backgroundColor:'green', color:'white'}} onClick={reloadForm}><CheckOutlinedIcon/></button> để xác nhận.
                 </Toast.Body>
             </Toast>
-
             <Toast show={showErrorToastAdd} onClose={() => setShowErrorToastAdd(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
                 <Toast.Header>
                     <strong className="me-auto" style={{ color: 'red' }}><ErrorOutlineOutlinedIcon /> Lỗi</strong>

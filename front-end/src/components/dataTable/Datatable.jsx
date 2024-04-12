@@ -285,7 +285,7 @@ function DataTable() {
                         schoolYear: student.schoolYear.year,
                     }))}
                     columns={columns}
-                    pageSizeOptions={[10, 100, { value: 1000, label: '1,000' }]}
+                    pageSizeOptions={[10, 50, 100]}
 
                 />
             )}
