@@ -44,7 +44,7 @@ function DataTableRegistrationPeroidLec() {
 
         if (tokenSt && selectedPeriodId) {
             console.log("Data: ", updatedEndValue,updatedStartValue);
-            axiosInstance.put(`/admin/PeriodLecturer/edit/${selectedPeriodId}`,{
+            axiosInstance.post(`/admin/PeriodLecturer/edit/${selectedPeriodId}`,{
                 params:{
                 periodId: selectedPeriodId,
                 start: updatedStartValue,
