@@ -59,10 +59,8 @@ public class RegistrationPeriodLecturerController {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
-           List<RegistrationPeriodLectuer> registrationPeriods = registrationPeriodRepository.findAllPeriod();
-            /*ModelAndView modelAndView = new ModelAndView("QuanLyDotDKLecturer");*//*
-            modelAndView.addObject("period",registrationPeriods);
-            modelAndView.addObject("person", personCurrent);*/
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+           List<RegistrationPeriodLectuer> registrationPeriods = registrationPeriodRepository.findAllPeriodEssay(typeSubject);
             Map<String,Object> response = new HashMap<>();
             response.put("period",registrationPeriods);
             response.put("person",personCurrent);
