@@ -95,6 +95,10 @@ function DatatableLec() {
         setSelectedRow(row);
         setShowConfirmation(true);
     };
+    const handleRestore = (row) => {
+        setSelectedRow(row);
+        setShowConfirmation(true);
+    };
 
     const confirmDelete = () => {
         const lecturerId = selectedRow.lecturerId;
@@ -233,23 +237,32 @@ function DatatableLec() {
         {
             field: 'action', headerName: 'Action', width: 200, renderCell: (params) => (
                 <div>
-                    <button className="btnView" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(params.row)}>
-                        <EditOutlinedIcon />
-                    </button>
-                    <button className='btnDelete' onClick={() => handleDelete(params.row)}>
-                        <DeleteRoundedIcon />
-                    </button>
+                    {showDeletedLecturers && (
+                        <button className='btnView' onClick={() => handleRestore(params.row)}>
+                            <RestoreOutlinedIcon />
+                        </button>
+                    )}
+                    {!showDeletedLecturers && (
+                        <>
+                            <button className="btnView" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(params.row)}>
+                                <EditOutlinedIcon />
+                            </button>
+                            <button className='btnDelete' onClick={() => handleDelete(params.row)}>
+                                <DeleteRoundedIcon />
+                            </button>
+                        </>
+                    )}
                 </div>
             )
         },
     ];
-    
+
 
     return (
         <div>
             <div className='header-table'>
                 <div className='btn-add'>
-                    <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddLecturere" style={{marginBottom:'20px'}}>
+                    <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddLecturere" style={{ marginBottom: '20px' }}>
                         Add
                     </button>
                 </div>
@@ -262,7 +275,7 @@ function DatatableLec() {
                     rows={lectures.filter(lecture => lecture.person.status === false).map((lecture, index) => ({
                         id: index + 1,
                         lecturerId: lecture.lecturerId,
-                        fullName: lecture.person.firstName,
+                        fullName: lecture.person.firstName + ' ' + lecture.person.lastName,
                         gender: lecture.person.gender ? 'Nữ' : 'Nam',
                         phone: lecture.person.phone,
                         major: lecture.major,
@@ -279,7 +292,7 @@ function DatatableLec() {
                     rows={lectures.filter(lecture => lecture.person.status === true).map((lecture, index) => ({
                         id: index + 1,
                         lecturerId: lecture.lecturerId,
-                        fullName: lecture.person.firstName,
+                        fullName: lecture.person.firstName + ' ' + lecture.person.lastName,
                         gender: lecture.person.gender ? 'Nữ' : 'Nam',
                         phone: lecture.person.phone,
                         major: lecture.major,

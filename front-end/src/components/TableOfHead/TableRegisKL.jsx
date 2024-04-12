@@ -6,6 +6,7 @@ import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import axiosInstance from '../../API/axios';
+import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
 
 function TableRegisKL() {
     const [isLoading, setIsLoading] = useState(false);
@@ -17,14 +18,14 @@ function TableRegisKL() {
         expected: '',
         student1: null,
         student2: null,
-        student3:null,
+        student3: null,
     });
     const [students, setStudents]= useState([]);
 
-    const handleSubmitAdd = () => {
+    const handleSubmitAdd = (e) => {
+        e.preventDefault();
         const userToken = getTokenFromUrlAndSaveToStorage();
-        console.log("Data: " + formData)
-
+        console.log(formData)
         axiosInstance.post('/head/subjectGraduation/register',
             formData
             , {
@@ -42,6 +43,18 @@ function TableRegisKL() {
                 console.log("Lỗi");
                 setShowErrorToastAdd(true);
             });
+    };
+
+    const reloadForm = () => {
+        setFormData({
+            subjectName: '',
+            requirement: '',
+            expected: '',
+            student1: null,
+            student2: null,
+            student3: null,
+        });
+        setShowAddToast(false);
     };
 
     useEffect(() => {
@@ -76,15 +89,14 @@ function TableRegisKL() {
 
     return (
         <div className='homeRegis'>
-            <Toast show={showAddToast} onClose={() => setShowAddToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
+            <Toast show={showAddToast} style={{ position: 'fixed', top: '80px', right: '10px' }}>
                 <Toast.Header>
                     <strong className="me-auto">Thông báo</strong>
                 </Toast.Header>
                 <Toast.Body>
-                    <DoneOutlinedIcon /> Đăng ký đề tài thành công!
+                    Đăng ký đề tài thành công! Nhấn vào <button style={{border:'none', backgroundColor:'green', color:'white'}} onClick={reloadForm}><CheckOutlinedIcon/></button> để xác nhận.
                 </Toast.Body>
             </Toast>
-
             <Toast show={showErrorToastAdd} onClose={() => setShowErrorToastAdd(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
                 <Toast.Header>
                     <strong className="me-auto" style={{ color: 'red' }}><ErrorOutlineOutlinedIcon /> Lỗi</strong>
@@ -117,7 +129,7 @@ function TableRegisKL() {
                         <div className="mb-3">
                             <label htmlFor="student1" className="form-label">Sinh viên 1</label>
                             <select className="form-select" aria-label="Default select example" name="student1" value={formData.student1} onChange={handleChange}>
-                                <option value="" selected disabled>Chọn sinh viên</option>
+                                <option selected disabled>Chọn sinh viên</option>
                                 {students.map(student => (
                                     <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
                                 ))}
@@ -126,7 +138,7 @@ function TableRegisKL() {
                         <div className="mb-3">
                             <label htmlFor="student2" className="form-label">Sinh viên 2</label>
                             <select className="form-select" aria-label="Default select example" name="student2" value={formData.student2} onChange={handleChange}>
-                                <option value="" selected disabled>Chọn sinh viên</option>
+                                <option selected disabled>Chọn sinh viên</option>
                                 {students.map(student => (
                                     <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
                                 ))}
@@ -135,7 +147,7 @@ function TableRegisKL() {
                         <div className="mb-3">
                             <label htmlFor="student3" className="form-label">Sinh viên 3</label>
                             <select className="form-select" aria-label="Default select example" name="student3" value={formData.student3} onChange={handleChange}>
-                                <option value="" selected disabled>Chọn sinh viên</option>
+                                <option selected disabled>Chọn sinh viên</option>
                                 {students.map(student => (
                                     <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
                                 ))}
