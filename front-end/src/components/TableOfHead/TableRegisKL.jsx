@@ -26,7 +26,7 @@ function TableRegisKL() {
         e.preventDefault();
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log(formData)
-        axios.post('http://localhost:5000/api/head/subjectGraduation/register',
+        axiosInstance.post('/api/head/subjectGraduation/register',
             formData
             , {
                 headers: {
@@ -63,7 +63,7 @@ function TableRegisKL() {
 
     const loadStudents = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
-        axios.get('http://localhost:5000/api/head/subjectGraduation/listStudent', {
+        axiosInstance.get('/head/subjectGraduation/listStudent', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
