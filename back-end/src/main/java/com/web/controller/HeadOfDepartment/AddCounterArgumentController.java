@@ -273,7 +273,7 @@ public class AddCounterArgumentController {
                     }
                     LocalDate nowDate = LocalDate.now();
                     newSubject.setYear(String.valueOf(nowDate));
-                    TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
+                    TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
                     newSubject.setTypeSubject(typeSubject);
                     subjectRepository.save(newSubject);
                     studentRepository.saveAll(studentList);
