@@ -21,6 +21,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.io.FileOutputStream;
 
 @Service
 public class FileMaterialService {
@@ -53,7 +54,9 @@ public class FileMaterialService {
                 }
             }
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            try (FileOutputStream fos = new FileOutputStream(targetLocation.toFile())) {
+                fos.write(file.getBytes());
+            }
 
             return fileName;
         } catch (IOException ex) {
@@ -81,7 +84,8 @@ public class FileMaterialService {
     }
 
     public FileMaterialService() {
-        this.fileStorageLocation = Paths.get("F:/")
+        String uploadDir = System.getProperty("user.dir") + "/uploads";
+        this.fileStorageLocation = Paths.get(uploadDir)
                 .toAbsolutePath().normalize();
         try {
             Files.createDirectories(this.fileStorageLocation);
@@ -89,6 +93,7 @@ public class FileMaterialService {
             throw new RuntimeException("Could not create the directory where the uploaded files will be stored.", ex);
         }
     }
+
 }
 
 
