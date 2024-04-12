@@ -97,6 +97,7 @@ const KanbanBoard = () => {
     })
       .then(response => {
         console.log("Thêm task thành công", response.data);
+        setData([...data, response.data]);
       })
       .catch(error => {
         console.error("Error add new task:", error);
@@ -150,6 +151,7 @@ const KanbanBoard = () => {
                       <option key={index} value={option.studentId}>{option.person.firstName + ' ' + option.person.lastName} </option>
                     ))}
                   </select>
+                  <label for="assignTo" class="form-label">Giao cho:</label>
                 </div>
               </div>
               <div class="modal-footer">
