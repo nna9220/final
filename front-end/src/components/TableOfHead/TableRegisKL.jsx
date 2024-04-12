@@ -26,7 +26,7 @@ function TableRegisKL() {
         e.preventDefault();
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log(formData)
-        axiosInstance.post('/api/head/subjectGraduation/register',
+        axiosInstance.post('/head/subjectGraduation/register',
             formData
             , {
                 headers: {
