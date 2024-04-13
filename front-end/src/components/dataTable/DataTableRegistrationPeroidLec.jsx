@@ -7,6 +7,7 @@ function DataTableRegistrationPeroidLec() {
     const [dataRegis, setDataRegis] = useState([]);
     const [editedStartTime, setEditedStartTime] = useState('');
     const [editedEndTime, setEditedEndTime] = useState('');
+    const [editedType, setEditedType] = useState('');
     const [selectedPeriodId, setSelectedPeriodId] = useState(null); // Lưu ID của đợt đăng ký đang được chỉnh sửa
 
     useEffect(() => {
@@ -19,6 +20,7 @@ function DataTableRegistrationPeroidLec() {
             })
                 .then(response => {
                     setDataRegis(response.data.period || []);
+                    console.log("RegisterPeriod: ", response.data.period)
                 })
                 .catch(error => {
                     console.error("error: ", error);
@@ -44,7 +46,7 @@ function DataTableRegistrationPeroidLec() {
 
         if (tokenSt && selectedPeriodId) {
             console.log("Data: ", updatedEndValue,updatedStartValue);
-            axios.post(`/admin/PeriodLecturer/edit/${selectedPeriodId}`,{
+            axiosInstance.post(`/admin/PeriodLecturer/edit/${selectedPeriodId}`,{
                 params:{
                 periodId: selectedPeriodId,
                 start: updatedStartValue,
@@ -100,6 +102,7 @@ function DataTableRegistrationPeroidLec() {
                         <th scope="col">Đợt đăng ký đề tài</th>
                         <th scope="col">Thời gian bắt đầu</th>
                         <th scope="col">Thời gian kết thúc</th>
+                        <th scope="col">loại đề tài</th>
                         <th scope='col'> Action</th>
                     </tr>
                 </thead>
@@ -110,6 +113,7 @@ function DataTableRegistrationPeroidLec() {
                             <td>{item.registrationName}</td>
                             <td>{item.registrationTimeStart}</td>
                             <td>{item.registrationTimeEnd}</td>
+                            <td>{item.typeSubject}</td>
                             <td>
                                 <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(item)}>
                                     Edit

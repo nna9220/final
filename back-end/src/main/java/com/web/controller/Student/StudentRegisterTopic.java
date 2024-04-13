@@ -45,11 +45,11 @@ public class StudentRegisterTopic {
             Optional<Student> currentStudentOptional = studentRepository.findById(personCurrent.getPersonId());
             if (currentStudentOptional.isPresent()) {
                 Student currentStudent = currentStudentOptional.get();
-                if (currentStudent.getSubjectGraduationId() == null) {
+                if (currentStudent.getSubjectId() == null) {
                     List<RegistrationPeriod> periodList = registrationPeriodRepository.findAllPeriod();
                     if (CompareTime.isCurrentTimeInPeriodStudent(periodList)) {
                         //ModelAndView modelAndView = new ModelAndView("QuanLyDeTai_SV");
-                        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
+                        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
                         List<Subject> subjectList = subjectRepository.findSubjectByStatusAndMajorAndStudent(true, currentStudent.getMajor(),typeSubject);
                         /*modelAndView.addObject("subjectList", subjectList);
                         modelAndView.addObject("person", personCurrent);
