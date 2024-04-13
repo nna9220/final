@@ -62,7 +62,7 @@ public class StudentAddCommentController {
     @PostMapping("/create/{taskId}")
     public ResponseEntity<?> createComment(@PathVariable int taskId,
                                       @RequestParam("content") String content,
-                                      @RequestParam("fileInput") List<MultipartFile> files,
+                                      @RequestParam(value = "fileInput", required = false) List<MultipartFile> files,
                                       @RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -109,17 +109,21 @@ public class StudentAddCommentController {
                     + "Content: " + comment.getContent();
             newMail.setSubject(subject);
             newMail.setSubject(messenger);
-            Student studen1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
-            Student studen2 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
             if (personCurrent.getPersonId().equals(existSubject.getStudent1())) {
                 if (existSubject.getStudent2()!=null) {
-                    mailService.sendMail(studen2.getPerson().getUsername(), existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
+                    Student student2 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
+                    if (student2!=null) {
+                        mailService.sendMail(student2.getPerson().getUsername(), existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
+                    }
                 }else {
                     mailService.sendMailNull(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
                 }
             }else {
                 if (existSubject.getStudent1()!=null) {
-                    mailService.sendMail(studen1.getPerson().getUsername(), existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
+                    Student student1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
+                    if (student1!=null) {
+                        mailService.sendMail(student1.getPerson().getUsername(), existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
+                    }
                 }else {
                     mailService.sendMailNull(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
                 }

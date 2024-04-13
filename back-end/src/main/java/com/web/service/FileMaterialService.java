@@ -21,6 +21,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.io.FileOutputStream;
 
 @Service
 public class FileMaterialService {
@@ -81,7 +82,8 @@ public class FileMaterialService {
     }
 
     public FileMaterialService() {
-        this.fileStorageLocation = Paths.get("D:/")
+        String uploadDir = System.getProperty("user.dir") + "/uploads";
+        this.fileStorageLocation = Paths.get(uploadDir)
                 .toAbsolutePath().normalize();
         try {
             Files.createDirectories(this.fileStorageLocation);
