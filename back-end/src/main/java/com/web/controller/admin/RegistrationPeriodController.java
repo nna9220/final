@@ -80,12 +80,9 @@ public class RegistrationPeriodController {
             registrationPeriod.setRegistrationName(periodName);
             registrationPeriod.setRegistrationTimeStart(timeStart);
             registrationPeriod.setRegistrationTimeEnd(timeEnd);
-            TypeSubject typeSubject = typeSubjectRepository.findById(1).orElse(null);
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
             registrationPeriod.setTypeSubjectId(typeSubject);
             registrationPeriodRepository.save(registrationPeriod);
-            /*String referer = request.getHeader("Referer");*/
-            // Thực hiện redirect trở lại trang trước đó
-            /*return new ModelAndView("redirect:" + referer);*/
             return new ResponseEntity<>(registrationPeriod,HttpStatus.CREATED);
         }else {
             /*ModelAndView error = new ModelAndView();
@@ -103,13 +100,11 @@ public class RegistrationPeriodController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             // Lấy thông tin lớp học cần chỉnh sửa từ service
             RegistrationPeriod registrationPeriod = registrationPeriodRepository.findById(periodId).orElse(null);
+            List<TypeSubject> typeSubjects = typeSubjectRepository.findAll();
             // Kiểm tra xem lớp học có tồn tại không
             if (registrationPeriod != null) {
-                // Trả về ModelAndView với thông tin lớp học và đường dẫn của trang chỉnh sửa
-                /*ModelAndView model = new ModelAndView("admin_editPeriod");
-                model.addObject("period", registrationPeriod);
-                model.addObject("person", personCurrent);*/
                 Map<String,Object> response = new HashMap<>();
+                response.put("listSubject",typeSubjects);
                 response.put("period",registrationPeriod);
                 response.put("person",personCurrent);
                 return new ResponseEntity<>(response,HttpStatus.OK);
@@ -121,9 +116,6 @@ public class RegistrationPeriodController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
