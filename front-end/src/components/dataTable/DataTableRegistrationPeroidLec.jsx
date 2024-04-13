@@ -20,6 +20,7 @@ function DataTableRegistrationPeroidLec() {
             })
                 .then(response => {
                     setDataRegis(response.data.period || []);
+                    console.log("RegisterPeriod: ", response.data.period)
                 })
                 .catch(error => {
                     console.error("error: ", error);
