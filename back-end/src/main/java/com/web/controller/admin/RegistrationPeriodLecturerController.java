@@ -59,11 +59,12 @@ public class RegistrationPeriodLecturerController {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
-            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            List<TypeSubject> typeSubject = typeSubjectRepository.findAll();
            List<RegistrationPeriodLectuer> registrationPeriods = registrationPeriodRepository.findAll();
             Map<String,Object> response = new HashMap<>();
             response.put("period",registrationPeriods);
             response.put("person",personCurrent);
+            response.put("listTypeSubject",typeSubject);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }else {
             /*ModelAndView error = new ModelAndView();
@@ -105,27 +106,17 @@ public class RegistrationPeriodLecturerController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             // Lấy thông tin lớp học cần chỉnh sửa từ service
             RegistrationPeriodLectuer registrationPeriod = registrationPeriodRepository.findById(periodId).orElse(null);
-            // Kiểm tra xem lớp học có tồn tại không
+            List<TypeSubject> typeSubjects = typeSubjectRepository.findAll();
             if (registrationPeriod != null) {
-                // Trả về ModelAndView với thông tin lớp học và đường dẫn của trang chỉnh sửa
-                /*ModelAndView model = new ModelAndView("admin_editPeriodLecturer");
-                model.addObject("period", registrationPeriod);
-                model.addObject("person", personCurrent);*/
                 Map<String,Object> response = new HashMap<>();
                 response.put("period",registrationPeriod);
                 response.put("person",personCurrent);
+                response.put("listTypeSubject", typeSubjects);
                 return new ResponseEntity<>(response,HttpStatus.OK);
             } else {
-                // Trả về ModelAndView với thông báo lỗi nếu không tìm thấy lớp học
-                /*ModelAndView errorModel = new ModelAndView("error");
-                errorModel.addObject("errorMessage", "Không tìm thấy lớp học");
-                return errorModel;*/
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
@@ -142,14 +133,12 @@ public class RegistrationPeriodLecturerController {
                 Date dateStart = dateFormat.parse(start);
                 Date dateEnd = dateFormat.parse(end);*/
                 System.out.println("Data nhận được: " +  registrationPeriodLectuer.getPeriodId());
-
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 java.util.Date utilStartDate = dateFormat.parse(registrationPeriodLectuer.getRegistrationTimeStart());
                 Date startFormat = new Date(utilStartDate.getTime());
-
                 java.util.Date utilEndDate = dateFormat.parse(registrationPeriodLectuer.getRegistrationTimeEnd());
                 Date endFormat = new Date(utilEndDate.getTime());
-
+                existRegistrationPeriod.setTypeSubjectId(registrationPeriodLectuer.getTypeSubjectId());
                 existRegistrationPeriod.setRegistrationTimeStart(startFormat);
                 existRegistrationPeriod.setRegistrationTimeEnd(endFormat);
                 registrationPeriodRepository.save(existRegistrationPeriod);
