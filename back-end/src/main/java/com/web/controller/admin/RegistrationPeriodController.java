@@ -130,16 +130,10 @@ public class RegistrationPeriodController {
             if (existRegistrationPeriod != null) {
                 existRegistrationPeriod.setRegistrationTimeStart(registrationPeriodRequest.getRegistrationTimeStart());
                 existRegistrationPeriod.setRegistrationTimeEnd(registrationPeriodRequest.getRegistrationTimeEnd());
+                existRegistrationPeriod.setTypeSubjectId(registrationPeriodRequest.getTypeSubjectId());
                 registrationPeriodRepository.save(existRegistrationPeriod);
-                /*String url = Contains.URL_LOCAL +  "/api/admin/Period";
-                ModelAndView model = new ModelAndView("redirect:" + url);
-
-                model.addObject("successMessage", successMessage);*/
                 return new ResponseEntity<>(existRegistrationPeriod,HttpStatus.OK);
             } else {
-                /*ModelAndView error = new ModelAndView();
-                error.addObject("errorMessage", "không tìm thấy đợt đăng ký.");
-                return error;*/
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         }else {
