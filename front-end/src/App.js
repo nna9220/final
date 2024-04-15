@@ -75,7 +75,7 @@ function App() {
         <Route path='/registerHead' element={<RegisterHead/>}/>
         <Route path="/managermentHead" element={<ManageHead />} />
         <Route path="/managermentTopicHead" element={<TopicOfHead />} />
-        <Route path="/managermentHeadPB" element={<ManageTopicPBOfHead />} />
+        <Route path="/managermentHead/TopicsPB" element={<ManageTopicPBOfHead />} />
 
 
         <Route path='/homeLecturer' element={<HomeLec/>}/>
