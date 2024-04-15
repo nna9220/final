@@ -1,19 +1,31 @@
-import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import './SidebarAdmin.scss'
+import React from 'react';
+import { Navigation } from 'react-minimal-side-navigation';
+import 'react-minimal-side-navigation/lib/ReactMinimalSideNavigation.css';
+import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
+import AppRegistrationOutlinedIcon from '@mui/icons-material/AppRegistrationOutlined';
+import RecentActorsOutlinedIcon from '@mui/icons-material/RecentActorsOutlined';
+import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined';
+import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
+import ViewListOutlinedIcon from '@mui/icons-material/ViewListOutlined';
+import BallotOutlinedIcon from '@mui/icons-material/BallotOutlined';
 import { useState, useEffect } from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import { getAdminUser } from '../../actions/Admin/ActionOf Admin';
-import { data } from 'jquery';
+import { useNavigate } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
+import './SidebarAdmin.scss'
 
 function SidebarAdmin() {
   const [isSidebarToggled, setSidebarToggled] = useState(true);
   const [selectedMenuItem, setSelectedMenuItem] = useState(false);
   const [admin, setAdmin] = useState({});
-
+  const history = useNavigate();
+  const location = useLocation();
   const handleSidebarToggle = () => {
     setSidebarToggled(!isSidebarToggled);
   };
@@ -34,60 +46,84 @@ function SidebarAdmin() {
             'Authorization': `Bearer ${userToken}`,
           },
         })
-        .then(response => {
-          // Xử lý response từ backend (nếu cần)
-          setAdmin(response.data);
-        })
-        .catch(error => {
-          console.error(error);
-        });
+          .then(response => {
+            // Xử lý response từ backend (nếu cần)
+            setAdmin(response.data);
+            console.log(response.data);
+          })
+          .catch(error => {
+            console.error(error);
+          });
       }
     }
   }, []);
 
   return (
-    <div className={`page-wrapper chiller-theme ${isSidebarToggled ? 'toggled' : ''}`}>
-      <a id="show-sidebar" className="btn btn-sm btn-dark" href="#" onClick={handleSidebarToggle}>
-        <i><MenuOutlinedIcon /></i>
-      </a>
-
-      <nav id="sidebar" className="sidebar-wrapper">
-        <div className="sidebar-content">
-          <div className="sidebar-brand">
-            <a style={{ fontSize: '12px' }} href="#">KHOA CÔNG NGHỆ THÔNG TIN</a>
-            <div id="close-sidebar" onClick={handleSidebarToggle}>
-              <i><CloseRoundedIcon /></i>
-            </div>
-          </div>
-
-          <div className="sidebar-header">
-            <div className="user-pic" style={{ color: '#fff' }}>
-              <i className="fa fa-user-circle fa-4x" aria-hidden="true"></i>
-            </div>
-            <div className="user-info">
-              <span className="user-name"><strong>{admin.firstName + ' '+admin.lastName}</strong></span>
-              <span className="user-role">Administrator</span>
-              <span className="user-status"><i className="fa fa-circle"></i> <span>Online</span></span>
-            </div>
-          </div>
-
-          <div className="sidebar-menu">
-            <ul>
-              <li className="header-menu"><span>Trang chủ</span></li>
-              <li><NavLink to="/homeAdmin" onClick={() => handleMenuItemClick('trangCuaBan')} activeClassName={selectedMenuItem === 'trangCuaBan' ? 'active' : ''}><i className="fa fa-home"></i><span>Trang của bạn</span></NavLink></li>
-              <li className={selectedMenuItem === 'thongTinCaNhan' ? 'active' : ''}><Link to="/profileAdmin" onClick={() => handleMenuItemClick('thongTinCaNhan')}><i className="fa fa-user"></i><span>Thông tin cá nhân</span></Link></li>
-              <li className={selectedMenuItem === 'quanLySV' ? 'active' : ''}><Link to="/managermentStudent" href="#" onClick={() => handleMenuItemClick('quanLySV')}><i className="fa fa-book"></i><span>Quản lý sinh viên</span></Link></li>
-              <li className={selectedMenuItem === 'quanLyGV' ? 'active' : ''}><Link to='/managermentLec' onClick={() => handleMenuItemClick('quanLyGV')}><i className="fa fa-address-book-o"></i><span>Quản lý giảng viên</span></Link></li>
-              <li className={selectedMenuItem === 'quanlytopic' ? 'active' : ''}><Link to='/managermentTopics' onClick={() => handleMenuItemClick('quanlytopic')}><i className="fa fa-address-card"></i><span>Quản lý đề tài</span></Link></li>
-              <li className={selectedMenuItem === 'quanlyloaidetai' ? 'active' : ''}><Link to='/managermentType' onClick={() => handleMenuItemClick('quanlyloaidetai')}><i className="fa fa-list-alt"></i><span>Quản lý loại đề tài</span></Link></li>
-              <li className={selectedMenuItem === 'quanlydetai' ? 'active' : ''}><Link to='/managermentPeriod' onClick={() => handleMenuItemClick('quanlydetai')}><i className="fa fa-folder"></i><span>Quản lý đợt đăng ký đề tài</span></Link></li>
-              <li className={selectedMenuItem === 'quanlynienkhoa' ? 'active' : ''}><Link to='/managermentYears' onClick={() => handleMenuItemClick('quanlynienkhoa')}><i className="fa fa-list-alt"></i><span>Quản lý niên khóa-lớp học</span></Link></li>
-            </ul>
-          </div>
+    <div className='sidebar-head'>
+      <div className="sidebar-header">
+        <a className='title-sidebar'>KHOA CÔNG NGHỆ THÔNG TIN</a>
+      </div>
+      <hr></hr>
+      <div className="sidebar-header">
+        <div className="user-pic" style={{ color: '#fff' }}>
+          <i className="fa fa-user-circle fa-4x" aria-hidden="true"></i>
         </div>
-      </nav>
+        <div className="user-info">
+          <span className="user-name"><strong>{admin.firstName + ' ' + admin.lastName}</strong></span>
+          <span className="user-role">Administrator</span>
+        </div>
+      </div>
+      <hr></hr>
+      <Navigation
+        activeItemId={location.pathname}
+        onSelect={({ itemId }) => {
+          history(itemId);
+        }}
+        items={[
+          {
+            title: 'Trang chủ',
+            itemId: '/homeAdmin',
+            elemBefore: () => <HomeOutlinedIcon />,
+          },
+          {
+            title: 'Trang cá nhân',
+            itemId: '/profileAdmin',
+            elemBefore: () => <PersonOutlinedIcon />,
+          },
+          {
+            title: 'Quản lý sinh viên',
+            itemId: '/managermentStudent',
+            elemBefore: () => <RecentActorsOutlinedIcon />,
+          },
+          {
+            title: 'Quản lý giảng viên',
+            itemId: '/managermentLec',
+            elemBefore: () => <FactCheckOutlinedIcon />,
+          },
+          {
+            title: 'Quản lý đợt đăng ký',
+            itemId: '/managermentPeriod',
+            elemBefore: () => <AppRegistrationOutlinedIcon/>,
+          },
+          {
+            title: 'Quản lý đề tài',
+            itemId: '/managermentTopics',
+            elemBefore: () => <BallotOutlinedIcon />,
+          },
+          {
+            title: 'Quản lý loại đề tài',
+            itemId: '/managermentType',
+            elemBefore: () => <ListAltOutlinedIcon />,
+          },
+          {
+            title: 'Quản lý niên khóa',
+            itemId: '/managermentYears',
+            elemBefore: () => <ViewListOutlinedIcon />,
+          },
+        ]}
+      />
     </div>
-  )
+  );
 }
 
 export default SidebarAdmin

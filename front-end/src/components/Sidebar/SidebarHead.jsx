@@ -1,19 +1,32 @@
-import React from 'react'
-import { Sidebar, Menu, MenuItem } from 'react-pro-sidebar';
-import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import './SidebarStudent.scss'
-import { Link } from 'react-router-dom';
-import { useState, useEffect} from 'react';
+import React from 'react';
+import { Navigation } from 'react-minimal-side-navigation';
+import 'react-minimal-side-navigation/lib/ReactMinimalSideNavigation.css';
+import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
+import AppRegistrationOutlinedIcon from '@mui/icons-material/AppRegistrationOutlined';
+import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
+import RuleFolderOutlinedIcon from '@mui/icons-material/RuleFolderOutlined';
+import TopicOutlinedIcon from '@mui/icons-material/TopicOutlined';
+import SnippetFolderOutlinedIcon from '@mui/icons-material/SnippetFolderOutlined';
+import FolderSharedOutlinedIcon from '@mui/icons-material/FolderSharedOutlined';
+import { BorderBottom, BorderRight } from '@mui/icons-material';
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
-
+import './SidebarHead.scss'
 
 function SidebarHead() {
     const [isSidebarToggled, setSidebarToggled] = useState(true);
     const [selectedMenuItem, setSelectedMenuItem] = useState(false);
     const [head, setHead] = useState({});
+    const history = useNavigate();
+    const location = useLocation();
 
     const handleSidebarToggle = () => {
         setSidebarToggled(!isSidebarToggled);
@@ -26,66 +39,95 @@ function SidebarHead() {
     useEffect(() => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         if (userToken) {
-          // Lấy token từ storage
-          const tokenSt = sessionStorage.getItem(userToken);
-    
-          if (!tokenSt) {
-            axiosInstance.get('/head/home', {
-              headers: {
-                'Authorization': `Bearer ${userToken}`,
-              },
-            })
-            .then(response => {
-              // Xử lý response từ backend (nếu cần)
-              console.log("DataHead: ", response);
-              setHead(response.data);
-            })
-            .catch(error => {
-              console.error(error);
-            });
-          }
+            // Lấy token từ storage
+            const tokenSt = sessionStorage.getItem(userToken);
+
+            if (!tokenSt) {
+                axiosInstance.get('/head/home', {
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`,
+                    },
+                })
+                    .then(response => {
+                        // Xử lý response từ backend (nếu cần)
+                        console.log("DataHead: ", response);
+                        setHead(response.data);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            }
         }
-      }, []);
-    
+    }, []);
+
     return (
-        <div className={`page-wrapper chiller-theme ${isSidebarToggled ? 'toggled' : ''}`}>
-            <a id="show-sidebar" className="btn btn-sm btn-dark" href="#" onClick={handleSidebarToggle}>
-                <i><MenuOutlinedIcon /></i>
-            </a>
-
-            <nav id="sidebar" className="sidebar-wrapper">
-                <div className="sidebar-content">
-                    <div className="sidebar-brand">
-                        <a style={{ fontSize: '12px' }} href="#">KHOA CÔNG NGHỆ THÔNG TIN</a>
-                        <div id="close-sidebar" onClick={handleSidebarToggle}>
-                            <i><CloseRoundedIcon /></i>
-                        </div>
-                    </div>
-
-                    <div className="sidebar-header">
-                        <div className="user-pic" style={{ color: '#fff' }}>
-                            <i className="fa fa-user-circle fa-4x" aria-hidden="true"></i>
-                        </div>
-                        <div className="user-info">
-                            <span className="user-name"> <strong>{head.firstName + ' '+head.lastName}</strong></span>
-                            <span className="user-role">Trưởng bộ môn</span>
-                        </div>
-                    </div>
-
-                    <div className="sidebar-menu">
-                        <ul>
-                            <li className="header-menu"><span>Trang chủ</span></li>
-                            <li className={selectedMenuItem === 'trangCuaBan' ? 'active' : ''}><Link to="/homeHead" onClick={() => handleMenuItemClick('trangCuaBan')}><i className="fa fa-home"></i><span>Trang của bạn</span></Link></li>
-                            <li className={selectedMenuItem === 'thongTinCaNhan' ? 'active' : ''}><Link to="/profileHead" onClick={() => handleMenuItemClick('thongTinCaNhan')}><i className="fa fa-user"></i><span>Thông tin cá nhân</span></Link></li>
-                            <li className={selectedMenuItem === 'dangkiDeTai' ? 'active' : ''}><Link to="/registerHead" onClick={() => handleMenuItemClick('dangkiDeTai')}><i className="fa fa-book"></i><span>Đăng ký đề tài</span></Link></li>
-                            <li className={selectedMenuItem === 'quanlydetai' ? 'active' : ''}><Link to="/managermentHead" onClick={() => handleMenuItemClick('quanlydetai')}><i className="fa fa-folder"></i><span>Quản lý đề tài</span></Link></li>
-                            <li className={selectedMenuItem === 'quanlydetaiPB' ? 'active' : ''}><Link to="/managermentHeadPB" onClick={() => handleMenuItemClick('quanlydetaiPB')}><i className="fa fa-folder"></i><span>Quản lý đề tài phản biện</span></Link></li>
-                        </ul>
-                    </div>
+        <div className='sidebar-head'>
+            <div className="sidebar-header">
+                <a className='title-sidebar'>KHOA CÔNG NGHỆ THÔNG TIN</a>
+            </div>
+            <hr></hr>
+            <div className="sidebar-header">
+                <div className="user-pic" style={{ color: '#fff' }}>
+                    <i className="fa fa-user-circle fa-4x" aria-hidden="true"></i>
                 </div>
-            </nav>
+                <div className="user-info">
+                    <span className="user-name"><strong>{head.firstName + ' ' + head.lastName}</strong></span>
+                    <span className="user-role">Trưởng bộ môn</span>
+                </div>
+            </div>
+            <hr></hr>
+            <Navigation
+                activeItemId={location.pathname}
+                onSelect={({ itemId }) => {
+                    history(itemId);
+                }}
+                items={[
+                    {
+                        title: 'Trang chủ',
+                        itemId: '/homeHead',
+                        elemBefore: () => <HomeOutlinedIcon />,
+                    },
+                    {
+                        title: 'Trang cá nhân',
+                        itemId: '/profileHead',
+                        elemBefore: () => <PersonOutlinedIcon />,
+                    },
+                    {
+                        title: 'Đăng kí đề tài',
+                        itemId: '/registerHead',
+                        elemBefore: () => <AppRegistrationOutlinedIcon />,
+                    },
+                    {
+                        title: 'Quản lý đề tài',
+                        itemId: '/managermentHead',
+                        elemBefore: () => <FolderOutlinedIcon />,
+                        subNav: [
+                            {
+                                title: 'Duyệt đề tài',
+                                itemId: '/managermentHead',
+                                elemBefore: () => <RuleFolderOutlinedIcon />,
+                            },
+                            {
+                                title: 'Phân giảng viên phản biện',
+                                itemId: '/management/assign',
+                                elemBefore: () => <FolderSharedOutlinedIcon />,
+                            },
+                            {
+                                title: 'Đề tài của tôi',
+                                itemId: '/management/projects',
+                                elemBefore: () => <TopicOutlinedIcon />,
+                            },
+                            {
+                                title: 'Đề tài phản biện',
+                                itemId: '/managermentHead/TopicsPB',
+                                elemBefore: () => <SnippetFolderOutlinedIcon />,
+                            },
+                        ],
+                    },
+                ]}
+            />
         </div>
-    )
+    );
 }
 
 export default SidebarHead
