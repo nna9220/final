@@ -46,7 +46,7 @@
       .side-navigation-panel-select-wrap {
         .side-navigation-panel-select-option {
           @apply flex items-center justify-between w-full px-6 py-3 text-blue-700 border-l-2 cursor-pointer;
-
+          padding-right: 10px;
           &:focus {
             @apply outline-none;
             background-color:rgb(40, 55, 65);
@@ -87,7 +87,8 @@
         .side-navigation-panel-select-inner-wrap {
           .side-navigation-panel-select-inner-option {
             @apply flex items-center justify-between px-16 py-2 border-l-2 cursor-pointer text-blue-700;
-            padding-right: 10px;
+            padding-right: 5px;
+            padding-left: 40px;
             &:hover {
               @apply bg-blue-100 text-blue-800 border-blue-500;
               background-color:rgb(40, 55, 65)
@@ -105,7 +106,7 @@
   
           .side-navigation-panel-select-inner-option-selected {
               @apply text-blue-800 bg-blue-100 border-blue-500;
-              background-color:rgb(40, 55, 65)
+              background-color:rgb(40, 55, 65);
           }
         }
       }

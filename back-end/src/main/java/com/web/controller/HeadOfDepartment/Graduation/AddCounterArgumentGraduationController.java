@@ -190,7 +190,7 @@ public class AddCounterArgumentGraduationController {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
-            List<Student> studentList = studentRepository.getStudentSubjectGraduationNull();
+            List<Student> studentList = studentRepository.getStudentSubjectEssayNull();
             return new ResponseEntity<>(studentList, HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -315,16 +315,9 @@ public class AddCounterArgumentGraduationController {
             String subject = "Topic: " + existSubject.getSubjectName() ;
             String messenger = "Topic: " + existSubject.getSubjectName() + " đã bị xóa!!";
             mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
-            /*tring referer = Contains.URL_LOCAL +  "/api/head/subject";
-            // Thực hiện redirect trở lại trang trước đó
-            System.out.println("Url: " + referer);
-            // Thực hiện redirect trở lại trang trước đó
-            return new ModelAndView("redirect:" + referer);*/
+
             return new ResponseEntity<>(HttpStatus.OK);
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }

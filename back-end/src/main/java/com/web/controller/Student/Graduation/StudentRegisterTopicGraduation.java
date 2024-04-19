@@ -48,7 +48,7 @@ public class StudentRegisterTopicGraduation {
             Optional<Student> currentStudentOptional = studentRepository.findById(personCurrent.getPersonId());
             if (currentStudentOptional.isPresent()) {
                 Student currentStudent = currentStudentOptional.get();
-                if (currentStudent.getSubjectGraduationId() == null && currentStudent.getSubjectId() !=null) {
+                if (currentStudent.getSubjectGraduationId() == null) {
                     List<RegistrationPeriod> periodList = registrationPeriodRepository.findAllPeriod();
                     if (CompareTime.isCurrentTimeInPeriodStudent(periodList)) {
                         //ModelAndView modelAndView = new ModelAndView("QuanLyDeTai_SV");

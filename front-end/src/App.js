@@ -15,7 +15,7 @@ import ProfileST from './Pages/Student/ProfileST';
 import RegisterTopicSt from './Pages/Student/RegisterTopicSt';
 import HomeHead from './Pages/Head/HomeHead'
 import ProfileHe from './Pages/Head/ProfileHe'
-import ManageHead from './Pages/Head/MannageHead'
+import ManageHead from './Pages/Head/ManageHead'
 import ManagementLec from './Pages/Admin/ManagementLec';
 import ManagementPeriod from './Pages/Admin/ManagementPeriod';
 import ManagementYears from './Pages/Admin/ManagementYears';
@@ -31,6 +31,9 @@ import ManagementTopics from './Pages/Admin/ManagementTopics';
 import ManagementType from './Pages/Admin/ManagementType';
 import ManageTopicPB from './Pages/Teacher/ManageTopicPB';
 import ManageTopicPBOfHead from './Pages/Head/ManageTopicPBOfHead';
+import ManagementAppove from './Pages/Head/ManagementAppove';
+import ManagementAssign from './Pages/Head/ManagementAssign';
+import ManagementProjects from './Pages/Head/ManagementTopics';
 
 function App() {
   return (
@@ -73,7 +76,9 @@ function App() {
         <Route path="/homeHead" element={<HomeHead />} />
         <Route path="/profileHead" element={<ProfileHe />} />
         <Route path='/registerHead' element={<RegisterHead/>}/>
-        <Route path="/managermentHead" element={<ManageHead />} />
+        <Route path="/managermentHead/approve" element={<ManagementAppove />} />
+        <Route path='/managementHead/assign' element={<ManagementAssign/>}/>
+        <Route path='/managementHead/topics' element={<ManagementProjects/>}/>
         <Route path="/managermentTopicHead" element={<TopicOfHead />} />
         <Route path="/managermentHead/TopicsPB" element={<ManageTopicPBOfHead />} />
 
