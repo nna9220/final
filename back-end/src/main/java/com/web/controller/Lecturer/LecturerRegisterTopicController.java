@@ -114,6 +114,18 @@ public class LecturerRegisterTopicController {
         }
     }
 
+    @GetMapping("/listStudent")
+    public ResponseEntity<?> getListStudent(@RequestHeader("Authorization") String authorizationHeader){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
+            List<Student> studentList = studentRepository.getStudentSubjectNull();
+            return new ResponseEntity<>(studentList, HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
 
     @PostMapping("/register")
     public ResponseEntity<?> lecturerRegisterTopic(@RequestParam("subjectName") String name,
@@ -144,28 +156,36 @@ public class LecturerRegisterTopicController {
                     newSubject.setInstructorId(existLecturer);
                     newSubject.setMajor(existLecturer.getMajor());
                     //Tìm sinh viên qua mã sinh viên
-                    Student studentId1 = studentRepository.findById(student1).orElse(null);
-                    Student studentId2 = studentRepository.findById(student2).orElse(null);
-                    Student studentId3 = studentRepository.findById(student3).orElse(null);
-                    if (studentId1 != null) {
+                    List<Student> studentList = new ArrayList<>();
+                    System.out.println("Trước if check sv1");
+                    if (student1 != null) {
+                        Student studentId1 = studentRepository.findById(student1).orElse(null);
                         newSubject.setStudent1(student1);
                         studentId1.setSubjectId(newSubject);
+                        studentList.add(studentId1);
+                        System.out.println("Sau if check sv1");
                     }
-                    if (studentId2 != null) {
+                    System.out.println("Trước if check sv2");
+                    if (student2 != null) {
+                        Student studentId2 = studentRepository.findById(student2).orElse(null);
                         newSubject.setStudent2(student2);
                         studentId2.setSubjectId(newSubject);
+                        studentList.add(studentId2);
+                        System.out.println("Sau if check sv2");
                     }
-                    if (studentId3 != null) {
+                    System.out.println("Trước if check sv3");
+                    if (student3 != null) {
+                        Student studentId3 = studentRepository.findById(student3).orElse(null);
                         newSubject.setStudent3(student3);
                         studentId3.setSubjectId(newSubject);
+                        System.out.println("Sau if check sv3");
+                        studentList.add(studentId3);
                     }
                     LocalDate nowDate = LocalDate.now();
                     newSubject.setYear(String.valueOf(nowDate));
                     newSubject.setTypeSubject(typeSubject);
                     subjectRepository.save(newSubject);
-                    studentRepository.save(studentId1);
-                    studentRepository.save(studentId2);
-                    studentRepository.save(studentId3);
+                    studentRepository.saveAll(studentList);
 
                     return new ResponseEntity<>(newSubject,HttpStatus.CREATED);
                 }else {

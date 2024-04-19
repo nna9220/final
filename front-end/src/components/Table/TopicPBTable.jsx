@@ -3,9 +3,14 @@ import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import CreditScoreOutlinedIcon from '@mui/icons-material/CreditScoreOutlined';
 import axiosInstance from '../../API/axios';
+import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined';
+import TopicOutlinedIcon from '@mui/icons-material/TopicOutlined';
+import './TopicPBTable.scss'
 
 function TopicPBTable() {
     const [topics, setTopics] = useState([]);
+    const [activeTLChuyenNganh, setActiveTLChuyenNganh] = useState(false);
+    const [activeKhoaLuan, setActiveKhoaLuan] = useState(false);
     const [detail, setDetail] = useState('');
     const userToken = getTokenFromUrlAndSaveToStorage();
 
@@ -22,6 +27,8 @@ function TopicPBTable() {
                     .then(response => {
                         console.log("Topic: ", response.data);
                         setTopics(response.data.listSubject);
+                        setActiveTLChuyenNganh(true);
+                        setActiveKhoaLuan(false);
                     })
                     .catch(error => {
                         console.error(error);
@@ -74,7 +81,15 @@ function TopicPBTable() {
     }
 
     return (
-        <div>
+        <div style={{ display: 'grid' }}>
+            <div className='btn-type'>
+                <button className={`button-listDelete ${activeTLChuyenNganh ? 'active' : ''}`}>
+                    <TopicOutlinedIcon /> Tiểu luận chuyên ngành
+                </button>
+                <button className={`button-listDelete ${activeKhoaLuan ? 'active' : ''}`}>
+                    <SummarizeOutlinedIcon /> Khóa luận tốt nghiệp
+                </button>
+            </div>
             <div>
                 <div className='home-table'>
                     <table className="table table-hover">

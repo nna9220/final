@@ -99,22 +99,22 @@ function SidebarHead() {
                     },
                     {
                         title: 'Quản lý đề tài',
-                        itemId: '/managermentHead',
+                        itemId: '/managermentHead/approve',
                         elemBefore: () => <FolderOutlinedIcon />,
                         subNav: [
                             {
                                 title: 'Duyệt đề tài',
-                                itemId: '/managermentHead',
+                                itemId: '/managermentHead/approve',
                                 elemBefore: () => <RuleFolderOutlinedIcon />,
                             },
                             {
                                 title: 'Phân giảng viên phản biện',
-                                itemId: '/management/assign',
+                                itemId: '/managementHead/assign',
                                 elemBefore: () => <FolderSharedOutlinedIcon />,
                             },
                             {
                                 title: 'Đề tài của tôi',
-                                itemId: '/management/projects',
+                                itemId: '/managementHead/topics',
                                 elemBefore: () => <TopicOutlinedIcon />,
                             },
                             {
