@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
-import { DragDropContext } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Column from './Column';
 import './scroll.scss'
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
@@ -14,8 +14,8 @@ import axiosInstance from '../../API/axios';
 const KanbanBoard = () => {
   const [data, setData] = useState([]);
   const [newTask, setNewTask] = useState([]);
-  const [showTimeLine, setShowTimeLine] = useState(false); 
-  const [showListTask, setShowListTask] = useState(true); 
+  const [showTimeLine, setShowTimeLine] = useState(false);
+  const [showListTask, setShowListTask] = useState(true);
   const [formNewTask, setFormNewTask] = useState({
     requirement: '',
     timeStart: '',
@@ -34,11 +34,11 @@ const KanbanBoard = () => {
 
   const toggleTimeline = () => {
     setShowTimeLine(!showTimeLine);
-    setShowListTask(false); 
+    setShowListTask(false);
   }
   const toggleListTask = () => {
     setShowListTask(!showListTask);
-    setShowTimeLine(false); 
+    setShowTimeLine(false);
   }
 
 
@@ -85,8 +85,8 @@ const KanbanBoard = () => {
     const userToken = getTokenFromUrlAndSaveToStorage();
 
 
-    console.log("Start: ",formNewTask.timeStart);
-    console.log("Requirement: ",formNewTask.requirement);
+    console.log("Start: ", formNewTask.timeStart);
+    console.log("Requirement: ", formNewTask.requirement);
     axiosInstance.post('/student/task/create', formNewTask, {
       headers: {
         'Authorization': `Bearer ${userToken}`,
@@ -102,9 +102,33 @@ const KanbanBoard = () => {
       })
   }
 
-  const onDragEnd = (result) => {
-    // Code xử lý kéo và thả task tại đây
+  const handleDragEnd = (result) => {
+    const { destination, source, draggableId } = result;
+    if (!destination || (destination.droppableId === source.droppableId && destination.index === source.index)) {
+      return;
+    }
+    const updatedData = [...data];
+    const movedTask = updatedData.find(task => task.id === draggableId);
+    updatedData.splice(source.index, 1);
+    updatedData.splice(destination.index, 0, movedTask);
+    setData(updatedData);
+    // Gọi API hoặc cập nhật trạng thái task ở đây
   };
+
+  const updateTaskStatus = (taskId, status) => {
+    const userToken = getTokenFromUrlAndSaveToStorage();
+    axiosInstance.post(`/student/task/updateStatus/${taskId}`, { selectedOption: status }, {
+      headers: {
+        'Authorization': `Bearer ${userToken}`,
+      },
+    })
+      .then(response => {
+        console.log("Task status updated successfully:", response.data);
+      })
+      .catch(error => {
+        console.error("Error updating task status:", error);
+      });
+  }
 
   return (
     <div>
@@ -114,12 +138,12 @@ const KanbanBoard = () => {
             <AddOutlinedIcon /> Add task
           </button>
           <div>
-          <button type="button" className='button-add-task' onClick={toggleListTask}>
-            <DnsOutlinedIcon /> List Task
-          </button>
-          <button type="button" className='button-add-task' onClick={toggleTimeline}>
-            <TimelineOutlinedIcon /> Time Line
-          </button>
+            <button type="button" className='button-add-task' onClick={toggleListTask}>
+              <DnsOutlinedIcon /> List Task
+            </button>
+            <button type="button" className='button-add-task' onClick={toggleTimeline}>
+              <TimelineOutlinedIcon /> Time Line
+            </button>
           </div>
         </div>
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -161,16 +185,16 @@ const KanbanBoard = () => {
         </div>
       </div>
       {showListTask && (
-        <DragDropContext onDragEnd={onDragEnd}>
+        <DragDropContext onDragEnd={handleDragEnd}>
           <div className="kanban-board">
-            <Column className='column' title="Must Do" tasks={data.filter(task => task.status === 'MustDo')} droppableId="MustDo" />
-            <Column className='column' title="Doing" tasks={data.filter(task => task.status === 'Doing')} droppableId="Doing"/>
-            <Column className='column' title="Closed" tasks={data.filter(task => task.status === 'Closed')} droppableId="Closed" />
-            {/* Các cột khác */}
+            <Column title="Must Do" tasks={data.filter(task => task.status === 'MustDo')} droppableId="MustDo" />
+            <Column title="Doing" tasks={data.filter(task => task.status === 'Doing')} droppableId="Doing" />
+            <Column title="Closed" tasks={data.filter(task => task.status === 'Closed')} droppableId="Closed" />
+            {/* Other columns */}
           </div>
         </DragDropContext>
       )}
-      {showTimeLine && <TimeLineOfStudent/>}
+      {showTimeLine && <TimeLineOfStudent />}
     </div>
   );
 };

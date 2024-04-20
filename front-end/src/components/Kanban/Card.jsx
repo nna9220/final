@@ -80,7 +80,7 @@ const Card = ({ task, index }) => {
   const modalId = `exampleModal-${task.taskId}`;
 
   return (
-    <Draggable draggableId={task.taskId} index={index}>
+    <Draggable draggableId={task.id} index={index}>
       {(provided) => (
         <div  className="card-items" ref={provided.innerRef}{...provided.draggableProps}{...provided.dragHandleProps}>
           <div class="dropdown">

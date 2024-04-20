@@ -36,6 +36,28 @@
     }
 }
 
+.draggable {
+    background-color: lightblue;
+    padding: 8px;
+    margin-bottom: 8px;
+    cursor: grab;
+  }
+  
+  .draggable:hover {
+    background-color: blue;
+    color: white;
+  }
+  
+  .droppable {
+    background-color: lightgray;
+    padding: 16px;
+  }
+  
+  .dragging-over {
+    border: 2px dashed blue;
+  }
+  
+
 
 /*Card*/
 .modal-body {
