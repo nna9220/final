@@ -1,40 +1,25 @@
-import React from 'react';
-import { Navigation } from 'react-minimal-side-navigation';
-import 'react-minimal-side-navigation/lib/ReactMinimalSideNavigation.css';
-import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
+import React, { useState, useEffect } from 'react';
+import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
-import AppRegistrationOutlinedIcon from '@mui/icons-material/AppRegistrationOutlined';
-import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
+import RecentActorsOutlinedIcon from '@mui/icons-material/RecentActorsOutlined';
+import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined';
 import RuleFolderOutlinedIcon from '@mui/icons-material/RuleFolderOutlined';
-import TopicOutlinedIcon from '@mui/icons-material/TopicOutlined';
-import SnippetFolderOutlinedIcon from '@mui/icons-material/SnippetFolderOutlined';
-import FolderSharedOutlinedIcon from '@mui/icons-material/FolderSharedOutlined';
-import { BorderBottom, BorderRight } from '@mui/icons-material';
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useLocation } from "react-router-dom";
-import axios from 'axios';
-import { Link } from 'react-router-dom';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
 import './SidebarHead.scss'
 
 function SidebarHead() {
-    const [isSidebarToggled, setSidebarToggled] = useState(true);
-    const [selectedMenuItem, setSelectedMenuItem] = useState(false);
+    const [expand, setExpand] = useState(true);
+    const [isAvatarVisible, setIsAvatarVisible] = useState(false);
+
+    const toggleSidebar = () => {
+        setExpand(!expand);
+        setIsAvatarVisible(!isAvatarVisible);
+    };
+
     const [head, setHead] = useState({});
-    const history = useNavigate();
-    const location = useLocation();
 
-    const handleSidebarToggle = () => {
-        setSidebarToggled(!isSidebarToggled);
-    };
-
-    const handleMenuItemClick = (menuItem) => {
-        setSelectedMenuItem(menuItem);
-    };
 
     useEffect(() => {
         const userToken = getTokenFromUrlAndSaveToStorage();
@@ -61,72 +46,74 @@ function SidebarHead() {
     }, []);
 
     return (
-        <div className='sidebar-head'>
-            <div className="sidebar-header">
-                <a className='title-sidebar'>KHOA CÔNG NGHỆ THÔNG TIN</a>
+        <>
+            <div className={`wrapper ${expand ? 'expand' : ''}`}>
+                <aside id="sidebar" className={expand ? 'expand' : ''}>
+                    <div className="d-flex">
+                        <button className="toggle-btn" type="button" onClick={toggleSidebar}>
+                            <i className="lni lni-grid-alt"> <DashboardOutlinedIcon /></i>
+                        </button>
+                        <div className="sidebar-logo">
+                            <a href="#">KHOA CÔNG NGHỆ THÔNG TIN</a>
+                        </div>
+                    </div>
+                    <hr style={{ color: '#fff' }}></hr>
+                    {!isAvatarVisible && (
+                        <div className="sidebar-header">
+                            <div className="user-pic" style={{ color: '#fff' }}>
+                                <i className="fa fa-user-circle fa-4x" aria-hidden="true"></i>
+                            </div>
+                            <div className="user-info">
+                                <span className="user-name"><strong>{head.firstName + ' ' + head.lastName}</strong></span>
+                                <span className="user-role">Trưởng bộ môn</span>
+                            </div>
+                        </div>
+                    )}
+                    <hr style={{ color: '#fff' }}></hr>
+                    <ul className="sidebar-nav">
+                        <li className="sidebar-item">
+                            <a href="/homeHead" className="sidebar-link">
+                                <i className="lni lni-user"><HomeOutlinedIcon /></i>
+                                <span>Trang chủ</span>
+                            </a>
+                        </li>
+                        <li className="sidebar-item">
+                            <a href="/profileHead" className="sidebar-link">
+                                <i className="lni lni-agenda"><PersonOutlinedIcon /></i>
+                                <span>Trang cá nhân</span>
+                            </a>
+                        </li>
+                        <li className="sidebar-item">
+                            <a href="/registerHead" className="sidebar-link">
+                                <i className="lni lni-popup"><RecentActorsOutlinedIcon /></i>
+                                <span>Đăng ký đề tài</span>
+                            </a>
+                        </li>
+                        <li className="sidebar-item">
+                            <a href="#" className="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth"
+                                aria-expanded="false" aria-controls="auth">
+                                <i className="lni lni-protection"><FactCheckOutlinedIcon/></i>
+                                <span>Quản lý đề tài</span>
+                            </a>
+                            <ul id="auth" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                                <li className="sidebar-item">
+                                    <a  style={{marginLeft:'10px'}} href="/managermentHead/approve" className="sidebar-link">Duyệt đề tài</a>
+                                </li>
+                                <li className="sidebar-item">
+                                    <a style={{marginLeft:'10px'}} href="/managementHead/assign" className="sidebar-link">Phân giảng viên phản biện</a>
+                                </li>
+                                <li className="sidebar-item">
+                                    <a style={{marginLeft:'10px'}} href="/managementHead/topics" className="sidebar-link">Đề tài của tôi</a>
+                                </li>
+                                <li className="sidebar-item">
+                                    <a style={{marginLeft:'10px'}} href="/managermentHead/TopicsPB" className="sidebar-link">Đề tài phản biện</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </aside>
             </div>
-            <hr></hr>
-            <div className="sidebar-header">
-                <div className="user-pic" style={{ color: '#fff' }}>
-                    <i className="fa fa-user-circle fa-4x" aria-hidden="true"></i>
-                </div>
-                <div className="user-info">
-                    <span className="user-name"><strong>{head.firstName + ' ' + head.lastName}</strong></span>
-                    <span className="user-role">Trưởng bộ môn</span>
-                </div>
-            </div>
-            <hr></hr>
-            <Navigation
-                activeItemId={location.pathname}
-                onSelect={({ itemId }) => {
-                    history(itemId);
-                }}
-                items={[
-                    {
-                        title: 'Trang chủ',
-                        itemId: '/homeHead',
-                        elemBefore: () => <HomeOutlinedIcon />,
-                    },
-                    {
-                        title: 'Trang cá nhân',
-                        itemId: '/profileHead',
-                        elemBefore: () => <PersonOutlinedIcon />,
-                    },
-                    {
-                        title: 'Đăng kí đề tài',
-                        itemId: '/registerHead',
-                        elemBefore: () => <AppRegistrationOutlinedIcon />,
-                    },
-                    {
-                        title: 'Quản lý đề tài',
-                        itemId: '/managermentHead/approve',
-                        elemBefore: () => <FolderOutlinedIcon />,
-                        subNav: [
-                            {
-                                title: 'Duyệt đề tài',
-                                itemId: '/managermentHead/approve',
-                                elemBefore: () => <RuleFolderOutlinedIcon />,
-                            },
-                            {
-                                title: 'Phân giảng viên phản biện',
-                                itemId: '/managementHead/assign',
-                                elemBefore: () => <FolderSharedOutlinedIcon />,
-                            },
-                            {
-                                title: 'Đề tài của tôi',
-                                itemId: '/managementHead/topics',
-                                elemBefore: () => <TopicOutlinedIcon />,
-                            },
-                            {
-                                title: 'Đề tài phản biện',
-                                itemId: '/managermentHead/TopicsPB',
-                                elemBefore: () => <SnippetFolderOutlinedIcon />,
-                            },
-                        ],
-                    },
-                ]}
-            />
-        </div>
+        </>
     );
 }
 
