@@ -57,10 +57,9 @@ function DatatableLec() {
         if (name === 'gender') {
             setFormData(prevState => ({
                 ...prevState,
-                [name]: value === 'Nữ' // Chuyển giá trị về true nếu là "Nữ", ngược lại là false
+                [name]: value === 'Nữ' 
             }));
         } else {
-            // Các trường nhập liệu khác
             setFormData(prevState => ({
                 ...prevState,
                 [name]: value
@@ -109,7 +108,6 @@ function DatatableLec() {
         })
             .then(response => {
                 if (response.status === 200) {
-                    // Xóa thành công
                     setLectures(prevState => prevState.filter(lecturer => lecturer.lecturerId !== lecturerId));
                     setShowConfirmation(false);
                     setShowDeleteToast(true);
@@ -165,14 +163,9 @@ function DatatableLec() {
         })
             .then(response => {
                 const data = response.data;
-                console.log("Data: " + data)
                 if (data.lecturer && data.lecturer.person) {
                     const formattedDate = moment(data.lecturer.person.birthDay, "DD/MM/YYYY").format("YYYY-MM-DD");
-                    console.log("user tồn tại");
-                    console.log("Date: " + data.lecturer.person.birthDay)
-                    console.log("Authority: " + data.lecturer.authority.name)
                     data.lecturer.person.birthDay = formattedDate;
-                    console.log("Date2: " + data.lecturer.person.birthDay);
                     setUserEdit(data.lecturer.person);
                     setGender(data.lecturer.person.gender);
                     setShowModal(true);
@@ -301,7 +294,11 @@ function DatatableLec() {
                     }
                     ))}
                     columns={columns}
-                    pageSizeOptions={[10, 100, { value: 1000, label: '1,000' }]}
+                    initialState={{
+                        ...lectures.initialState,
+                        pagination: { paginationModel: { pageSize: 10 } },
+                    }}
+                    pageSizeOptions={[10, 25, 50]}
                 />
             )}
 
@@ -318,7 +315,11 @@ function DatatableLec() {
                     }
                     ))}
                     columns={columns}
-                    pageSizeOptions={[10, 100, { value: 1000, label: '1,000' }]}
+                    initialState={{
+                        ...lectures.initialState,
+                        pagination: { paginationModel: { pageSize: 10 } },
+                    }}
+                    pageSizeOptions={[10, 25, 50]}
                 />
             )}
 
