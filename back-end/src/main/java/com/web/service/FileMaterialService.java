@@ -5,6 +5,7 @@ import com.web.entity.FileComment;
 import com.web.exception.MyFileNotFoundException;
 import com.web.repository.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,9 @@ public class FileMaterialService {
 
 
     private final Path fileStorageLocation;
+
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
 
     public String storeFile(MultipartFile file) {
@@ -84,7 +88,6 @@ public class FileMaterialService {
     }
 
     public FileMaterialService() {
-        String uploadDir = System.getProperty("user.dir") + "/uploads";
         this.fileStorageLocation = Paths.get(uploadDir)
                 .toAbsolutePath().normalize();
         try {
