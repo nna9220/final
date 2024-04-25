@@ -129,9 +129,6 @@ public class RegistrationPeriodLecturerController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             RegistrationPeriodLectuer existRegistrationPeriod = registrationPeriodRepository.findById(periodId).orElse(null);
             if (existRegistrationPeriod != null) {
-                /*SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                Date dateStart = dateFormat.parse(start);
-                Date dateEnd = dateFormat.parse(end);*/
                 System.out.println("Data nhận được: " +  registrationPeriodLectuer.getPeriodId());
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 java.util.Date utilStartDate = dateFormat.parse(registrationPeriodLectuer.getRegistrationTimeStart());
