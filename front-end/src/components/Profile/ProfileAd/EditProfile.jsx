@@ -5,7 +5,6 @@ import AutoFixNormalOutlinedIcon from '@mui/icons-material/AutoFixNormalOutlined
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import { Alert, Toast } from 'react-bootstrap';
 import axiosInstance from '../../../API/axios';
-import { ToastContainer, toast } from 'react-toastify';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 function EditProfile() {
     const [user, setUser] = useState([]);
@@ -111,10 +110,9 @@ function EditProfile() {
                             lastName: response.data.lastName,
                             birthDay: response.data.birthDay,
                             phone: response.data.phone,
-                            gender: response.data.gender // Cập nhật giá trị gender từ dữ liệu nhận được từ máy chủ
+                            gender: response.data.gender,
                         }));
                         setShowModal(true);
-                        // Cập nhật state user với dữ liệu nhận được từ server
                         setUser(response.data);
                     })
                     .catch(error => {
@@ -220,14 +218,10 @@ function EditProfile() {
         });
         setEditingMode(false);
         setIsCancelClicked(true);
-        // Đặt các state của thông báo lỗi về trạng thái ban đầu khi click vào cancel
         setErrorPhone('');
         setErrorFirstName('');
         setErrorLastName('');
     };
-
-    // Đảm bảo rằng các thông báo lỗi sẽ không được hiển thị khi click vào cancel
-
 
     const handleUpdate = async () => {
         await handleSubmit();

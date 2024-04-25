@@ -4,6 +4,7 @@ com\web\config\CorsConfig$1.class
 com\web\dto\response\CommentResponse.class
 com\web\dto\response\SubjectResponse.class
 com\web\entity\RegistrationPeriod.class
+com\web\controller\Student\Graduation\StudentAddCommentGraduationController.class
 com\web\mapper\SubjectMapperImpl.class
 com\web\exception\EmptyException.class
 com\web\utils\UserUtils.class
@@ -49,6 +50,7 @@ com\web\mapper\PersonMapperImpl.class
 com\web\mapper\TypeSubjectMapper.class
 com\web\config\TokenUtils.class
 com\web\mapper\StudentMapperImpl.class
+com\web\controller\Student\Graduation\StudentAddTaskGraduationController.class
 com\web\dto\request\SchoolYearRequest.class
 com\web\utils\FileFactory.class
 com\web\controller\HeadOfDepartment\AddCounterArgumentController.class
@@ -115,6 +117,7 @@ com\web\config\DatabaseConfiguration.class
 com\web\controller\admin\SubjectController.class
 com\web\controller\admin\TypeSubjectController.class
 com\web\controller\Student\StudentRegisterTopic.class
+com\web\controller\Student\Graduation\StudentRegisterTopicGraduation.class
 com\web\dto\TokenDto.class
 com\web\entity\Subject.class
 com\web\config\WebConfig.class
@@ -133,6 +136,7 @@ com\web\controller\Student\StudentAddTaskController.class
 com\web\config\CloudConfig.class
 com\web\controller\Lecturer\Graduation\LecturerRegisterGraduationTopicController.class
 com\web\dto\response\TaskResponse.class
+com\web\controller\admin\GraduationThesis\RegistrationPeriodGraduationController.class
 com\web\dto\UserDto.class
 com\web\entity\Notification.class
 com\web\mapper\SchoolYearMapperImpl.class
