@@ -6,40 +6,46 @@ import './TimeLineOfStudent.scss'
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
 
-
 setOptions({
   theme: 'ios',
   themeVariant: 'light'
 });
 
-function TimeLineOfStudent() {
+const TimeLineOfHeader= ({ subjectId }) => {
   const [data, setData] = useState([]);
   const [isToastOpen, setToastOpen] = useState(false);
   const [toastText, setToastText] = useState();
   const [toastContext, setToastContext] = useState();
+  const [showTimeLine, setShowTimeLine] = useState(false);
+  const [showListTask, setShowListTask] = useState(true);
   useEffect(() => {
     const userToken = getTokenFromUrlAndSaveToStorage();
-    if (userToken) {
-      const tokenSt = sessionStorage.getItem(userToken);
-      if (!tokenSt) {
-        axiosInstance.get('/student/task/list', {
+    const fetchData = async () => {
+      try {
+        const response = await axiosInstance.get(`/head/manager/listTask/${subjectId}`, {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },
-        })
-          .then(response => {
-            console.log("detailTaskSt: ", response.data.listTask);
-            setData(response.data.listTask);
-          })
-          .catch(error => {
-            console.error("Error fetching task list:", error);
-            // Xử lý lỗi ở đây, ví dụ:
-            // setErrorMessage("Error fetching task list. Please try again later.");
-          });
+        });
+        setData(response.data.listTask);
+        console.log("DataTask:", response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
       }
-    }
-  }, []);
+    };
 
+    fetchData();
+  }, [subjectId]);
+
+  const toggleTimeline = () => {
+    setShowTimeLine(!showTimeLine);
+    setShowListTask(false);
+  }
+  const toggleListTask = () => {
+    setShowListTask(!showListTask);
+    setShowTimeLine(false);
+  }
+  
   const myView = useMemo(
     () => ({
       timeline: {
@@ -113,4 +119,4 @@ function TimeLineOfStudent() {
   );
 }
 
-export default TimeLineOfStudent
+export default TimeLineOfHeader

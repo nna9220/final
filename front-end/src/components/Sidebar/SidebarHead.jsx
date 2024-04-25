@@ -1,91 +1,127 @@
-import React from 'react'
-import { Sidebar, Menu, MenuItem } from 'react-pro-sidebar';
-import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import './SidebarStudent.scss'
-import { Link } from 'react-router-dom';
-import { useState, useEffect} from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
+import RecentActorsOutlinedIcon from '@mui/icons-material/RecentActorsOutlined';
+import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined';
+import RuleFolderOutlinedIcon from '@mui/icons-material/RuleFolderOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
-
+import './SidebarHead.scss'
+import { useNavigate } from 'react-router-dom'; 
 
 function SidebarHead() {
-    const [isSidebarToggled, setSidebarToggled] = useState(true);
-    const [selectedMenuItem, setSelectedMenuItem] = useState(false);
-    const [head, setHead] = useState({});
+    const [expand, setExpand] = useState(true);
+    const [isAvatarVisible, setIsAvatarVisible] = useState(false);
+    const [activeItem, setActiveItem] = useState('');
+    const navigate = useNavigate(); 
 
-    const handleSidebarToggle = () => {
-        setSidebarToggled(!isSidebarToggled);
+    const toggleSidebar = () => {
+        setExpand(!expand);
+        setIsAvatarVisible(!isAvatarVisible);
     };
 
-    const handleMenuItemClick = (menuItem) => {
-        setSelectedMenuItem(menuItem);
+    const [head, setHead] = useState({});
+
+    const handleItemClick = (item) => {
+        setActiveItem(item);
+        navigate(`/${item}`);
     };
 
     useEffect(() => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         if (userToken) {
-          // Lấy token từ storage
-          const tokenSt = sessionStorage.getItem(userToken);
-    
-          if (!tokenSt) {
-            axiosInstance.get('/head/home', {
-              headers: {
-                'Authorization': `Bearer ${userToken}`,
-              },
-            })
-            .then(response => {
-              // Xử lý response từ backend (nếu cần)
-              console.log("DataHead: ", response);
-              setHead(response.data);
-            })
-            .catch(error => {
-              console.error(error);
-            });
-          }
+            // Lấy token từ storage
+            const tokenSt = sessionStorage.getItem(userToken);
+
+            if (!tokenSt) {
+                axiosInstance.get('/head/home', {
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`,
+                    },
+                })
+                    .then(response => {
+                        // Xử lý response từ backend (nếu cần)
+                        console.log("DataHead: ", response);
+                        setHead(response.data);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            }
         }
-      }, []);
-    
+    }, []);
+
     return (
-        <div className={`page-wrapper chiller-theme ${isSidebarToggled ? 'toggled' : ''}`}>
-            <a id="show-sidebar" className="btn btn-sm btn-dark" href="#" onClick={handleSidebarToggle}>
-                <i><MenuOutlinedIcon /></i>
-            </a>
-
-            <nav id="sidebar" className="sidebar-wrapper">
-                <div className="sidebar-content">
-                    <div className="sidebar-brand">
-                        <a style={{ fontSize: '12px' }} href="#">KHOA CÔNG NGHỆ THÔNG TIN</a>
-                        <div id="close-sidebar" onClick={handleSidebarToggle}>
-                            <i><CloseRoundedIcon /></i>
+        <>
+            <div className={`wrapper ${expand ? 'expand' : ''}`}>
+                <aside id="sidebar" className={expand ? 'expand' : ''}>
+                    <div className="d-flex">
+                        <button className="toggle-btn" type="button" onClick={toggleSidebar}>
+                            <i className="lni lni-grid-alt"> <DashboardOutlinedIcon /></i>
+                        </button>
+                        <div className="sidebar-logo">
+                            <a href="#">KHOA CÔNG NGHỆ THÔNG TIN</a>
                         </div>
                     </div>
-
-                    <div className="sidebar-header">
-                        <div className="user-pic" style={{ color: '#fff' }}>
-                            <i className="fa fa-user-circle fa-4x" aria-hidden="true"></i>
+                    <hr style={{ color: '#fff' }}></hr>
+                    {!isAvatarVisible && (
+                        <div className="sidebar-header">
+                            <div className="user-pic" style={{ color: '#fff' }}>
+                                <i className="fa fa-user-circle fa-4x" aria-hidden="true"></i>
+                            </div>
+                            <div className="user-info">
+                                <span className="user-name"><strong>{head.firstName + ' ' + head.lastName}</strong></span>
+                                <span className="user-role">Trưởng bộ môn</span>
+                            </div>
                         </div>
-                        <div className="user-info">
-                            <span className="user-name"> <strong>{head.firstName + ' '+head.lastName}</strong></span>
-                            <span className="user-role">Trưởng bộ môn</span>
-                        </div>
-                    </div>
-
-                    <div className="sidebar-menu">
-                        <ul>
-                            <li className="header-menu"><span>Trang chủ</span></li>
-                            <li className={selectedMenuItem === 'trangCuaBan' ? 'active' : ''}><Link to="/homeHead" onClick={() => handleMenuItemClick('trangCuaBan')}><i className="fa fa-home"></i><span>Trang của bạn</span></Link></li>
-                            <li className={selectedMenuItem === 'thongTinCaNhan' ? 'active' : ''}><Link to="/profileHead" onClick={() => handleMenuItemClick('thongTinCaNhan')}><i className="fa fa-user"></i><span>Thông tin cá nhân</span></Link></li>
-                            <li className={selectedMenuItem === 'dangkiDeTai' ? 'active' : ''}><Link to="/registerHead" onClick={() => handleMenuItemClick('dangkiDeTai')}><i className="fa fa-book"></i><span>Đăng ký đề tài</span></Link></li>
-                            <li className={selectedMenuItem === 'quanlydetai' ? 'active' : ''}><Link to="/managermentHead" onClick={() => handleMenuItemClick('quanlydetai')}><i className="fa fa-folder"></i><span>Quản lý đề tài</span></Link></li>
-                            <li className={selectedMenuItem === 'quanlydetaiPB' ? 'active' : ''}><Link to="/managermentHeadPB" onClick={() => handleMenuItemClick('quanlydetaiPB')}><i className="fa fa-folder"></i><span>Quản lý đề tài phản biện</span></Link></li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </div>
-    )
+                    )}
+                    <hr style={{ color: '#fff' }}></hr>
+                    <ul className="sidebar-nav">
+                        <li className={`sidebar-item ${activeItem === 'homeHead' ? 'active' : ''}`}>
+                            <a href="#" className="sidebar-link" onClick={() => handleItemClick('homeHead')}>
+                                <i className="lni lni-user"><HomeOutlinedIcon /></i>
+                                <span>Trang chủ</span>
+                            </a>
+                        </li>
+                        <li className={`sidebar-item ${activeItem === 'profileHead' ? 'active' : ''}`}>
+                            <a href="#" className="sidebar-link" onClick={() => handleItemClick('profileHead')}>
+                                <i className="lni lni-agenda"><PersonOutlinedIcon /></i>
+                                <span>Trang cá nhân</span>
+                            </a>
+                        </li>
+                        <li className={`sidebar-item ${activeItem === 'registerHead' ? 'active' : ''}`}>
+                            <a href="#" className="sidebar-link" onClick={() => handleItemClick('registerHead')}>
+                                <i className="lni lni-popup"><RecentActorsOutlinedIcon /></i>
+                                <span>Đăng ký đề tài</span>
+                            </a>
+                        </li>
+                        <li className={`sidebar-item ${activeItem === 'management' ? 'active' : ''}`}>
+                            <a href="#" className="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth"
+                                aria-expanded="false" aria-controls="auth">
+                                <i className="lni lni-protection"><FactCheckOutlinedIcon/></i>
+                                <span>Quản lý đề tài</span>
+                            </a>
+                            <ul id="auth" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                                <li className={`sidebar-item ${activeItem === 'managermentHead/approve' ? 'active' : ''}`}>
+                                    <a  style={{marginLeft:'10px'}} href="#" className="sidebar-link" onClick={() => handleItemClick('managermentHead/approve')}>Duyệt đề tài</a>
+                                </li>
+                                <li className={`sidebar-item ${activeItem === 'managementHead/assign' ? 'active' : ''}`}>
+                                    <a style={{marginLeft:'10px'}} href="#" className="sidebar-link" onClick={() => handleItemClick('managementHead/assign')}>Phân giảng viên phản biện</a>
+                                </li>
+                                <li className={`sidebar-item ${activeItem === 'managementHead/topics' ? 'active' : ''}`}>
+                                    <a style={{marginLeft:'10px'}} href="#" className="sidebar-link" onClick={() => handleItemClick('managementHead/topics')}>Đề tài của tôi</a>
+                                </li>
+                                <li className={`sidebar-item ${activeItem === 'managermentHead/TopicsPB' ? 'active' : ''}`}>
+                                    <a style={{marginLeft:'10px'}} href="#" className="sidebar-link" onClick={() => handleItemClick('managermentHead/TopicsPB')}>Đề tài phản biện</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </aside>
+            </div>
+        </>
+    );
 }
 
 export default SidebarHead

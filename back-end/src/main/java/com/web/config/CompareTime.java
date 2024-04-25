@@ -17,7 +17,7 @@ public class CompareTime {
         Date currentTime = new Date(System.currentTimeMillis()); // Lấy thời gian hiện tại
 
         // So sánh thời gian hiện tại với thời gian bắt đầu và kết thúc
-        return currentTime.after(end) && currentTime.before(start);
+        return currentTime.after(end) && currentTime.before(start) || currentTime.equals(start) || currentTime.equals(end);
 
     }
 
@@ -50,13 +50,11 @@ public class CompareTime {
             RegistrationPeriodLectuer period2 = periodList.get(1);
             Date start2 = period2.getRegistrationTimeStart();
             Date end2 = period2.getRegistrationTimeEnd();
-
             System.out.println("start 1: " + start1);
             System.out.println("end 1: " + end1);
             System.out.println("start 2: " + start2);
             System.out.println("end 2: " + end2);
             System.out.println("current: " + currentTime);
-
             return isCurrentTimeInInterval(start1, end1) || isCurrentTimeInInterval(start2, end2);
         }
         return false;

@@ -153,20 +153,15 @@ public class StudentController {
                                                           @RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
+        System.out.println("Start");
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
+            System.out.println("Before existedStudent null");
             Student existStudent = studentRepository.findById(id).orElse(null);;
             if (existStudent!=null){
+                System.out.println("After existedStudent null");
                 Person person = personRepository.findById(existStudent.getStudentId()).orElse(null);
                 List<StudentClass> studentClasses = studentClassService.findAll();
                 List<SchoolYear> schoolYears = schoolYearService.findAll();
-               /* ModelAndView modelAndView = new ModelAndView("admin_editStudent");
-                System.out.println(personCurrent.getUsername()+personCurrent.getFirstName());
-                modelAndView.addObject("student", existStudent);
-                modelAndView.addObject("person", person);
-                modelAndView.addObject("listClass", studentClasses);
-                modelAndView.addObject("major", Major.values());
-                modelAndView.addObject("listYear", schoolYears);
-                return modelAndView;*/
                 Map<String,Object> response= new HashMap<>();
                 response.put("student",existStudent);
                 response.put("person", person);
@@ -186,38 +181,41 @@ public class StudentController {
     }
 
     @PostMapping("/edit/{id}")
-    public ResponseEntity<?> updateStudent(@PathVariable String id,@ModelAttribute PersonRequest studentRequest,
-                                           @RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request){
+    public ResponseEntity<?> updateUser(@PathVariable String id,
+                                        @RequestParam("personId") String personId,
+                                        @RequestParam("firstName") String firstName,
+                                        @RequestParam("lastName") String lastName,
+                                        @RequestParam("birthDay") String birthDay, // Thay đổi kiểu dữ liệu thành String
+                                        @RequestParam("phone") String phone,
+                                        @RequestParam("gender") boolean gender,
+                                        @RequestParam(value = "status", required = false, defaultValue = "true") boolean status,
+                                        @RequestHeader("Authorization") String authorizationHeader,
+                                        HttpServletRequest request) {
         String token = tokenUtils.extractToken(authorizationHeader);
-        Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
-            Student existStudent = studentRepository.findById(id).orElse(null);
-            if (existStudent!=null){
-                System.out.println(id);
-                existStudent.getPerson().setFirstName(studentRequest.getFirstName());
-                existStudent.getPerson().setLastName(studentRequest.getLastName());
-                existStudent.getPerson().setBirthDay(String.valueOf(studentRequest.getBirthDay()));
-                existStudent.getPerson().setPhone(studentRequest.getPhone());
-                existStudent.getPerson().setStatus(studentRequest.isStatus());
+            Person existPerson = personRepository.findById(id).orElse(null);
 
-                studentRepository.save(existStudent);
-                /*String referer = Contains.URL_LOCAL + "/api/admin/student";
-                System.out.println("Url: " + referer);
-                // Thực hiện redirect trở lại trang trước đó
-                return new ModelAndView("redirect:" + referer);*/
-                return new ResponseEntity<>(existStudent, HttpStatus.OK);
+            if (existPerson != null) {
+                existPerson.setPersonId(personId);
+                existPerson.setFirstName(firstName);
+                existPerson.setLastName(lastName);
 
-            }else {
-               /* ModelAndView error = new ModelAndView();
-                error.addObject("errorMessage", "Không tìm thấy sinh viên");
-                return error;*/
+                existPerson.setBirthDay(birthDay);
+
+                existPerson.setPhone(phone);
+                existPerson.setGender(gender);
+                existPerson.setStatus(status);
+
+                personRepository.save(existPerson);
+                return new ResponseEntity<>(existPerson, HttpStatus.OK);
+            } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-        }else {
+        } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
-
     @PostMapping("/delete/{id}")
     public ResponseEntity<?> deleteStudent(@PathVariable String id, @RequestHeader("Authorization") String authorizationHeader) {
         String token = tokenUtils.extractToken(authorizationHeader);

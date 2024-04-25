@@ -1,55 +1,84 @@
 /*Board*/
-.kanban-board{
-    display: flex; 
+.kanban-board {
+    display: flex;
     justify-content: center;
-    margin-top: 20px;
+    margin: 20px;
     background-color: white;
-    .column{
+
+    .column {
         border: none;
         background-color: rgb(219, 198, 198);
         text-align: center;
     }
 }
 
-.header-board{
-    .btn-add{
+.header-board {
+    .btn-add {
         background-color: white;
         border: none;
-        &:active{
+
+        &:active {
             border: none;
         }
-        &:hover{
+
+        &:hover {
             color: #2d99ae;
         }
     }
 }
 
-.button-add-task{
+.button-add-task {
     border: none;
     background-color: white;
+
     &:hover {
         color: #156575;
     }
 }
 
+.draggable {
+    background-color: lightblue;
+    padding: 8px;
+    margin-bottom: 8px;
+    cursor: grab;
+  }
+  
+  .draggable:hover {
+    background-color: blue;
+    color: white;
+  }
+  
+  .droppable {
+    background-color: lightgray;
+    padding: 16px;
+  }
+  
+  .dragging-over {
+    border: 2px dashed blue;
+  }
+  
+
 
 /*Card*/
-.modal-body{
+.modal-body {
     text-align: start;
-    .lable-items{
+
+    .lable-items {
         text-align: start;
     }
 
-    .button-container{
+    .button-container {
         display: flex;
         justify-content: flex-end;
         margin-bottom: 10px;
-        .btn-comment{
+
+        .btn-comment {
             border-radius: 5px;
             border: none;
             background-color: #2d99ae;
             color: aliceblue;
             padding: 5px;
+
             &:hover {
                 background-color: #156575;
             }
@@ -57,48 +86,53 @@
     }
 
 
-    .comment-items{
+    .comment-items {
         border: none;
-        
-        .comment-item
-        {
+
+        .comment-item {
             padding: 10px;
             border: 1px solid rgb(215, 206, 206);
             border-radius: 5px;
             margin-bottom: 5px;
-            .header-comment{
+
+            .header-comment {
                 justify-content: space-between;
                 display: flex;
-                .name-post{
+
+                .name-post {
                     font-weight: bold;
                     color: #2d99ae;
                 }
-                
+
             }
-            .body-comment{
+
+            .body-comment {
                 margin-top: 20px;
                 margin-bottom: 20px;
-                
+
             }
         }
 
-        .navbar-comment{
+        .navbar-comment {
             margin-bottom: 20px;
         }
 
     }
 }
 
-.info-modal{
+.info-modal {
     display: flex;
     justify-content: space-between;
-    .lable-items{
+
+    .lable-items {
         color: #156575;
         margin: 10px;
-        .name-label{
+
+        .name-label {
             color: black;
             padding-left: 10px;
-            .name{
+
+            .name {
                 margin-left: 10px;
                 font-weight: medium;
             }
@@ -106,8 +140,31 @@
     }
 }
 
-.list-button{
+.list-button {
     display: flex;
     justify-content: space-between;
 }
 
+.card-items {
+    background-color: white;
+    margin: 0 20px 10px 20px;
+    padding: 16px;
+
+    .dropdown {
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+
+//Column
+.column-task {
+    background: #edefef;
+    flex: 1;
+    margin: 10px;
+
+    .title-column {
+        text-align: center;
+        padding: 16px;
+    }
+}

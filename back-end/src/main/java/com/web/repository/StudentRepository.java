@@ -1,6 +1,7 @@
 package com.web.repository;
 
 import com.web.entity.Student;
+import com.web.entity.Subject;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,9 @@ public interface StudentRepository extends JpaRepository<Student, String> {
     @Query("SELECT S FROM Student S WHERE S.subjectId IS NULL")
     public List<Student> getStudentSubjectNull();
 
-    @Query("SELECT S FROM Student S WHERE S.subjectGraduationId IS NULL")
-    public List<Student> getStudentSubjectGraduationNull();
+    @Query("SELECT S FROM Student S WHERE S.subjectId=:subject")
+    public List<Student> getStudentSubjectGraduationNull(List<Subject> subject);
+
+    @Query("SELECT S FROM Student S WHERE S.subjectId IS NULL")
+    public List<Student> getStudentSubjectEssayNull();
 }
