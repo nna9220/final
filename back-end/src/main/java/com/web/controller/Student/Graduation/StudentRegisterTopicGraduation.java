@@ -51,7 +51,6 @@ public class StudentRegisterTopicGraduation {
                 if (currentStudent.getSubjectGraduationId() == null && currentStudent.getSubjectId() !=null) {
                     List<RegistrationPeriod> periodList = registrationPeriodRepository.findAllPeriod();
                     if (CompareTime.isCurrentTimeInPeriodStudent(periodList)) {
-                        //ModelAndView modelAndView = new ModelAndView("QuanLyDeTai_SV");
                         TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
                         List<Subject> subjectList = subjectRepository.findSubjectByStatusAndMajorAndStudent(true, currentStudent.getMajor(),typeSubject);
 
