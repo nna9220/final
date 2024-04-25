@@ -24,6 +24,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -168,37 +171,52 @@ public class HomeHeadController {
     }
 
     @PostMapping("/edit/{id}")
-    public ResponseEntity<?> updateLecturer(@PathVariable String id,@ModelAttribute PersonRequest studentRequest,
-                                       @RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request){
+    public ResponseEntity<?> updateHead(@PathVariable String id,
+                                            @RequestParam("firstName") String firstName,
+                                            @RequestParam("lastName") String lastName,
+                                            @RequestParam("birthDay") String birthDay,
+                                            @RequestParam("phone") String phone,
+                                            @RequestParam("gender") boolean gender,
+                                            @RequestParam(value = "status", required = false, defaultValue = "true") boolean status,
+                                            @RequestHeader("Authorization") String authorizationHeader,
+                                            HttpServletRequest request) {
         String token = tokenUtils.extractToken(authorizationHeader);
-        Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Person existPerson = personRepository.findById(id).orElse(null);
-            if (existPerson!=null){
-                System.out.println(id);
-                existPerson.setFirstName(studentRequest.getFirstName());
-                existPerson.setLastName(studentRequest.getLastName());
-                existPerson.setBirthDay(String.valueOf(studentRequest.getBirthDay()));
-                existPerson.setPhone(studentRequest.getPhone());
-                existPerson.setStatus(studentRequest.isStatus());
+            if (existPerson != null) {
+                existPerson.setFirstName(firstName);
+                existPerson.setLastName(lastName);
+
+                // Attempt to parse the birthDay string using multiple formats
+                String[] possibleFormats = {"dd-MM-yyyy", "yyyy-MM-dd", "MM-dd-yyyy"};
+                SimpleDateFormat inputFormat = new SimpleDateFormat();
+                Date birthDayDate = null;
+                for (String format : possibleFormats) {
+                    inputFormat.applyPattern(format);
+                    try {
+                        birthDayDate = inputFormat.parse(birthDay);
+                        break; // If parsing succeeds, exit the loop
+                    } catch (ParseException e) {
+                        // Parsing failed, try next format
+                    }
+                }
+
+                if (birthDayDate == null) {
+                    // Parsing failed for all formats, return an error response
+                    return new ResponseEntity<>("Invalid birthDay format", HttpStatus.BAD_REQUEST);
+                }
+                existPerson.setBirthDay(String.valueOf(birthDayDate));
+                existPerson.setPhone(phone);
+                existPerson.setGender(gender);
+                existPerson.setStatus(status);
 
                 personRepository.save(existPerson);
-                /*String referer = Contains.URL_LOCAL + "/api/head/profile";
-                System.out.println("Url: " + referer);
-                // Thực hiện redirect trở lại trang trước đó
-                return new ModelAndView("redirect:" + referer);*/
-                return new ResponseEntity<>(existPerson,HttpStatus.OK);
-
-            }else {
-                /*ModelAndView error = new ModelAndView();
-                error.addObject("errorMessage", "Không tìm thấy admin");
-                return error;*/
+                return new ResponseEntity<>(existPerson, HttpStatus.OK);
+            } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-        }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
+        } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
