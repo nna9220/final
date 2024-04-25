@@ -167,13 +167,30 @@ function DataTable() {
         }
     }, [isDataFetched]);
 
-    const handleEdit = (student) => {
-        if (student && student.person) { // Kiểm tra xem student và student.person có tồn tại không
-            setUserEdit(student.person);
-            setGender(student.person.gender);
-            setShowModal(true);
-        }
+    const handleEdit = (id) => {
+        console.log("id student", id);
+        console.log("user k tt");
+        axiosInstance.get(`/admin/student/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
+            },
+        })
+            .then(response => {
+                const data = response.data;
+                if (data.student && data.student.person) {
+                    console.log("user tồn tại");
+                    setUserEdit(data.student.person);
+                    setGender(data.student.person.gender);
+                    setShowModal(true);
+                } else {
+                    console.log("Sinh viên không tồn tại.");
+                }
+            })
+            .catch(error => {
+                console.error("Lỗi khi lấy thông tin sinh viên:", error);
+            });
     };
+
 
     const handleSubmitEdit = () => {
         const id = userEdit.personId; // Sử dụng thông tin từ state userEdit
@@ -243,7 +260,7 @@ function DataTable() {
                 <div>
                     {!showDeletedStudents && (
                         <>
-                            <button className="btnView" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(params.row)}>
+                            <button className="btnView" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(params.row.studentId)}>
                                 <EditOutlinedIcon />
                             </button>
                             <button className='btnDelete' onClick={() => handleDelete(params.row)}>
@@ -370,13 +387,17 @@ function DataTable() {
             </Toast>
 
             <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true" style={{ display: showModal ? 'block' : 'none' }}>
-                <div className="modal-dialog">
+                <div className="modal-dialog  modal-dialog modal-dialog-scrollable">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h1 className="modal-title fs-5" id="exampleModalLabel1">CẬP NHẬT THÔNG TIN SINH VIÊN</h1>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
+                            <div className="mb-3">
+                                <label htmlFor="id" className="form-label">MSSV</label>
+                                <input type="text" className="form-control" id="id" name="id" />
+                            </div>
                             <div className="mb-3">
                                 <label htmlFor="firstName" className="form-label">Họ</label>
                                 <input type="text" className="form-control" id="firstName" name="firstName" value={userEdit.firstName} onChange={handleChange} />
@@ -404,6 +425,18 @@ function DataTable() {
                                 <label htmlFor='phone' className="form-label">Số điện thoại</label>
                                 <input type="text" className="form-control" id="phone" name="phone" value={userEdit.phone} onChange={handleChange} />
                             </div>
+                            <div className="mb-3">
+                                <label htmlFor='address' className="form-label">Địa chỉ</label>
+                                <input type="text" className="form-control" id="address" name="address" />
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor='status' className="form-label">Trạng thái</label>
+                                <select className="form-select" id="status" name="status">
+                                    <option value="option1">True</option>
+                                    <option value="option2">False</option>
+                                </select>
+                            </div>
+
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModal(false)}>Close</button>
