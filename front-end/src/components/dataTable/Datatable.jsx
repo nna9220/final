@@ -13,6 +13,7 @@ import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import { DataGrid } from '@mui/x-data-grid';
 import axiosInstance from '../../API/axios';
+import moment from 'moment';
 
 function DataTable() {
     const [students, setStudents] = useState([]);
@@ -178,7 +179,9 @@ function DataTable() {
             .then(response => {
                 const data = response.data;
                 if (data.student && data.student.person) {
+                    const formattedDate = moment(data.student.person.birthDay, "DD/MM/YYYY").format("YYYY-MM-DD");
                     console.log("user tồn tại");
+                    data.student.person.birthDay = formattedDate;
                     setUserEdit(data.student.person);
                     setGender(data.student.person.gender);
                     setShowModal(true);
@@ -303,7 +306,11 @@ function DataTable() {
                         schoolYear: student.schoolYear.year,
                     }))}
                     columns={columns}
-                    pageSizeOptions={[10, 50, 100]}
+                    initialState={{
+                        ...students.initialState,
+                        pagination: { paginationModel: { pageSize: 10 } },
+                    }}
+                    pageSizeOptions={[10, 25, 50]}
 
                 />
             )}
@@ -320,7 +327,11 @@ function DataTable() {
                         schoolYear: student.schoolYear.year,
                     }))}
                     columns={columns}
-                    pageSizeOptions={[10, 50, 100]}
+                    initialState={{
+                        ...students.initialState,
+                        pagination: { paginationModel: { pageSize: 10 } },
+                    }}
+                    pageSizeOptions={[10, 25, 50]}
                 />
             )}
 
@@ -419,7 +430,7 @@ function DataTable() {
                             </div>
                             <div className="mb-3">
                                 <label htmlFor='brithDay' className="form-label">Ngày sinh</label>
-                                <input type="text" className="form-control" id="brithDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} />
+                                <input type="date" className="form-control" id="brithDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor='phone' className="form-label">Số điện thoại</label>
