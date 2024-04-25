@@ -24,10 +24,9 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.persistence.Access;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/lecturer")
@@ -166,56 +165,64 @@ public class HomeLecturerController {
         }
     }
     @GetMapping("/edit")
-    public ResponseEntity<Map<String,Object>> getEditProfile(@RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<?> getEditProfile(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent != null && personCurrent.getAuthorities().getName().equals("ROLE_LECTURER")) {
-            Lecturer lecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            /*ModelAndView modelAndView = new ModelAndView("profileGV");
-            modelAndView.addObject("person", personCurrent);
-            return modelAndView;*/
-            Map<String,Object> response = new HashMap<>();
-            response.put("person", personCurrent);
-            response.put("lec",lecturer);
-            return new ResponseEntity<>(response,HttpStatus.OK);
+            Person person = personRepository.findById(personCurrent.getPersonId()).orElse(null);
+            return new ResponseEntity<>(person,HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            //return new ModelAndView("error").addObject("errorMessage", "Bạn không có quyền truy cập.");
         }
     }
 
     @PostMapping("/edit/{id}")
-    public ResponseEntity<?> updateLecturer(@PathVariable String id,@ModelAttribute PersonRequest studentRequest,
-                                       @RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request){
+    public ResponseEntity<?> updateLecturer(@PathVariable String id,
+                                           @RequestParam("firstName") String firstName,
+                                           @RequestParam("lastName") String lastName,
+                                           @RequestParam("birthDay") String birthDay,
+                                           @RequestParam("phone") String phone,
+                                           @RequestParam("gender") boolean gender,
+                                           @RequestParam(value = "status", required = false, defaultValue = "true") boolean status,
+                                           @RequestHeader("Authorization") String authorizationHeader,
+                                           HttpServletRequest request) {
         String token = tokenUtils.extractToken(authorizationHeader);
-        Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER")) {
-            Lecturer existLecturer = lecturerRepository.findById(id).orElse(null);
-            if (existLecturer!=null){
-                System.out.println(id);
-                existLecturer.getPerson().setFirstName(studentRequest.getFirstName());
-                existLecturer.getPerson().setLastName(studentRequest.getLastName());
-                existLecturer.getPerson().setBirthDay(String.valueOf(studentRequest.getBirthDay()));
-                existLecturer.getPerson().setPhone(studentRequest.getPhone());
-                existLecturer.getPerson().setStatus(studentRequest.isStatus());
+            Person existPerson = personRepository.findById(id).orElse(null);
+            if (existPerson != null) {
+                existPerson.setFirstName(firstName);
+                existPerson.setLastName(lastName);
 
-                lecturerRepository.save(existLecturer);
-                /*String referer = Contains.URL_LOCAL + "/api/lecturer/profile";
-                System.out.println("Url: " + referer);
-                // Thực hiện redirect trở lại trang trước đó
-                return new ModelAndView("redirect:" + referer);*/
-                return new ResponseEntity<>(existLecturer,HttpStatus.OK);
+                // Attempt to parse the birthDay string using multiple formats
+                String[] possibleFormats = {"dd-MM-yyyy", "yyyy-MM-dd", "MM-dd-yyyy"};
+                SimpleDateFormat inputFormat = new SimpleDateFormat();
+                Date birthDayDate = null;
+                for (String format : possibleFormats) {
+                    inputFormat.applyPattern(format);
+                    try {
+                        birthDayDate = inputFormat.parse(birthDay);
+                        break; // If parsing succeeds, exit the loop
+                    } catch (ParseException e) {
+                        // Parsing failed, try next format
+                    }
+                }
 
-            }else {
-                /*ModelAndView error = new ModelAndView();
-                error.addObject("errorMessage", "Không tìm thấy sinh viên");
-                return error;*/
+                if (birthDayDate == null) {
+                    // Parsing failed for all formats, return an error response
+                    return new ResponseEntity<>("Invalid birthDay format", HttpStatus.BAD_REQUEST);
+                }
+                existPerson.setBirthDay(String.valueOf(birthDayDate));
+                existPerson.setPhone(phone);
+                existPerson.setGender(gender);
+                existPerson.setStatus(status);
+
+                personRepository.save(existPerson);
+                return new ResponseEntity<>(existPerson, HttpStatus.OK);
+            } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-        }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
+        } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
