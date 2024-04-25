@@ -25,6 +25,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,12 +143,6 @@ public class LecturerController {
                 Person person = personRepository.findById(existLecturer.getLecturerId()).orElse(null);
 
                 List<Authority> listAutho = authorityRepository.findAll();
-                /*ModelAndView modelAndView = new ModelAndView("admin_editLecturer");
-                System.out.println(personCurrent.getUsername()+personCurrent.getFirstName());
-                modelAndView.addObject("person", person);
-                modelAndView.addObject("major", Major.values());
-                modelAndView.addObject("lecturer", existLecturer);
-                modelAndView.addObject("autho", listAutho);*/
                 Map<String, Object> response = new HashMap<>();
                 response.put("person", person);
                 response.put("major",Major.values());
@@ -168,37 +165,49 @@ public class LecturerController {
     }
 
     @PostMapping("/edit/{id}")
-    public ResponseEntity<?> updateStudent(@PathVariable String id,@ModelAttribute PersonRequest studentRequest,
-                                           @RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<?> updateUser(@PathVariable String id,
+                                        @RequestParam("personId") String personId,
+                                        @RequestParam("firstName") String firstName,
+                                        @RequestParam("lastName") String lastName,
+                                        @RequestParam("birthDay") String birthDay, // Thay đổi kiểu dữ liệu thành String
+                                        @RequestParam("phone") String phone,
+                                        @RequestParam("gender") boolean gender,
+                                        @RequestParam("authority") Authority authority,
+                                        @RequestParam(value = "status", required = false, defaultValue = "true") boolean status,
+                                        @RequestHeader("Authorization") String authorizationHeader) {
+        System.out.println("Hellooooooo");
         String token = tokenUtils.extractToken(authorizationHeader);
-        Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             Lecturer existLecturer = lecturerRepository.findById(id).orElse(null);
-            if (existLecturer!=null){
-                System.out.println(id);
-                existLecturer.getPerson().setFirstName(studentRequest.getFirstName());
-                existLecturer.getPerson().setLastName(studentRequest.getLastName());
+            if (existLecturer != null) {
+                existLecturer.setLecturerId(personId);
+                existLecturer.getPerson().setFirstName(firstName);
+                existLecturer.getPerson().setLastName(lastName);
 
-                existLecturer.getPerson().setBirthDay(String.valueOf(studentRequest.getBirthDay()));
-                existLecturer.getPerson().setPhone(studentRequest.getPhone());
-                existLecturer.getPerson().setStatus(studentRequest.isStatus());
+                // Chuyển đổi birthDay từ String thành Date
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    Date birthDayDate = formatter.parse(birthDay);
+                    existLecturer.getPerson().setBirthDay(String.valueOf((birthDayDate)));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+                existLecturer.getPerson().setPhone(phone);
+                existLecturer.getPerson().setGender(gender);
+                existLecturer.setAuthority(authority);
+                Person lecturerPerson = personRepository.findById(existLecturer.getLecturerId()).orElse(null);
+                lecturerPerson.setAuthorities(authority);
+                existLecturer.getPerson().setStatus(status);
 
                 lecturerRepository.save(existLecturer);
-                /*String referer = Contains.URL + "/api/admin/lecturer";
-                System.out.println("Url: " + referer);
-                // Thực hiện redirect trở lại trang trước đó
-                return new ModelAndView("redirect:" + referer);*/
-                return new ResponseEntity<>(existLecturer,HttpStatus.OK);
-            }else {
-                /*ModelAndView error = new ModelAndView();
-                error.addObject("errorMessage", "Không tìm thấy sinh viên");
-                return error;*/
+                personRepository.save(lecturerPerson);
+                return new ResponseEntity<>(existLecturer, HttpStatus.OK);
+            } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-        }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
+        } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }

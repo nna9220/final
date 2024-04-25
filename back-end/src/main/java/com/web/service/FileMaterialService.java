@@ -58,9 +58,7 @@ public class FileMaterialService {
                 }
             }
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
-            try (FileOutputStream fos = new FileOutputStream(targetLocation.toFile())) {
-                fos.write(file.getBytes());
-            }
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
             return fileName;
         } catch (IOException ex) {
@@ -96,7 +94,6 @@ public class FileMaterialService {
             throw new RuntimeException("Could not create the directory where the uploaded files will be stored.", ex);
         }
     }
-
 }
 
 

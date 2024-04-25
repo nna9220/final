@@ -62,8 +62,6 @@ public class Person {
     private String providerId;
 
     @Column(name = "birth_Day")
-    @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private String birthDay;
 
     @Column(name = "status")

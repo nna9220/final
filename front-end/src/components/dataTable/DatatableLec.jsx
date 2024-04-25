@@ -12,7 +12,7 @@ import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
-import Item from 'antd/es/list/Item';
+import moment from 'moment';
 import axiosInstance from '../../API/axios';
 
 function DatatableLec() {
@@ -156,15 +156,33 @@ function DatatableLec() {
         }
     }, [isDataFetched]);
 
-    const handleEdit = (lecture) => {
-        if (lecture.person && lecture.person.gender) {
-            setUserEdit(lecture.person);
-            setGender(lecture.person.gender);
-            setShowModal(true);
-            console.log(lecture.person.gender);
-        } else {
-            console.error("Không thể chỉnh sửa. Thông tin giới tính không tồn tại.");
-        }
+    const handleEdit = (id) => {
+        console.log("id student", id);
+        axiosInstance.get(`/admin/lecturer/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
+            },
+        })
+            .then(response => {
+                const data = response.data;
+                console.log("Data: " + data)
+                if (data.lecturer && data.lecturer.person) {
+                    const formattedDate = moment(data.lecturer.person.birthDay, "DD/MM/YYYY").format("YYYY-MM-DD");
+                    console.log("user tồn tại");
+                    console.log("Date: " + data.lecturer.person.birthDay)
+                    console.log("Authority: " + data.lecturer.authority.name)
+                    data.lecturer.person.birthDay = formattedDate;
+                    console.log("Date2: " + data.lecturer.person.birthDay);
+                    setUserEdit(data.lecturer.person);
+                    setGender(data.lecturer.person.gender);
+                    setShowModal(true);
+                } else {
+                    console.log("Sinh viên không tồn tại.");
+                }
+            })
+            .catch(error => {
+                console.error("Lỗi khi lấy thông tin sinh viên:", error);
+            });
     };
 
     const handleSubmitEdit = () => {
@@ -244,7 +262,7 @@ function DatatableLec() {
                     )}
                     {!showDeletedLecturers && (
                         <>
-                            <button className="btnView" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(params.row)}>
+                            <button className="btnView" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(params.row.lecturerId)}>
                                 <EditOutlinedIcon />
                             </button>
                             <button className='btnDelete' onClick={() => handleDelete(params.row)}>
@@ -374,6 +392,10 @@ function DatatableLec() {
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
+                        <div className="mb-3">
+                                <label htmlFor='id' className="form-label">MSGV</label>
+                                <input type="text" className="form-control" id="id" name="id"/>
+                            </div>
                             <div className="mb-3">
                                 <label htmlFor="firstName" className="form-label">Họ</label>
                                 <input type="text" className="form-control" id="firstName" name="firstName" value={userEdit.firstName} onChange={handleChange} />
@@ -381,6 +403,10 @@ function DatatableLec() {
                             <div className="mb-3">
                                 <label htmlFor='lastName' className="form-label">Tên</label>
                                 <input type="text" className="form-control" id="lastName" name="lastName" value={userEdit.lastName} onChange={handleChange} />
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor='email' className="form-label">Email</label>
+                                <input type="text" className="form-control" id="email" name="email" />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor='gender' className="form-label">Giới tính</label>
@@ -399,7 +425,7 @@ function DatatableLec() {
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="authority" className="form-label">Role</label>
-                                <select className="form-select" id="authority" value={userEdit.authority} onChange={handleChange} name="authority">
+                                <select className="form-select" id="authority" value={userEdit.authority} onChange={handleChange} name="authority" defaultValue={userEdit.authority}>
                                     {author && author.filter(Item => Item.name === 'ROLE_HEAD' || Item.name === 'ROLE_LECTURER').map((Item, index) => (
                                         <option key={index} value={Item.name}>{Item.name}</option>
                                     ))}
@@ -408,6 +434,17 @@ function DatatableLec() {
                             <div className="mb-3">
                                 <label htmlFor='phone' className="form-label">Số điện thoại</label>
                                 <input type="text" className="form-control" id="phone" name="phone" value={userEdit.phone} onChange={handleChange} />
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor='address' className="form-label">Địa chỉ</label>
+                                <input type="text" className="form-control" id="address" name="address"/>
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor='status' className="form-label">Trạng thái</label>
+                                <select className="form-select" id="status" name="status">
+                                    <option value="option1">True</option>
+                                    <option value="option2">False</option>
+                                </select>
                             </div>
                         </div>
                         <div className="modal-footer">

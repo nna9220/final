@@ -22,6 +22,24 @@ public class Subject implements Serializable {
     @Column(name="subject_name")
     private String subjectName;
 
+    /*TLCN
+    1 là dang thực hiện
+    2 GVHD đã xác nhận đề tài hoàn thành --> SV trong tgian nộp bài
+    3 SV đã xác nhận nộp bài --> GVHD trong quá trình xác nhận đề tài đủ đk phản biện
+    4 GVHD đã xác nhận đề tài đủ đk phản biển
+    5 đã chấm điểm - đánh giá
+    8 đề tài đủ đk qua môn (score+scorerThesis/2 >=5) --> Đề tài successful
+    0 (score+scorerThesis/2 <5) --> Đề tài fail --> Subject hoặc subjectGraduation của SV sẽ về null
+    KLTN
+    1 là dang thực hiện
+    2 GVHD đã xác nhận đề tài hoàn thành --> SV trong tgian nộp bài
+    3 SV đã xác nhận nộp bài --> GVHD trong quá trình xác nhận đề tài đủ đk phản biện
+    4 GVHD đã xác nhận đề tài đủ đk phản biển
+    5 đã chấm điểm - đánh giá --> TBM trong giai đoạn lập hội đồng cho đề tài
+    6 đã Lập hội đồng - Thời gian báo cáo và chấm điểm
+    7 Hội đồng đã đánh giá và chấm điểm
+    8 đề tài đủ đk qua môn (scoreCouncil+scorerThesis/2 >=5) --> Đề tài successful
+    0 (score+scorerThesis/2 <5) --> Đề tài fail --> Subject hoặc subjectGraduation của SV sẽ về null*/
     @Column(name="active")
     private Byte active;
 

@@ -3,18 +3,23 @@ import SidebarLec from '../../components/Sidebar/SidebarLec'
 import Navbar from '../../components/Navbar/Navbar'
 import './RegisTopicLec.scss'
 import RegisTopicOfLecturer from '../../components/Table/RegisTopicOfLecturer'
-import { useState, useEffect} from 'react'
+import { useState, useEffect } from 'react'
+import RegisTopicOfLecturerKL from '../../components/Table/RegisTopicOfLecturerKL'
 
 function RegisTopicLec() {
   useEffect(() => {
     document.title = "Đăng ký đề tài";
   }, []);
-
   const [selectedTitle, setSelectedTitle] = useState("Tiểu luận chuyên ngành");
+
+  const handleDropdownClick = (title1, title2, table) => {
+    setSelectedTitle({ title1, title2, table });
+  };
 
   const handleDropdownChange = (e) => {
     setSelectedTitle(e.target.value);
   };
+
 
   return (
     <div className='homeLec'>
@@ -39,8 +44,18 @@ function RegisTopicLec() {
               </div>
             </div>
           </div>
+          <div className='context-nd' style={{ marginTop: '30px' }}>
+            <div className="form-title">
+              <span>{selectedTitle}</span>
+              <hr className="line" />
+            </div>
+            <div className='card-nd' style={{ display: 'block' }}>
+              <div className='table-items'>
+                {selectedTitle === "Tiểu luận chuyên ngành" ? <RegisTopicOfLecturer /> : <RegisTopicOfLecturerKL />}
+              </div>
+            </div>
+          </div>
         </div>
-        <RegisTopicOfLecturer />
       </div>
     </div>
   )

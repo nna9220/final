@@ -1,26 +1,27 @@
-import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import './SidebarAdmin.scss'
-import { useState, useEffect } from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import { getAdminUser } from '../../actions/Admin/ActionOf Admin';
-import { data } from 'jquery';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
+import AppRegistrationOutlinedIcon from '@mui/icons-material/AppRegistrationOutlined';
+import RecentActorsOutlinedIcon from '@mui/icons-material/RecentActorsOutlined';
+import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined';
+import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
+import ViewListOutlinedIcon from '@mui/icons-material/ViewListOutlined';
+import BallotOutlinedIcon from '@mui/icons-material/BallotOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
+import './SidebarAdmin.scss'
 
-function SidebarAdmin() {
-  const [isSidebarToggled, setSidebarToggled] = useState(true);
-  const [selectedMenuItem, setSelectedMenuItem] = useState(false);
+const SidebarAdmin = () => {
+  const [expand, setExpand] = useState(true);
+  const [isAvatarVisible, setIsAvatarVisible] = useState(false);
+
+  const toggleSidebar = () => {
+    setExpand(!expand);
+    setIsAvatarVisible(!isAvatarVisible);
+  };
+
   const [admin, setAdmin] = useState({});
-
-  const handleSidebarToggle = () => {
-    setSidebarToggled(!isSidebarToggled);
-  };
-
-  const handleMenuItemClick = (menuItem) => {
-    setSelectedMenuItem(menuItem);
-  };
 
   useEffect(() => {
     const userToken = getTokenFromUrlAndSaveToStorage();
@@ -34,61 +35,97 @@ function SidebarAdmin() {
             'Authorization': `Bearer ${userToken}`,
           },
         })
-        .then(response => {
-          // Xử lý response từ backend (nếu cần)
-          setAdmin(response.data);
-        })
-        .catch(error => {
-          console.error(error);
-        });
+          .then(response => {
+            // Xử lý response từ backend (nếu cần)
+            setAdmin(response.data);
+            console.log(response.data);
+          })
+          .catch(error => {
+            console.error(error);
+          });
       }
     }
   }, []);
 
   return (
-    <div className={`page-wrapper chiller-theme ${isSidebarToggled ? 'toggled' : ''}`}>
-      <a id="show-sidebar" className="btn btn-sm btn-dark" href="#" onClick={handleSidebarToggle}>
-        <i><MenuOutlinedIcon /></i>
-      </a>
-
-      <nav id="sidebar" className="sidebar-wrapper">
-        <div className="sidebar-content">
-          <div className="sidebar-brand">
-            <a style={{ fontSize: '12px' }} href="#">KHOA CÔNG NGHỆ THÔNG TIN</a>
-            <div id="close-sidebar" onClick={handleSidebarToggle}>
-              <i><CloseRoundedIcon /></i>
+    <>
+      <div className={`wrapper ${expand ? 'expand' : ''}`}>
+        <aside id="sidebar" className={expand ? 'expand' : ''}>
+          <div className="d-flex">
+            <button className="toggle-btn" type="button" onClick={toggleSidebar}>
+              <i className="lni lni-grid-alt"> <DashboardOutlinedIcon /></i>
+            </button>
+            <div className="sidebar-logo">
+              <a href="#">KHOA CÔNG NGHỆ THÔNG TIN</a>
             </div>
           </div>
-
-          <div className="sidebar-header">
-            <div className="user-pic" style={{ color: '#fff' }}>
-              <i className="fa fa-user-circle fa-4x" aria-hidden="true"></i>
+          <hr style={{ color: '#fff' }}></hr>
+          {!isAvatarVisible && (
+            <div className="sidebar-header">
+              <div className="user-pic" style={{ color: '#fff' }}>
+                <i className="fa fa-user-circle fa-4x" aria-hidden="true"></i>
+              </div>
+              <div className="user-info">
+                <span className="user-name"><strong>{admin.firstName + ' ' + admin.lastName}</strong></span>
+                <span className="user-role">Administrator</span>
+              </div>
             </div>
-            <div className="user-info">
-              <span className="user-name"><strong>{admin.firstName + ' '+admin.lastName}</strong></span>
-              <span className="user-role">Administrator</span>
-              <span className="user-status"><i className="fa fa-circle"></i> <span>Online</span></span>
-            </div>
-          </div>
-
-          <div className="sidebar-menu">
-            <ul>
-              <li className="header-menu"><span>Trang chủ</span></li>
-              <li><NavLink to="/homeAdmin" onClick={() => handleMenuItemClick('trangCuaBan')} activeClassName={selectedMenuItem === 'trangCuaBan' ? 'active' : ''}><i className="fa fa-home"></i><span>Trang của bạn</span></NavLink></li>
-              <li className={selectedMenuItem === 'thongTinCaNhan' ? 'active' : ''}><Link to="/profileAdmin" onClick={() => handleMenuItemClick('thongTinCaNhan')}><i className="fa fa-user"></i><span>Thông tin cá nhân</span></Link></li>
-              <li className={selectedMenuItem === 'quanLySV' ? 'active' : ''}><Link to="/managermentStudent" href="#" onClick={() => handleMenuItemClick('quanLySV')}><i className="fa fa-book"></i><span>Quản lý sinh viên</span></Link></li>
-              <li className={selectedMenuItem === 'quanLyGV' ? 'active' : ''}><Link to='/managermentLec' onClick={() => handleMenuItemClick('quanLyGV')}><i className="fa fa-address-book-o"></i><span>Quản lý giảng viên</span></Link></li>
-              <li className={selectedMenuItem === 'quanlytopic' ? 'active' : ''}><Link to='/managermentTopics' onClick={() => handleMenuItemClick('quanlytopic')}><i className="fa fa-address-card"></i><span>Quản lý đề tài</span></Link></li>
-              <li className={selectedMenuItem === 'quanlyloaidetai' ? 'active' : ''}><Link to='/managermentType' onClick={() => handleMenuItemClick('quanlyloaidetai')}><i className="fa fa-list-alt"></i><span>Quản lý loại đề tài</span></Link></li>
-              <li className={selectedMenuItem === 'quanlydetai' ? 'active' : ''}><Link to='/managermentPeriod' onClick={() => handleMenuItemClick('quanlydetai')}><i className="fa fa-folder"></i><span>Quản lý đợt đăng ký đề tài</span></Link></li>
-              <li className={selectedMenuItem === 'quanlynienkhoa' ? 'active' : ''}><Link to='/managermentYears' onClick={() => handleMenuItemClick('quanlynienkhoa')}><i className="fa fa-list-alt"></i><span>Quản lý niên khóa-lớp học</span></Link></li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-    </div>
+          )}
+          <hr style={{ color: '#fff' }}></hr>
+          <ul className="sidebar-nav">
+            <li className="sidebar-item">
+              <a href="/homeAdmin" className="sidebar-link">
+                <i className="lni lni-user"><HomeOutlinedIcon /></i>
+                <span>Trang chủ</span>
+              </a>
+            </li>
+            <li className="sidebar-item">
+              <a href="/profileAdmin" className="sidebar-link">
+                <i className="lni lni-agenda"><PersonOutlinedIcon /></i>
+                <span>Trang cá nhân</span>
+              </a>
+            </li>
+            <li className="sidebar-item">
+              <a href="/managermentStudent" className="sidebar-link">
+                <i className="lni lni-popup"><RecentActorsOutlinedIcon /></i>
+                <span>Quản lý sinh viên</span>
+              </a>
+            </li>
+            <li className="sidebar-item">
+              <a href="/managermentLec" className="sidebar-link">
+                <i className="lni lni-cog"><FactCheckOutlinedIcon /></i>
+                <span>Quản lý giảng viên</span>
+              </a>
+            </li>
+            <li className="sidebar-item">
+              <a href="/managermentTopics" className="sidebar-link">
+                <i className="lni lni-cog"><BallotOutlinedIcon /></i>
+                <span>Quản lý đề tài</span>
+              </a>
+            </li>
+            <li className="sidebar-item">
+              <a href="/managermentType" className="sidebar-link">
+                <i className="lni lni-cog"><ListAltOutlinedIcon /></i>
+                <span>Quản lý loại đề tài</span>
+              </a>
+            </li>
+            <li className="sidebar-item">
+              <a href="/managermentPeriod" className="sidebar-link">
+                <i className="lni lni-cog"><AppRegistrationOutlinedIcon /></i>
+                <span>Quản lý đợt đăng ký</span>
+              </a>
+            </li>
+            <li className="sidebar-item">
+              <a href="/managermentYears" className="sidebar-link">
+                <i className="lni lni-cog"><ViewListOutlinedIcon /></i>
+                <span>Quản lý niên khóa</span>
+              </a>
+            </li>
+          </ul>
+        </aside>
+      </div>
+    </>
   )
-}
+};
 
-export default SidebarAdmin
-
+export default SidebarAdmin;

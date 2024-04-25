@@ -41,20 +41,6 @@ function MannageHead() {
                   <a href="#" onClick={() => handleDropdownClick('Duyệt đề tài', 'Khóa luận tốt nghiệp', <TableApproveKL/>)}>Khóa luận tốt nghiệp</a>
                 </div>
               </div>
-              <div className="dropdown">
-                <div className="dropdown-title">Phân Giảng viên phản biện</div>
-                <div className="dropdown-content">
-                  <a href="#" onClick={() => handleDropdownClick('Phân giảng viên phản biện', 'Tiểu luận chuyên ngành',<TbaleAssign/>)}>Tiểu luận chuyên ngành</a>
-                  <a href="#" onClick={() => handleDropdownClick('Phân giảng viên phản biện', 'Khóa luận tốt nghiệp', <TableAssignKL/>)}>Khóa luận tốt nghiệp</a>
-                </div>
-              </div>
-              <div className="dropdown">
-                <div className="dropdown-title">Đề tài của tôi</div>
-                <div className="dropdown-content">
-                  <a href="#" onClick={() => handleDropdownClick('Đề tài của tôi', 'Tiểu luận chuyên ngành', <TableTopic/>)}>Tiểu luận chuyên ngành</a>
-                  <a href="#" onClick={() => handleDropdownClick('Đề tài của tôi', 'Khóa luận tốt nghiệp', <TableTopicKL/>)}>Khóa luận tốt nghiệp</a>
-                </div>
-              </div>
             </div>
           </div>
           <div className='context-nd' style={{ marginTop: '30px' }}>

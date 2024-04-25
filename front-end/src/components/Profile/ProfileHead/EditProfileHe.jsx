@@ -51,12 +51,23 @@ function EditProfileHe() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        let formattedValue = value;
+    
+        if (name === 'birthDay') {
+            const [day, month, year] = value.split('-');
+            formattedValue = `${year}-${month}-${day}`;
+        }
+    
         setUserEdit(prevState => ({
             ...prevState,
-            [name]: value
+            [name]: formattedValue
         }));
     };
 
+    const formatBirthDayForDisplay = (dateString) => {
+        const [year, month, day] = dateString.split('-');
+        return `${day}-${month}-${year}`;
+    };
 
     const handleEdit = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
@@ -190,7 +201,7 @@ function EditProfileHe() {
                                                 </div>
                                                 <div className="mb-3">
                                                     <label htmlFor='brithDay' className="form-label">Ngày sinh</label>
-                                                    <input type="date" className="form-control" id="brithDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} />
+                                                    <input type="date" className="form-control" id="brithDay" name="birthDay" value={formatBirthDayForDisplay(userEdit.birthDay)} onChange={handleChange} />
                                                 </div>
                                                 <div className="mb-3">
                                                     <label htmlFor='phone' className="form-label">Số điện thoại</label>
