@@ -11,6 +11,7 @@ F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\Student.jav
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\config\CheckRole.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\dto\response\StudentResponse.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\Student\StudentAddCommentController.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\Student\Graduation\StudentAddCommentGraduationController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\dto\response\SchoolYearResponse.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\HomePageController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\service\Admin\StudentService.java
@@ -78,6 +79,7 @@ F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\LoginCo
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\repository\AuthorityRepository.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\dto\response\TaskResponse.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\Lecturer\LecturerAddCommentController.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\Student\Graduation\StudentAddTaskGraduationController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\Lecturer.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\jwt\JwtAuthenticationFilter.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\config\SecurityUtils.java
@@ -113,6 +115,7 @@ F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\HeadOfD
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\config\JwtUtils.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\Task.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\service\Admin\TypeSubjectService.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\Student\Graduation\StudentRegisterTopicGraduation.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\RoleName.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\HeadOfDepartment\Graduation\HeadAddCommentGraduationController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\Student\StudentRegisterTopic.java
@@ -138,6 +141,7 @@ F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\dto\UserDto.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\service\Admin\SubjectImport.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\service\SubjectImplService.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\config\DatabaseConfiguration.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\admin\GraduationThesis\RegistrationPeriodGraduationController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\admin\RegistrationPeriodController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\dto\request\LecturerRequest.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\Authority.java
@@ -159,7 +163,7 @@ F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\config\MailSenderC
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\admin\LecturerController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\exception\MyFileNotFoundException.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\mapper\PersonMapper.java
-F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\admin\GraduationThesis\RegistrationPeriodGraduationStudentController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\Major.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\admin\PersonController.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\Council.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\Lecturer\HomeLecturerController.java
