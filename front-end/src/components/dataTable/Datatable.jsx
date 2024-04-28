@@ -29,7 +29,12 @@ function DataTable() {
         birthDay: '',
         phone: '',
         gender: '',
+        username: '',
+        address: '',
+        status: '',
+        classes:''
     });
+    const [IdOld, setIdOld] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [showModalAdd, setShowModalAdd] = useState(false);
     const [showSuccessToast, setShowSuccessToast] = useState(false);
@@ -169,7 +174,6 @@ function DataTable() {
 
     const handleEdit = (id) => {
         console.log("id student", id);
-        console.log("user k tt");
         axiosInstance.get(`/admin/student/${id}`, {
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
@@ -181,6 +185,7 @@ function DataTable() {
                     console.log("user tồn tại");
                     setUserEdit(data.student.person);
                     setGender(data.student.person.gender);
+                    setIdOld(data.student.studentId);
                     setShowModal(true);
                 } else {
                     console.log("Sinh viên không tồn tại.");
@@ -193,14 +198,18 @@ function DataTable() {
 
 
     const handleSubmitEdit = () => {
-        const id = userEdit.personId; // Sử dụng thông tin từ state userEdit
+        const id = IdOld;
         const formDataEdit = new FormData();
         formDataEdit.append('personId', userEdit.personId);
         formDataEdit.append('firstName', userEdit.firstName);
         formDataEdit.append('lastName', userEdit.lastName);
         formDataEdit.append('birthDay', userEdit.birthDay);
         formDataEdit.append('phone', userEdit.phone);
+        formDataEdit.append('username', userEdit.username);
+        formDataEdit.append('address', userEdit.address);
+        formDataEdit.append('status', userEdit.status);
         formDataEdit.append('gender', gender);
+        formDataEdit.append('classes', userEdit.classes);
 
         axiosInstance.post(`/admin/student/edit/${id}`, formDataEdit, {
             headers: {
@@ -220,10 +229,16 @@ function DataTable() {
                                 lastName: userEdit.lastName,
                                 birthDay: userEdit.birthDay,
                                 phone: userEdit.phone,
-                                gender: userEdit.gender
+                                gender: userEdit.gender,
+                                username: userEdit.username,
+                                address: userEdit.address
+                            },
+                            student:{
+                                classes: userEdit.classes
                             }
                         };
                     }
+                    console.log("Student: "+ student);
                     return student;
                 });
                 setStudents(updatedStudents);
@@ -396,7 +411,11 @@ function DataTable() {
                         <div className="modal-body">
                             <div className="mb-3">
                                 <label htmlFor="id" className="form-label">MSSV</label>
-                                <input type="text" className="form-control" id="id" name="id" />
+                                <input readOnly type="text" className="form-control" id="personId" name="personId" value={userEdit.personId} onChange={handleChange} />
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor="id" className="form-label">Email</label>
+                                <input type="text" className="form-control" id="username" name="username" value={userEdit.username} onChange={handleChange} />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="firstName" className="form-label">Họ</label>
@@ -427,7 +446,15 @@ function DataTable() {
                             </div>
                             <div className="mb-3">
                                 <label htmlFor='address' className="form-label">Địa chỉ</label>
-                                <input type="text" className="form-control" id="address" name="address" />
+                                <input type="text" className="form-control" id="address" name="address" value={userEdit.address} onChange={handleChange} />
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor="class" className="form-label">Lớp</label>
+                                <select className="form-select" id="classes" value={userEdit.classes} onChange={handleChange} name="classes">
+                                    {classes.map((classItem, index) => (
+                                        <option key={index} value={classItem.id}>{classItem.classname}</option>
+                                    ))}
+                                </select>
                             </div>
                             <div className="mb-3">
                                 <label htmlFor='status' className="form-label">Trạng thái</label>

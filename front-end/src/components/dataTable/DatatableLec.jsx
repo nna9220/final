@@ -31,6 +31,9 @@ function DatatableLec() {
         phone: '',
         gender: '',
         authority: '',
+        username: '',
+        major: '',
+        address: ''
     });
     const [showModal, setShowModal] = useState(false);
     const [showModalAdd, setShowModalAdd] = useState(false);
@@ -195,6 +198,9 @@ function DatatableLec() {
         formDataEdit.append('phone', userEdit.phone);
         formDataEdit.append('gender', gender);
         formDataEdit.append('authority', userEdit.authority);
+        formDataEdit.append('major', userEdit.major);
+        formDataEdit.append('username', userEdit.username);
+        formDataEdit.append('address', userEdit.address);
 
         console.log(userEdit);
         axiosInstance.post(`/admin/lecturer/edit/${id}`, formDataEdit, {
@@ -217,6 +223,12 @@ function DatatableLec() {
                                 phone: userEdit.phone,
                                 gender: gender,
                                 authority: userEdit.authority,
+                                address: userEdit.address,
+                                username: userEdit.username
+                            },
+                            lecture:{
+                                major: userEdit.major,
+                                authority: userEdit.authority
                             }
                         };
                     }
@@ -393,8 +405,8 @@ function DatatableLec() {
                         </div>
                         <div className="modal-body">
                         <div className="mb-3">
-                                <label htmlFor='id' className="form-label">MSGV</label>
-                                <input type="text" className="form-control" id="id" name="id"/>
+                                <label htmlFor='id' className="form-label">MGV</label>
+                                <input readOnly type="text" className="form-control" id="personId" name="personId"  value={userEdit.personId} onChange={handleChange} />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="firstName" className="form-label">Họ</label>
@@ -406,7 +418,15 @@ function DatatableLec() {
                             </div>
                             <div className="mb-3">
                                 <label htmlFor='email' className="form-label">Email</label>
-                                <input type="text" className="form-control" id="email" name="email" />
+                                <input type="text" className="form-control" id="username" name="username"  value={userEdit.username} onChange={handleChange} />
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor="class" className="form-label">Chuyên ngành</label>
+                                <select className="form-select" id="classes" defaultValue={userEdit.major} onChange={handleChange} name="major">
+                                    {major.map((majorItem, index) => (
+                                        <option key={index} value={majorItem}>{majorItem}</option>
+                                    ))}
+                                </select>
                             </div>
                             <div className="mb-3">
                                 <label htmlFor='gender' className="form-label">Giới tính</label>
@@ -421,11 +441,11 @@ function DatatableLec() {
                             </div>
                             <div className="mb-3">
                                 <label htmlFor='brithDay' className="form-label">Ngày sinh</label>
-                                <input type="date" className="form-control" id="brithDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} />
+                                <input type="text" className="form-control" id="brithDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="authority" className="form-label">Role</label>
-                                <select className="form-select" id="authority" value={userEdit.authority} onChange={handleChange} name="authority" defaultValue={userEdit.authority}>
+                                <select className="form-select" id="authority" defaultValue={userEdit.authority} onChange={handleChange} name="authority">
                                     {author && author.filter(Item => Item.name === 'ROLE_HEAD' || Item.name === 'ROLE_LECTURER').map((Item, index) => (
                                         <option key={index} value={Item.name}>{Item.name}</option>
                                     ))}
@@ -437,7 +457,7 @@ function DatatableLec() {
                             </div>
                             <div className="mb-3">
                                 <label htmlFor='address' className="form-label">Địa chỉ</label>
-                                <input type="text" className="form-control" id="address" name="address"/>
+                                <input type="text" className="form-control" id="address" name="address"  value={userEdit.address} onChange={handleChange}/>
                             </div>
                             <div className="mb-3">
                                 <label htmlFor='status' className="form-label">Trạng thái</label>

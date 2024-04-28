@@ -30,7 +30,7 @@ public class UserUtils implements UserDetailsService {
 
     public Person getUserWithAuthority(){
         String email = SecurityUtils.getCurrentUserLogin().get();
-        return userRepository.findByEmail(email).get();
+        return userRepository.findByUsername(email).get();
     }
 
     public String randomKey(){

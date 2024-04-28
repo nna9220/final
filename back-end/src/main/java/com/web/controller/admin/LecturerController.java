@@ -148,22 +148,14 @@ public class LecturerController {
                 response.put("major",Major.values());
                 response.put("lecturer", existLecturer);
                 response.put("autho",listAutho);
-               /* return modelAndView;*/
                 return new ResponseEntity<>(response,HttpStatus.OK);
             }else {
-                /*ModelAndView error = new ModelAndView();
-                error.addObject("errorMessage", "Không tìm thấy người dùng");
-                return error;*/
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
-
     @PostMapping("/edit/{id}")
     public ResponseEntity<?> updateUser(@PathVariable String id,
                                         @RequestParam("personId") String personId,
@@ -173,9 +165,11 @@ public class LecturerController {
                                         @RequestParam("phone") String phone,
                                         @RequestParam("gender") boolean gender,
                                         @RequestParam("authority") Authority authority,
+                                        @RequestParam("username") String username,
+                                        @RequestParam("major") Major major,
+                                        @RequestParam("address") String address,
                                         @RequestParam(value = "status", required = false, defaultValue = "true") boolean status,
                                         @RequestHeader("Authorization") String authorizationHeader) {
-        System.out.println("Hellooooooo");
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
@@ -185,22 +179,18 @@ public class LecturerController {
                 existLecturer.getPerson().setFirstName(firstName);
                 existLecturer.getPerson().setLastName(lastName);
 
-                // Chuyển đổi birthDay từ String thành Date
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-                try {
-                    Date birthDayDate = formatter.parse(birthDay);
-                    existLecturer.getPerson().setBirthDay(String.valueOf((birthDayDate)));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-                }
+                existLecturer.getPerson().setBirthDay(birthDay);
+
                 existLecturer.getPerson().setPhone(phone);
                 existLecturer.getPerson().setGender(gender);
                 existLecturer.setAuthority(authority);
+                existLecturer.getPerson().setAuthorities(authority);
+                existLecturer.setMajor(major);
+                existLecturer.getPerson().setUsername(username);
+                existLecturer.getPerson().setAddress(address);
                 Person lecturerPerson = personRepository.findById(existLecturer.getLecturerId()).orElse(null);
                 lecturerPerson.setAuthorities(authority);
                 existLecturer.getPerson().setStatus(status);
-
                 lecturerRepository.save(existLecturer);
                 personRepository.save(lecturerPerson);
                 return new ResponseEntity<>(existLecturer, HttpStatus.OK);
