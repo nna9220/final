@@ -1,26 +1,28 @@
 package com.web.controller.admin.GraduationThesis;
 
 //import hcmute.edu.vn.registertopic_be.authentication.CheckedPermission;
-
 import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
-import com.web.dto.request.RegistrationPeriodRequest;
-import com.web.entity.Person;
-import com.web.entity.RegistrationPeriod;
-import com.web.entity.TypeSubject;
+import com.web.entity.*;
 import com.web.mapper.RegistrationPeriodMapper;
+import com.web.dto.request.RegistrationPeriodRequest;
 import com.web.repository.PersonRepository;
 import com.web.repository.RegistrationPeriodRepository;
 import com.web.repository.TypeSubjectRepository;
 import com.web.service.Admin.RegistrationPeriodService;
+import com.web.utils.Contains;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,8 +70,8 @@ public class RegistrationPeriodGraduationController {
     @PostMapping("/create")
     public ResponseEntity<?> savePeriod(@RequestHeader("Authorization") String authorizationHeader,
                                         @RequestParam("periodName") String periodName,
-                                   @RequestParam("timeStart") Date timeStart,
-                                   @RequestParam("timeEnd") Date timeEnd, HttpServletRequest request){
+                                        @RequestParam("timeStart") Date timeStart,
+                                        @RequestParam("timeEnd") Date timeEnd, HttpServletRequest request){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
@@ -77,7 +79,7 @@ public class RegistrationPeriodGraduationController {
             registrationPeriod.setRegistrationName(periodName);
             registrationPeriod.setRegistrationTimeStart(timeStart);
             registrationPeriod.setRegistrationTimeEnd(timeEnd);
-            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
             registrationPeriod.setTypeSubjectId(typeSubject);
             registrationPeriodRepository.save(registrationPeriod);
             return new ResponseEntity<>(registrationPeriod,HttpStatus.CREATED);
@@ -101,44 +103,49 @@ public class RegistrationPeriodGraduationController {
             // Kiểm tra xem lớp học có tồn tại không
             if (registrationPeriod != null) {
                 Map<String,Object> response = new HashMap<>();
-                response.put("listSubject",typeSubjects);
+                response.put("listTypeSubject",typeSubjects);
                 response.put("period",registrationPeriod);
                 response.put("person",personCurrent);
                 return new ResponseEntity<>(response,HttpStatus.OK);
             } else {
-                // Trả về ModelAndView với thông báo lỗi nếu không tìm thấy lớp học
-                /*ModelAndView errorModel = new ModelAndView("error");
-                errorModel.addObject("errorMessage", "Không tìm thấy lớp học");
-                return errorModel;*/
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+    private java.sql.Date convertToSqlDate(String dateString) {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            java.util.Date parsedDate = dateFormat.parse(dateString);
+            return new java.sql.Date(parsedDate.getTime());
+        } catch (ParseException e) {
+            // Xử lý ngoại lệ khi có lỗi trong quá trình chuyển đổi
+            e.printStackTrace();
+            return null; // hoặc throw một Exception phù hợp
+        }
+    }
 
     @PostMapping("/edit/{periodId}")
-    public ResponseEntity<?> updatePeriod(@PathVariable int periodId, @ModelAttribute RegistrationPeriodRequest registrationPeriodRequest,@RequestHeader("Authorization") String authorizationHeader,
-                                     @ModelAttribute("successMessage") String successMessage){
+    public ResponseEntity<?> updatePeriod(@PathVariable int periodId,
+                                          @RequestParam("start") String start,
+                                          @RequestParam("end") String end,
+                                          @RequestHeader("Authorization") String authorizationHeader,
+                                          @ModelAttribute("successMessage") String successMessage) throws ParseException {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             RegistrationPeriod existRegistrationPeriod = registrationPeriodRepository.findById(periodId).orElse(null);
             if (existRegistrationPeriod != null) {
-                existRegistrationPeriod.setRegistrationTimeStart(registrationPeriodRequest.getRegistrationTimeStart());
-                existRegistrationPeriod.setRegistrationTimeEnd(registrationPeriodRequest.getRegistrationTimeEnd());
+                System.out.println("data nhận về:" + start + " end : " + end);
+                existRegistrationPeriod.setRegistrationTimeStart(convertToSqlDate(start));
+                existRegistrationPeriod.setRegistrationTimeEnd(convertToSqlDate(end));
                 registrationPeriodRepository.save(existRegistrationPeriod);
                 return new ResponseEntity<>(existRegistrationPeriod,HttpStatus.OK);
             } else {
-                /*ModelAndView error = new ModelAndView();
-                error.addObject("errorMessage", "không tìm thấy đợt đăng ký.");
-                return error;*/
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }

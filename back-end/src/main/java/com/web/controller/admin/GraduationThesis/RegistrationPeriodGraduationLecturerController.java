@@ -58,29 +58,25 @@ public class RegistrationPeriodGraduationLecturerController {
             Map<String,Object> response = new HashMap<>();
             response.put("period",registrationPeriods);
             response.put("person",personCurrent);
-            response.put("listTypeSubject",typeSubject);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
 
     @PostMapping("/create")
     public ResponseEntity<?> savePeriod(@RequestHeader("Authorization") String authorizationHeader, @RequestParam("periodName") String periodName,
-                                   @RequestParam("timeStart") Date timeStart,
-                                   @RequestParam("timeEnd") Date timeEnd, HttpServletRequest request){
+                                        @RequestParam("timeStart") Date timeStart,
+                                        @RequestParam("timeEnd") Date timeEnd, HttpServletRequest request){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             RegistrationPeriodLectuer registrationPeriod = new RegistrationPeriodLectuer();
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
+            registrationPeriod.setTypeSubjectId(typeSubject);
             registrationPeriod.setRegistrationName(periodName);
             registrationPeriod.setRegistrationTimeStart(timeStart);
             registrationPeriod.setRegistrationTimeEnd(timeEnd);
-            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
-            registrationPeriod.setTypeSubjectId(typeSubject);
             registrationPeriodRepository.save(registrationPeriod);
             return new ResponseEntity<>(registrationPeriod,HttpStatus.CREATED);
         }else {
@@ -111,23 +107,33 @@ public class RegistrationPeriodGraduationLecturerController {
         }
     }
 
+    private java.sql.Date convertToSqlDate(String dateString) {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            java.util.Date parsedDate = dateFormat.parse(dateString);
+            return new java.sql.Date(parsedDate.getTime());
+        } catch (ParseException e) {
+            // Xử lý ngoại lệ khi có lỗi trong quá trình chuyển đổi
+            e.printStackTrace();
+            return null; // hoặc throw một Exception phù hợp
+        }
+    }
     @PostMapping("/edit/{periodId}")
-    public ResponseEntity<?> updatePeriod(@PathVariable int periodId, @RequestBody RegistrationPeriodLecturerRequest registrationPeriodLectuer, @RequestHeader("Authorization") String authorizationHeader,
+    public ResponseEntity<?> updatePeriod(@PathVariable int periodId,
+                                          @RequestParam("start") String start,
+                                          @RequestParam("end") String end,
+                                          @RequestParam("typeSubject") TypeSubject typeSubject,
+                                          @RequestHeader("Authorization") String authorizationHeader,
                                           @ModelAttribute("successMessage") String successMessage) throws ParseException {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             RegistrationPeriodLectuer existRegistrationPeriod = registrationPeriodRepository.findById(periodId).orElse(null);
             if (existRegistrationPeriod != null) {
-                System.out.println("Data nhận được: " +  registrationPeriodLectuer.getPeriodId());
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                java.util.Date utilStartDate = dateFormat.parse(registrationPeriodLectuer.getRegistrationTimeStart());
-                Date startFormat = new Date(utilStartDate.getTime());
-                java.util.Date utilEndDate = dateFormat.parse(registrationPeriodLectuer.getRegistrationTimeEnd());
-                Date endFormat = new Date(utilEndDate.getTime());
-                existRegistrationPeriod.setTypeSubjectId(registrationPeriodLectuer.getTypeSubjectId());
-                existRegistrationPeriod.setRegistrationTimeStart(startFormat);
-                existRegistrationPeriod.setRegistrationTimeEnd(endFormat);
+                System.out.println("data nhận về:" + start + " end : " + end);
+                existRegistrationPeriod.setTypeSubjectId(typeSubject);
+                existRegistrationPeriod.setRegistrationTimeStart(convertToSqlDate(start));
+                existRegistrationPeriod.setRegistrationTimeEnd(convertToSqlDate(end));
                 registrationPeriodRepository.save(existRegistrationPeriod);
                 return new ResponseEntity<>(existRegistrationPeriod,HttpStatus.OK);
             } else {
