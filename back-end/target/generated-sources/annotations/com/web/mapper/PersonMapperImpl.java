@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-04-25T13:27:55+0700",
-    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 18.0.2 (Oracle Corporation)"
+    date = "2024-04-28T15:54:36+0700",
+    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 17.0.8 (Oracle Corporation)"
 )
 @Component
 public class PersonMapperImpl implements PersonMapper {
@@ -79,7 +79,6 @@ public class PersonMapperImpl implements PersonMapper {
         person.setLastName( personRequest.getLastName() );
         person.setFirstName( personRequest.getFirstName() );
         person.setPhone( personRequest.getPhone() );
-        person.setEmail( personRequest.getEmail() );
         person.setImage( personRequest.getImage() );
         person.setGender( personRequest.isGender() );
         if ( personRequest.getBirthDay() != null ) {

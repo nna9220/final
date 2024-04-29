@@ -13,7 +13,6 @@ com\web\dto\response\RegistrationPeriodResponse.class
 com\web\mapper\TypeSubjectMapperImpl.class
 com\web\utils\CloudinaryService.class
 com\web\controller\ProfileLecturerController.class
-com\web\controller\admin\GraduationThesis\RegistrationPeriodGraduationStudentController.class
 com\web\exception\SuccessMessage$SuccessMessageBuilder.class
 com\web\dto\response\StudentClassResponse.class
 com\web\entity\Person.class
@@ -46,6 +45,7 @@ com\web\repository\AuthorityRepository.class
 com\web\entity\Student.class
 com\web\config\CorsConfig.class
 com\web\service\Admin\StudentService.class
+com\web\entity\Council.class
 com\web\mapper\PersonMapperImpl.class
 com\web\mapper\TypeSubjectMapper.class
 com\web\config\TokenUtils.class

@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface TypeSubjectRepository extends JpaRepository<TypeSubject, Integer> {
-    @Query("select t from TypeSubject t")
+    @Query("select t from TypeSubject t ")
     public List<TypeSubject> getAllTypeSubject();
 
     @Query("select s from TypeSubject s where s.typeName=:id")

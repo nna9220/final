@@ -18,6 +18,7 @@ import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -26,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.crypto.Data;
@@ -180,34 +182,44 @@ public class StudentController {
         }
     }
 
+
+
+    @Autowired
+    private EntityManager entityManager;
+
     @PostMapping("/edit/{id}")
     public ResponseEntity<?> updateUser(@PathVariable String id,
-                                        @RequestParam("personId") String personId,
                                         @RequestParam("firstName") String firstName,
                                         @RequestParam("lastName") String lastName,
                                         @RequestParam("birthDay") String birthDay, // Thay đổi kiểu dữ liệu thành String
                                         @RequestParam("phone") String phone,
                                         @RequestParam("gender") boolean gender,
                                         @RequestParam(value = "status", required = false, defaultValue = "true") boolean status,
-                                        @RequestHeader("Authorization") String authorizationHeader,
-                                        HttpServletRequest request) {
+                                        @RequestParam("username") String username,
+                                        @RequestParam("address") String address,
+                                        @RequestParam("classes") StudentClass classes,
+                                        @RequestHeader("Authorization") String authorizationHeader) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             Person existPerson = personRepository.findById(id).orElse(null);
-
-            if (existPerson != null) {
-                existPerson.setPersonId(personId);
+            Student existStudent = studentRepository.findById(id).orElse(null);
+            System.out.println("Id: " + id);
+            System.out.println("Check admin ok");
+            if (existPerson != null && existStudent != null) {
+                System.out.println("Check student and person not null");
                 existPerson.setFirstName(firstName);
                 existPerson.setLastName(lastName);
-
                 existPerson.setBirthDay(birthDay);
-
+                existPerson.setAddress(address);
+                existPerson.setUsername(username);
                 existPerson.setPhone(phone);
                 existPerson.setGender(gender);
                 existPerson.setStatus(status);
-
+                existStudent.setStudentClass(classes);
                 personRepository.save(existPerson);
+                studentRepository.save(existStudent);
                 return new ResponseEntity<>(existPerson, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

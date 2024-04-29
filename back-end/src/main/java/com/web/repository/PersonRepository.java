@@ -17,13 +17,11 @@ public interface PersonRepository extends JpaRepository<Person,String> {
 
     @Query("SELECT p FROM Person p")
     List<Person> findAllPerson();
-    Optional<Person> findByEmail(String email);
 
     @Query("select p from Person p where p.authorities=:authorities")
     public List<Person> findGuest(Authority authorities);
 
-    @Query("SELECT p FROM Person p WHERE p.username=:email")
-    public Person findUserByEmail(@Param("email") String email);
+    @Query("SELECT p FROM Person p WHERE p.username=:username")
+    public Person findUsername(@Param("username") String username);
 
-    Optional<Person> findByEmailAndProviderId(String email, String providerId);
 }

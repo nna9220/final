@@ -28,6 +28,8 @@ services:
       - SPRING_DATASOURCE_PASSWORD=Nanguyen1206@
     depends_on:
       - mysql-container
+    volumes:
+      - /data/uploads:/app/uploads
 
   web-server:
     image: nginx:1.25.4-alpine
