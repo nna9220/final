@@ -28,7 +28,7 @@ public class PersonService {
         return personRepository.save(person);
     }
     public Person getUserEmail(String email){
-        return personRepository.findUserByEmail(email);
+        return personRepository.findUsername(email);
     }
 
 //    public String processOAuthPostLogin(String email){

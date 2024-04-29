@@ -20,9 +20,6 @@ import java.util.*;
 @Setter
 public class Person {
 
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "id")
-//    private Long id;
 
     @Id
     @Column(name = "person_id", columnDefinition = "VARCHAR(255)")
@@ -50,8 +47,8 @@ public class Person {
     private String phone;
 
 
-    @Column(name="email")
-    private String email;
+    @Column(name="address")
+    private String address;
 
 
     @Column(name="image")

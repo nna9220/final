@@ -3,10 +3,7 @@ package com.web.controller.admin;
 //import hcmute.edu.vn.registertopic_be.authentication.CheckedPermission;
 import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
-import com.web.entity.Person;
-import com.web.entity.RegistrationPeriod;
-import com.web.entity.StudentClass;
-import com.web.entity.TypeSubject;
+import com.web.entity.*;
 import com.web.mapper.RegistrationPeriodMapper;
 import com.web.dto.request.RegistrationPeriodRequest;
 import com.web.repository.PersonRepository;
@@ -24,6 +21,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,9 +55,9 @@ public class RegistrationPeriodController {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
+
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
             List<RegistrationPeriod> registrationPeriods = registrationPeriodRepository.findAllByTypeSubject(typeSubject);
-
             Map<String,Object> response = new HashMap<>();
             response.put("period",registrationPeriods);
             response.put("person",personCurrent);
@@ -85,9 +84,6 @@ public class RegistrationPeriodController {
             registrationPeriodRepository.save(registrationPeriod);
             return new ResponseEntity<>(registrationPeriod,HttpStatus.CREATED);
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -104,42 +100,50 @@ public class RegistrationPeriodController {
             // Kiểm tra xem lớp học có tồn tại không
             if (registrationPeriod != null) {
                 Map<String,Object> response = new HashMap<>();
-                response.put("listSubject",typeSubjects);
+                response.put("listTypeSubject",typeSubjects);
                 response.put("period",registrationPeriod);
                 response.put("person",personCurrent);
                 return new ResponseEntity<>(response,HttpStatus.OK);
             } else {
-                // Trả về ModelAndView với thông báo lỗi nếu không tìm thấy lớp học
-                /*ModelAndView errorModel = new ModelAndView("error");
-                errorModel.addObject("errorMessage", "Không tìm thấy lớp học");
-                return errorModel;*/
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+    private java.sql.Date convertToSqlDate(String dateString) {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            java.util.Date parsedDate = dateFormat.parse(dateString);
+            return new java.sql.Date(parsedDate.getTime());
+        } catch (ParseException e) {
+            // Xử lý ngoại lệ khi có lỗi trong quá trình chuyển đổi
+            e.printStackTrace();
+            return null; // hoặc throw một Exception phù hợp
+        }
+    }
 
     @PostMapping("/edit/{periodId}")
-    public ResponseEntity<?> updatePeriod(@PathVariable int periodId, @ModelAttribute RegistrationPeriodRequest registrationPeriodRequest,@RequestHeader("Authorization") String authorizationHeader,
-                                     @ModelAttribute("successMessage") String successMessage){
+    public ResponseEntity<?> updatePeriod(@PathVariable int periodId,
+                                          @RequestParam("start") String start,
+                                          @RequestParam("end") String end,
+                                          @RequestHeader("Authorization") String authorizationHeader,
+                                          @ModelAttribute("successMessage") String successMessage) throws ParseException {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             RegistrationPeriod existRegistrationPeriod = registrationPeriodRepository.findById(periodId).orElse(null);
             if (existRegistrationPeriod != null) {
-                existRegistrationPeriod.setRegistrationTimeStart(registrationPeriodRequest.getRegistrationTimeStart());
-                existRegistrationPeriod.setRegistrationTimeEnd(registrationPeriodRequest.getRegistrationTimeEnd());
-                existRegistrationPeriod.setTypeSubjectId(registrationPeriodRequest.getTypeSubjectId());
+                System.out.println("data nhận về:" + start + " end : " + end);
+
+                existRegistrationPeriod.setRegistrationTimeStart(convertToSqlDate(start));
+                existRegistrationPeriod.setRegistrationTimeEnd(convertToSqlDate(end));
                 registrationPeriodRepository.save(existRegistrationPeriod);
                 return new ResponseEntity<>(existRegistrationPeriod,HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
