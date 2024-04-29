@@ -5,6 +5,7 @@ import axiosInstance from '../../API/axios';
 
 function DataTableRegistrationPeroidLec() {
     const [dataRegis, setDataRegis] = useState([]);
+    const [dataTypeSubject, setTypeSubject] = useState([]);
     const [editedStartTime, setEditedStartTime] = useState('');
     const [editedEndTime, setEditedEndTime] = useState('');
     const [editedType, setEditedType] = useState('');
@@ -20,7 +21,8 @@ function DataTableRegistrationPeroidLec() {
             })
                 .then(response => {
                     setDataRegis(response.data.period || []);
-                    console.log("RegisterPeriod: ", response.data.period)
+                    setTypeSubject(response.data.listTypeSubject || []);
+                    console.log("TypeSubject: ", response.data.listTypeSubject);
                 })
                 .catch(error => {
                     console.error("error: ", error);
@@ -34,24 +36,40 @@ function DataTableRegistrationPeroidLec() {
         setSelectedPeriodId(item.periodId);
         setEditedStartTime(item.registrationTimeStart);
         setEditedEndTime(item.registrationTimeEnd);
+        setEditedType(item.typeSubject);
+    };
+
+    const convertToFormattedDateTime = (dateTimeString) => {
+        const dateTime = new Date(dateTimeString);
+        const year = dateTime.getFullYear();
+        const month = String(dateTime.getMonth() + 1).padStart(2, '0');
+        const day = String(dateTime.getDate()).padStart(2, '0');
+        const hours = String(dateTime.getHours()).padStart(2, '0');
+        const minutes = String(dateTime.getMinutes()).padStart(2, '0');
+        const seconds = String(dateTime.getSeconds()).padStart(2, '0');
+    
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     };
     
 
     const handleSaveChanges = () => {
         const tokenSt = sessionStorage.getItem('userToken');
-        const updatedStartValue = document.getElementById('start').value;
-        const updatedEndValue = document.getElementById('end').value;
+        const updatedStartValue = convertToFormattedDateTime(document.getElementById('start').value);
+        const updatedEndValue = convertToFormattedDateTime(document.getElementById('end').value);
+        const updateTypeValue = document.getElementById('typeSubject').value;
+        // Sử dụng editedEndTime thay vì lấy giá trị từ document.getElementById('end').value
+        
 
-        console.log("Type of updatedStartValue:", typeof updatedStartValue);
-
+        console.log("Start: ", updatedStartValue);
+        console.log("End: ", updatedEndValue);
         if (tokenSt && selectedPeriodId) {
-            console.log("Data: ", updatedEndValue,updatedStartValue);
-            axiosInstance.post(`/admin/PeriodLecturer/edit/${selectedPeriodId}`,{
-                params:{
-                periodId: selectedPeriodId,
-                start: updatedStartValue,
-                end: updatedEndValue,}
-            }, {
+            axiosInstance.post(`/admin/PeriodLecturer/edit/${selectedPeriodId}`, null, {
+                params: {
+                    periodId: selectedPeriodId,
+                    start: updatedStartValue,
+                    end: updatedEndValue,
+                    typeSubject:updateTypeValue
+                },
                 headers: {
                     'Authorization': `Bearer ${tokenSt}`,
                 },
@@ -68,7 +86,6 @@ function DataTableRegistrationPeroidLec() {
                 });
         }
     };
-
     return (
         <div>
             <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -81,11 +98,19 @@ function DataTableRegistrationPeroidLec() {
                         <div className="modal-body">
                             <div className="mb-3">
                                 <label htmlFor="startTime" className="form-label">Thời gian bắt đầu: </label>
-                                <input type="text" className="form-control" id="start" value={editedStartTime} onChange={(e) => setEditedStartTime(e.target.value)} />
+                                <input type="datetime-local" className="form-control" id="start" value={editedStartTime} onChange={(e) => setEditedStartTime(e.target.value)} />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="endTime" className="form-label">Thời gian kết thúc: </label>
-                                <input type="text" className="form-control" id="end" value={editedEndTime} onChange={(e) => setEditedEndTime(e.target.value)} />
+                                <input type="datetime-local" className="form-control" id="end" value={editedEndTime} onChange={(e) => setEditedEndTime(e.target.value)} />
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor="class" className="form-label">loại đề tài</label>
+                                <select className="form-select" id="typeSubject" name="typeSubject" defaultValue={editedType} onChange={(e) => setEditedType(e.target.value)}>
+                                    {dataTypeSubject.map((typeItem, index) => (
+                                        <option key={index} value={typeItem.typeId}>{typeItem.typeName}</option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
                         <div className="modal-footer">
@@ -102,7 +127,7 @@ function DataTableRegistrationPeroidLec() {
                         <th scope="col">Đợt đăng ký đề tài</th>
                         <th scope="col">Thời gian bắt đầu</th>
                         <th scope="col">Thời gian kết thúc</th>
-                        <th scope="col">loại đề tài</th>
+                        <th scope="col">Loại đề tài</th>
                         <th scope='col'> Action</th>
                     </tr>
                 </thead>
@@ -113,7 +138,7 @@ function DataTableRegistrationPeroidLec() {
                             <td>{item.registrationName}</td>
                             <td>{item.registrationTimeStart}</td>
                             <td>{item.registrationTimeEnd}</td>
-                            <td>{item.typeSubject}</td>
+                            <td>{item.typeSubjectId.typeName}</td>
                             <td>
                                 <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(item)}>
                                     Edit

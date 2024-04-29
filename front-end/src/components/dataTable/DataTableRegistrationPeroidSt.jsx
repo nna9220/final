@@ -39,14 +39,31 @@ function DataTableRegistrationPeroidSt() {
         setEditedStartTime(item.registrationTimeStart);
         setEditedEndTime(item.registrationTimeEnd);
     };
+    const convertToFormattedDateTime = (dateTimeString) => {
+        const dateTime = new Date(dateTimeString);
+        const year = dateTime.getFullYear();
+        const month = String(dateTime.getMonth() + 1).padStart(2, '0');
+        const day = String(dateTime.getDate()).padStart(2, '0');
+        const hours = String(dateTime.getHours()).padStart(2, '0');
+        const minutes = String(dateTime.getMinutes()).padStart(2, '0');
+        const seconds = String(dateTime.getSeconds()).padStart(2, '0');
+    
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    };
+    
 
     const handleSaveChanges = () => {
         const tokenSt = sessionStorage.getItem('userToken');
+        const updatedStartValue = convertToFormattedDateTime(document.getElementById('start').value);
+        const updatedEndValue = convertToFormattedDateTime(document.getElementById('end').value);
+        const updateTypeValue = document.getElementById('typeSubject').value;
         if (tokenSt && selectedPeriodId) {
-            axiosInstance.post(`/admin/Period/${selectedPeriodId}`, {
-                registrationTimeStart: editedStartTime,
-                registrationTimeEnd: editedEndTime,
-            }, {
+            axiosInstance.post(`/admin/PeriodLecturer/edit/${selectedPeriodId}`, null, {
+                params: {
+                    periodId: selectedPeriodId,
+                    start: updatedStartValue,
+                    end: updatedEndValue,
+                },
                 headers: {
                     'Authorization': `Bearer ${tokenSt}`,
                 },
@@ -81,6 +98,7 @@ function DataTableRegistrationPeroidSt() {
                                 <label htmlFor="endTime" className="form-label">Thời gian kết thúc: </label>
                                 <input type="text" className="form-control" id="endTime" value={editedEndTime} onChange={(e) => setEditedEndTime(e.target.value)} />
                             </div>
+                            
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -96,6 +114,7 @@ function DataTableRegistrationPeroidSt() {
                         <th scope="col">Đợt đăng ký đề tài</th>
                         <th scope="col">Thời gian bắt đầu</th>
                         <th scope="col">Thời gian kết thúc</th>
+                        <th scope="col">Loại đề tài</th>
                         <th scope='col'> Action</th>
                     </tr>
                 </thead>
@@ -106,6 +125,7 @@ function DataTableRegistrationPeroidSt() {
                             <td>{item.registrationName}</td>
                             <td>{item.registrationTimeStart}</td>
                             <td>{item.registrationTimeEnd}</td>
+                            <td>{item.typeSubjectId.typeName}</td>
                             <td>
                                 <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(item)}>
                                     Edit
