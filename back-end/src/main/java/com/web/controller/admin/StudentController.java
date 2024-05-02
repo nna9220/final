@@ -171,10 +171,7 @@ public class StudentController {
                 response.put("major", Major.values());
                 response.put("listYear", schoolYears);
                 return new ResponseEntity<>(response,HttpStatus.OK);
-            }else {
-                /*ModelAndView error = new ModelAndView();
-                error.addObject("errorMessage", "Không tìm thấy người dùng");
-                return error;*/
+            }else{
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         }else {

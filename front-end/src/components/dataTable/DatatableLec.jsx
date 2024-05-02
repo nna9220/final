@@ -442,7 +442,7 @@ function DatatableLec() {
                             </div>
                             <div className="mb-3">
                                 <label htmlFor='brithDay' className="form-label">Ngày sinh</label>
-                                <input type="text" className="form-control" id="brithDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} />
+                                <input type="date" className="form-control" id="brithDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="authority" className="form-label">Role</label>
@@ -519,7 +519,7 @@ function DatatableLec() {
 
                             <div className="mb-3">
                                 <label htmlFor="birthDay" className="form-label">Ngày sinh</label>
-                                <input type="text" className="form-control" id="birthDay" name="birthDay" value={formData.birthDay} onChange={handleChangeAdd} />
+                                <input type="date" className="form-control" id="birthDay" name="birthDay" value={formData.birthDay} onChange={handleChangeAdd} />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="major" className="form-label">Chuyên ngành</label>
