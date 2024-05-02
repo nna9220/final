@@ -21,6 +21,7 @@ function DataTable() {
     const [years, setYear] = useState([]);
     const [major, setMajr] = useState([]);
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [showConfirmationRestore, setShowConfirmationRestore] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
     const [showDeletedStudents, setShowDeleteStudents] = useState(false);
     const [userEdit, setUserEdit] = useState({
@@ -33,7 +34,7 @@ function DataTable() {
         username: '',
         address: '',
         status: '',
-        classes:''
+        classes: '',
     });
     const [IdOld, setIdOld] = useState("");
     const [showModal, setShowModal] = useState(false);
@@ -44,6 +45,7 @@ function DataTable() {
     const [showErrorToastAdd, setShowErrorToastAdd] = useState(false);
     const [showDeleteToast, setShowDeleteToast] = useState(false);
     const [gender, setGender] = useState(false);
+    const [classname, setClassName] = useState(false);
     const [formData, setFormData] = useState({
         personId: '',
         firstName: '',
@@ -78,7 +80,7 @@ function DataTable() {
 
     const handleSubmitAdd = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
-        console.log(formData)
+        console.log(formData);
         axiosInstance.post('/admin/student/create',
             formData
             , {
@@ -104,6 +106,11 @@ function DataTable() {
         setGender(value);
     };
 
+    const handleClassNameChange = (e) => {
+        const value = e.target.value;
+        setClassName(value);
+    };
+
     const handleDelete = (row) => {
         setSelectedRow(row);
         setShowConfirmation(true);
@@ -111,7 +118,7 @@ function DataTable() {
 
     const handleRestore = (row) => {
         setSelectedRow(row);
-        setShowConfirmation(true);
+        setShowConfirmationRestore(true);
     };
 
     const confirmDelete = () => {
@@ -126,6 +133,7 @@ function DataTable() {
                     // Xóa thành công
                     setStudents(prevState => prevState.filter(student => student.studentId !== studentId));
                     setShowConfirmation(false);
+                    setShowConfirmationRestore(false);
                     setShowDeleteToast(true);
                     console.log('Xóa thành công');
                 } else if (response.status === 404) {
@@ -141,6 +149,7 @@ function DataTable() {
 
     const cancelDelete = () => {
         setShowConfirmation(false);
+        setShowConfirmationRestore(false);
     };
 
     const [isDataFetched, setIsDataFetched] = useState(false);
@@ -183,11 +192,25 @@ function DataTable() {
             .then(response => {
                 const data = response.data;
                 if (data.student && data.student.person) {
-                    const formattedDate = moment(data.student.person.birthDay, "DD/MM/YYYY").format("YYYY-MM-DD");
+                    const formattedDate = moment(data.student.person.birthDay, "YYYY-MM-DD").format("YYYY-MM-DD");
                     console.log("user tồn tại");
                     data.student.person.birthDay = formattedDate;
-                    setUserEdit(data.student.person);
+                    console.log("Student classs 1: ", data.student.studentClass.classname)
+                    setUserEdit(prevState => ({
+                        ...prevState,
+                        personId: data.student.person.personId,
+                        firstName: data.student.person.firstName,
+                        lastName: data.student.person.lastName,
+                        birthDay: data.student.person.birthDay,
+                        phone: data.student.person.phone,
+                        gender: data.student.person.gender,
+                        username: data.student.person.username,
+                        address: data.student.person.address,
+                        status: data.student.person.status,
+                        classes: data.student.studentClass.classname
+                    }));
                     setGender(data.student.person.gender);
+                    setClassName(data.student.studentClass.classname);
                     setIdOld(data.student.studentId);
                     setShowModal(true);
                 } else {
@@ -214,6 +237,17 @@ function DataTable() {
         formDataEdit.append('gender', gender);
         formDataEdit.append('classes', userEdit.classes);
 
+        console.log('personId', userEdit.personId);
+        console.log('firstName', userEdit.firstName);
+        console.log('lastName', userEdit.lastName);
+        console.log('birthDay', userEdit.birthDay);
+        console.log('phone', userEdit.phone);
+        console.log('username', userEdit.username);
+        console.log('address', userEdit.address);
+        console.log('status', userEdit.status);
+        console.log('gender', gender);
+        console.log('classes', classname);
+
         axiosInstance.post(`/admin/student/edit/${id}`, formDataEdit, {
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
@@ -236,12 +270,12 @@ function DataTable() {
                                 username: userEdit.username,
                                 address: userEdit.address
                             },
-                            student:{
+                            student: {
                                 classes: userEdit.classes
                             }
                         };
                     }
-                    console.log("Student: "+ student);
+                    console.log("Student: " + student);
                     return student;
                 });
                 setStudents(updatedStudents);
@@ -268,7 +302,7 @@ function DataTable() {
         { field: 'fullName', headerName: 'Họ và tên', width: 200 },
         { field: 'gender', headerName: 'Giới tính', width: 130 },
         { field: 'phone', headerName: 'Số điện thoại', width: 160 },
-        { field: 'class', headerName: 'Lớp', width: 130 },
+        { field: 'classes', headerName: 'Lớp', width: 130 },
         { field: 'schoolYear', headerName: 'Niên khóa', width: 130 },
         {
             field: 'action',
@@ -317,7 +351,7 @@ function DataTable() {
                         fullName: `${student.person.firstName} ${student.person.lastName}`,
                         gender: student.person.gender ? 'Nữ' : 'Nam',
                         phone: student.person.phone,
-                        class: student.studentClass.classname,
+                        classes: student.studentClass.classname,
                         schoolYear: student.schoolYear.year,
                     }))}
                     columns={columns}
@@ -338,7 +372,7 @@ function DataTable() {
                         fullName: `${student.person.firstName} ${student.person.lastName}`,
                         gender: student.person.gender ? 'Nữ' : 'Nam',
                         phone: student.person.phone,
-                        class: student.studentClass.classname,
+                        classes: student.studentClass.classname,
                         schoolYear: student.schoolYear.year,
                     }))}
                     columns={columns}
@@ -362,6 +396,23 @@ function DataTable() {
                         Hủy
                     </Button>
                     <Button variant="primary" onClick={confirmDelete}>
+                        Xác nhận
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={showConfirmationRestore} onHide={cancelDelete}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Xác nhận xóa sinh viên</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Bạn có chắc chắn muốn khôi phục lại sinh viên này không?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={cancelDelete}>
+                        Hủy
+                    </Button>
+                    <Button variant="primary">
                         Xác nhận
                     </Button>
                 </Modal.Footer>
@@ -413,8 +464,8 @@ function DataTable() {
             </Toast>
 
             <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true" style={{ display: showModal ? 'block' : 'none' }}>
-                <div className="modal-dialog  modal-dialog modal-dialog-scrollable">
-                    <div className="modal-content">
+                <div className="modal-dialog modal-lg modal-dialog modal-dialog-scrollable">
+                    <div className="modal-content was-validated">
                         <div className="modal-header">
                             <h1 className="modal-title fs-5" id="exampleModalLabel1">CẬP NHẬT THÔNG TIN SINH VIÊN</h1>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -422,57 +473,66 @@ function DataTable() {
                         <div className="modal-body">
                             <div className="mb-3">
                                 <label htmlFor="id" className="form-label">MSSV</label>
-                                <input readOnly type="text" className="form-control" id="personId" name="personId" value={userEdit.personId} onChange={handleChange} />
+                                <input disabled type="text" className="form-control" id="personId" name="personId" value={userEdit.personId} onChange={handleChange} />
+                            </div>
+                            <div className="row mb-3">
+                                <div className="col">
+                                    <label htmlFor="firstName" className="form-label">Họ</label>
+                                    <input required type="text" className="form-control" id="firstName" name="firstName" value={userEdit.firstName} onChange={handleChange} />
+                                </div>
+                                <div className="col">
+                                    <label htmlFor='lastName' className="form-label">Tên</label>
+                                    <input required type="text" className="form-control" id="lastName" name="lastName" value={userEdit.lastName} onChange={handleChange} />
+                                </div>
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="id" className="form-label">Email</label>
-                                <input type="text" className="form-control" id="username" name="username" value={userEdit.username} onChange={handleChange} />
+                                <input required type="text" className="form-control" id="username" name="username" value={userEdit.username} onChange={handleChange} />
                             </div>
-                            <div className="mb-3">
-                                <label htmlFor="firstName" className="form-label">Họ</label>
-                                <input type="text" className="form-control" id="firstName" name="firstName" value={userEdit.firstName} onChange={handleChange} />
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor='lastName' className="form-label">Tên</label>
-                                <input type="text" className="form-control" id="lastName" name="lastName" value={userEdit.lastName} onChange={handleChange} />
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor='gender' className="form-label">Giới tính</label>
-                                <div>
-                                    <input type="radio" id="nam" name="gender" value="Nam" checked={gender === false} onChange={handleGenderChange} />
-                                    <label htmlFor="nam">Nam</label>
+                            <div className="row mb-3">
+                                <div className="col">
+                                    <label htmlFor='brithDay' className="form-label">Ngày sinh</label>
+                                    <input required type="date" className="form-control" id="brithDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} />
                                 </div>
-                                <div>
-                                    <input type="radio" id="nu" name="gender" value="Nữ" checked={gender === true} onChange={handleGenderChange} />
-                                    <label htmlFor="nu">Nữ</label>
+                                <div className="col">
+                                    <label htmlFor='phone' className="form-label">Số điện thoại</label>
+                                    <input required type="text" className="form-control" id="phone" name="phone" value={userEdit.phone} onChange={handleChange} />
                                 </div>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor='brithDay' className="form-label">Ngày sinh</label>
-                                <input type="date" className="form-control" id="brithDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} />
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor='phone' className="form-label">Số điện thoại</label>
-                                <input type="text" className="form-control" id="phone" name="phone" value={userEdit.phone} onChange={handleChange} />
+                                <div className="col">
+                                    <label htmlFor='gender' className="form-label">Giới tính</label>
+                                    <div style={{ display: 'flex' }}>
+                                        <div>
+                                            <input type="radio" id="nam" name="gender" value="Nam" checked={gender === false} onChange={handleGenderChange} />
+                                            <label htmlFor="nam">Nam</label>
+                                        </div>
+                                        <div>
+                                            <input type="radio" id="nu" name="gender" value="Nữ" checked={gender === true} onChange={handleGenderChange} />
+                                            <label htmlFor="nu">Nữ</label>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div className="mb-3">
                                 <label htmlFor='address' className="form-label">Địa chỉ</label>
-                                <input type="text" className="form-control" id="address" name="address" value={userEdit.address} onChange={handleChange} />
+                                <input required type="text" className="form-control" id="address" name="address" value={userEdit.address} onChange={handleChange} />
                             </div>
-                            <div className="mb-3">
-                                <label htmlFor="class" className="form-label">Lớp</label>
-                                <select className="form-select" id="classes" value={userEdit.classes} onChange={handleChange} name="classes">
-                                    {classes.map((classItem, index) => (
-                                        <option key={index} value={classItem.id}>{classItem.classname}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor='status' className="form-label">Trạng thái</label>
-                                <select className="form-select" id="status" name="status">
-                                    <option value="option1">True</option>
-                                    <option value="option2">False</option>
-                                </select>
+                            <div className='row mb-3'>
+                                <div className="col">
+                                    <label htmlFor="class" className="form-label">Lớp</label>
+                                    <select required className="form-select" id="classes" value={userEdit.classes} onChange={handleClassNameChange} name="classes">
+                                        <option value="">{userEdit.classes}</option>
+                                        {classes.map((classItem, index) => (
+                                            <option key={index} value={classItem.classname}>{classItem.classname}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="col">
+                                    <label htmlFor='status' className="form-label">Trạng thái</label>
+                                    <select required className="form-select" id="status" name="status">
+                                        <option value="option1">True</option>
+                                        <option value="option2">False</option>
+                                    </select>
+                                </div>
                             </div>
 
                         </div>
@@ -488,8 +548,8 @@ function DataTable() {
 
 
             <div className="modal fade" id="AddStudent" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: showModalAdd ? 'block' : 'none' }}>
-                <div className="modal-dialog modal-dialog-scrollable">
-                    <div className="modal-content">
+                <div className="modal-dialog modal-lg modal-dialog-scrollable">
+                    <div className="modal-content was-validated">
                         <div className="modal-header">
                             <h1 className="modal-title fs-5" id="exampleModalLabel">THÊM SINH VIÊN</h1>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -497,63 +557,77 @@ function DataTable() {
                         <div className="modal-body">
                             <div className="mb-3">
                                 <label htmlFor="id" className="form-label">MSSV</label>
-                                <input type="text" className="form-control" id="id" name="personId" value={formData.personId} onChange={handleChangeAdd} />
+                                <input type="text" className="form-control" id="id" name="personId" value={formData.personId} onChange={handleChangeAdd} required />
                             </div>
-                            <div className="mb-3">
-                                <label htmlFor="firstName" className="form-label">Họ</label>
-                                <input type="text" className="form-control" id="firstName" name="firstName" value={formData.firstName} onChange={handleChangeAdd} />
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="lastName" className="form-label">Tên</label>
-                                <input type="text" className="form-control" id="lastName" name="lastName" value={formData.lastName} onChange={handleChangeAdd} />
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="email" className="form-label">Email</label>
-                                <input type="email" className="form-control" id="email" name="email" value={formData.email} onChange={handleChangeAdd} />
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="phone" className="form-label">Số điện thoại</label>
-                                <input type="text" className="form-control" id="phone" name="phone" value={formData.phone} onChange={handleChangeAdd} />
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor='genderAdd' className="form-label">Giới tính</label>
-                                <div>
-                                    <input type="radio" id="nam" name="gender" value="Nam" checked={formData.gender === false} onChange={handleChangeAdd} />
-                                    <label htmlFor="nam">Nam</label>
+                            <div className="row mb-3">
+                                <div className="col">
+                                    <label htmlFor="firstName" className="form-label">Họ</label>
+                                    <input type="text" className="form-control" id="firstName" name="firstName" value={formData.firstName} onChange={handleChangeAdd} required />
                                 </div>
-                                <div>
-                                    <input type="radio" id="nu" name="gender" value="Nữ" checked={formData.gender === true} onChange={handleChangeAdd} />
-                                    <label htmlFor="nu">Nữ</label>
+                                <div className="col">
+                                    <label htmlFor="lastName" className="form-label">Tên</label>
+                                    <input type="text" className="form-control" id="lastName" name="lastName" value={formData.lastName} onChange={handleChangeAdd} required />
                                 </div>
                             </div>
-
-                            <div className="mb-3">
-                                <label htmlFor="birthDay" className="form-label">Ngày sinh</label>
-                                <input type="text" className="form-control" id="birthDay" name="birthDay" value={formData.birthDay} onChange={handleChangeAdd} />
+                            <div className="row mb-3">
+                                <div className="col">
+                                    <label htmlFor="email" className="form-label">Email</label>
+                                    <input type="email" className="form-control" id="email" name="email" value={formData.email} onChange={handleChangeAdd} required />
+                                </div>
+                                <div className="col">
+                                    <label htmlFor="phone" className="form-label">Số điện thoại</label>
+                                    <input type="text" className="form-control" id="phone" name="phone" value={formData.phone} onChange={handleChangeAdd} required />
+                                </div>
                             </div>
-                            <div className="mb-3">
-                                <label htmlFor="major" className="form-label">Chuyên ngành</label>
-                                <select className="form-select" id="major" value={formData.major.name} onChange={handleChangeAdd} name="major">
-                                    {major.map((majorItem, index) => (
-                                        <option key={index} value={majorItem}>{majorItem}</option>
-                                    ))}
-                                </select>
+                            <div className="row mb-3">
+                                <div className="col">
+                                    <label htmlFor='genderAdd' className="form-label">Giới tính</label>
+                                    <div style={{ display: 'flex' }}>
+                                        <div>
+                                            <input type="radio" id="nam" name="gender" value="Nam" checked={formData.gender === false} onChange={handleChangeAdd} />
+                                            <label htmlFor="nam">Nam</label>
+                                        </div>
+                                        <div>
+                                            <input type="radio" id="nu" name="gender" value="Nữ" checked={formData.gender === true} onChange={handleChangeAdd} />
+                                            <label htmlFor="nu">Nữ</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col">
+                                    <label htmlFor="birthDay" className="form-label">Ngày sinh</label>
+                                    <input type="date" className="form-control" id="birthDay" name="birthDay" value={formData.birthDay} onChange={handleChangeAdd} required />
+                                </div>
                             </div>
-                            <div className="mb-3">
-                                <label htmlFor="class" className="form-label">Lớp</label>
-                                <select className="form-select" id="class" value={formData.id.id} onChange={handleChangeAdd} name="id">
-                                    {classes.map((classItem, index) => (
-                                        <option key={index} value={classItem.id}>{classItem.classname}</option>
-                                    ))}
-                                </select>
+                            <div className="row mb-3">
+                                <div className="col">
+                                    <label htmlFor="major" className="form-label">Chuyên ngành</label>
+                                    <select className="form-select" id="major" value={formData.major.name} onChange={handleChangeAdd} name="major" required>
+                                        <option value="">Chọn ...</option>
+                                        {major.map((majorItem, index) => (
+                                            <option key={index} value={majorItem}>{majorItem}</option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
-                            <div className="mb-3">
-                                <label htmlFor="year" className="form-label">Niên khóa</label>
-                                <select className="form-select" id="year" value={formData.year} onChange={handleChangeAdd} name="year">
-                                    {years.map((yearItem, index) => (
-                                        <option key={index} value={yearItem.yearId}>{yearItem.year}</option>
-                                    ))}
-                                </select>
+                            <div className="row mb-3">
+                                <div className="col">
+                                    <label htmlFor="class" className="form-label">Lớp</label>
+                                    <select className="form-select" id="class" value={formData.id.id} onChange={handleChangeAdd} name="id" required>
+                                        <option value="">Chọn ...</option>
+                                        {classes.map((classItem, index) => (
+                                            <option key={index} value={classItem.id}>{classItem.classname}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="col">
+                                    <label htmlFor="year" className="form-label">Niên khóa</label>
+                                    <select className="form-select" id="year" value={formData.year} onChange={handleChangeAdd} name="year" required>
+                                        <option value="">Chọn ...</option>
+                                        {years.map((yearItem, index) => (
+                                            <option key={index} value={yearItem.yearId}>{yearItem.year}</option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div className="modal-footer">
@@ -563,6 +637,7 @@ function DataTable() {
                     </div>
                 </div>
             </div>
+
         </div>
     );
 }
