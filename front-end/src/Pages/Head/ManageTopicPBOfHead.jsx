@@ -1,11 +1,10 @@
 import React from 'react'
 import SidebarHead from '../../components/Sidebar/SidebarHead'
 import Navbar from '../../components/Navbar/Navbar'
-import TopicPBTableHead from '../../components/TableOfHead/TopicPBTableHead'
 import './ManageTopicPBOfHead.scss'
 import { useState, useEffect } from 'react'
-import RegisTopicLec from '../Teacher/RegisTopicLec'
-import TopicKLPBTableHead from '../../components/TableOfHead/TopicKLPBTableHead'
+import TopicPBTableHead from '../../components/TableOfHead/TopicPBOfHead/TopicPBTableHead'
+import TopicKLPBTableHead from '../../components/TableOfHead/TopicPBOfHead/TopicKLPBTableHead'
 
 function ManageTopicPBOfHead() {
   useEffect(() => {

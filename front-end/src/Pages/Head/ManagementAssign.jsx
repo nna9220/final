@@ -2,13 +2,9 @@ import React, { useState, useEffect } from 'react';
 import SidebarHead from '../../components/Sidebar/SidebarHead';
 import Navbar from '../../components/Navbar/Navbar';
 import './MannageHead.scss';
-import TableApprove from '../../components/TableOfHead/TableApprove';
-import TbaleAssign from '../../components/TableOfHead/TbaleAssign';
-import TableRegis from '../../components/TableOfHead/TableRegis';
-import TableTopic from '../../components/TableOfHead/TableTopic';
-import TableApproveKL from '../../components/TableOfHead/TableApproveKL';
-import TableAssignKL from '../../components/TableOfHead/TableAssignKL';
-import TableTopicKL from '../../components/TableOfHead/TableTopicKL';
+import TableAssign from '../../components/TableOfHead/AssignTable/TableAssign';
+import TableAssignKL from '../../components/TableOfHead/AssignTable/TableAssignKL';
+
 function ManagementAssign() {
   useEffect(() => {
     document.title = "Phân giảng viên phản biện";
@@ -51,7 +47,7 @@ function ManagementAssign() {
             </div>
             <div className='card-nd' style={{ display: 'block' }}>
               <div className='table-items'>
-                {selectedTitle === "Tiểu luận chuyên ngành" ? <TbaleAssign /> : <TableAssignKL />}
+                {selectedTitle === "Tiểu luận chuyên ngành" ? <TableAssign /> : <TableAssignKL/>}
               </div>
             </div>
           </div>

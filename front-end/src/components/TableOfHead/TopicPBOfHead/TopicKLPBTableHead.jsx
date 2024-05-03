@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
+import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import CreditScoreOutlinedIcon from '@mui/icons-material/CreditScoreOutlined';
-import axiosInstance from '../../API/axios';
-import './styleTable.scss';
+import axiosInstance from '../../../API/axios';
 
 function TopicKLPBTableHead() {
     const [topics, setTopics] = useState([]);

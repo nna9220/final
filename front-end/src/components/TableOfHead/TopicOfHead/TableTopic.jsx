@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
+import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import './TableTopic.scss'
-import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
 import DetailsIcon from '@mui/icons-material/Details';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import { Link } from 'react-router-dom';
-import ManagementTask from '../KanbanOfHead/ManagementTask';
-import axiosInstance from '../../API/axios';
+import ManagementTask from '../../KanbanOfHead/ManagementTask';
+import axiosInstance from '../../../API/axios';
 
 function TableTopic() {
   const [topics, setTopics] = useState([]);

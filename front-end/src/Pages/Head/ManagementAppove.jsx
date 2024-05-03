@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import SidebarHead from '../../components/Sidebar/SidebarHead';
 import Navbar from '../../components/Navbar/Navbar';
 import './MannageHead.scss';
-import TableApprove from '../../components/TableOfHead/TableApprove';
-import TableApproveKL from '../../components/TableOfHead/TableApproveKL';
+import TableApprove from '../../components/TableOfHead/ApproveTable/TableApprove';
+import TableApproveKL from '../../components/TableOfHead/ApproveTable/TableApproveKL';
 
 function ManagementAppove() {
     useEffect(() => {

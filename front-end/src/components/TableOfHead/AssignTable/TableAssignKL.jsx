@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
-import './styleTable.scss';
+import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
-import axiosInstance from '../../API/axios';
+import axiosInstance from '../../../API/axios';
 
 function TableAssignKL() {
   const [topics, setTopics] = useState([]);
