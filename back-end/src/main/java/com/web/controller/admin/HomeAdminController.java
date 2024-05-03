@@ -95,6 +95,7 @@ public class HomeAdminController {
                                             @RequestParam("birthDay") String birthDay,
                                             @RequestParam("phone") String phone,
                                             @RequestParam("gender") boolean gender,
+                                            @RequestParam("address") String address,
                                             @RequestParam(value = "status", required = false, defaultValue = "true") boolean status,
                                             @RequestHeader("Authorization") String authorizationHeader,
                                             HttpServletRequest request) {
@@ -106,28 +107,10 @@ public class HomeAdminController {
             if (existPerson != null) {
                 existPerson.setFirstName(firstName);
                 existPerson.setLastName(lastName);
-
-                // Attempt to parse the birthDay string using multiple formats
-                String[] possibleFormats = {"dd-MM-yyyy", "yyyy-MM-dd", "MM-dd-yyyy"};
-                SimpleDateFormat inputFormat = new SimpleDateFormat();
-                Date birthDayDate = null;
-                for (String format : possibleFormats) {
-                    inputFormat.applyPattern(format);
-                    try {
-                        birthDayDate = inputFormat.parse(birthDay);
-                        break; // If parsing succeeds, exit the loop
-                    } catch (ParseException e) {
-                        // Parsing failed, try next format
-                    }
-                }
-
-                if (birthDayDate == null) {
-                    // Parsing failed for all formats, return an error response
-                    return new ResponseEntity<>("Invalid birthDay format", HttpStatus.BAD_REQUEST);
-                }
-                existPerson.setBirthDay(String.valueOf(birthDayDate));
+                existPerson.setBirthDay(birthDay);
                 existPerson.setPhone(phone);
                 existPerson.setGender(gender);
+                existPerson.setAddress(address);
                 existPerson.setStatus(status);
 
                 personRepository.save(existPerson);
