@@ -105,3 +105,24 @@
 .link-profile {
     text-decoration: none;
 }
+
+.app.dark-mode {
+    // CSS cho chế độ tối
+    background-color: #212529;
+  }
+  
+  .item {
+    // CSS cho các item trong navbar
+  }
+  
+  .icon {
+    // CSS cho các biểu tượng
+    color: #000; // Màu sắc mặc định
+  }
+  
+  .icon.dark-mode {
+    color: #fff; // Màu sắc khi ở chế độ tối
+  }
+  
+  .icon-noti {
+  }
