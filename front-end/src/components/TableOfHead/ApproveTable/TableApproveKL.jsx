@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
+import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import './TableApprove.scss';
-import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
 import { Toast } from 'react-bootstrap';
+import { DataGrid } from '@mui/x-data-grid'; // Import DataGrid
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import PlaylistRemoveOutlinedIcon from '@mui/icons-material/PlaylistRemoveOutlined';
 import PlaylistAddCheckOutlinedIcon from '@mui/icons-material/PlaylistAddCheckOutlined';
-import axiosInstance from '../../API/axios';
+import axiosInstance from '../../../API/axios';
+import RestoreOutlinedIcon from '@mui/icons-material/RestoreOutlined';
 
 function TableApproveKL() {
-  const [topics, setTopics] = useState([]);
+    const [topics, setTopics] = useState([]);
     const [topicsDeleted, setTopicsDeleted] = useState([]);
     const userToken = getTokenFromUrlAndSaveToStorage();
     const [showTable, setShowTable] = useState(false);
@@ -40,7 +40,12 @@ function TableApproveKL() {
         })
             .then(response => {
                 console.log("Topic: ", response.data);
-                setTopics(response.data.listSubject);
+                const topicsWithId = response.data.listSubject.map((topic, index) => ({
+                    ...topic,
+                    id: topic.subjectId,
+                    instructorName: topic.instructorId.person.firstName + ' ' + topic.instructorId.person.lastName
+                }));
+                setTopics(topicsWithId);
             })
             .catch(error => {
                 console.error(error);
@@ -56,8 +61,12 @@ function TableApproveKL() {
             .then(response => {
                 console.log("Topic deleted: ", response.data);
                 loadTopics();
-                setTopicsDeleted(response.data.lstSubject);
-            })
+                const topicsDeletedWithId = response.data.lstSubject.map((topic, index) => ({
+                    ...topic,
+                    id: topic.subjectId,
+                    instructorName: topic.instructorId.person.firstName + ' ' + topic.instructorId.person.lastName
+                }));
+                setTopicsDeleted(topicsDeletedWithId);            })
             .catch(error => {
                 console.error(error);
             });
@@ -97,6 +106,40 @@ function TableApproveKL() {
             });
     }
 
+    const columns = [
+        { field: 'id', headerName: '#', width: 60 },
+        { field: 'subjectName', headerName: 'Tên đề tài', width: 250 },
+        { field: 'instructorName', headerName: 'Giảng viên hướng dẫn', width: 200 },
+        { field: 'student1', headerName: 'Sinh viên 1', width: 100 },
+        { field: 'student2', headerName: 'Sinh viên 2', width: 100 },
+        { field: 'student3', headerName: 'Sinh viên 3', width: 100 },
+        { field: 'requirement', headerName: 'Yêu cầu', width: 200 },
+        {
+            field: 'action',
+            headerName: 'Action',
+            width: 120,
+            renderCell: (params) => (
+                <>
+                    {showTable ? (
+                        <button className='button-res'>
+                            <p className='text'><RestoreOutlinedIcon /></p>
+                        </button>
+                    ) : (
+
+                        <div style={{ display: 'flex' }}>
+                            <button className='button-res' onClick={() => handleApprove(params.row.id)}>
+                                <p className='text'>Duyệt</p>
+                            </button>
+                            <button className='button-res-de' onClick={() => handleDelete(params.row.id)}>
+                                <p className='text'>Xóa</p>
+                            </button>
+                        </div>
+                    )}
+                </>
+            ),
+        },
+    ];
+
     return (
         <div className='body-table'>
              <Toast show={showDeleteToast} onClose={() => setShowDeleteToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
@@ -135,74 +178,35 @@ function TableApproveKL() {
                 </Toast.Body>
             </Toast>
 
-            <button className='button-listDelete' onClick={() => setShowTable(!showTable)}>
+            <button className='button-listDelete-approve' onClick={() => setShowTable(!showTable)}>
                     {showTable ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách đề tài chưa duyệt</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách đề tài đã xóa</>}
             </button>
 
             {showTable ? (
                 <div>
-                    <div className='home-table'>
-                        <table className="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Tên đề tài</th>
-                                    <th scope="col">Giảng viên hướng dẫn</th>
-                                    <th scope="col">Sinh viên 1</th>
-                                    <th scope="col">Sinh viên 2</th>
-                                    <th scope="col">Yêu cầu</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {topicsDeleted.map((itemDelete, index) => (
-                                    <tr key={index}>
-                                        <th scope="row">{index + 1}</th>
-                                        <td>{itemDelete.subjectName}</td>
-                                        <td>{itemDelete.instructorId.person.firstName + ' ' + itemDelete.instructorId.person.lastName}</td>
-                                        <td>{itemDelete.student1 === null ? 'Trống' : ''}</td>
-                                        <td>{itemDelete.student2 === null ? 'Trống' : ''}</td>
-                                        <td>{itemDelete.requirement}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    <div className='home-table table-approve'>
+                        <DataGrid
+                            rows={topicsDeleted}
+                            columns={columns}
+                            initialState={{
+                                ...topics.initialState,
+                                pagination: { paginationModel: { pageSize: 10 } },
+                            }}
+                            pageSizeOptions={[10, 25, 50]}
+                        />
                     </div>
                 </div>
             ) : (
-                <div className='home-table'>
-                    <table className="table table-hover">
-                        <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Tên đề tài</th>
-                                <th scope="col">Giảng viên hướng dẫn</th>
-                                <th scope="col">Sinh viên 1</th>
-                                <th scope="col">Sinh viên 2</th>
-                                <th scope="col">Yêu cầu</th>
-                                <th scope="col">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {topics.map((item, index) => (
-                                <tr key={index}>
-                                    <th scope="row">{index + 1}</th>
-                                    <td>{item.subjectName}</td>
-                                    <td>{item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName}</td>
-                                    <td>{item.student1}</td>
-                                    <td>{item.student2}</td>
-                                    <td>{item.requirement}</td>
-                                    <td style={{ display: 'flex' }}>
-                                        <button style={{ marginRight: '20px' }} className='button-res' onClick={() => handleApprove(item.subjectId)}>
-                                            <p className='text'>Duyệt</p>
-                                        </button>
-                                        <button className='button-res-de' onClick={() => handleDelete(item.subjectId)}>
-                                            <p className='text'>Xóa</p>
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                <div className='home-table table-approve'>
+                    <DataGrid
+                        rows={topics}
+                        columns={columns}
+                        initialState={{
+                            ...topics.initialState,
+                            pagination: { paginationModel: { pageSize: 10 } },
+                        }}
+                        pageSizeOptions={[10, 25, 50]}
+                    />
                 </div>
             )}
         </div>
