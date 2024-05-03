@@ -150,3 +150,8 @@
         border-radius: 5px;
     }
 }
+
+.required::after {
+    content: "*";
+    color: red;
+}

@@ -51,6 +51,7 @@ function DatatableLec() {
         gender: '',
         birthDay: '',
         phone: '',
+        address:'',
         major: '',
         author: ''
     });
@@ -60,7 +61,7 @@ function DatatableLec() {
         if (name === 'gender') {
             setFormData(prevState => ({
                 ...prevState,
-                [name]: value === 'Nữ' 
+                [name]: value === 'Nữ'
             }));
         } else {
             setFormData(prevState => ({
@@ -189,6 +190,7 @@ function DatatableLec() {
         formDataEdit.append('lastName', userEdit.lastName);
         formDataEdit.append('birthDay', userEdit.birthDay);
         formDataEdit.append('phone', userEdit.phone);
+        formDataEdit.append('address', userEdit.address);
         formDataEdit.append('gender', gender);
         formDataEdit.append('authority', userEdit.authority);
         formDataEdit.append('major', userEdit.major);
@@ -214,12 +216,13 @@ function DatatableLec() {
                                 lastName: userEdit.lastName,
                                 birthDay: userEdit.birthDay,
                                 phone: userEdit.phone,
+                                address: userEdit.address,
                                 gender: gender,
                                 authority: userEdit.authority,
                                 address: userEdit.address,
                                 username: userEdit.username
                             },
-                            lecture:{
+                            lecture: {
                                 major: userEdit.major,
                                 authority: userEdit.authority
                             }
@@ -398,67 +401,75 @@ function DatatableLec() {
             </Toast>
 
             <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true" style={{ display: showModal ? 'block' : 'none' }}>
-                <div className="modal-dialog modal-dialog modal-dialog-scrollable">
-                    <div className="modal-content">
+                <div className="modal-dialog modal-lg modal-dialog modal-dialog-scrollable" onSubmit={handleSubmitEdit}>
+                    <form className="modal-content">
                         <div className="modal-header">
                             <h1 className="modal-title fs-5" id="exampleModalLabel1">CẬP NHẬT THÔNG TIN GIẢNG VIÊN</h1>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                        <div className="mb-3">
-                                <label htmlFor='id' className="form-label">MGV</label>
-                                <input readOnly type="text" className="form-control" id="personId" name="personId"  value={userEdit.personId} onChange={handleChange} />
-                            </div>
                             <div className="mb-3">
-                                <label htmlFor="firstName" className="form-label">Họ</label>
-                                <input type="text" className="form-control" id="firstName" name="firstName" value={userEdit.firstName} onChange={handleChange} />
+                                <label htmlFor='id' className="form-label">MSGV</label>
+                                <input disabled type="text" className="form-control" id="personId" name="personId" value={userEdit.personId} onChange={handleChange} />
                             </div>
-                            <div className="mb-3">
-                                <label htmlFor='lastName' className="form-label">Tên</label>
-                                <input type="text" className="form-control" id="lastName" name="lastName" value={userEdit.lastName} onChange={handleChange} />
+                            <div className='row mb-3'>
+                                <div className="col">
+                                    <label htmlFor="firstName" className="form-label">Họ</label>
+                                    <input required type="text" className="form-control" id="firstName" name="firstName" value={userEdit.firstName} onChange={handleChange} />
+                                </div>
+                                <div className="col">
+                                    <label htmlFor='lastName' className="form-label">Tên</label>
+                                    <input required type="text" className="form-control" id="lastName" name="lastName" value={userEdit.lastName} onChange={handleChange} />
+                                </div>
+                            </div>
+                            <div className='row mb-3'>
+                                <div className="col">
+                                    <label htmlFor='brithDay' className="form-label">Ngày sinh</label>
+                                    <input required type="date" className="form-control" id="brithDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} />
+                                </div>
+                                <div className="col">
+                                    <label htmlFor='phone' className="form-label">Số điện thoại</label>
+                                    <input required pattern='\d{10}' type="text" className="form-control" id="phone" name="phone" value={userEdit.phone} onChange={handleChange} />
+                                </div>
+                                <div className="col">
+                                    <label htmlFor='gender' className="form-label">Giới tính</label>
+                                    <div style={{ display: "flex" }}>
+                                        <div>
+                                            <input required type="radio" id="nam" name="gender" value="Nam" checked={gender === false} onChange={handleGenderChange} />
+                                            <label htmlFor="nam">Nam</label>
+                                        </div>
+                                        <div>
+                                            <input required type="radio" id="nu" name="gender" value="Nữ" checked={gender === true} onChange={handleGenderChange} />
+                                            <label htmlFor="nu">Nữ</label>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div className="mb-3">
                                 <label htmlFor='email' className="form-label">Email</label>
-                                <input type="text" className="form-control" id="username" name="username"  value={userEdit.username} onChange={handleChange} />
+                                <input required pattern=".*@.*" type="text" className="form-control" id="username" name="username" value={userEdit.username} onChange={handleChange} />
                             </div>
-                            <div className="mb-3">
-                                <label htmlFor="class" className="form-label">Chuyên ngành</label>
-                                <select className="form-select" id="classes" defaultValue={userEdit.major} onChange={handleChange} name="major">
-                                    {major.map((majorItem, index) => (
-                                        <option key={index} value={majorItem}>{majorItem}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor='gender' className="form-label">Giới tính</label>
-                                <div>
-                                    <input type="radio" id="nam" name="gender" value="Nam" checked={gender === false} onChange={handleGenderChange} />
-                                    <label htmlFor="nam">Nam</label>
+                            <div className='row mb-3'>
+                                <div className="col">
+                                    <label htmlFor="class" className="form-label">Chuyên ngành</label>
+                                    <select required className="form-select" id="classes" defaultValue={userEdit.major} onChange={handleChange} name="major">
+                                        {major.map((majorItem, index) => (
+                                            <option key={index} value={majorItem}>{majorItem}</option>
+                                        ))}
+                                    </select>
                                 </div>
-                                <div>
-                                    <input type="radio" id="nu" name="gender" value="Nữ" checked={gender === true} onChange={handleGenderChange} />
-                                    <label htmlFor="nu">Nữ</label>
+                                <div className="col">
+                                    <label htmlFor="authority" className="form-label">Role</label>
+                                    <select required className="form-select" id="authority" defaultValue={userEdit.authority} onChange={handleChange} name="authority">
+                                        {author && author.filter(Item => Item.name === 'ROLE_HEAD' || Item.name === 'ROLE_LECTURER').map((Item, index) => (
+                                            <option key={index} value={Item.name}>{Item.name}</option>
+                                        ))}
+                                    </select>
                                 </div>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor='brithDay' className="form-label">Ngày sinh</label>
-                                <input type="date" className="form-control" id="brithDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} />
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="authority" className="form-label">Role</label>
-                                <select className="form-select" id="authority" defaultValue={userEdit.authority} onChange={handleChange} name="authority">
-                                    {author && author.filter(Item => Item.name === 'ROLE_HEAD' || Item.name === 'ROLE_LECTURER').map((Item, index) => (
-                                        <option key={index} value={Item.name}>{Item.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor='phone' className="form-label">Số điện thoại</label>
-                                <input type="text" className="form-control" id="phone" name="phone" value={userEdit.phone} onChange={handleChange} />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor='address' className="form-label">Địa chỉ</label>
-                                <input type="text" className="form-control" id="address" name="address"  value={userEdit.address} onChange={handleChange}/>
+                                <input type="text" className="form-control" id="address" name="address" value={userEdit.address} onChange={handleChange} />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor='status' className="form-label">Trạng thái</label>
@@ -470,81 +481,96 @@ function DatatableLec() {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModal(false)}>Close</button>
-                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitEdit}>
+                            <button type="submit" className="btn btn-primary">
                                 Cập nhật
                             </button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
             <div className="modal fade" id="AddLecturere" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: showModalAdd ? 'block' : 'none' }}>
-                <div className="modal-dialog modal-dialog-scrollable">
-                    <div className="modal-content">
+                <div className="modal-dialog modal-lg modal-dialog-scrollable" onSubmit={handleSubmitAdd}>
+                    <form className="modal-content">
                         <div className="modal-header">
                             <h1 className="modal-title fs-5" id="exampleModalLabel">THÊM GIẢNG VIÊN</h1>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
                             <div className="mb-3">
-                                <label htmlFor="id" className="form-label">MSSV</label>
-                                <input type="text" className="form-control" id="id" name="personId" value={formData.personId} onChange={handleChangeAdd} />
+                                <label htmlFor="id" className="form-label">MSGV</label>
+                                <input required type="text" className="form-control" id="id" name="personId" value={formData.personId} onChange={handleChangeAdd} />
                             </div>
-                            <div className="mb-3">
-                                <label htmlFor="firstName" className="form-label">Họ</label>
-                                <input type="text" className="form-control" id="firstName" name="firstName" value={formData.firstName} onChange={handleChangeAdd} />
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="lastName" className="form-label">Tên</label>
-                                <input type="text" className="form-control" id="lastName" name="lastName" value={formData.lastName} onChange={handleChangeAdd} />
+                            <div className='row mb-3'>
+                                <div className="col">
+                                    <label htmlFor="firstName" className="form-label">Họ</label>
+                                    <input required type="text" className="form-control" id="firstName" name="firstName" value={formData.firstName} onChange={handleChangeAdd} />
+                                </div>
+                                <div className="col">
+                                    <label htmlFor="lastName" className="form-label">Tên</label>
+                                    <input required type="text" className="form-control" id="lastName" name="lastName" value={formData.lastName} onChange={handleChangeAdd} />
+                                </div>
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="email" className="form-label">Email</label>
-                                <input type="email" className="form-control" id="email" name="email" value={formData.email} onChange={handleChangeAdd} />
+                                <input required pattern=".*@.*" type="email" className="form-control" id="email" name="email" value={formData.email} onChange={handleChangeAdd} />
+                                <div class="form-text"></div>
                             </div>
-                            <div className="mb-3">
-                                <label htmlFor="phone" className="form-label">Số điện thoại</label>
-                                <input type="text" className="form-control" id="phone" name="phone" value={formData.phone} onChange={handleChangeAdd} />
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor='genderAdd' className="form-label">Giới tính</label>
-                                <div>
-                                    <input type="radio" id="nam" name="gender" value="Nam" checked={formData.gender === false} onChange={handleChangeAdd} />
-                                    <label htmlFor="nam">Nam</label>
+                            <div className='row mb-3'>
+                                <div className="col">
+                                    <label htmlFor="birthDay" className="form-label">Ngày sinh</label>
+                                    <input required type="date" className="form-control" id="birthDay" name="birthDay" value={formData.birthDay} onChange={handleChangeAdd} />
                                 </div>
-                                <div>
-                                    <input type="radio" id="nu" name="gender" value="Nữ" checked={formData.gender === true} onChange={handleChangeAdd} />
-                                    <label htmlFor="nu">Nữ</label>
+                                <div className="col">
+                                    <label htmlFor="phone" className="form-label">Số điện thoại</label>
+                                    <input required pattern="\d{10}" type="text" className="form-control" id="phone" name="phone" value={formData.phone} onChange={handleChangeAdd} />
+                                    <div class="form-text">Số điện thoại gồm 10 số.</div>
+                                </div>
+                                <div className="col">
+                                    <label htmlFor='genderAdd' className="form-label">Giới tính</label>
+                                    <div style={{ display: 'flex' }}>
+                                        <div>
+                                            <input required type="radio" id="nam" name="gender" value="Nam" checked={formData.gender === false} onChange={handleChangeAdd} />
+                                            <label htmlFor="nam">Nam</label>
+                                        </div>
+                                        <div>
+                                            <input required type="radio" id="nu" name="gender" value="Nữ" checked={formData.gender === true} onChange={handleChangeAdd} />
+                                            <label htmlFor="nu">Nữ</label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-
                             <div className="mb-3">
-                                <label htmlFor="birthDay" className="form-label">Ngày sinh</label>
-                                <input type="date" className="form-control" id="birthDay" name="birthDay" value={formData.birthDay} onChange={handleChangeAdd} />
+                                <label htmlFor="address" className="form-label">Địa chỉ</label>
+                                <input type="address" className="form-control" id="address" name="address" value={formData.address} onChange={handleChangeAdd} />
                             </div>
-                            <div className="mb-3">
-                                <label htmlFor="major" className="form-label">Chuyên ngành</label>
-                                <select className="form-select" id="major" value={formData.major.name} onChange={handleChangeAdd} name="major">
-                                    {major.map((majorItem, index) => (
-                                        <option key={index} value={majorItem}>{majorItem}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="author" className="form-label">Role</label>
-                                <select className="form-select" id="author" value={formData.author} onChange={handleChangeAdd} name="author">
-                                    {author.filter(Item => Item.name === "ROLE_LECTURER" || Item.name === "ROLE_HEAD").map((Item, index) => (
-                                        <option key={index} value={Item.name}>{Item.name}</option>
-                                    ))}
-                                </select>
+                            <div className='row mb-3'>
+                                <div className="col">
+                                    <label htmlFor="major" className="form-label">Chuyên ngành</label>
+                                    <select required className="form-select" id="major" value={formData.major.name} onChange={handleChangeAdd} name="major">
+                                        <option value="">Chọn ...</option>
+                                        {major.map((majorItem, index) => (
+                                            <option key={index} value={majorItem}>{majorItem}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="col">
+                                    <label htmlFor="author" className="form-label">Role</label>
+                                    <select required className="form-select" id="author" value={formData.author} onChange={handleChangeAdd} name="author">
+                                        <option value="">Chọn ...</option>
+                                        {author.filter(Item => Item.name === "ROLE_LECTURER" || Item.name === "ROLE_HEAD").map((Item, index) => (
+                                            <option key={index} value={Item.name}>{Item.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModalAdd(false)}>Close</button>
-                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitAdd}>
+                            <button type="submit" className="btn btn-primary">
                                 Add
                             </button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div >

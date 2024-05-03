@@ -90,6 +90,7 @@ public class LecturerController {
                                                      @RequestParam(value = "gender", required = true) boolean gender,
                                                      @RequestParam(value = "birthDay", required = true) String birthDay,
                                                      @RequestParam(value = "phone", required = true) String phone,
+                                                     @RequestParam(value = "address", required = true) String address,
                                                      @RequestParam(value = "major", required = true) Major major,
                                                      @RequestParam(value = "author") Authority author,
                                                      @RequestHeader("Authorization") String authorizationHeader) {
@@ -106,6 +107,7 @@ public class LecturerController {
             newPerson.setGender(gender);
             newPerson.setBirthDay(birthDay);
             newPerson.setPhone(phone);
+            newPerson.setAddress(address);
             newPerson.setAuthorities(author);
             newPerson.setStatus(true);
             //newPerson.setRole(RoleName.valueOf("Student"));
@@ -118,17 +120,9 @@ public class LecturerController {
             lecturerRequest.setAuthority(author);
             lecturerRequest.setMajor(String.valueOf(major));
             lecturerService.saveLecturer(lecturerRequest);
-            /*String referer = request.getHeader("Referer");
-            // Thực hiện redirect trở lại trang trước đó
-            System.out.println("Url: " + referer);
-            // Thực hiện redirect trở lại trang trước đó
-            return new ModelAndView("redirect:" + referer);*/
             return new ResponseEntity<>(person,HttpStatus.CREATED);
 
         } else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
