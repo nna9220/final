@@ -89,7 +89,7 @@ public class HomeAdminController {
     }
 
     @PostMapping("/edit/{id}")
-    public ResponseEntity<?> updateLecturer(@PathVariable String id,
+    public ResponseEntity<?> updateProfileAd(@PathVariable String id,
                                             @RequestParam("firstName") String firstName,
                                             @RequestParam("lastName") String lastName,
                                             @RequestParam("birthDay") String birthDay,
