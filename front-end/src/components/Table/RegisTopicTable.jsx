@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './RegisTopicTable.scss';
-import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import EditCalendarOutlinedIcon from '@mui/icons-material/EditCalendarOutlined';
-import { Link, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import axiosInstance from '../../API/axios';
+import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 
 function RegisTopicTable() {
     const [topics, setTopics] = useState([]);
@@ -62,7 +62,7 @@ function RegisTopicTable() {
     };
 
     return (
-        <div className='home-table'>
+        <div className='home-table-register-student'>
             {topics.length > 0 ? (
                 <table className="table table-hover">
                     <thead>
@@ -109,37 +109,39 @@ function RegisTopicTable() {
             ) : topicsRegistered.length > 0 ? (
                 topicsRegistered.map((topic, index) => (
                     <div key={index}>
-                        <div class="alert alert-success" role="alert">
-                            BẠN ĐÃ ĐĂNG KÝ ĐỀ TÀI THÀNH CÔNG!!!
+                        <div style={{margin:'16px'}} class="alert alert-success" role="alert">
+                            <CheckCircleOutlineOutlinedIcon/> BẠN ĐÃ ĐĂNG KÝ ĐỀ TÀI THÀNH CÔNG!!!
                         </div>
+                        <br/>
                         <div class="container-fluid mx-auto">
                             <div class="row">
-                                <div class="col-xl-7 col-lg-8 col-md-9 col-11 r">
+                                <div class="mb-3">
                                     <div class="card">
                                         <form class="form-card">
-                                        <h5 class="text-center mb-4">THÔNG TIN ĐỀ TÀI</h5>
-                                            <div>
-                                                <label>Tên đề tài: <p> {topic.subjectName}</p></label>
+                                        <h5 class="text-center mb-4 tille-name-topic">THÔNG TIN ĐỀ TÀI</h5>
+                                            <div className='items-content-topic'>
+                                                <label>Tên đề tài: <label className='content-name'>{topic.subjectName}</label></label>
                                             </div>
-                                            <div>
-                                                <label>Loại đề tài: <p> {topic.typeSubject.typeName}</p></label>
+                                            <div className='items-content-topic'>
+                                                <label>Loại đề tài: <label className='content-name'>{topic.typeSubject.typeName}</label></label>
                                             </div>
-                                            <div>
-                                                <label>Giảng viên hướng dẫn: <p> {topic.instructorId.person.firstName + ' ' + topic.instructorId.person.lastName}</p></label>
+                                            <div className='items-content-topic' >
+                                                <label>Giảng viên hướng dẫn: <label className='content-name'>{topic.instructorId.person.firstName + ' ' + topic.instructorId.person.lastName}</label></label>
                                             </div>
-                                            <div>
-                                                <label>Giảng viên phản biện: <p>{topic.thesisAdvisorId.person.firstName + ' ' + topic.thesisAdvisorId.person.lastName}</p></label>
+                                            <div className='items-content-topic'>
+                                                <label>Giảng viên phản biện: <label className='content-name'>{topic.thesisAdvisorId.person.firstName + ' ' + topic.thesisAdvisorId.person.lastName}</label></label>
                                             </div>
-                                            <div>
+                                            <div className='items-content-topic'>
                                                 <a>Nhóm sinh viên thực hiện</a><br/>
-                                                <label>Sinh viên 1: <p> {topic.student1}</p></label><br/>
-                                                <label>Sinh viên 2: <p> {topic.student2}</p></label>
+                                                <label>Sinh viên 1: <label className='content-name'>{topic.student1}</label></label><br/>
+                                                <label>Sinh viên 2: <label className='content-name'>{topic.student2}</label></label><br/>
+                                                <label>Sinh viên 3: <label className='content-name'>{topic.student3}</label></label>
                                             </div>
-                                            <div>
-                                                <label>Yêu cầu: <p> {topic.requirement}</p></label>
+                                            <div className='items-content-topic'>
+                                                <label>Yêu cầu: <label className='content-name'>{topic.requirement}</label></label>
                                             </div>
                                             <div class="row justify-content-end">
-                                                <div class="form-group col-sm-6"><NavLink to="/managermentTopicStudent"><button type="submit" class="btn-block btn-primary">Quản lý đề tài</button> </NavLink></div>
+                                                <div class="form-group col-sm-2"><NavLink to="/managermentTopicStudent"><button type="submit" class="btn-block btn-primary">Quản lý đề tài</button> </NavLink></div>
                                             </div>
                                         </form>
                                     </div>
@@ -151,7 +153,7 @@ function RegisTopicTable() {
                 ))
             ) : (
                 <div>
-                    <h4 style={{ color: 'red' }}>CHƯA ĐẾN THỜI GIAN ĐĂNG KÝ ĐỀ TÀI!!!</h4>
+                    <h4 style={{ padding:'20px',color: 'red' }}>CHƯA ĐẾN THỜI GIAN ĐĂNG KÝ ĐỀ TÀI!!!</h4>
                 </div>
             )}
         </div>

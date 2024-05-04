@@ -1,4 +1,5 @@
-.home-table {
+.home-table-register-student {
+    width: 95%;
     margin-top: 30px;
     border: 1px solid rgb(164, 156, 156);
     margin-right: 30px;
@@ -12,11 +13,8 @@
     }
 
     .table {
-        width: 95%;
         margin: 10px;
         padding: 20px;
-        border: 1px solid rgb(160, 152, 152);
-        border-radius: 5px;
 
         .button-res {
             border: 1px solid #4eb09b;
@@ -46,21 +44,8 @@
         font-weight: bold;
     }
 
-    label {
-        color: #000;
-        font-weight: bold;
-        font-size: 1vw;
-        p {
-            font-size: 1vw;
-            color: #6c6a6a;
-            margin-bottom: 10px;
-            font-weight: lighter;
-            margin-left: 2vw;
-        }
-    }
     color: #000;
     overflow-x: hidden;
-    height: 100%;
     background-repeat: no-repeat;
     background-size: 100% 100%
 }
@@ -81,7 +66,20 @@
 }
 
 .btn-block:hover {
-    background-color: #afb7b4 !important;
+    background-color: #43766C !important;
     color: white;
     font-weight: bold;
+}
+
+.tille-name-topic{
+    background-color: #43766C;
+    padding: 8px;
+    color: white;
+}
+
+.content-name{
+    font-weight: bold;
+}
+.items-content-topic{
+    padding: 8px;
 }
