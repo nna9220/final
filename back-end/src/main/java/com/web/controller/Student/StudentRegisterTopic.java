@@ -48,12 +48,8 @@ public class StudentRegisterTopic {
                 if (currentStudent.getSubjectId() == null) {
                     List<RegistrationPeriod> periodList = registrationPeriodRepository.findAllPeriod();
                     if (CompareTime.isCurrentTimeInPeriodStudent(periodList)) {
-                        //ModelAndView modelAndView = new ModelAndView("QuanLyDeTai_SV");
                         TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
                         List<Subject> subjectList = subjectRepository.findSubjectByStatusAndMajorAndStudent(true, currentStudent.getMajor(),typeSubject);
-                        /*modelAndView.addObject("subjectList", subjectList);
-                        modelAndView.addObject("person", personCurrent);
-                        return modelAndView;*/
                         Map<String,Object> response = new HashMap<>();
                         response.put("person",personCurrent);
                         response.put("subjectList", subjectList);
@@ -65,23 +61,17 @@ public class StudentRegisterTopic {
                     }
                 }
                 else {
-                    //ModelAndView modelAndView = new ModelAndView("QuanLyDeTaiDaDK_SV");
                     Subject existSubject = subjectRepository.findById(currentStudent.getSubjectGraduationId().getSubjectId()).orElse(null);
                     Map<String,Object> response = new HashMap<>();
                     response.put("person",personCurrent);
                     response.put("subject", existSubject);
                     return new ResponseEntity<>(response,HttpStatus.OK);
-                    /*modelAndView.addObject("subject", existSubject);
-                    modelAndView.addObject("person", personCurrent);
-                    return modelAndView;*/
                 }
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-                //return new ModelAndView("error").addObject("errorMessage", "Không tìm thấy sinh viên.");
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            //return new ModelAndView("error").addObject("errorMessage", "Bạn không có quyền truy cập.");
         }
     }
 
@@ -100,26 +90,15 @@ public class StudentRegisterTopic {
                         existSubject.setStudent2(currentStudent.getStudentId());
                         currentStudent.setSubjectId(existSubject);
                     } else {
-                        /*ModelAndView error = new ModelAndView();
-                        error.addObject("errorMessage", "Đã đủ số lượng SVTH");
-                        return error;*/
                         return new ResponseEntity<>("Đã đủ SVTH", HttpStatus.BAD_REQUEST);
                     }
                     subjectRepository.save(existSubject);
                     studentRepository.save(currentStudent);
-                    /*tring referer = request.getHeader("Referer");
-                    return new ModelAndView("redirect:" + referer);*/
                     return new ResponseEntity<>(currentStudent, HttpStatus.OK);
                 } else {
-                    /*ModelAndView error = new ModelAndView();
-                    error.addObject("errorMessage", "Không tồn tại đề tài này.");
-                    return error;*/
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 }
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }

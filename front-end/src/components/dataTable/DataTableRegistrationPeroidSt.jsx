@@ -39,6 +39,7 @@ function DataTableRegistrationPeroidSt() {
         setEditedStartTime(item.registrationTimeStart);
         setEditedEndTime(item.registrationTimeEnd);
     };
+    
     const convertToFormattedDateTime = (dateTimeString) => {
         const dateTime = new Date(dateTimeString);
         const year = dateTime.getFullYear();
