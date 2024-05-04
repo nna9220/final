@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import axios from 'axios';
 import MoreHorizTwoToneIcon from '@mui/icons-material/MoreHorizTwoTone';
 import AlarmOnTwoToneIcon from '@mui/icons-material/AlarmOnTwoTone';
 import AddAlarmOutlinedIcon from '@mui/icons-material/AddAlarmOutlined';
 import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
 import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
-
 import './Styles.scss';
 import axiosInstance from '../../API/axios';
 
@@ -43,18 +41,11 @@ const Card = ({ task, index }) => {
     return (
         <Draggable draggableId={task.taskId} index={index}>
             {(provided) => (
-                <div ref={provided.innerRef}{...provided.draggableProps}{...provided.dragHandleProps} style={{
-                    display: 'flex', userSelect: 'none', padding: '16px', margin: '0 0 8px 0',
-                    backgroundColor: 'white',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    justifyContent: 'space-between',
-                    ...provided.draggableProps.style,
-                }}
+                <div className='card-items' ref={provided.innerRef}{...provided.draggableProps}{...provided.dragHandleProps}
                 >
-                    {task.requirement}
                     <div class="dropdown">
-                        <button class="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{ display: 'flex', border: 'none', backgroundColor: 'none'}} >
+                        <label className='title-task-st'>{task.requirement}</label>
+                        <button class="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{border: 'none', backgroundColor: 'white' }} >
                             <MoreHorizTwoToneIcon />
                         </button>
                         <ul class="dropdown-menu">

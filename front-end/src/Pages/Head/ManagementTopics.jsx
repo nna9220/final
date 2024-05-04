@@ -46,7 +46,7 @@ function ManagementProjects() {
                             <span>{selectedTitle}</span>
                             <hr className="line" />
                         </div>
-                        <div className='card-nd' style={{ display: 'block' }}>
+                        <div className='card-nd-topic' style={{ display: 'block' }}>
                             <div className='table-items'>
                                 {selectedTitle === "Tiểu luận chuyên ngành" ? <TableTopic /> : <TableTopicKL />}
                             </div>

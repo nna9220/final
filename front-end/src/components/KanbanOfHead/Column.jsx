@@ -1,6 +1,7 @@
 import React from 'react';
 import { Droppable } from 'react-beautiful-dnd';
 import Card from './Card'; // Import Card component
+import './styleKanban.scss'
 
 const Column = ({title, tasks, droppableId }) => {
   return (
@@ -9,10 +10,9 @@ const Column = ({title, tasks, droppableId }) => {
         <div
           {...provided.droppableProps}
           ref={provided.innerRef}
-          className="column"
-          style={{ background: 'white', padding: '8px', width: '300px' }}
+          className="column-head"
         >
-          <h5>{title}</h5>
+          <h5 className='title-column-head' >{title}</h5>
           {tasks.map((task, index) => (
             <Card key={task.taskId} task={task} index={index} /> // Use Card component
           ))}

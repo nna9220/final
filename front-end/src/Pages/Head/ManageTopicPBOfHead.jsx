@@ -3,8 +3,8 @@ import SidebarHead from '../../components/Sidebar/SidebarHead'
 import Navbar from '../../components/Navbar/Navbar'
 import './ManageTopicPBOfHead.scss'
 import { useState, useEffect } from 'react'
-import TopicPBTableHead from '../../components/TableOfHead/TopicPBOfHead/TopicPBTableHead'
-import TopicKLPBTableHead from '../../components/TableOfHead/TopicPBOfHead/TopicKLPBTableHead'
+import TopicPBTableHead from '../../components/TableOfHead/TopicKLOfHead/TopicPBTableHead'
+import TopicKLPBTableHead from '../../components/TableOfHead/TopicKLOfHead/TopicKLPBTableHead'
 
 function ManageTopicPBOfHead() {
   useEffect(() => {
@@ -45,8 +45,8 @@ function ManageTopicPBOfHead() {
               <span>{selectedTitle}</span>
               <hr className="line" />
             </div>
-            <div className='card-nd' style={{ display: 'block' }}>
-              <div className='table-items'>
+            <div className='card-nd-topicPB' style={{ display: 'block' }}>
+              <div className='table-items-topicPB'>
                 {selectedTitle === "Tiểu luận chuyên ngành" ? <TopicPBTableHead />:<TopicKLPBTableHead/>}
               </div>
             </div>

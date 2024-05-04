@@ -4,6 +4,8 @@ import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import axiosInstance from '../../../API/axios';
+import './assign.scss'
+
 function TableAssign() {
   const [topics, setTopics] = useState([]);
   const [lecturers, setLecturers] = useState([]);
@@ -88,7 +90,7 @@ function TableAssign() {
   };
 
   return (
-    <div className='home-table'>
+    <div className='home-table-assign'>
       <Toast show={showAssignToast} onClose={() => setShowAssignToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
         <Toast.Header>
           <strong className="me-auto">Thông báo</strong>
@@ -113,7 +115,8 @@ function TableAssign() {
             <th scope="col">Tên đề tài</th>
             <th scope="col">Sinh viên 1</th>
             <th scope="col">Sinh viên 2</th>
-            <th scope="col">Giảng viên hướng dẫn</th>
+            <th scope="col">Sinh viên 3</th>
+            <th scope="col">GVHD</th>
             <th scope="col">Phân GVPB</th>
           </tr>
         </thead>
@@ -124,15 +127,18 @@ function TableAssign() {
               <td>{item.subjectName}</td>
               <td>{item.student1}</td>
               <td>{item.student2}</td>
+              <td>{item.student3}</td>
               <td>{item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName}</td>
               <td>
-                <select className='optionLecs' value={lecturerIds[index]} onChange={(event) => handleSelectChange(event, index)} onClick={() => handleAssignGVPB(item.subjectId, index)}>
-                  <option className='option' value="" >Chọn giảng viên phản biện</option>
-                  {lecturers.map((lecturer, idx) => (
-                    <option key={idx} value={lecturer.lecturerId}>{lecturer.person.firstName} {lecturer.person.lastName}</option>
-                  ))}
-                </select>
-                <button className='btn-assign' onClick={() => handleGVPB(item.subjectId, index)}>Phân công</button>
+                <div className='group-assign'>
+                  <select className='optionLecs' value={lecturerIds[index]} onChange={(event) => handleSelectChange(event, index)} onClick={() => handleAssignGVPB(item.subjectId, index)}>
+                    <option className='option' value="" >Chọn GVPB</option>
+                    {lecturers.map((lecturer, idx) => (
+                      <option key={idx} value={lecturer.lecturerId}>{lecturer.person.firstName} {lecturer.person.lastName}</option>
+                    ))}
+                  </select>
+                  <button className='btn-assign' onClick={() => handleGVPB(item.subjectId, index)}>Phân công</button>
+                </div>
               </td>
             </tr>
           ))}

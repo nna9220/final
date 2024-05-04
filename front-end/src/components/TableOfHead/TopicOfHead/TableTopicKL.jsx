@@ -61,7 +61,7 @@ function TableTopicKL() {
   }
 
   return (
-    <div className='home-table'>
+    <div className='home-table-assign'>
       {showBackButton && (
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
@@ -77,14 +77,14 @@ function TableTopicKL() {
           <thead>
             <tr>
               <th scope="col">#</th>
-              <th scope="col">Tên đề tài</th>
+              <th scope="col" style={{width:'300px'}}>Tên đề tài</th>
               <th scope="col">GVHD</th>
               <th scope="col">GVPB</th>
               <th scope="col">Sinh viên 1</th>
               <th scope="col">Sinh viên 2</th>
+              <th scope="col">Sinh viên 3</th>
               <th scope="col">Yêu cầu</th>
               <th scope="col">Action</th>
-              <th scope="col">Chấm điểm</th>
             </tr>
           </thead>
           <tbody>
@@ -96,15 +96,10 @@ function TableTopicKL() {
                 <td>{item.thesisAdvisorId?.person?.firstName + ' ' + item.thesisAdvisorId?.person?.lastName}</td>
                 <td>{item.student1}</td>
                 <td>{item.student2}</td>
+                <td>{item.student3}</td>
                 <td>{item.requirement}</td>
                 <td>
                   <button style={{ marginRight: '20px' }} class="btn btn-primary" type="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Đi đến chi tiết để quản lý đề tài" onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}><DetailsIcon /></button>
-                </td>
-                <td>
-                  <div style={{display:'flex',}}>
-                    <input type="number" value={scores[item.subjectId]} onChange={(e) => handleScoreChange(item.subjectId, e)} min={0} max={10} step={0.1}/>
-                    <button style={{marginLeft:'5px'}} class="btn btn-success" type="button"><CheckCircleOutlineOutlinedIcon/></button>
-                  </div>
                 </td>
               </tr>
             ))}

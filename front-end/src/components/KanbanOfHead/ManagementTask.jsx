@@ -64,12 +64,12 @@ const ManagementTask = ({ subjectId }) => {
 
   return (
     <div>
-      <div className='list-button'>
+      <div className='list-button-head'>
         <div>
-          <button type="button" className='button-add-task' onClick={toggleListTask}>
+          <button type="button" className='button-add-task-head' onClick={toggleListTask}>
             <DnsOutlinedIcon /> List Task
           </button>
-          <button type="button" className='button-add-task' onClick={toggleTimeline}>
+          <button type="button" className='button-add-task-head' onClick={toggleTimeline}>
             <TimelineOutlinedIcon subjectId={subjectId} /> Time Line
           </button>
         </div>
@@ -80,7 +80,6 @@ const ManagementTask = ({ subjectId }) => {
             <Column className='column' title="Must Do" tasks={data.filter(task => task.status === 'MustDo')} droppableId="MustDo" />
             <Column className='column' title="Doing" tasks={data.filter(task => task.status === 'Doing')} droppableId="Doing" />
             <Column className='column' title="Closed" tasks={data.filter(task => task.status === 'Closed')} droppableId="Closed" />
-            {/* Các cột khác */}
           </div>
         </DragDropContext>
       )}
