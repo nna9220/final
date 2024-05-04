@@ -38,7 +38,6 @@ const Card = ({ task, index }) => {
       }
 
       console.log("Comment-post: ", formData);
-      // Gửi yêu cầu POST để tạo comment
       const response = await axiosInstance.post(`/student/comment/create/${task.taskId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -46,10 +45,8 @@ const Card = ({ task, index }) => {
         },
       });
       console.log('Comment created successfully:', response.data);
-      // Cập nhật danh sách comment hoặc thực hiện các bước cần thiết khác
     } catch (error) {
       console.error('Error creating comment:', error);
-      // Xử lý lỗi nếu cần
     }
   };
 
@@ -85,7 +82,7 @@ const Card = ({ task, index }) => {
         <div className="card-items" ref={provided.innerRef}{...provided.draggableProps}{...provided.dragHandleProps}>
           <div class="dropdown">
             <label className='title-task-st'>{task.requirement}</label>
-            <button class="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{border: 'none', backgroundColor: 'white' }} >
+            <button class="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{ border: 'none', backgroundColor: 'white' }} >
               <MoreHorizTwoToneIcon />
             </button>
             <ul class="dropdown-menu">
@@ -134,7 +131,7 @@ const Card = ({ task, index }) => {
                       <div class="mb-3">
                         <input type="file" class="form-control" id="commentFile" onChange={handleFileChange} multiple />
                       </div>
-                      <button type="submit" class="btn btn-primary">Submit</button>
+                      <button type="submit" class="btn btn-primary">Post Comment</button>
                     </form>
                   </div>
                   <div className='comment-items'>
