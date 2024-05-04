@@ -53,14 +53,11 @@ const Card = ({ task, index }) => {
         },
       })
         .then(response => {
-          // Xử lý phản hồi từ server nếu cần
           console.log('Comment submitted successfully:', response.data);
-          // Xóa nội dung comment và tệp đã chọn sau khi gửi thành công
           setCommentContent('');
           setSelectedFile(null);
         })
         .catch(error => {
-          // Xử lý lỗi nếu có
           console.error('Error submitting comment:', error);
         });
     }
@@ -70,18 +67,10 @@ const Card = ({ task, index }) => {
   return (
     <Draggable draggableId={task.taskId} index={index}>
       {(provided) => (
-        <div ref={provided.innerRef}{...provided.draggableProps}{...provided.dragHandleProps} style={{
-          display: 'flex', userSelect: 'none', padding: '16px', margin: '0 0 3px 0',
-          backgroundColor: 'white',
-          border: '1px solid #ddd',
-          borderRadius: '10px',
-          justifyContent: 'space-between',
-          ...provided.draggableProps.style,
-        }}
-        >
-          {task.requirement}
-          <div class="dropdown" style={{ border: 'none' }}>
-            <button class="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{ display: 'flex', border: 'none', backgroundColor: 'none' }} >
+        <div className='card-items' ref={provided.innerRef}{...provided.draggableProps}{...provided.dragHandleProps} >
+          <div class="dropdown">
+            <label className='title-task-st'>{task.requirement}</label>
+            <button class="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{border: 'none', backgroundColor: 'white' }}>
               <MoreHorizTwoToneIcon />
             </button>
             <ul class="dropdown-menu">
@@ -153,7 +142,6 @@ const Card = ({ task, index }) => {
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="button" class="btn btn-primary">Save changes</button>
                 </div>
               </div>
             </div>

@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import CreditScoreOutlinedIcon from '@mui/icons-material/CreditScoreOutlined';
 import axiosInstance from '../../../API/axios';
+import './topicPb.scss'
 
-function TopicKLPBTableHead() {
+function TopicPBTableHead() {
     const [topics, setTopics] = useState([]);
     const [detail, setDetail] = useState('');
     const userToken = getTokenFromUrlAndSaveToStorage();
@@ -13,7 +14,7 @@ function TopicKLPBTableHead() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axiosInstance.get('/head/graduation/manager/counterArgumentSubject', {
+                axiosInstance.get('/head/counterArgumentSubject', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -35,7 +36,7 @@ function TopicKLPBTableHead() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axiosInstance.get(`/head/graduation/manager/counterArgumentSubject/detail/${id}`, {
+                axiosInstance.get(`/head/counterArgumentSubject/detail/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -57,7 +58,7 @@ function TopicKLPBTableHead() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axiosInstance.post(`/head/graduation/manager/addScore/${id}`, {
+                axiosInstance.post(`/head/addScore/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -73,45 +74,43 @@ function TopicKLPBTableHead() {
     }
 
     return (
-        <div>
-            <div>
-                <div className='home-table'>
-                    <table className="table table-hover">
-                        <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Tên đề tài</th>
-                                <th scope="col">Giảng viên hướng dẫn</th>
-                                <th scope="col">Sinh viên 1</th>
-                                <th scope="col">Sinh viên 2</th>
-                                <th scope="col">Sinh viên 3</th>
-                                <th scope="col">Yêu cầu</th>
-                                <th scope='col'>Chấm điểm</th>
+        <div className='table-assign'>
+            <div className='home-table-assign'>
+                <table className="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Tên đề tài</th>
+                            <th scope="col">Giảng viên hướng dẫn</th>
+                            <th scope="col">Sinh viên 1</th>
+                            <th scope="col">Sinh viên 2</th>
+                            <th scope="col">Sinh viên 3</th>
+                            <th scope="col">Yêu cầu</th>
+                            <th scope='col'>Chấm điểm</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {topics.map((item, index) => (
+                            <tr key={index}>
+                                <th scope="row">{index + 1}</th>
+                                <td>{item.subjectName}</td>
+                                <td>{item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName}</td>
+                                <td>{item.student1}</td>
+                                <td>{item.student2}</td>
+                                <td>{item.student3}</td>
+                                <td>{item.requirement}</td>
+                                <td>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => detailTopic(item.subjectId)}>
+                                        <CreditScoreOutlinedIcon />
+                                    </button>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {topics.map((item, index) => (
-                                <tr key={index}>
-                                    <th scope="row">{index + 1}</th>
-                                    <td>{item.subjectName}</td>
-                                    <td>{item.instructorId?.person?.firstName + ' ' + item.instructorId?.person?.lastName}</td>
-                                    <td>{item.student1}</td>
-                                    <td>{item.student2}</td>
-                                    <td>{item.student3}</td>
-                                    <td>{item.requirement}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => detailTopic(item.subjectId)}>
-                                            <CreditScoreOutlinedIcon />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                        ))}
+                    </tbody>
+                </table>
             </div>
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h1 class="modal-title fs-5" id="exampleModalLabel">Đánh giá</h1>
@@ -157,6 +156,6 @@ function TopicKLPBTableHead() {
             </div>
         </div>
     )
- }
+}
 
-export default TopicKLPBTableHead
+export default TopicPBTableHead

@@ -9,10 +9,8 @@ import PlaylistRemoveOutlinedIcon from '@mui/icons-material/PlaylistRemoveOutlin
 import PlaylistAddCheckOutlinedIcon from '@mui/icons-material/PlaylistAddCheckOutlined';
 import axiosInstance from '../../../API/axios';
 import RestoreOutlinedIcon from '@mui/icons-material/RestoreOutlined';
-import Modal from '../../Alerts/Modal';
 
 function TableApprove() {
-    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
     const [topics, setTopics] = useState([]);
     const [topicsDeleted, setTopicsDeleted] = useState([]);
     const userToken = getTokenFromUrlAndSaveToStorage();
@@ -21,13 +19,7 @@ function TableApprove() {
     const [showErrorToastDelete, setShowErrorToastDelete] = useState(false);
     const [showApproveToast, setShowApproveToast] = useState(false);
     const [showErrorToastApprove, setShowErrorToastApprove] = useState(false);
-    const handleConfirmAction = () => {
-        setShowConfirmationModal(false);
-    };
 
-    const handleCancelAction = () => {
-        setShowConfirmationModal(false);
-    };
     useEffect(() => {
         console.log("Token: " + userToken);
         if (userToken) {

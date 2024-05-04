@@ -45,7 +45,7 @@ function ManagementAssign() {
               <span>{selectedTitle}</span>
               <hr className="line" />
             </div>
-            <div className='card-nd' style={{ display: 'block' }}>
+            <div className='card-nd-assign'>
               <div className='table-items'>
                 {selectedTitle === "Tiểu luận chuyên ngành" ? <TableAssign /> : <TableAssignKL/>}
               </div>

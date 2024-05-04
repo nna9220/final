@@ -1,0 +1,18 @@
+.group-assign{
+   display: flex;
+   justify-content: space-between;
+   .optionLecs{
+    border: none;
+   }
+   .btn-assign {
+        padding: 5px;
+        border: 1px solid rgb(21, 82, 62);
+        color: rgb(21, 82, 62);
+        font-weight: bold;
+        background-color: white;
+        &:hover {
+            background-color: rgb(21, 82, 62);;
+            color: white;
+        }
+   }
+}

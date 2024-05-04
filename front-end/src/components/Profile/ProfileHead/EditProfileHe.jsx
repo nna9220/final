@@ -15,7 +15,7 @@ function EditProfileHe() {
         birthDay: '',
         phone: '',
         gender: '',
-        address:'',
+        address: '',
     });
     const [showModal, setShowModal] = useState(false);
     const [showSuccessToast, setShowSuccessToast] = useState(false);
@@ -206,7 +206,7 @@ function EditProfileHe() {
             birthDay: user.birthDay,
             phone: user.phone,
             gender: user.gender,
-            address:user.address,
+            address: user.address,
         });
         setEditingMode(false);
         setIsCancelClicked(true);
@@ -232,7 +232,7 @@ function EditProfileHe() {
                             <Toast.Header>
                                 <strong className="me-auto">Thông báo</strong>
                             </Toast.Header>
-                            <Toast.Body style={{color:'green'}}>
+                            <Toast.Body style={{ color: 'green' }}>
                                 Cập nhật thông tin cá nhân thành công!
                             </Toast.Body>
                         </Toast>
@@ -240,7 +240,7 @@ function EditProfileHe() {
                             <Toast.Header>
                                 <strong className="me-auto">Thông báo</strong>
                             </Toast.Header>
-                            <Toast.Body style={{color:'red'}}>
+                            <Toast.Body style={{ color: 'red' }}>
                                 Cập nhật thông tin cá nhân thất bại!
                             </Toast.Body>
                         </Toast>
@@ -299,7 +299,7 @@ function EditProfileHe() {
                                         </div>
                                     </div>
                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
+                                        <div class="form-group">
                                             <label for="birthDay">Ngày sinh</label>
                                             <input type="date" class="form-control" id="birthDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} disabled={!editingMode} />
                                         </div>

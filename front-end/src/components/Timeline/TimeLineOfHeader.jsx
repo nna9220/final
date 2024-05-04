@@ -105,7 +105,7 @@ const TimeLineOfHeader= ({ subjectId }) => {
         data={firstEvents}
         resources={firstResources}
         height={500}
-        width={1200}
+        width={1100}
         dragToMove={true}
         eventDelete={true}
         externalDrag={true}
