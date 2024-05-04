@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
-import './styleTable.scss';
+import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
-import axiosInstance from '../../API/axios';
+import axiosInstance from '../../../API/axios';
 
 function TableAssignKL() {
   const [topics, setTopics] = useState([]);
@@ -91,7 +90,7 @@ function TableAssignKL() {
   };
 
   return (
-    <div className='home-table'>
+    <div className='home-table-assign'>
       <Toast show={showAssignToast} onClose={() => setShowAssignToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
         <Toast.Header>
           <strong className="me-auto">Thông báo</strong>
@@ -113,10 +112,11 @@ function TableAssignKL() {
         <thead>
           <tr>
             <th scope="col">#</th>
-            <th scope="col">Tên đề tài</th>
+            <th scope="col" style={{width:'300px'}}>Tên đề tài</th>
             <th scope="col">Sinh viên 1</th>
             <th scope="col">Sinh viên 2</th>
-            <th scope="col">Giảng viên hướng dẫn</th>
+            <th scope="col">Sinh viên 3</th>
+            <th scope="col">GVHD</th>
             <th scope="col">Phân GVPB</th>
           </tr>
         </thead>
@@ -127,15 +127,18 @@ function TableAssignKL() {
               <td>{item.subjectName}</td>
               <td>{item.student1}</td>
               <td>{item.student2}</td>
+              <td>{item.student3}</td>
               <td>{item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName}</td>
               <td>
-                <select className='optionLecs' value={lecturerIds[index]} onChange={(event) => handleSelectChange(event, index)} onClick={() => handleAssignGVPB(item.subjectId, index)}>
-                  <option className='option' value="" >Chọn giảng viên phản biện</option>
-                  {lecturers.map((lecturer, idx) => (
-                    <option key={idx} value={lecturer.lecturerId}>{lecturer.person.firstName} {lecturer.person.lastName}</option>
-                  ))}
-                </select>
-                <button className='btn-assign' onClick={() => handleGVPB(item.subjectId, index)}>Phân công</button>
+                <div className='group-assign'>
+                  <select className='optionLecs' value={lecturerIds[index]} onChange={(event) => handleSelectChange(event, index)} onClick={() => handleAssignGVPB(item.subjectId, index)}>
+                    <option className='option' value="" >Chọn GVPB</option>
+                    {lecturers.map((lecturer, idx) => (
+                      <option key={idx} value={lecturer.lecturerId}>{lecturer.person.firstName} {lecturer.person.lastName}</option>
+                    ))}
+                  </select>
+                  <button className='btn-assign' onClick={() => handleGVPB(item.subjectId, index)}>Phân công</button>
+                </div>
               </td>
             </tr>
           ))}

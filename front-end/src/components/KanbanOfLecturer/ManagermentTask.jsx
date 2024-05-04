@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import Booard from './Booard'
+import Booard from './Booard';
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
 import DetailsIcon from '@mui/icons-material/Details';
 import TopicOutlinedIcon from '@mui/icons-material/TopicOutlined';
 import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
+import './Styles.scss';
 
 function ManagermentTask() {
   const [topics, setTopics] = useState([]);
@@ -17,6 +16,7 @@ function ManagermentTask() {
   const [selectedSubjectId, setSelectedSubjectId] = useState(null);
   const [selectedSubjectName, setSelectedSubjectName] = useState("");
   const [showBackButton, setShowBackButton] = useState(false);
+  const [showButtons, setShowButtons] = useState(true); // State để ẩn hiện nút "Khóa luận tốt nghiệp" và "Tiểu luận chuyên ngành"
   const userToken = getTokenFromUrlAndSaveToStorage();
 
   useEffect(() => {
@@ -34,6 +34,7 @@ function ManagermentTask() {
         setTopics(response.data.listSubject);
         setActiveTLChuyenNganh(true);
         setActiveKhoaLuan(false);
+        setShowButtons(true); // Hiển thị nút khi chuyển sang danh sách đề tài khác
       })
       .catch(error => {
         console.error(error);
@@ -51,50 +52,54 @@ function ManagermentTask() {
         setTopics(response.data.listSubject);
         setActiveKhoaLuan(true);
         setActiveTLChuyenNganh(false);
+        setShowButtons(true); // Hiển thị nút khi chuyển sang danh sách đề tài khác
       })
       .catch(error => {
         console.error(error);
       });
   }
-  const handleShowManagementTask = (subjectId, subjectName) => { // Thêm tham số để nhận tên đề tài
+
+  const handleShowManagementTask = (subjectId, subjectName) => {
     setSelectedSubjectId(subjectId);
-    setSelectedSubjectName(subjectName); // Lưu trữ tên đề tài được chọn
+    setSelectedSubjectName(subjectName);
     setShowManagementTask(true);
     setShowBackButton(true);
+    setShowButtons(false); // Ẩn nút khi mở chi tiết task
   };
 
   const handleGoBack = () => {
     setShowManagementTask(false);
     setShowBackButton(false);
+    setShowButtons(true); // Hiển thị lại nút khi quay lại danh sách đề tài
   };
 
   return (
-    <div className='home-table'>
+    <div className='home-table-myTopicLec'>
       <div className='btn-type'>
-        <button className={`button-listDelete ${activeTLChuyenNganh ? 'active' : ''}`} onClick={listTopic}>
-          <TopicOutlinedIcon /> Tiểu luận chuyên ngành
-        </button>
-        <button className={`button-listDelete ${activeKhoaLuan ? 'active' : ''}`} onClick={listSubjectGraduation}>
+        <button className={`button-listDelete ${activeKhoaLuan ? 'active' : ''}`} onClick={listSubjectGraduation} style={{display: showButtons ? 'inline-block' : 'none'}}> {/* Thêm điều kiện hiển thị */}
           <SummarizeOutlinedIcon /> Khóa luận tốt nghiệp
         </button>
+        <button className={`button-listDelete ${activeTLChuyenNganh ? 'active' : ''}`} onClick={listTopic} style={{display: showButtons ? 'inline-block' : 'none'}}> {/* Thêm điều kiện hiển thị */}
+          <TopicOutlinedIcon /> Tiểu luận chuyên ngành
+        </button>
       </div>
+      <br/>
       {showBackButton && (
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
             <li className="breadcrumb-item"><a href="#" onClick={handleGoBack}>Danh sách đề tài</a></li>
-            <li className="breadcrumb-item active" aria-current="page">{selectedSubjectName}</li> {/* Sử dụng tên đề tài được lưu trữ */}
+            <li className="breadcrumb-item active" aria-current="page">{selectedSubjectName}</li>
           </ol>
         </nav>
       )}
       {showManagementTask ? (
         <Booard subjectId={selectedSubjectId} />
       ) : (
-        <table className="table table-hover">
+        <table className="table table-hover table-lec-topic">
           <thead>
             <tr>
               <th scope="col">#</th>
               <th scope="col">Tên đề tài</th>
-              <th scope="col">GVHD</th>
               <th scope="col">GVPB</th>
               <th scope="col">Sinh viên 1</th>
               <th scope="col">Sinh viên 2</th>
@@ -109,7 +114,6 @@ function ManagermentTask() {
               <tr key={index}>
                 <th scope='row'>{index + 1}</th>
                 <td>{item.subjectName}</td>
-                <td>{item.instructorId?.person?.firstName + ' ' + item.instructorId?.person?.lastName}</td>
                 <td>{item.thesisAdvisorId?.person?.firstName + ' ' + item.thesisAdvisorId?.person?.lastName}</td>
                 <td>{item.student1 || ''}</td>
                 <td>{item.student2 || ''}</td>
@@ -117,16 +121,14 @@ function ManagermentTask() {
                 <td>{item.typeSubject.typeName || ''}</td>
                 <td>{item.requirement}</td>
                 <td>
-                  <button
-                    style={{ marginRight: '20px' }}
-                    className='button-res'
-                    onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}
-                  >
-                    <p className='text'><DetailsIcon /></p>
-                  </button>
-                  <button className='button-res'>
-                    <p className='text'><ModeEditOutlineOutlinedIcon /></p>
-                  </button>
+                  <div style={{display:'flex', justifyContent:'space-between'}}>
+                    <button style={{ marginRight: '20px' }} className='button-res' onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}>
+                      <p className='text'><DetailsIcon /></p>
+                    </button>
+                    <button className='button-res'>
+                      <p className='text'><ModeEditOutlineOutlinedIcon /></p>
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -138,4 +140,4 @@ function ManagermentTask() {
   )
 }
 
-export default ManagermentTask
+export default ManagermentTask;

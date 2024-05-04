@@ -9,10 +9,9 @@ const Column = ({title, tasks, droppableId }) => {
           <div
             {...provided.droppableProps}
             ref={provided.innerRef}
-            className="column"
-            style={{ background: 'white', padding: '8px', width: '300px' }}
+            className='column-lecturer'
           >
-            <h5>{title}</h5>
+            <h5 className='title-column-lec'>{title}</h5>
             {tasks.map((task, index) => (
               <Cart key={task} task={task} index={index} /> // Use Card component
             ))}

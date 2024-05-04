@@ -2,13 +2,8 @@ import React, { useState, useEffect} from 'react';
 import SidebarHead from '../../components/Sidebar/SidebarHead';
 import Navbar from '../../components/Navbar/Navbar';
 import './MannageHead.scss';
-import TableApprove from '../../components/TableOfHead/TableApprove';
-import TbaleAssign from '../../components/TableOfHead/TbaleAssign';
-import TableRegis from '../../components/TableOfHead/TableRegis';
-import TableTopic from '../../components/TableOfHead/TableTopic';
-import TableApproveKL from '../../components/TableOfHead/TableApproveKL';
-import TableAssignKL from '../../components/TableOfHead/TableAssignKL';
-import TableTopicKL from '../../components/TableOfHead/TableTopicKL';
+import TableApprove from '../../components/TableOfHead/ApproveTable/TableApprove';
+import TableApproveKL from '../../components/TableOfHead/ApproveTable/TableApproveKL';
 
 function MannageHead() {
   useEffect(() => {

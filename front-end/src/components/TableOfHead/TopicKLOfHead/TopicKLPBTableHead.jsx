@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
+import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import CreditScoreOutlinedIcon from '@mui/icons-material/CreditScoreOutlined';
-import axiosInstance from '../../API/axios';
+import axiosInstance from '../../../API/axios';
+import './topicPb.scss'
 
-function TopicPBTableHead() {
+function TopicKLPBTableHead() {
     const [topics, setTopics] = useState([]);
     const [detail, setDetail] = useState('');
     const userToken = getTokenFromUrlAndSaveToStorage();
@@ -14,7 +14,7 @@ function TopicPBTableHead() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axiosInstance.get('/head/counterArgumentSubject', {
+                axiosInstance.get('/head/graduation/manager/counterArgumentSubject', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -36,7 +36,7 @@ function TopicPBTableHead() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axiosInstance.get(`/head/counterArgumentSubject/detail/${id}`, {
+                axiosInstance.get(`/head/graduation/manager/counterArgumentSubject/detail/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -58,7 +58,7 @@ function TopicPBTableHead() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axiosInstance.post(`/head/addScore/${id}`, {
+                axiosInstance.post(`/head/graduation/manager/addScore/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -76,12 +76,12 @@ function TopicPBTableHead() {
     return (
         <div>
             <div>
-                <div className='home-table'>
+                <div className='home-table-topicPB'>
                     <table className="table table-hover">
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
-                                <th scope="col">Tên đề tài</th>
+                                <th scope="col" style={{ width: '250px' }}>Tên đề tài</th>
                                 <th scope="col">Giảng viên hướng dẫn</th>
                                 <th scope="col">Sinh viên 1</th>
                                 <th scope="col">Sinh viên 2</th>
@@ -95,7 +95,7 @@ function TopicPBTableHead() {
                                 <tr key={index}>
                                     <th scope="row">{index + 1}</th>
                                     <td>{item.subjectName}</td>
-                                    <td>{item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName}</td>
+                                    <td>{item.instructorId?.person?.firstName + ' ' + item.instructorId?.person?.lastName}</td>
                                     <td>{item.student1}</td>
                                     <td>{item.student2}</td>
                                     <td>{item.student3}</td>
@@ -112,7 +112,7 @@ function TopicPBTableHead() {
                 </div>
             </div>
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h1 class="modal-title fs-5" id="exampleModalLabel">Đánh giá</h1>
@@ -158,6 +158,6 @@ function TopicPBTableHead() {
             </div>
         </div>
     )
-}
+ }
 
-export default TopicPBTableHead
+export default TopicKLPBTableHead

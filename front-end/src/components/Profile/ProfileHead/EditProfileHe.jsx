@@ -1,12 +1,12 @@
-import React from 'react'
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import React from 'react';
+import './EditProfileHe.scss';
+import moment from 'moment';
+import AutoFixNormalOutlinedIcon from '@mui/icons-material/AutoFixNormalOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
-import './EditProfileHe.scss'
-import { Toast } from 'react-bootstrap';
+import { Alert, Toast } from 'react-bootstrap';
 import axiosInstance from '../../../API/axios';
-
-
+import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 function EditProfileHe() {
     const [user, setUser] = useState([]);
     const [userEdit, setUserEdit] = useState({
@@ -14,20 +14,32 @@ function EditProfileHe() {
         lastName: '',
         birthDay: '',
         phone: '',
-        gender:''
+        gender: '',
+        address: '',
     });
     const [showModal, setShowModal] = useState(false);
     const [showSuccessToast, setShowSuccessToast] = useState(false);
-    const [gender, setGender] = useState(false);
+    const [showErrorToast, setShowErrorToast] = useState(false);
+    const [errorPhone, setErrorPhone] = useState('');
+    const [errorFirstName, setErrorFirstName] = useState('');
+    const [errorLastName, setErrorLastName] = useState('');
+    const [isCancelClicked, setIsCancelClicked] = useState(false);
+
+    const [editingMode, setEditingMode] = useState(false);
 
     const handleGenderChange = (e) => {
-        const value = e.target.value === 'Nữ' ? true : false;
-        setGender(value);
+        const value = e.target.value === 'true'; // Chuyển đổi giá trị từ chuỗi sang boolean
+        setUserEdit(prevState => ({
+            ...prevState,
+            gender: value
+        }));
     };
+
 
     useEffect(() => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log("Token: " + userToken);
+
         if (userToken) {
             // Lấy token từ storage
             const tokenSt = sessionStorage.getItem(userToken);
@@ -41,6 +53,8 @@ function EditProfileHe() {
                     .then(response => {
                         console.log("UserHeader: ", response.data);
                         setUser(response.data);
+                        setUserEdit(response.data);
+                        console.log('userEdittt: ', userEdit);
                     })
                     .catch(error => {
                         console.error(error);
@@ -49,24 +63,14 @@ function EditProfileHe() {
         }
     }, []);
 
+
     const handleChange = (e) => {
         const { name, value } = e.target;
-        let formattedValue = value;
-    
-        if (name === 'birthDay') {
-            const [day, month, year] = value.split('-');
-            formattedValue = `${year}-${month}-${day}`;
-        }
-    
+
         setUserEdit(prevState => ({
             ...prevState,
-            [name]: formattedValue
+            [name]: value
         }));
-    };
-
-    const formatBirthDayForDisplay = (dateString) => {
-        const [year, month, day] = dateString.split('-');
-        return `${day}-${month}-${year}`;
     };
 
     const handleEdit = () => {
@@ -83,31 +87,97 @@ function EditProfileHe() {
                 })
                     .then(response => {
                         console.log("EditHeader: ", response.data);
-                        setUserEdit(response.data);
-                        setShowModal(true);
-                        // Cập nhật state user với dữ liệu nhận được từ server
-                        setUser(response.data);
+                        const formattedDate = moment(response.data.birthDay, "DD/MM/YYYY", true);
+                        if (formattedDate.isValid()) {
+                            response.data.birthDay = formattedDate.format("YYYY-MM-DD");
+                            setUserEdit(prevState => ({
+                                ...prevState,
+                                firstName: response.data.firstName,
+                                lastName: response.data.lastName,
+                                birthDay: response.data.birthDay,
+                                phone: response.data.phone,
+                                gender: response.data.gender,
+                                address: response.data.address
+                            }));
+                            setShowModal(true);
+                            setUser(response.data);
+                        } else {
+                            console.error("Ngày không hợp lệ!");
+                        }
                     })
                     .catch(error => {
                         console.error(error);
+                        setShowErrorToast(true);
                     });
             }
         }
     }
 
+    const isValidPhoneNumber = (phone) => {
+        return /^\d{10}$/.test(phone) && /^[0-9]*$/.test(phone);
+    };
+
+    const isValidInputFirstName = (firsName) => {
+        return firsName.trim() !== '';
+    }
+
+    const isValidInputLastName = (lastName) => {
+        return lastName.trim() !== '';
+    }
+
+    const handleBlur = () => {
+        if (!isCancelClicked && !isValidPhoneNumber(userEdit.phone)) {
+            setErrorPhone('Định dạng số điện thoại chưa đúng');
+        } else {
+            setErrorPhone('');
+        }
+    };
+
+    const handleBlurFirstName = (e) => {
+        if (!isCancelClicked && !isValidInputFirstName(e.target.value)) {
+            setErrorFirstName('Không được để trống');
+        } else {
+            setErrorFirstName('');
+        }
+    };
+
+    const handleBlurLastName = (e) => {
+        if (!isCancelClicked && !isValidInputLastName(e.target.value)) {
+            setErrorLastName('Không được để trống');
+        } else {
+            setErrorLastName('');
+        }
+    };
+
     const handleSubmit = () => {
-        const id = user.personId; // Sử dụng thông tin từ state user
+        const id = user.personId;
         const userToken = getTokenFromUrlAndSaveToStorage();
+        console.log('userEdittt2: ', userEdit);
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
+                if (!isValidPhoneNumber(userEdit.phone)) {
+                    setErrorPhone('Định dạng số điện thoại chưa đúng');
+                    return;
+                }
+                if (!isValidInputFirstName(userEdit.firstName)) {
+                    setErrorFirstName('Vui lòng nhập họ');
+                    return;
+                }
+                if (!isValidInputLastName(userEdit.lastName)) {
+                    setErrorLastName('Vui lòng nhập tên');
+                    return;
+                }
                 const formData = new FormData();
                 formData.append('firstName', userEdit.firstName);
                 formData.append('lastName', userEdit.lastName);
                 formData.append('birthDay', userEdit.birthDay);
                 formData.append('phone', userEdit.phone);
-                formData.append('gender', gender);
+                formData.append('gender', userEdit.gender);
+                formData.append('address', userEdit.address);
 
+                console.log("update profile: ", formData.data);
+                console.log('userEdittt3: ', userEdit);
                 axiosInstance.post(`/head/edit/${id}`, formData, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
@@ -123,97 +193,143 @@ function EditProfileHe() {
                     })
                     .catch(error => {
                         console.error(error);
+                        setShowErrorToast(true);
                     })
             }
         }
     }
 
+    const handleCancel = () => {
+        setUserEdit({
+            firstName: user.firstName,
+            lastName: user.lastName,
+            birthDay: user.birthDay,
+            phone: user.phone,
+            gender: user.gender,
+            address: user.address,
+        });
+        setEditingMode(false);
+        setIsCancelClicked(true);
+        setErrorPhone('');
+        setErrorFirstName('');
+        setErrorLastName('');
+    };
+
+    const handleUpdate = async () => {
+        await handleSubmit();
+        if (!errorFirstName && !errorLastName && !errorPhone) {
+            setEditingMode(false);
+        }
+    };
 
     return (
         <div>
-            {/* Toast thông báo thành công */}
-            <div className='profile'>
-                <div class="container rounded bg-white mt-2 mb-5">
-                    <div class="row">
-                        <div class="d-flex justify-content-between align-items-center mb-3" style={{ display: 'flex' }}>
-                            <h4 class="text-right">TRANG CÁ NHÂN</h4>
-                            <div>
-                                <Toast className='toast align-items-center' show={showSuccessToast} onClose={() => setShowSuccessToast(false)} delay={3000} autohide>
-                                    <Toast.Header>
-                                        <strong className="me-auto">Thông báo</strong>
-                                    </Toast.Header>
-                                    <Toast.Body>
-                                        Cập nhật thông tin thành công!
-                                    </Toast.Body>
-                                </Toast>
+            <div class="container">
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <h4 class="text-right">TRANG CÁ NHÂN</h4>
+                    <div>
+                        <Toast className='toast align-items-center' show={showSuccessToast} onClose={() => setShowSuccessToast(false)} delay={3000} autohide>
+                            <Toast.Header>
+                                <strong className="me-auto">Thông báo</strong>
+                            </Toast.Header>
+                            <Toast.Body style={{ color: 'green' }}>
+                                Cập nhật thông tin cá nhân thành công!
+                            </Toast.Body>
+                        </Toast>
+                        <Toast className='toast align-items-center' show={showErrorToast} onClose={() => setShowSuccessToast(false)} delay={3000} autohide>
+                            <Toast.Header>
+                                <strong className="me-auto">Thông báo</strong>
+                            </Toast.Header>
+                            <Toast.Body style={{ color: 'red' }}>
+                                Cập nhật thông tin cá nhân thất bại!
+                            </Toast.Body>
+                        </Toast>
+                    </div>
+                </div>
+                <br />
+                <div class="row gutters">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="account-settings">
+                                    <div class="user-profile">
+                                        <div class="user-avatar">
+                                            <img src="/assets/team-1.jpg" alt="Maxwell Admin" />
+                                        </div>
+                                        <h5 class="user-name">{user.firstName + ' ' + user.lastName}</h5>
+                                        <h6 class="user-email">{user.username}</h6>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-3 border-right">
-                            <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg" /><span class="font-weight-bold"></span>{user.firstName + ' ' + user.lastName}<span class="text-black-50">{user.username}</span><span> </span></div>
-                        </div>
-                        <div class="col-md-5 border-right">
-                            <div class="p-3 py-5">
-                                <div class="row mt-2">
-                                    <div class="col-md-6"><label class="labels">Họ</label><p>{user.firstName}</p></div>
-                                    <div class="col-md-6"><label class="labels">Tên</label><p>{user.lastName}</p></div>
+                    </div>
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
+                        <div class="card h-100">
+                            <div class="card-body" onSubmit={handleSubmit}>
+                                <div class="row gutters">
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }} class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <h6 class="mb-2 text-primary">Thông tin cá nhân</h6>
+                                        <button className='btn-edit-info' onClick={() => { setEditingMode(true); handleEdit(); }}> <AutoFixNormalOutlinedIcon /> Cập nhật thông tin cá nhân</button>
+                                    </div>
+                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <label for="firstName">Họ</label>
+                                            <input type="text" class="form-control" id="firstName" name="firstName" required value={userEdit.firstName} onBlur={handleBlurFirstName} onChange={handleChange} disabled={!editingMode} />
+                                            {errorFirstName && <Alert variant="danger" style={{ padding: '5px', marginTop: '5px', marginBottom: '2px', border: 'none', backgroundColor: 'white' }}><ErrorOutlineOutlinedIcon />{errorFirstName}</Alert>}
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <label for="lastName">Tên</label>
+                                            <input type="text" class="form-control" id="lastName" name="lastName" required value={userEdit.lastName} onBlur={handleBlurLastName} onChange={handleChange} disabled={!editingMode} />
+                                            {errorLastName && <Alert variant="danger" style={{ padding: '5px', marginTop: '5px', marginBottom: '2px', border: 'none', backgroundColor: 'white' }}><ErrorOutlineOutlinedIcon />{errorLastName}</Alert>}
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <label for="phone">Số điện thoại</label>
+                                            <input type="tel" class="form-control" id="phone" name="phone" pattern="[0-9]{10}" onBlur={handleBlur} required value={userEdit.phone} onChange={handleChange} disabled={!editingMode} />
+                                            {errorPhone && <Alert variant="danger" style={{ padding: '5px', marginTop: '5px', marginBottom: '2px', border: 'none', backgroundColor: 'white' }}><ErrorOutlineOutlinedIcon /> {errorPhone}</Alert>}
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <label for="email">Email</label>
+                                            <input type="email" class="form-control" id="email" name="email" value={user.username} disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <label for="birthDay">Ngày sinh</label>
+                                            <input type="date" class="form-control" id="birthDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} disabled={!editingMode} />
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                        <div class="form-group">
+                                            <label for="gender">Giới tính</label>
+                                            <select class="form-control" id="gender" name="gender" value={userEdit.gender} onChange={handleGenderChange} disabled={!editingMode}>
+                                                <option value="false">Nam</option>
+                                                <option value="true">Nữ</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-group">
+                                            <label for="address">Địa chỉ</label>
+                                            <input type="text" class="form-control" id="address" name="address" value={userEdit.address} onChange={handleChange} disabled={!editingMode} />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="row mt-3">
-                                    <div class="col-md-6"><label class="labels">Ngày sinh</label><p>{user.birthDay}</p></div>
-                                    <div class="col-md-6"><label class="labels">Giới tính</label><p>{user.gender ? 'Nữ' : 'Nam'}</p></div>
-                                </div>
-                                <div class="row mt-3">
-                                    <div class="col-md-12"><label class="labels">Số điện thoại</label><p>{user.phone}</p></div>
-                                    <div class="col-md-12"><label class="labels">Địa chỉ</label><p>{ }</p></div>
-                                    <div class="col-md-12"><label class="labels">Email ID</label><p>{user.username}</p></div>
-                                    <div class="col-md-12"><label class="labels">Education</label><p>{ }</p></div>
-                                    <div class="col-md-12"><label class="labels">Ghi chú</label><p>{ }</p></div>
-                                </div>
-                                <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={handleEdit}>
-                                    Cập nhật thông tin
-                                </button>
-
-                                <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: showModal ? 'block' : 'none' }}>
-                                    <div className="modal-dialog">
-                                        <div className="modal-content">
-                                            <div className="modal-header">
-                                                <h1 className="modal-title fs-5" id="exampleModalLabel">CẬP NHẬT THÔNG TIN CÁ NHÂN</h1>
-                                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div className="modal-body">
-                                                <div className="mb-3">
-                                                    <label htmlFor="firstName" className="form-label">Họ</label>
-                                                    <input type="text" className="form-control" id="firstName" name="firstName" value={userEdit.firstName} onChange={handleChange} />
-                                                </div>
-                                                <div className="mb-3">
-                                                    <label htmlFor='lastName' className="form-label">Tên</label>
-                                                    <input type="text" className="form-control" id="lastName" name="lastName" value={userEdit.lastName} onChange={handleChange} />
-                                                </div>
-                                                <div className="mb-3">
-                                                    <label htmlFor='gender' className="form-label">Giới tính</label>
-                                                    <div>
-                                                        <input type="radio" id="nam" name="gender" value="Nam" checked={gender === false} onChange={handleGenderChange} />
-                                                        <label htmlFor="nam">Nam</label>
-                                                    </div>
-                                                    <div>
-                                                        <input type="radio" id="nu" name="gender" value="Nữ" checked={gender === true} onChange={handleGenderChange} />
-                                                        <label htmlFor="nu">Nữ</label>
-                                                    </div>
-                                                </div>
-                                                <div className="mb-3">
-                                                    <label htmlFor='brithDay' className="form-label">Ngày sinh</label>
-                                                    <input type="date" className="form-control" id="brithDay" name="birthDay" value={formatBirthDayForDisplay(userEdit.birthDay)} onChange={handleChange} />
-                                                </div>
-                                                <div className="mb-3">
-                                                    <label htmlFor='phone' className="form-label">Số điện thoại</label>
-                                                    <input type="text" className="form-control" id="phone" name="phone" value={userEdit.phone} onChange={handleChange} />
-                                                </div>
-                                            </div>
-                                            <div className="modal-footer">
-                                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModal(false)}>Close</button>
-                                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmit}>
-                                                    Cập nhật
-                                                </button>
-                                            </div>
+                                <br />
+                                <div class="row gutters">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="text-left">
+                                            {editingMode && (
+                                                <>
+                                                    <button type="button" id="cancel" name="cancel" class="btn btn-secondary" onClick={handleCancel} style={{ marginRight: '10px' }}>Cancel</button>
+                                                    <button type="submit" id="update" name="update" class="btn btn-primary" onClick={handleUpdate}>Update</button>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
