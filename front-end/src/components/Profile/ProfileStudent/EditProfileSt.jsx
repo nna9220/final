@@ -14,7 +14,8 @@ function EditProfileSt() {
         lastName: '',
         birthDay: '',
         phone: '',
-        gender: ''
+        gender: '',
+        address: '',
     });
     const [showModal, setShowModal] = useState(false);
     const [showSuccessToast, setShowSuccessToast] = useState(false);
@@ -62,32 +63,11 @@ function EditProfileSt() {
         }
     }, []);
 
-
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const year = date.getFullYear();
-        let month = (date.getMonth() + 1).toString().padStart(2, '0');
-        let day = date.getDate().toString().padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
-
-
     const handleChange = (e) => {
         const { name, value } = e.target;
-        let formattedValue = value;
-        if (name === 'birthDay') {
-            const date = new Date(value);
-            const year = date.getFullYear();
-            let month = date.getMonth() + 1;
-            month = month < 10 ? '0' + month : month;
-            let day = date.getDate();
-            day = day < 10 ? '0' + day : day;
-            formattedValue = `${year}-${month}-${day}`;
-        }
-
         setUserEdit(prevState => ({
             ...prevState,
-            [name]: formattedValue
+            [name]: value
         }));
     };
 
@@ -112,6 +92,7 @@ function EditProfileSt() {
                             birthDay: response.data.birthDay,
                             phone: response.data.phone,
                             gender: response.data.gender,
+                            address: response.data.address
                         }));
                         setShowModal(true);
                         setUser(response.data);
@@ -182,9 +163,10 @@ function EditProfileSt() {
                 const formData = new FormData();
                 formData.append('firstName', userEdit.firstName);
                 formData.append('lastName', userEdit.lastName);
-                formData.append('birthDay', formatDate(userEdit.birthDay));
+                formData.append('birthDay', userEdit.birthDay);
                 formData.append('phone', userEdit.phone);
                 formData.append('gender', userEdit.gender);
+                formData.append('address', userEdit.address);
 
                 console.log("update profile: ", formData.data);
                 console.log('userEdittt3: ', userEdit);
@@ -215,7 +197,8 @@ function EditProfileSt() {
             lastName: user.lastName,
             birthDay: user.birthDay,
             phone: user.phone,
-            gender: user.gender
+            gender: user.gender,
+            address: user.address
         });
         setEditingMode(false);
         setIsCancelClicked(true);
@@ -309,20 +292,10 @@ function EditProfileSt() {
                                     </div>
                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                         <div class="form-group">
-                                            {editingMode ? (
-                                                <label for="birthDay">Ngày sinh: {userEdit.birthDay}</label>
-                                            ) : (
-                                                <label for="birthDay">Ngày sinh</label>
-                                            )}
-                                            {editingMode ? (
-                                                <input type="date" class="form-control" id="birthDay" name="birthDay" value={(userEdit.birthDay)} onChange={handleChange} disabled={!editingMode} />
-                                            ) : (
-                                                <input type="text" class="form-control" id="birthDay" name="birthDay" value={(userEdit.birthDay)} disabled={!editingMode} />
-                                            )}
+                                            <label for="birthDay">Ngày sinh</label>
+                                            <input type="date" class="form-control" id="birthDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} disabled={!editingMode} />
                                         </div>
                                     </div>
-
-
                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                         <div class="form-group">
                                             <label for="gender">Giới tính</label>
@@ -332,30 +305,24 @@ function EditProfileSt() {
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                    <div class="mb-3">
                                         <div class="form-group">
                                             <label for="address">Địa chỉ</label>
-                                            <input type="text" class="form-control" id="address" />
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                        <div class="form-group">
-                                            <label for="note">Ghi chú</label>
-                                            <input type="text" class="form-control" id="note" value={user.email} />
+                                            <input type="text" class="form-control" id="address" name="address" value={userEdit.address} onChange={handleChange} disabled={!editingMode} />
                                         </div>
                                     </div>
                                 </div>
-                                <br />
-                                <div class="row gutters">
-                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                        <div class="text-left">
-                                            {editingMode && (
-                                                <>
-                                                    <button type="button" id="cancel" name="cancel" class="btn btn-secondary" onClick={handleCancel} style={{ marginRight: '10px' }}>Cancel</button>
-                                                    <button type="submit" id="update" name="update" class="btn btn-primary" onClick={handleUpdate}>Update</button>
-                                                </>
-                                            )}
-                                        </div>
+                            </div>
+                            <br />
+                            <div class="row gutters">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="text-left">
+                                        {editingMode && (
+                                            <>
+                                                <button type="button" id="cancel" name="cancel" class="btn btn-secondary" onClick={handleCancel} style={{ marginRight: '10px' }}>Cancel</button>
+                                                <button type="submit" id="update" name="update" class="btn btn-primary" onClick={handleUpdate}>Update</button>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
                             </div>

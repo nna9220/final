@@ -14,7 +14,7 @@ function EditProfileLec() {
         birthDay: '',
         phone: '',
         gender: '',
-        address:'',
+        address: '',
     });
     const [showModal, setShowModal] = useState(false);
     const [showSuccessToast, setShowSuccessToast] = useState(false);
@@ -197,7 +197,7 @@ function EditProfileLec() {
             lastName: user.lastName,
             birthDay: user.birthDay,
             phone: user.phone,
-            gender: user.gender, 
+            gender: user.gender,
             address: user.address
         });
         setEditingMode(false);
@@ -291,7 +291,7 @@ function EditProfileLec() {
                                         </div>
                                     </div>
                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
+                                        <div class="form-group">
                                             <label for="birthDay">Ngày sinh</label>
                                             <input type="date" class="form-control" id="birthDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} disabled={!editingMode} />
                                         </div>
