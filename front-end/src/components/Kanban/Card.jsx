@@ -82,7 +82,7 @@ const Card = ({ task, index }) => {
   return (
     <Draggable draggableId={task.id} index={index}>
       {(provided) => (
-        <div  className="card-items" ref={provided.innerRef}{...provided.draggableProps}{...provided.dragHandleProps}>
+        <div className="card-items" ref={provided.innerRef}{...provided.draggableProps}{...provided.dragHandleProps}>
           <div class="dropdown">
             <label className='title-task-st'>{task.requirement}</label>
             <button class="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{border: 'none', backgroundColor: 'white' }} >

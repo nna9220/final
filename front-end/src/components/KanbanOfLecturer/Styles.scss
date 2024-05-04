@@ -24,23 +24,93 @@
     }
 }
 
+/*Column*/
+.column-lecturer {
+    background: #edefef;
+    flex: 1;
+    margin: 10px;
 
-/*Card*/
-.btn-menutask{
-    border: none;
-    background-color: white;
+    .title-column-lec {
+        text-align: center;
+        padding: 16px;
+    }
 }
 
-.info-modal{
+
+/*Card*/
+.modal-body {
+    text-align: start;
+
+    .lable-items {
+        text-align: start;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 10px;
+
+        .btn-comment {
+            border-radius: 5px;
+            border: none;
+            background-color: #2d99ae;
+            color: aliceblue;
+            padding: 5px;
+
+            &:hover {
+                background-color: #156575;
+            }
+        }
+    }
+
+
+    .comment-items {
+        border: none;
+
+        .comment-item {
+            padding: 10px;
+            border: 1px solid rgb(215, 206, 206);
+            border-radius: 5px;
+            margin-bottom: 5px;
+
+            .header-comment {
+                justify-content: space-between;
+                display: flex;
+
+                .name-post {
+                    font-weight: bold;
+                    color: #2d99ae;
+                }
+
+            }
+
+            .body-comment {
+                margin-top: 20px;
+                margin-bottom: 20px;
+
+            }
+        }
+
+        .navbar-comment {
+            margin-bottom: 20px;
+        }
+
+    }
+}
+
+.info-modal {
     display: flex;
     justify-content: space-between;
-    .lable-items{
+
+    .lable-items {
         color: #156575;
         margin: 10px;
-        .name-label{
+
+        .name-label {
             color: black;
             padding-left: 10px;
-            .name{
+
+            .name {
                 margin-left: 10px;
                 font-weight: medium;
             }
@@ -48,34 +118,26 @@
     }
 }
 
-.comment-items{
-    border: none;
-    
-    .comment-item
-    {
-        padding: 10px;
-        border: 1px solid rgb(215, 206, 206);
-        border-radius: 5px;
-        margin-bottom: 5px;
-        .header-comment{
-            justify-content: space-between;
-            display: flex;
-            .name-post{
-                font-weight: bold;
-                color: #2d99ae;
-            }
-            
-        }
-        .body-comment{
-            margin-top: 20px;
-            margin-bottom: 20px;
-            
-        }
-    }
-
-    .navbar-comment{
-        margin-bottom: 20px;
-    }
-
+.list-button {
+    display: flex;
+    justify-content: space-between;
 }
 
+.card-items {
+    background-color: white;
+    margin: 0 20px 10px 20px;
+    padding: 16px;
+
+    .dropdown {
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+//////
+.home-table-myTopicLec{
+    padding: 16px;
+    .table-lec-topic{
+        margin-top: 20px;
+    }
+}

@@ -4,7 +4,7 @@
     .context{
         flex: 6;
         .title-pb {
-            width: 400px;
+            width: fit-content;
             height: 50px;
             background-color: #4eb09b;
             color: white;
@@ -18,7 +18,7 @@
         .body-table{
             border: 1px solid rgb(142, 135, 135);
             border-radius: 5px;
-            padding: 5px;
+            padding: 16px;
             margin-top: 20px;
             margin-right: 30px;
         }

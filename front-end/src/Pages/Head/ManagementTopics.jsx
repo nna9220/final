@@ -2,13 +2,8 @@ import React, { useState, useEffect } from 'react';
 import SidebarHead from '../../components/Sidebar/SidebarHead';
 import Navbar from '../../components/Navbar/Navbar';
 import './MannageHead.scss';
-import TableApprove from '../../components/TableOfHead/TableApprove';
-import TbaleAssign from '../../components/TableOfHead/TbaleAssign';
-import TableRegis from '../../components/TableOfHead/TableRegis';
-import TableTopic from '../../components/TableOfHead/TableTopic';
-import TableApproveKL from '../../components/TableOfHead/TableApproveKL';
-import TableAssignKL from '../../components/TableOfHead/TableAssignKL';
-import TableTopicKL from '../../components/TableOfHead/TableTopicKL';
+import TableTopic from '../../components/TableOfHead/TopicOfHead/TableTopic';
+import TableTopicKL from '../../components/TableOfHead/TopicOfHead/TableTopicKL';
 
 
 function ManagementProjects() {
@@ -51,7 +46,7 @@ function ManagementProjects() {
                             <span>{selectedTitle}</span>
                             <hr className="line" />
                         </div>
-                        <div className='card-nd' style={{ display: 'block' }}>
+                        <div className='card-nd-topic' style={{ display: 'block' }}>
                             <div className='table-items'>
                                 {selectedTitle === "Tiểu luận chuyên ngành" ? <TableTopic /> : <TableTopicKL />}
                             </div>

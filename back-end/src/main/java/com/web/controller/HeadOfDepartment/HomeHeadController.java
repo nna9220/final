@@ -24,6 +24,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,9 +160,7 @@ public class HomeHeadController {
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent != null && personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Person person = personRepository.findById(personCurrent.getPersonId()).orElse(null);
-            /*ModelAndView modelAndView = new ModelAndView("profileTBM");
-            modelAndView.addObject("person", person);
-            return modelAndView;*/
+
             return new ResponseEntity<>(person,HttpStatus.OK);
         } else {
            /* return new ModelAndView("error").addObject("errorMessage", "Bạn không có quyền truy cập.");*/
@@ -168,37 +169,36 @@ public class HomeHeadController {
     }
 
     @PostMapping("/edit/{id}")
-    public ResponseEntity<?> updateLecturer(@PathVariable String id,@ModelAttribute PersonRequest studentRequest,
-                                       @RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request){
+    public ResponseEntity<?> updateProfileHe(@PathVariable String id,
+                                             @RequestParam("firstName") String firstName,
+                                             @RequestParam("lastName") String lastName,
+                                             @RequestParam("birthDay") String birthDay,
+                                             @RequestParam("phone") String phone,
+                                             @RequestParam("gender") boolean gender,
+                                             @RequestParam("address") String address,
+                                             @RequestParam(value = "status", required = false, defaultValue = "true") boolean status,
+                                             @RequestHeader("Authorization") String authorizationHeader,
+                                             HttpServletRequest request) {
         String token = tokenUtils.extractToken(authorizationHeader);
-        Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Person existPerson = personRepository.findById(id).orElse(null);
-            if (existPerson!=null){
-                System.out.println(id);
-                existPerson.setFirstName(studentRequest.getFirstName());
-                existPerson.setLastName(studentRequest.getLastName());
-                existPerson.setBirthDay(String.valueOf(studentRequest.getBirthDay()));
-                existPerson.setPhone(studentRequest.getPhone());
-                existPerson.setStatus(studentRequest.isStatus());
+
+            if (existPerson != null) {
+                existPerson.setFirstName(firstName);
+                existPerson.setLastName(lastName);
+                existPerson.setBirthDay(birthDay);
+                existPerson.setPhone(phone);
+                existPerson.setGender(gender);
+                existPerson.setAddress(address);
+                existPerson.setStatus(status);
 
                 personRepository.save(existPerson);
-                /*String referer = Contains.URL_LOCAL + "/api/head/profile";
-                System.out.println("Url: " + referer);
-                // Thực hiện redirect trở lại trang trước đó
-                return new ModelAndView("redirect:" + referer);*/
-                return new ResponseEntity<>(existPerson,HttpStatus.OK);
-
-            }else {
-                /*ModelAndView error = new ModelAndView();
-                error.addObject("errorMessage", "Không tìm thấy admin");
-                return error;*/
+                return new ResponseEntity<>(existPerson, HttpStatus.OK);
+            } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-        }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
+        } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }

@@ -83,15 +83,15 @@ function TopicPBTable() {
     return (
         <div style={{ display: 'grid' }}>
             <div className='btn-type'>
-                <button className={`button-listDelete ${activeTLChuyenNganh ? 'active' : ''}`}>
-                    <TopicOutlinedIcon /> Tiểu luận chuyên ngành
-                </button>
                 <button className={`button-listDelete ${activeKhoaLuan ? 'active' : ''}`}>
                     <SummarizeOutlinedIcon /> Khóa luận tốt nghiệp
                 </button>
+                <button className={`button-listDelete ${activeTLChuyenNganh ? 'active' : ''}`}>
+                    <TopicOutlinedIcon /> Tiểu luận chuyên ngành
+                </button>
             </div>
             <div>
-                <div className='home-table'>
+                <div className='home-table-topicPB'>
                     <table className="table table-hover">
                         <thead>
                             <tr>
@@ -127,7 +127,7 @@ function TopicPBTable() {
                 </div>
             </div>
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h1 class="modal-title fs-5" id="exampleModalLabel">Đánh giá</h1>
