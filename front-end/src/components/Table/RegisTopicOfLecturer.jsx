@@ -20,7 +20,8 @@ function RegisTopicOfLecturer() {
         student2: null,
         student3: null,
     });
-    const [students, setStudents]= useState([]);
+    const [students, setStudents] = useState([]);
+    const [periods, setPeriods] = useState([]);
 
     const reloadForm = () => {
         setFormData({
@@ -36,6 +37,7 @@ function RegisTopicOfLecturer() {
 
     useEffect(() => {
         loadStudents();
+        getPeriod();
     }, []);
 
     const loadStudents = () => {
@@ -45,16 +47,36 @@ function RegisTopicOfLecturer() {
                 'Authorization': `Bearer ${userToken}`,
             },
         })
-        .then(response => {
-            console.log('Danh sách sinh viên:', response.data);
-            setStudents(response.data);
-            setIsLoading(false);
-        })
-        .catch(error => {
-            console.error(error);
-            console.log("Lỗi");
-        });
+            .then(response => {
+                console.log('Danh sách sinh viên:', response.data);
+                setStudents(response.data);
+                setIsLoading(false);
+            })
+            .catch(error => {
+                console.error(error);
+                console.log("Lỗi");
+            });
     };
+
+    const getPeriod = () => {
+        const userToken = getTokenFromUrlAndSaveToStorage();
+        if (userToken) {
+            axiosInstance.get('/head/subject/periodHead', {
+                headers: {
+                    'Authorization': `Bearer ${userToken}`,
+                },
+            })
+                .then(response => {
+                    console.log('Danh sách đợt đề tài:', response.data);
+                    setPeriods(response.data);
+                    setIsLoading(false);
+                })
+                .catch(error => {
+                    console.error(error);
+                    console.log("Lỗi");
+                });
+        }
+    }
 
     const handleSubmitAdd = (event) => {
         event.preventDefault();
@@ -108,6 +130,9 @@ function RegisTopicOfLecturer() {
             <div className='title'>
                 <h3>ĐĂNG KÝ ĐỀ TÀI - TIỂU LUẬN CHUYÊN NGÀNH</h3>
             </div>
+            <div>
+                <label>Thời gian đăng ký: {}</label>
+            </div>
             <div className='menuItems'>
                 {isLoading ? (
                     <p>Loading...</p>
@@ -130,7 +155,7 @@ function RegisTopicOfLecturer() {
                             <input type="text" class="form-control" id="expected" placeholder="Nhập tên đề tài" name="expected" value={formData.expected} onChange={handleChange} required />
                             <div class="valid-feedback">Valid.</div>
                             <div class="invalid-feedback">Vui lòng nhập kết quả mong muốn.</div>
-                        </div>   
+                        </div>
                         <h5>Nhóm sinh viên thực hiện: </h5>
                         <div className="mb-3">
                             <label htmlFor="student1" className="form-label">Sinh viên 1</label>
@@ -139,7 +164,7 @@ function RegisTopicOfLecturer() {
                                 {students.map(student => (
                                     <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
                                 ))}
-                            </select>                        
+                            </select>
                         </div>
                         <div className="mb-3">
                             <label htmlFor="student2" className="form-label">Sinh viên 2</label>
@@ -148,7 +173,7 @@ function RegisTopicOfLecturer() {
                                 {students.map(student => (
                                     <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
                                 ))}
-                            </select>                           
+                            </select>
                         </div>
                         <div className="mb-3">
                             <label htmlFor="student3" className="form-label">Sinh viên 3</label>
@@ -157,7 +182,7 @@ function RegisTopicOfLecturer() {
                                 {students.map(student => (
                                     <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
                                 ))}
-                            </select>   
+                            </select>
                         </div>
                         <div className='footerForm'>
                             <div>
