@@ -1,5 +1,12 @@
-.homeRegis {
-    margin: 40px;
+.homeRegis-Head {
+    margin: 20px;
+
+    .alert-head{
+        border: none;
+        background-color: white;
+        font-weight: bold;
+    }
+    
     .title {
         text-align: center;
         color: #3a8d53;

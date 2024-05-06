@@ -109,16 +109,16 @@ function RegisTopicTable() {
             ) : topicsRegistered.length > 0 ? (
                 topicsRegistered.map((topic, index) => (
                     <div key={index}>
-                        <div style={{margin:'16px'}} class="alert alert-success" role="alert">
-                            <CheckCircleOutlineOutlinedIcon/> BẠN ĐÃ ĐĂNG KÝ ĐỀ TÀI THÀNH CÔNG!!!
+                        <div style={{ margin: '16px' }} class="alert alert-success" role="alert">
+                            <CheckCircleOutlineOutlinedIcon /> BẠN ĐÃ ĐĂNG KÝ ĐỀ TÀI THÀNH CÔNG!!!
                         </div>
-                        <br/>
+                        <br />
                         <div class="container-fluid mx-auto">
                             <div class="row">
                                 <div class="mb-3">
                                     <div class="card">
                                         <form class="form-card">
-                                        <h5 class="text-center mb-4 tille-name-topic">THÔNG TIN ĐỀ TÀI</h5>
+                                            <h5 class="text-center mb-4 tille-name-topic">THÔNG TIN ĐỀ TÀI</h5>
                                             <div className='items-content-topic'>
                                                 <label>Tên đề tài: <label className='content-name'>{topic.subjectName}</label></label>
                                             </div>
@@ -132,9 +132,9 @@ function RegisTopicTable() {
                                                 <label>Giảng viên phản biện: <label className='content-name'>{topic.thesisAdvisorId.person.firstName + ' ' + topic.thesisAdvisorId.person.lastName}</label></label>
                                             </div>
                                             <div className='items-content-topic'>
-                                                <a>Nhóm sinh viên thực hiện</a><br/>
-                                                <label>Sinh viên 1: <label className='content-name'>{topic.student1}</label></label><br/>
-                                                <label>Sinh viên 2: <label className='content-name'>{topic.student2}</label></label><br/>
+                                                <a>Nhóm sinh viên thực hiện</a><br />
+                                                <label>Sinh viên 1: <label className='content-name'>{topic.student1}</label></label><br />
+                                                <label>Sinh viên 2: <label className='content-name'>{topic.student2}</label></label><br />
                                                 <label>Sinh viên 3: <label className='content-name'>{topic.student3}</label></label>
                                             </div>
                                             <div className='items-content-topic'>
@@ -153,7 +153,7 @@ function RegisTopicTable() {
                 ))
             ) : (
                 <div>
-                    <h4 style={{ padding:'20px',color: 'red' }}>CHƯA ĐẾN THỜI GIAN ĐĂNG KÝ ĐỀ TÀI!!!</h4>
+                    <h4 style={{ padding: '20px', color: 'red' }}>CHƯA ĐẾN THỜI GIAN ĐĂNG KÝ ĐỀ TÀI!!!</h4>
                 </div>
             )}
         </div>
