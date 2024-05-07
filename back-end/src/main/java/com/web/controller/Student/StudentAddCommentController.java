@@ -84,6 +84,7 @@ public class StudentAddCommentController {
                         FileComment newFile = new FileComment();
                         newFile.setName(fileName);
                         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                                .scheme("https")
                                 .path("/api/student/comment/fileUpload/")
                                 .path(fileName)
                                 .toUriString();
@@ -140,9 +141,9 @@ public class StudentAddCommentController {
     }
 
     @GetMapping("/fileUpload/{fileName}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
+    public ResponseEntity<Resource> viewFile(@PathVariable String fileName, HttpServletRequest request) {
         // Load file as Resource
-        Resource resource =fileMaterialService.loadFileAsResource(fileName);
+        Resource resource = fileMaterialService.loadFileAsResource(fileName);
 
         // Try to determine file's content type
         String contentType = null;
@@ -159,7 +160,17 @@ public class StudentAddCommentController {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
+    }
+    @GetMapping("/download/{fileName}")
+    public ResponseEntity<Resource> redirectToDownload(@PathVariable String fileName) {
+        // Build the redirect URL
+        String redirectUrl = "/fileUpload/" + fileName;
+
+        // Redirect to the download endpoint
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header(HttpHeaders.LOCATION, redirectUrl)
+                .build();
     }
 }

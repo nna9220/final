@@ -55,7 +55,8 @@ public class RegistrationPeriodLecturerController {
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
-            List<RegistrationPeriodLectuer> registrationPeriods = registrationPeriodRepository.findAllPeriodEssay(typeSubject);
+            //List<RegistrationPeriodLectuer> registrationPeriods = registrationPeriodRepository.findAllPeriodEssay(typeSubject);
+            List<RegistrationPeriodLectuer> registrationPeriods = registrationPeriodRepository.findAll();
             List<TypeSubject> typeSubjects = typeSubjectRepository.findAll();
             Map<String,Object> response = new HashMap<>();
             response.put("period",registrationPeriods);
@@ -133,6 +134,9 @@ public class RegistrationPeriodLecturerController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             RegistrationPeriodLectuer existRegistrationPeriod = registrationPeriodRepository.findById(periodId).orElse(null);
             if (existRegistrationPeriod != null) {
+                if (convertToSqlDate(end).before(convertToSqlDate(start))) {
+                    return new ResponseEntity<>("Ngày kết thúc phải lớn hơn ngày bắt đầu", HttpStatus.BAD_REQUEST);
+                }
                 System.out.println("data nhận về:" + start + " end : " + end);
                 existRegistrationPeriod.setTypeSubjectId(typeSubject);
                 existRegistrationPeriod.setRegistrationTimeStart(convertToSqlDate(start));

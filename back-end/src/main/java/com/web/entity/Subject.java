@@ -92,6 +92,18 @@ public class Subject implements Serializable {
     @JsonIgnore
     private List<Task> tasks;
 
-    @Column(name="ÿear")
+    @Column(name="year")
     private String year;
+
+    @Column(name="check_student")
+    private boolean checkStudent; //Check giá trị student khi gv đăng ký đề tài -> Nếu k cso sv thì false, có sv thì true
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "reportFiftyPercent", referencedColumnName = "file_id")
+    private FileComment fiftyPercent;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "reportOneHundredPercent", referencedColumnName = "file_id")
+    private FileComment oneHundredPercent;
+
 }
