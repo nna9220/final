@@ -26,7 +26,7 @@ public interface SubjectRepository extends JpaRepository<Subject, Integer> {
     @Query("select s from Subject s where s.status=:status and s.major=:major and s.active=:active and s.typeSubject=:typeSubject")
     public List<Subject> findSubjectByStatusAndMajorAndActive(boolean status, Major major, Byte active, TypeSubject typeSubject);
 
-    @Query("select s from Subject s where (s.student1 is null or  s.student2 is null) and s.status=:status and s.major=:major and s.typeSubject=:typeSubject")
+    @Query("select s from Subject s where (s.student1 is null and  s.student2 is null and s.student3 is null) and s.status=:status and s.major=:major and s.typeSubject=:typeSubject")
     public List<Subject> findSubjectByStatusAndMajorAndStudent(boolean status, Major major,TypeSubject typeSubject);
 
 
