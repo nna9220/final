@@ -134,8 +134,10 @@ public class RegistrationPeriodController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             RegistrationPeriod existRegistrationPeriod = registrationPeriodRepository.findById(periodId).orElse(null);
             if (existRegistrationPeriod != null) {
+                if (convertToSqlDate(end).before(convertToSqlDate(start))) {
+                    return new ResponseEntity<>("Ngày kết thúc phải lớn hơn ngày bắt đầu", HttpStatus.BAD_REQUEST);
+                }
                 System.out.println("data nhận về:" + start + " end : " + end);
-
                 existRegistrationPeriod.setRegistrationTimeStart(convertToSqlDate(start));
                 existRegistrationPeriod.setRegistrationTimeEnd(convertToSqlDate(end));
                 registrationPeriodRepository.save(existRegistrationPeriod);

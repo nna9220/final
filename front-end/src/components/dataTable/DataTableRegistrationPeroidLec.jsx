@@ -10,6 +10,8 @@ function DataTableRegistrationPeroidLec() {
     const [editedEndTime, setEditedEndTime] = useState('');
     const [editedType, setEditedType] = useState('');
     const [selectedPeriodId, setSelectedPeriodId] = useState(null); // Lưu ID của đợt đăng ký đang được chỉnh sửa
+    const [errorMessage, setErrorMessage] = useState('');
+
 
     useEffect(() => {
         const tokenSt = sessionStorage.getItem('userToken');
@@ -83,7 +85,7 @@ function DataTableRegistrationPeroidLec() {
                 })
                 .catch(error => {
                     console.error("error: ", error);
-                    console.log("Lỗi");
+                    setErrorMessage('Ngày bắt đầu và ngày kết thúc không hợp lệ');
                 });
         }
     };
@@ -96,6 +98,7 @@ function DataTableRegistrationPeroidLec() {
                             <h1 className="modal-title fs-5" id="exampleModalLabel">CHỈNH SỬA THỜI GIAN</h1>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
+                        {errorMessage && <div className="alert alert-danger" role="alert">{errorMessage}</div>}
                         <div className="modal-body">
                             <div className="mb-3">
                                 <label htmlFor="startTime" className="form-label">Thời gian bắt đầu: </label>

@@ -94,19 +94,12 @@ public class AddCounterArgumentController {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             /*ModelAndView model = new ModelAndView("ListLecturerAddCounterArgument");*/
             List<Lecturer> lecturerList = lecturerRepository.getListLecturerNotCurrent(existedLecturer.getLecturerId());
-            /*model.addObject("listLecturer",lecturerList);
-            model.addObject("person", personCurrent);
-            model.addObject("subject",currentSubject);
-            return model;*/
             Map<String,Object> response = new HashMap<>();
             response.put("listLecturer", lecturerList);
             response.put("person",personCurrent);
             response.put("subject", currentSubject);
             return new ResponseEntity<>(response,HttpStatus.OK);
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
@@ -119,16 +112,11 @@ public class AddCounterArgumentController {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
             List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByAsisAdvisorAndMajor(true,existedLecturer.getMajor(),typeSubject);
-            /*model.addObject("listSubject",subjectByCurrentLecturer);
-            return model;*/
             Map<String,Object> response = new HashMap<>();
             response.put("person",personCurrent);
             response.put("listSubject",subjectByCurrentLecturer);
             return new ResponseEntity<>(response,HttpStatus.OK);
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
@@ -151,16 +139,8 @@ public class AddCounterArgumentController {
                     subjectRepository.save(existedSubject);
                 }
             }
-            /*String referer = Contains.URL_LOCAL + "/api/head/subject/listAdd";
-            // Thực hiện redirect trở lại trang trước đó
-            System.out.println("Url: " + referer);
-            // Thực hiện redirect trở lại trang trước đó
-            return new ModelAndView("redirect:" + referer);*/
             return new ResponseEntity<>(existedSubject, HttpStatus.OK);
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
@@ -245,7 +225,7 @@ public class AddCounterArgumentController {
                     newSubject.setSubjectName(name);
                     newSubject.setRequirement(requirement);
                     newSubject.setExpected(expected);
-                    newSubject.setActive((byte) 1);
+                    newSubject.setActive((byte) 0);
                     newSubject.setStatus(false);
                     //Tìm kiếm giảng viên hiện tại
                     Lecturer existLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
@@ -258,19 +238,25 @@ public class AddCounterArgumentController {
                         Student studentId1 = studentRepository.findById(student1).orElse(null);
                         newSubject.setStudent1(student1);
                         studentId1.setSubjectId(newSubject);
+                        newSubject.setCheckStudent(true);
                         studentList.add(studentId1);
                     }
                     if (student2!=null) {
                         Student studentId2 = studentRepository.findById(student2).orElse(null);
                         newSubject.setStudent2(student2);
                         studentId2.setSubjectId(newSubject);
+                        newSubject.setCheckStudent(true);
                         studentList.add(studentId2);
                     }
                     if (student3!=null) {
                         Student studentId3 = studentRepository.findById(student3).orElse(null);
                         newSubject.setStudent1(student3);
                         studentId3.setSubjectId(newSubject);
+                        newSubject.setCheckStudent(true);
                         studentList.add(studentId3);
+                    }
+                    if (student1==null){
+                        newSubject.setCheckStudent(false);
                     }
                     LocalDate nowDate = LocalDate.now();
                     newSubject.setYear(String.valueOf(nowDate));
@@ -308,16 +294,8 @@ public class AddCounterArgumentController {
             String subject = "Topic: " + existSubject.getSubjectName() ;
             String messenger = "Topic: " + existSubject.getSubjectName() + " đã được duyệt!!";
             mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
-            /*String referer = Contains.URL_LOCAL +  "/api/head/subject";
-            // Thực hiện redirect trở lại trang trước đó
-            System.out.println("Url: " + referer);
-            // Thực hiện redirect trở lại trang trước đó
-            return new ModelAndView("redirect:" + referer);*/
             return new ResponseEntity<>(HttpStatus.OK);
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
