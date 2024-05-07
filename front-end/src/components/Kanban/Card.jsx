@@ -149,7 +149,7 @@ const Card = ({ task, index }) => {
                               if (files.commentId.commentId === comment.commentId) {
                                 return (
                                   <div key={fileIndex}>
-                                    <a href={files.url}><p>{files.name}</p></a>
+                                    <a href={files.url}><p>{files.url}</p></a>
                                   </div>
                                 );
                               } else {

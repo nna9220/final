@@ -61,11 +61,12 @@ public class StudentRegisterTopic {
                     }
                 }
                 else {
-                    Subject existSubject = subjectRepository.findById(currentStudent.getSubjectGraduationId().getSubjectId()).orElse(null);
+                    Subject existSubject = subjectRepository.findById(currentStudent.getSubjectId().getSubjectId()).orElse(null);
                     Map<String,Object> response = new HashMap<>();
                     response.put("person",personCurrent);
                     response.put("subject", existSubject);
                     return new ResponseEntity<>(response,HttpStatus.OK);
+
                 }
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

@@ -233,7 +233,7 @@ public class AddCounterArgumentController {
                     newSubject.setSubjectName(name);
                     newSubject.setRequirement(requirement);
                     newSubject.setExpected(expected);
-                    newSubject.setActive((byte) 1);
+                    newSubject.setActive((byte) 0);
                     newSubject.setStatus(false);
                     //Tìm kiếm giảng viên hiện tại
                     Lecturer existLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
@@ -246,19 +246,25 @@ public class AddCounterArgumentController {
                         Student studentId1 = studentRepository.findById(student1).orElse(null);
                         newSubject.setStudent1(student1);
                         studentId1.setSubjectId(newSubject);
+                        newSubject.setCheckStudent(true);
                         studentList.add(studentId1);
                     }
                     if (student2!=null) {
                         Student studentId2 = studentRepository.findById(student2).orElse(null);
                         newSubject.setStudent2(student2);
                         studentId2.setSubjectId(newSubject);
+                        newSubject.setCheckStudent(true);
                         studentList.add(studentId2);
                     }
                     if (student3!=null) {
                         Student studentId3 = studentRepository.findById(student3).orElse(null);
                         newSubject.setStudent1(student3);
                         studentId3.setSubjectId(newSubject);
+                        newSubject.setCheckStudent(true);
                         studentList.add(studentId3);
+                    }
+                    if (student1==null){
+                        newSubject.setCheckStudent(false);
                     }
                     LocalDate nowDate = LocalDate.now();
                     newSubject.setYear(String.valueOf(nowDate));

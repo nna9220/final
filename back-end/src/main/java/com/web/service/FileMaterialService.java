@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -30,7 +31,7 @@ public class FileMaterialService {
     FileRepository fileMaterialRepository;
 
 
-    private final Path fileStorageLocation;
+    private Path fileStorageLocation;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -85,7 +86,8 @@ public class FileMaterialService {
         return fileMaterialRepository.save(fileMaterial);
     }
 
-    public FileMaterialService() {
+    @PostConstruct
+    public void init() {
         this.fileStorageLocation = Paths.get(uploadDir)
                 .toAbsolutePath().normalize();
         try {
