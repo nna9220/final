@@ -8,8 +8,10 @@ import com.web.mapper.RegistrationPeriodMapper;
 import com.web.dto.request.RegistrationPeriodRequest;
 import com.web.repository.PersonRepository;
 import com.web.repository.RegistrationPeriodRepository;
+import com.web.repository.StudentRepository;
 import com.web.repository.TypeSubjectRepository;
 import com.web.service.Admin.RegistrationPeriodService;
+import com.web.service.MailServiceImpl;
 import com.web.utils.Contains;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import javax.servlet.http.HttpSession;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,9 +34,9 @@ import java.util.Map;
 @RequestMapping("/api/admin/Period")
 public class RegistrationPeriodController {
     @Autowired
-    private RegistrationPeriodService registrationPeriodService;
+    private StudentRepository studentRepository;
     @Autowired
-    private RegistrationPeriodMapper registrationPeriodMapper;
+    private MailServiceImpl mailService;
     @Autowired
     private RegistrationPeriodRepository registrationPeriodRepository;
     @Autowired
@@ -140,7 +143,23 @@ public class RegistrationPeriodController {
                 System.out.println("data nhận về:" + start + " end : " + end);
                 existRegistrationPeriod.setRegistrationTimeStart(convertToSqlDate(start));
                 existRegistrationPeriod.setRegistrationTimeEnd(convertToSqlDate(end));
-                registrationPeriodRepository.save(existRegistrationPeriod);
+                var update = registrationPeriodRepository.save(existRegistrationPeriod);
+                //GỬI MAIL
+                //Dnah sách SV
+                List<Student> studentList = studentRepository.findAll();
+                List<String> emailLecturer = new ArrayList<>();
+                for (Student student:studentList) {
+                    emailLecturer.add(student.getPerson().getUsername());
+                }
+                MailStructure newMail = new MailStructure();
+                String subject = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI TIỂU LUẬN CHUYÊN NGÀNH CHO SINH VIÊN " + update.getRegistrationName();
+                String messenger = "Thời gian bắt đầu: " + update.getRegistrationTimeStart()+"\n" +
+                        "Thời gian kết thúc: " + update.getRegistrationTimeEnd() + "\n";
+                newMail.setSubject(subject);
+                newMail.setSubject(messenger);
+                if (!studentList.isEmpty()){
+                    mailService.sendMailToStudents(emailLecturer,subject,messenger);
+                }
                 return new ResponseEntity<>(existRegistrationPeriod,HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

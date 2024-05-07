@@ -7,6 +7,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class MailServiceImpl {
     @Autowired
@@ -53,6 +55,30 @@ public class MailServiceImpl {
         simpleMailMessage.setSubject(subject);
         simpleMailMessage.setText(messenger);
         simpleMailMessage.setTo(emailLecturer);
+
+        mailSender.send(simpleMailMessage);
+    }
+
+
+    public void sendMailToStudents(List<String> studentEmails, String subject, String messenger) {
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setFrom(fromMail);
+        simpleMailMessage.setSubject(subject);
+        simpleMailMessage.setText(messenger);
+
+        // Set các địa chỉ email của sinh viên
+        simpleMailMessage.setTo(studentEmails.toArray(new String[0]));
+
+        mailSender.send(simpleMailMessage);
+    }
+
+    public void sendMailToLecturers(List<String> lecturerEmails, String subject, String messenger) {
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setFrom(fromMail);
+        simpleMailMessage.setSubject(subject);
+        simpleMailMessage.setText(messenger);
+        // Set các địa chỉ email của giáo viên
+        simpleMailMessage.setTo(lecturerEmails.toArray(new String[0]));
 
         mailSender.send(simpleMailMessage);
     }
