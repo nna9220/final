@@ -55,7 +55,8 @@ public class RegistrationPeriodLecturerController {
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
-            List<RegistrationPeriodLectuer> registrationPeriods = registrationPeriodRepository.findAllPeriodEssay(typeSubject);
+            //List<RegistrationPeriodLectuer> registrationPeriods = registrationPeriodRepository.findAllPeriodEssay(typeSubject);
+            List<RegistrationPeriodLectuer> registrationPeriods = registrationPeriodRepository.findAll();
             List<TypeSubject> typeSubjects = typeSubjectRepository.findAll();
             Map<String,Object> response = new HashMap<>();
             response.put("period",registrationPeriods);
