@@ -96,7 +96,7 @@ public class Subject implements Serializable {
     private String year;
 
     @Column(name="check_student")
-    private boolean checkStudent; //Check giá trị student khi gv đăng ký đề tài -> Nếu k cso sv thì false, có sv thì true
+    private Boolean checkStudent; //Check giá trị student khi gv đăng ký đề tài -> Nếu k cso sv thì false, có sv thì true
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "reportFiftyPercent", referencedColumnName = "file_id")

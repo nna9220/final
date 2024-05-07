@@ -5,14 +5,14 @@ package com.web.controller.admin.GraduationThesis;
 import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
 import com.web.dto.request.RegistrationPeriodLecturerRequest;
-import com.web.entity.Person;
-import com.web.entity.RegistrationPeriodLectuer;
-import com.web.entity.TypeSubject;
+import com.web.entity.*;
 import com.web.mapper.RegistrationPeriodMapper;
+import com.web.repository.LecturerRepository;
 import com.web.repository.PersonRepository;
 import com.web.repository.RegistrationPeriodLecturerRepository;
 import com.web.repository.TypeSubjectRepository;
 import com.web.service.Admin.RegistrationPeriodService;
+import com.web.service.MailServiceImpl;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,9 +32,9 @@ import java.util.Map;
 @RequestMapping("/api/admin/PeriodGraduationLecturer")
 public class RegistrationPeriodGraduationLecturerController {
     @Autowired
-    private RegistrationPeriodService registrationPeriodService;
+    private LecturerRepository lecturerRepository;
     @Autowired
-    private RegistrationPeriodMapper registrationPeriodMapper;
+    private MailServiceImpl mailService;
     @Autowired
     private RegistrationPeriodLecturerRepository registrationPeriodRepository;
     @Autowired
@@ -137,7 +138,23 @@ public class RegistrationPeriodGraduationLecturerController {
                 existRegistrationPeriod.setTypeSubjectId(typeSubject);
                 existRegistrationPeriod.setRegistrationTimeStart(convertToSqlDate(start));
                 existRegistrationPeriod.setRegistrationTimeEnd(convertToSqlDate(end));
-                registrationPeriodRepository.save(existRegistrationPeriod);
+                var update = registrationPeriodRepository.save(existRegistrationPeriod);
+                //GỬI MAIL
+                //Dnah sách giảng viên
+                List<Lecturer> lecturers = lecturerRepository.findAll();
+                List<String> emailLecturer = new ArrayList<>();
+                for (Lecturer lecturer:lecturers) {
+                    emailLecturer.add(lecturer.getPerson().getUsername());
+                }
+                MailStructure newMail = new MailStructure();
+                String subject = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI KHÓA LUẬN TỐT NGHIỆP CHO GIẢNG VIÊN " + update.getRegistrationName();
+                String messenger = "Thời gian bắt đầu: " + update.getRegistrationTimeStart()+"\n" +
+                        "Thời gian kết thúc: " + update.getRegistrationTimeEnd() + "\n";
+                newMail.setSubject(subject);
+                newMail.setSubject(messenger);
+                if (!lecturers.isEmpty()){
+                    mailService.sendMailToLecturers(emailLecturer,subject,messenger);
+                }
                 return new ResponseEntity<>(existRegistrationPeriod,HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
