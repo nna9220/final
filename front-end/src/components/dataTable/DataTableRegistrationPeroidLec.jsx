@@ -23,6 +23,7 @@ function DataTableRegistrationPeroidLec() {
                     setDataRegis(response.data.period || []);
                     setTypeSubject(response.data.listTypeSubject || []);
                     console.log("TypeSubject: ", response.data.listTypeSubject);
+                    console.log("Đợt đăng ký: ", response.data.period);
                 })
                 .catch(error => {
                     console.error("error: ", error);
