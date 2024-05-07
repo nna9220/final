@@ -65,12 +65,34 @@ function TableTopic() {
   return (
     <div>
       {showBackButton && (
-        <nav aria-label="breadcrumb">
-          <ol className="breadcrumb">
-            <li className="breadcrumb-item"><a href="#" onClick={handleGoBack}><ViewListOutlinedIcon /> Danh sách đề tài</a></li>
-            <li className="breadcrumb-item active" aria-current="page">{selectedSubjectName}</li>
-          </ol>
-        </nav>
+        <>
+          <div className='group-lecturer'>
+            <nav aria-label="breadcrumb">
+              <ol className="breadcrumb">
+                <li className="breadcrumb-item"><a href="#" onClick={handleGoBack}>Danh sách đề tài</a></li>
+                <li className="breadcrumb-item active" aria-current="page">{selectedSubjectName}</li>
+              </ol>
+            </nav>
+            <button data-bs-toggle="modal" data-bs-target="#confirmSuccess">Hoàn thành đề tài</button>
+          </div>
+          <div class="modal fade" id="confirmSuccess" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">XÁC NHẬN HOÀN THÀNH ĐỀ TÀI</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Bạn chắc chắn muốn hoàn thành đề tài này không?
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary">Confirm</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
       )}
       <div className='home-table-myTopic'>
         {showManagementTask ? (

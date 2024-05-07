@@ -34,6 +34,7 @@ import ManageTopicPBOfHead from './Pages/Head/ManageTopicPBOfHead';
 import ManagementAppove from './Pages/Head/ManagementAppove';
 import ManagementAssign from './Pages/Head/ManagementAssign';
 import ManagementProjects from './Pages/Head/ManagementTopics';
+import ManagementTopicBeforePB from './Pages/Head/ManagementTopicBeforePB';
 
 function App() {
   return (
@@ -77,6 +78,7 @@ function App() {
         <Route path="/profileHead" element={<ProfileHe />} />
         <Route path='/registerHead' element={<RegisterHead/>}/>
         <Route path="/managermentHead/approve" element={<ManagementAppove />} />
+        <Route path="/managermentHead/approvebefore" element={<ManagementTopicBeforePB/>} />
         <Route path='/managementHead/assign' element={<ManagementAssign/>}/>
         <Route path='/managementHead/topics' element={<ManagementProjects/>}/>
         <Route path="/managermentTopicHead" element={<TopicOfHead />} />

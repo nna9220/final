@@ -1,13 +1,12 @@
 .homeLec{
     display: flex;
     .context{
-        flex: 6;
-
+        flex: 1;
+        margin-left: 20px;
         .context-menu {
             .contaxt-title {
                 .title-re {
                     position: relative;
-    
                     h3 {
                         width: 260px;
                         height: 50px;

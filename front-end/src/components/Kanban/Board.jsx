@@ -131,9 +131,39 @@ const KanbanBoard = () => {
 
   return (
     <div>
-      {error && <h4 className='elter-error-no-topic'><ReportProblemOutlinedIcon/> {error}</h4>}
+      {error && <h4 className='elter-error-no-topic'><ReportProblemOutlinedIcon /> {error}</h4>}
       {!error &&
         <div>
+          <div className='button-submitTopic'>
+            <button className='submit-1' data-bs-toggle="modal" data-bs-target="#submit">
+              Nộp báo cáo lần 1
+            </button>
+
+            <button className='submit-2' data-bs-toggle="modal" data-bs-target="#submit">
+              Nộp báo cáo lần 2
+            </button>
+
+            <div class="modal fade" id="submit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Nộp báo cáo</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="mb-3">
+                      <label for="formFile" class="form-label">Chọn file báo cáo : </label>
+                      <input class="form-control" type="file" id="formFile" />
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Submit</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div className='list-button'>
             <button type="button" className='button-add-task' data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={handleNewTask}>
               <AddOutlinedIcon /> Add task
@@ -194,7 +224,7 @@ const KanbanBoard = () => {
                 <Column title="Must Do" tasks={data.filter(task => task.status === 'MustDo')} droppableId="MustDo" />
                 <Column title="Doing" tasks={data.filter(task => task.status === 'Doing')} droppableId="Doing" />
                 <Column title="Closed" tasks={data.filter(task => task.status === 'Closed')} droppableId="Closed" />
-                </div>
+              </div>
             </DragDropContext>
           )}
           {showTimeLine && <TimeLineOfStudent />}
