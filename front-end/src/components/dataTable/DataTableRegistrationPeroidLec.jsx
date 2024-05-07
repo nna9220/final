@@ -139,7 +139,7 @@ function DataTableRegistrationPeroidLec() {
                             <td>{item.registrationName}</td>
                             <td>{item.registrationTimeStart}</td>
                             <td>{item.registrationTimeEnd}</td>
-                            <td>{item.typeSubjectId.typeName}</td>
+                            <td>{item.typeSubjectId ? item.typeSubjectId.typeName : null}</td>
                             <td>
                                 <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(item)}>
                                     Edit
