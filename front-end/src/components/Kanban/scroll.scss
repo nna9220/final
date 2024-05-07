@@ -62,6 +62,26 @@
     color: #FF6C22;
 }
 
+.button-submitTopic{
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px;
+    .submit-1{
+        margin-right: 20px;
+        padding: 8px;
+        border-radius: 5px;
+        border: none;
+        background-color: #59b9e8;
+        color: white;
+    }
+    .submit-2 {
+        padding: 8px;
+        border-radius: 5px;
+        border: none;
+        background-color: #1572A1;
+        color: white;
+    }
+}
 /*Card*/
 .modal-body {
     text-align: start;

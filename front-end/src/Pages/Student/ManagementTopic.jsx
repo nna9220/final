@@ -2,8 +2,9 @@ import React from 'react'
 import KanbanBoard from '../../components/Kanban/Board'
 import SidebarStudent from '../../components/Sidebar/SidebarStudent'
 import Navbar from '../../components/Navbar/Navbar'
-import Context from '../../components/Context/Context'
 import { useEffect } from 'react'
+import './ManagementTopic.scss'
+
 function ManagementTopic() {
   useEffect(() => {
     document.title = "Quản lý đề tài";

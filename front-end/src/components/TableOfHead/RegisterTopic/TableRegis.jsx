@@ -31,16 +31,23 @@ function TableRegis() {
     useEffect(() => {
         if (periods.length > 0) {
             const currentDate = new Date();
-            const currentDateTimeString = `${currentDate.getMonth() + 1}/${currentDate.getDate()}/${currentDate.getFullYear()} ${currentDate.getHours()}:${currentDate.getMinutes()}:${currentDate.getSeconds()}`;
+            const currentDateTime = currentDate.getTime(); 
             const currentPeriod = periods.find(period => {
-                const startTime = new Date(period.registrationTimeStart);
-                const endTime = new Date(period.registrationTimeEnd);
-                return currentDateTimeString >= startTime && currentDateTimeString <= endTime;
+                const startTime = convertStringToDate(period.registrationTimeStart).getTime();
+                const endTime = convertStringToDate(period.registrationTimeEnd).getTime();
+                return currentDateTime <= startTime && currentDateTime >= endTime;
             });
             setCurrentPeriod(currentPeriod);
-            console.log("Thời gian hiện tại : ", currentDateTimeString);
+            console.log("Thời gian hiện tại: ", currentDateTime);
         }
     }, [periods]);
+    
+    function convertStringToDate(dateTimeString) {
+        const [datePart, timePart] = dateTimeString.split(' ');
+        const [day, month, year] = datePart.split('/');
+        const [hour, minute, second] = timePart.split(':');
+        return new Date(year, month - 1, day, hour, minute, second);
+    }
 
     const reloadForm = () => {
         setFormData({
@@ -126,8 +133,8 @@ function TableRegis() {
             {currentPeriod ? (
                 <div>
                     <h3>Đang trong đợt đăng ký: {currentPeriod.registrationName}</h3>
-                    <p>Thời gian bắt đầu: {currentPeriod.registrationTimeStart}</p>
-                    <p>Thời gian kết thúc: {currentPeriod.registrationTimeEnd}</p>
+                    <p>Thời gian bắt đầu: {currentPeriod.registrationTimeEnd}</p>
+                    <p>Thời gian kết thúc: {currentPeriod.registrationTimeStart}</p>
                 </div>
             ) : (
                 <>

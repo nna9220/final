@@ -1,7 +1,21 @@
-.ManagementTopic {
+.HomeStudent {
     display: flex;
+}
 
-    .homeContainer{
-        flex: 6;
+.context {
+    flex: 6;
+    margin-left: 20px;
+    margin-right: 10px;
+    .widgets{
+        .header-notification{
+            .title{
+                background-color: #4eb09b;
+                padding: 10px;
+                width: 20%;
+                text-align: center;
+                color: white;
+                margin-bottom: 20px;
+            }
+        }
     }
 }
