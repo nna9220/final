@@ -55,7 +55,6 @@ public class RegistrationPeriodLecturerController {
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
-            //List<RegistrationPeriodLectuer> registrationPeriods = registrationPeriodRepository.findAllPeriodEssay(typeSubject);
             List<RegistrationPeriodLectuer> registrationPeriods = registrationPeriodRepository.findAll();
             List<TypeSubject> typeSubjects = typeSubjectRepository.findAll();
             Map<String,Object> response = new HashMap<>();
@@ -117,7 +116,6 @@ public class RegistrationPeriodLecturerController {
             java.util.Date parsedDate = dateFormat.parse(dateString);
             return new java.sql.Date(parsedDate.getTime());
         } catch (ParseException e) {
-            // Xử lý ngoại lệ khi có lỗi trong quá trình chuyển đổi
             e.printStackTrace();
             return null; // hoặc throw một Exception phù hợp
         }

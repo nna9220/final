@@ -3,6 +3,7 @@ package com.web.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import lombok.*;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.io.Serializable;
 import java.util.List;
@@ -11,7 +12,6 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "subject")
-@NoArgsConstructor
 @AllArgsConstructor
 public class Subject implements Serializable {
     @Id
@@ -96,7 +96,7 @@ public class Subject implements Serializable {
     private String year;
 
     @Column(name="check_student")
-    private boolean checkStudent; //Check giá trị student khi gv đăng ký đề tài -> Nếu k cso sv thì false, có sv thì true
+    private Boolean checkStudent; //Check giá trị student khi gv đăng ký đề tài -> Nếu k cso sv thì false, có sv thì true
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "reportFiftyPercent", referencedColumnName = "file_id")
@@ -105,5 +105,8 @@ public class Subject implements Serializable {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "reportOneHundredPercent", referencedColumnName = "file_id")
     private FileComment oneHundredPercent;
+    public Subject() {
+        this.checkStudent = false;
+    }
 
 }

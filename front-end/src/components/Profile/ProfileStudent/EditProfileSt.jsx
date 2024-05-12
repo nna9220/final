@@ -6,6 +6,7 @@ import axiosInstance from '../../../API/axios';
 import AutoFixNormalOutlinedIcon from '@mui/icons-material/AutoFixNormalOutlined';
 import { Alert, Toast } from 'react-bootstrap';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import { FcReading } from "react-icons/fc";
 
 function EditProfileSt() {
     const [user, setUser] = useState([]);
@@ -246,7 +247,7 @@ function EditProfileSt() {
                                 <div class="account-settings">
                                     <div class="user-profile">
                                         <div class="user-avatar">
-                                            <img src="/assets/team-1.jpg" alt="Maxwell Admin" />
+                                            <FcReading size={100}/>
                                         </div>
                                         <h5 class="user-name">{user.firstName + ' ' + user.lastName}</h5>
                                         <h6 class="user-email">{user.username}</h6>

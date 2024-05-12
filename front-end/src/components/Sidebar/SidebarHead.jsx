@@ -4,10 +4,12 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import RecentActorsOutlinedIcon from '@mui/icons-material/RecentActorsOutlined';
 import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined';
+import HowToVoteOutlinedIcon from '@mui/icons-material/HowToVoteOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
 import './SidebarHead.scss'
 import { useNavigate } from 'react-router-dom';
+import { FcReadingEbook } from "react-icons/fc";
 
 function SidebarHead() {
     const [expand, setExpand] = useState(true);
@@ -66,9 +68,7 @@ function SidebarHead() {
                     <hr style={{ color: '#fff' }}></hr>
                     {!isAvatarVisible && (
                         <div className="sidebar-header">
-                            <div className="user-pic" style={{ color: '#fff' }}>
-                                <i className="fa fa-user-circle fa-4x" aria-hidden="true"></i>
-                            </div>
+                            <FcReadingEbook size={70}/>
                             <div className="user-info">
                                 <span className="user-name"><strong>{head.firstName + ' ' + head.lastName}</strong></span>
                                 <span className="user-role">Trưởng bộ môn</span>
@@ -118,6 +118,12 @@ function SidebarHead() {
                                     <a style={{marginLeft:'10px'}} href="/managermentHead/TopicsPB" className="sidebar-link">Đề tài phản biện</a>
                                 </li>
                             </ul>
+                            <li className="sidebar-item">
+                            <a href="/defensepanel" className="sidebar-link">
+                                <i className="lni lni-popup"><HowToVoteOutlinedIcon /></i>
+                                <span>Lập hội đồng báo cáo</span>
+                            </a>
+                        </li>
                         </li>
                     </ul>
                 </aside>

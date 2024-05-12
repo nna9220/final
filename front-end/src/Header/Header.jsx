@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FcGoogle } from "react-icons/fc";
 import { NavLink } from "react-router-dom";
 import './header.scss';
 
@@ -30,8 +31,9 @@ const Navbar = () => {
                 </nav>
                 <div class="login-button">
                     <button className="btn" onClick={handleLoginClick}>
-                        <i className="fab fa-google-plus-g"></i> Đăng nhập
-                    </button>
+                        <i className="fab fa-google-plus-g"></i> 
+                        <FcGoogle size={25}/>  Đăng nhập
+                    </button> 
                 </div>
             </header>
         </div>

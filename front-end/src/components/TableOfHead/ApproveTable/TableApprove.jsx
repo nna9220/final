@@ -119,12 +119,7 @@ function TableApprove() {
             width: 120,
             renderCell: (params) => (
                 <>
-                    {showTable ? (
-                        <button className='button-res'>
-                            <p className='text'><RestoreOutlinedIcon /></p>
-                        </button>
-                    ) : (
-
+                    {!showTable ? (
                         <div style={{ display: 'flex' }}>
                             <button className='button-res' onClick={() => handleApprove(params.row.id)}>
                                 <p className='text'>Duyệt</p>
@@ -133,6 +128,12 @@ function TableApprove() {
                                 <p className='text'>Xóa</p>
                             </button>
                         </div>
+
+                    ) : (
+
+                        <button className='button-res'>
+                            <p className='text'><RestoreOutlinedIcon /></p>
+                        </button>
                     )}
                 </>
             ),
@@ -181,7 +182,7 @@ function TableApprove() {
                 {showTable ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách đề tài chưa duyệt</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách đề tài đã xóa</>}
             </button>
 
-            {showTable ? (
+            {!showTable ? (
                 <div>
                     <div className='home-table table-approve'>
                         <DataGrid

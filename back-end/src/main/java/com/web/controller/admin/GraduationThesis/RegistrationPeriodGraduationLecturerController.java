@@ -113,9 +113,8 @@ public class RegistrationPeriodGraduationLecturerController {
             java.util.Date parsedDate = dateFormat.parse(dateString);
             return new java.sql.Date(parsedDate.getTime());
         } catch (ParseException e) {
-            // Xử lý ngoại lệ khi có lỗi trong quá trình chuyển đổi
             e.printStackTrace();
-            return null; // hoặc throw một Exception phù hợp
+            return null;
         }
     }
     @PostMapping("/edit/{periodId}")

@@ -8,6 +8,7 @@ import './SidebarStudent.scss';
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
 import SourceOutlinedIcon from '@mui/icons-material/SourceOutlined';
+import { FcReading } from "react-icons/fc";
 
 function SidebarStudent() {
   const [student, setStudent] = useState({});
@@ -55,9 +56,7 @@ function SidebarStudent() {
           <hr style={{ color: '#fff' }}></hr>
           {!isAvatarVisible && (
             <div className="sidebar-header">
-              <div className="user-pic" style={{ color: '#fff' }}>
-                <i className="fa fa-user-circle fa-4x" aria-hidden="true"></i>
-              </div>
+              <FcReading size={70}/>
               <div className="user-info">
                 <span className="user-name"><strong>{student.firstName + ' ' + student.lastName}</strong></span>
                 <span className="user-role">Sinh viên</span>
