@@ -6,6 +6,7 @@ import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import { Alert, Toast } from 'react-bootstrap';
 import axiosInstance from '../../../API/axios';
 import moment from 'moment';
+import { FcPortraitMode } from "react-icons/fc";
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 function EditProfile() {
     const [user, setUser] = useState([]);
@@ -255,7 +256,7 @@ function EditProfile() {
                                 <div class="account-settings">
                                     <div class="user-profile">
                                         <div class="user-avatar">
-                                            <img src="/assets/team-1.jpg" alt="Maxwell Admin" />
+                                            <FcPortraitMode size={100}/>
                                         </div>
                                         <h5 class="user-name">{user.firstName + ' ' + user.lastName}</h5>
                                         <h6 class="user-email">{user.username}</h6>

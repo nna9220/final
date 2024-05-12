@@ -10,7 +10,7 @@ function RegisTopicTable() {
     const [topics, setTopics] = useState([]);
     const [topicsRegistered, setTopicsRegistered] = useState([]);
     const [registeredSuccess, setRegisteredSuccess] = useState(false); // Thêm biến trạng thái
-
+    const [errors, setErrors] =useState(null);
     useEffect(() => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log("Token: " + userToken);
@@ -22,21 +22,28 @@ function RegisTopicTable() {
                         'Authorization': `Bearer ${userToken}`,
                     },
                 })
-                    .then(response => {
-                        console.log("DatalistSubject: ", response.data);
-                        const result = response.data;
+                .then(response => {
+                    console.log("DatalistSubject: ", response.data);
+                    const result = response.data;
+                    console.log("Data: ", response.data);
+                    if (result.person) {
+                        // Đã đến thời gian đăng ký
                         if (result.subjectList) {
                             setTopics(result.subjectList);
                         } else if (result.subject) {
                             setTopicsRegistered([result.subject]);
+                        }else {
+                            setErrors("Chưa đến thời gian đăng ký đề tài !!!");
                         }
-                    })
-                    .catch(error => {
-                        console.error(error);
-                    });
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
             }
         }
     }, []);
+    
 
     const dangKyDeTai = (subjectId) => {
         const userToken = getTokenFromUrlAndSaveToStorage();
@@ -153,7 +160,7 @@ function RegisTopicTable() {
                 ))
             ) : (
                 <div>
-                    <h4 style={{ padding: '20px', color: 'red' }}>CHƯA ĐẾN THỜI GIAN ĐĂNG KÝ ĐỀ TÀI!!!</h4>
+                    <h4 style={{ padding: '20px', color: 'red' }}>{errors}</h4>
                 </div>
             )}
         </div>

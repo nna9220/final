@@ -66,12 +66,24 @@ public class StudentRegisterTopic {
                     response.put("person",personCurrent);
                     response.put("subject", existSubject);
                     return new ResponseEntity<>(response,HttpStatus.OK);
-
                 }
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+
+    @GetMapping("/periodLecturer")
+    public ResponseEntity<?> getPeriod(@RequestHeader("Authorization") String authorizationHeader){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_STUDENT") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
+            List<RegistrationPeriod> periodList = registrationPeriodRepository.findAllPeriod();
+            return new ResponseEntity<>(periodList, HttpStatus.OK);
+        }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }

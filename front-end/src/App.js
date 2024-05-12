@@ -35,6 +35,9 @@ import ManagementAppove from './Pages/Head/ManagementAppove';
 import ManagementAssign from './Pages/Head/ManagementAssign';
 import ManagementProjects from './Pages/Head/ManagementTopics';
 import ManagementTopicBeforePB from './Pages/Head/ManagementTopicBeforePB';
+import ManagementTimeApprove from './Pages/Admin/ManagementTimeApprove';
+import ManagementTimeRegister from './Pages/Admin/ManagementTimeRegister';
+import DefensePanel from './Pages/Head/DefensePanel';
 
 function App() {
   return (
@@ -64,6 +67,8 @@ function App() {
         <Route path="/managermentStudent" element={<ManagementStudent />} />
         <Route path="/managermentLec" element={<ManagementLec />} />
         <Route path="/managermentPeriod" element={<ManagementPeriod />} />
+        <Route path="/managermentApproveTime" element={<ManagementTimeApprove />} /> 
+        <Route path="/managermentRegisterTime" element={<ManagementTimeRegister />} /> 
         <Route path="/managermentYears" element={<ManagementYears />} />
         <Route path='/managermentTopics' element={<ManagementTopics/>}/>
         <Route path='/managermentType' element={<ManagementType/>}/>
@@ -83,6 +88,7 @@ function App() {
         <Route path='/managementHead/topics' element={<ManagementProjects/>}/>
         <Route path="/managermentTopicHead" element={<TopicOfHead />} />
         <Route path="/managermentHead/TopicsPB" element={<ManageTopicPBOfHead />} />
+        <Route path="/defensepanel" element={<DefensePanel />} />
 
 
         <Route path='/homeLecturer' element={<HomeLec/>}/>

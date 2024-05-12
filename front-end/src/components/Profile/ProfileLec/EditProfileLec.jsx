@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import React from 'react';
+import { FcReadingEbook } from "react-icons/fc";
 import './EditProfileLec.scss';
 import AutoFixNormalOutlinedIcon from '@mui/icons-material/AutoFixNormalOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
@@ -246,7 +247,7 @@ function EditProfileLec() {
                                 <div class="account-settings">
                                     <div class="user-profile">
                                         <div class="user-avatar">
-                                            <img src="/assets/team-1.jpg" alt="Maxwell Admin" />
+                                            <FcReadingEbook size={100}/>
                                         </div>
                                         <h5 class="user-name">{user.firstName + ' ' + user.lastName}</h5>
                                         <h6 class="user-email">{user.username}</h6>

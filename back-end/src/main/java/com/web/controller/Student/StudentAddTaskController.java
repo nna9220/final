@@ -196,14 +196,8 @@ public class StudentAddTaskController {
                     }
                 }
             }
-
-            /*String referer = Contains.URL_LOCAL + "/api/student/task/detail/"+existTask.getTaskId();
-            return new ModelAndView("redirect:" + referer);*/
             return new ResponseEntity<>(existTask,HttpStatus.OK);
         } else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
