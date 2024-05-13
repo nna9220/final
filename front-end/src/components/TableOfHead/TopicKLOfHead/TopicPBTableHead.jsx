@@ -127,7 +127,7 @@ function TopicPBTableHead() {
                 </table>
             </div>
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-dialog modal-xl modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h1 class="modal-title fs-5" id="exampleModalLabel">Đánh giá</h1>
@@ -152,7 +152,9 @@ function TopicPBTableHead() {
                                 <thead>
                                     <tr>
                                         <th>Tiêu Chí Đánh Giá</th>
-                                        <th>Điểm</th>
+                                        <th>Sinh viên 1</th>
+                                        <th>Sinh viên 2</th>
+                                        <th>Sinh viên 3</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -160,12 +162,33 @@ function TopicPBTableHead() {
                                         <tr key={criteria}>
                                             <td className='criteria'>{criteria}</td>
                                             <td>
-                                                <input
-                                                    type='number'
-                                                    step='0.25'
-                                                    max={1}
-                                                    min={0}
-                                                    value={scores[criteria]}
+                                                <input type='number' step='0.25' max={1} min={0} value={scores[criteria]}
+                                                    onChange={(e) => {
+                                                        const value = parseFloat(e.target.value);
+                                                        if (value > 1) {
+                                                            handleScoreChange(criteria, 1);
+                                                        } else {
+                                                            handleScoreChange(criteria, value);
+                                                        }
+                                                    }}
+                                                />
+
+                                            </td>
+                                            <td>
+                                                <input type='number' step='0.25' max={1} min={0} value={scores[criteria]}
+                                                    onChange={(e) => {
+                                                        const value = parseFloat(e.target.value);
+                                                        if (value > 1) {
+                                                            handleScoreChange(criteria, 1);
+                                                        } else {
+                                                            handleScoreChange(criteria, value);
+                                                        }
+                                                    }}
+                                                />
+
+                                            </td>
+                                            <td>
+                                                <input type='number' step='0.25' max={1} min={0} value={scores[criteria]}
                                                     onChange={(e) => {
                                                         const value = parseFloat(e.target.value);
                                                         if (value > 1) {
@@ -182,6 +205,9 @@ function TopicPBTableHead() {
                                     <tr>
                                         <td className='criteria-sum'>Tổng</td>
                                         <td><input type='number' step='0.25' max={1} min={0} className='score' readOnly value={totalScore.toFixed(2)}></input></td>
+                                        <td><input type='number' step='0.25' max={1} min={0} className='score' readOnly value={totalScore.toFixed(2)}></input></td>
+                                        <td><input type='number' step='0.25' max={1} min={0} className='score' readOnly value={totalScore.toFixed(2)}></input></td>
+
                                     </tr>
                                 </tbody>
                             </table>

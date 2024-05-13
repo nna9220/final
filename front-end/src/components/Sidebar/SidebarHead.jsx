@@ -68,7 +68,7 @@ function SidebarHead() {
                     <hr style={{ color: '#fff' }}></hr>
                     {!isAvatarVisible && (
                         <div className="sidebar-header">
-                            <FcReadingEbook size={70}/>
+                            <FcReadingEbook size={70} />
                             <div className="user-info">
                                 <span className="user-name"><strong>{head.firstName + ' ' + head.lastName}</strong></span>
                                 <span className="user-role">Trưởng bộ môn</span>
@@ -98,32 +98,44 @@ function SidebarHead() {
                         <li className="sidebar-item">
                             <a href="#" className="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth"
                                 aria-expanded="false" aria-controls="auth">
-                                <i className="lni lni-protection"><FactCheckOutlinedIcon/></i>
-                                <span>Quản lý đề tài</span>
+                                <i className="lni lni-protection"><FactCheckOutlinedIcon /></i>
+                                <span>Quản lý quá trình</span>
                             </a>
                             <ul id="auth" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                                 <li className="sidebar-item">
-                                    <a  style={{marginLeft:'10px'}} href="/managermentHead/approve" className="sidebar-link">Duyệt đề tài</a>
+                                    <a style={{ marginLeft: '10px' }} href="/managermentHead/approve" className="sidebar-link">Duyệt đề tài</a>
                                 </li>
                                 <li className="sidebar-item">
-                                    <a  style={{marginLeft:'10px'}} href="/managermentHead/approvebefore" className="sidebar-link">Duyệt đề tài trước phản biện</a>
+                                    <a style={{ marginLeft: '10px' }} href="/managermentHead/approvebefore" className="sidebar-link">Duyệt đề tài trước phản biện</a>
                                 </li>
                                 <li className="sidebar-item">
-                                    <a style={{marginLeft:'10px'}} href="/managementHead/assign" className="sidebar-link">Phân giảng viên phản biện</a>
+                                    <a style={{ marginLeft: '10px' }} href="/managementHead/assign" className="sidebar-link">Phân giảng viên phản biện</a>
                                 </li>
                                 <li className="sidebar-item">
-                                    <a style={{marginLeft:'10px'}} href="/managementHead/topics" className="sidebar-link">Đề tài của tôi</a>
+                                    <a style={{ marginLeft: '10px' }} href="/managementHead/criteria" className="sidebar-link">Tiêu chí phản biện</a>
                                 </li>
                                 <li className="sidebar-item">
-                                    <a style={{marginLeft:'10px'}} href="/managermentHead/TopicsPB" className="sidebar-link">Đề tài phản biện</a>
+                                    <a style={{ marginLeft: '10px' }} href="/defensepanel" className="sidebar-link">Lập hội đồng</a>
                                 </li>
                             </ul>
-                            <li className="sidebar-item">
-                            <a href="/defensepanel" className="sidebar-link">
-                                <i className="lni lni-popup"><HowToVoteOutlinedIcon /></i>
-                                <span>Lập hội đồng báo cáo</span>
-                            </a>
                         </li>
+                        <li className="sidebar-item">
+                            <a href="#" className="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth2"
+                                aria-expanded="false" aria-controls="auth">
+                                <i className="lni lni-protection"><FactCheckOutlinedIcon /></i>
+                                <span>Quản lý đề tài</span>
+                            </a>
+                            <ul id="auth2" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                                <li className="sidebar-item">
+                                    <a style={{ marginLeft: '10px' }} href="/managementHead/topics" className="sidebar-link">Đề tài của tôi</a>
+                                </li>
+                                <li className="sidebar-item">
+                                    <a style={{ marginLeft: '10px' }} href="/managermentHead/TopicsPB" className="sidebar-link">Đề tài phản biện</a>
+                                </li>
+                                <li className="sidebar-item">
+                                    <a style={{ marginLeft: '10px' }} href="/managermentHead/TopicsPB" className="sidebar-link">Đề tài đã thực hiện</a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </aside>
