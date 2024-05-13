@@ -38,6 +38,7 @@ import ManagementTopicBeforePB from './Pages/Head/ManagementTopicBeforePB';
 import ManagementTimeApprove from './Pages/Admin/ManagementTimeApprove';
 import ManagementTimeRegister from './Pages/Admin/ManagementTimeRegister';
 import DefensePanel from './Pages/Head/DefensePanel';
+import ManagementCriteria from './Pages/Head/ManagementCriteria';
 
 function App() {
   return (
@@ -85,6 +86,7 @@ function App() {
         <Route path="/managermentHead/approve" element={<ManagementAppove />} />
         <Route path="/managermentHead/approvebefore" element={<ManagementTopicBeforePB/>} />
         <Route path='/managementHead/assign' element={<ManagementAssign/>}/>
+        <Route path='/managementHead/criteria' element={<ManagementCriteria/>}/>
         <Route path='/managementHead/topics' element={<ManagementProjects/>}/>
         <Route path="/managermentTopicHead" element={<TopicOfHead />} />
         <Route path="/managermentHead/TopicsPB" element={<ManageTopicPBOfHead />} />
