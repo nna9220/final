@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface EvaluationCriteriaRepository extends JpaRepository<EvaluationCriteria, Integer> {
 
-    @Query("SELECT * FROM EvaluationCriteria e where e.typeSubject=:typeSubject and e.major=:major")
+    @Query("SELECT e FROM EvaluationCriteria e where e.typeSubject=:typeSubject and e.major=:major")
     public List<EvaluationCriteria> getEvaluationCriteriaByTypeSubjectAndCriteriaId(TypeSubject typeSubject, Major major);
 }
