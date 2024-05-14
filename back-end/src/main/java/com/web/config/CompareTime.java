@@ -66,6 +66,7 @@ public class CompareTime {
         if (timeBrowsOfHead!=null){
             System.out.println("start 1: " + timeBrowsOfHead.getTimeStart());
             System.out.println("end 1: " + timeBrowsOfHead.getTimeEnd());
+            System.out.println("current: " + currentTime);
             return isCurrentTimeInInterval(timeBrowsOfHead.getTimeStart(), timeBrowsOfHead.getTimeEnd());
         }
         return false;
@@ -76,6 +77,7 @@ public class CompareTime {
         if (timeAddSubjectOfHead!=null){
             System.out.println("start 1: " + timeAddSubjectOfHead.getTimeStart());
             System.out.println("end 1: " + timeAddSubjectOfHead.getTimeEnd());
+            System.out.println("current: " + currentTime);
             return isCurrentTimeInInterval(timeAddSubjectOfHead.getTimeStart(), timeAddSubjectOfHead.getTimeEnd());
         }
         return false;

@@ -19,44 +19,19 @@ public class Subject implements Serializable {
     @Column(name="subject_id")
     private int subjectId;
 
+    @OneToOne
+    @JoinColumn(name = "council", unique = true)
+    private Council council;
+
     @Column(name="subject_name")
     private String subjectName;
 
-    /*TLCN
-    1 là dang thực hiện
-    2 GVHD đã xác nhận đề tài hoàn thành --> SV trong tgian nộp bài
-    3 SV đã xác nhận nộp bài --> GVHD trong quá trình xác nhận đề tài đủ đk phản biện
-    4 GVHD đã xác nhận đề tài đủ đk phản biển
-    5 đã chấm điểm - đánh giá
-    8 đề tài đủ đk qua môn (score+scorerThesis/2 >=5) --> Đề tài successful
-    0 (score+scorerThesis/2 <5) --> Đề tài fail --> Subject hoặc subjectGraduation của SV sẽ về null
-    KLTN
-    1 là dang thực hiện
-    2 GVHD đã xác nhận đề tài hoàn thành --> SV trong tgian nộp bài
-    3 SV đã xác nhận nộp bài --> GVHD trong quá trình xác nhận đề tài đủ đk phản biện
-    4 GVHD đã xác nhận đề tài đủ đk phản biển
-    5 đã chấm điểm - đánh giá --> TBM trong giai đoạn lập hội đồng cho đề tài
-    6 đã Lập hội đồng - Thời gian báo cáo và chấm điểm
-    7 Hội đồng đã đánh giá và chấm điểm
-    8 đề tài đủ đk qua môn (scoreCouncil+scorerThesis/2 >=5) --> Đề tài successful
-    0 (score+scorerThesis/2 <5) --> Đề tài fail --> Subject hoặc subjectGraduation của SV sẽ về null*/
     @Column(name="active")
     private Byte active;
 
     @Column(name = "major", length = 50)
     @Enumerated(EnumType.STRING)
     private Major major;
-
-    //Điểm GVHD
-    @Column(name="score_instruct")
-    private Double scoreInstruct;
-
-    //Điểm GVPB
-    @Column(name="score_Thesis")
-    private Double scoreThesis;
-
-    @Column(name="review")
-    private String review;
 
     @Column(name="requirement")
     private String requirement;
@@ -106,4 +81,12 @@ public class Subject implements Serializable {
     @JoinColumn(name = "reportOneHundredPercent", referencedColumnName = "file_id")
     private FileComment oneHundredPercent;
 
+    @ManyToMany(mappedBy = "lecturers")
+    private List<Council> councils;
+
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
+    private List<ResultEssay> resultEssays;
+
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
+    private List<ResultGraduation> resultGraduations;
 }

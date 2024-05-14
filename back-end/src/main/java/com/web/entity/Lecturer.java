@@ -27,7 +27,6 @@ public class Lecturer implements Serializable {
     @JoinColumn(name="authority")
     private Authority authority;
 
-
     @Column(name="major", length = 50)
     @Enumerated(EnumType.STRING)
     private Major major;
@@ -43,5 +42,7 @@ public class Lecturer implements Serializable {
     @OneToMany(mappedBy = "instructorId", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Task> tasks;
+
+
 
 }
