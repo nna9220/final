@@ -151,20 +151,25 @@ public class StudentAddTaskGraduationController {
                         + "Change status task " + existTask.getRequirement() + " to " + selectedOption;
                 newMail.setSubject(subject);
                 newMail.setSubject(messenger);
-                if (personCurrent.getPersonId().equals(existSubject.getStudent1())) {
-                    if (existSubject.getStudent2()!=null) {
-                        Student studen2 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
-                        mailService.sendMail(studen2.getPerson().getUsername(), existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
-                    }else {
-                        mailService.sendMailNull(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
-                    }
-                }else {
-                    if (existSubject.getStudent1()!=null) {
-                        Student studen1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
-                        mailService.sendMail(studen1.getPerson().getUsername(), existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
-                    }else {
-                        mailService.sendMailNull(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
-                    }
+                Student student1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
+                Student student2 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
+                Student student3 = studentRepository.findById(existSubject.getStudent3()).orElse(null);
+                List<String> emailPerson = new ArrayList<>();
+                if (student1!=null){
+                    emailPerson.add(student1.getPerson().getUsername());
+                }
+                if (student2!=null){
+                    emailPerson.add(student2.getPerson().getUsername());
+                }
+                if (student3!=null){
+                    emailPerson.add(student3.getPerson().getUsername());
+                }
+                Lecturer instructor = lecturerRepository.findById(existSubject.getInstructorId().getLecturerId()).orElse(null);
+                if (instructor!=null){
+                    emailPerson.add(instructor.getPerson().getUsername());
+                }
+                if (!emailPerson.isEmpty()){
+                    mailService.sendMailToPerson(emailPerson,subject,messenger);
                 }
             }
             return new ResponseEntity<>(existTask,HttpStatus.OK);

@@ -5,6 +5,8 @@ services:
       - MYSQL_ROOT_PASSWORD=Nanguyen1206@
     volumes:
       - /data:/var/lib/mysql
+      - ./backupfile.sql:/docker-entrypoint-initdb.d/backup.sql
+    command: --init-file /docker-entrypoint-initdb.d/backup.sql
 
   
   front-end:
@@ -23,7 +25,7 @@ services:
     expose:
       - "5000"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-container/registertopic
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-container/registersubject
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=Nanguyen1206@
     depends_on:

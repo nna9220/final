@@ -43,6 +43,8 @@ public class StudentAddCommentGraduationController {
     private FileMaterialService fileMaterialService;
     @Autowired
     private MailServiceImpl mailService;
+    @Autowired
+    private LecturerRepository lecturerRepository;
 
     @Autowired
     private SubjectRepository subjectRepository;
@@ -81,6 +83,7 @@ public class StudentAddCommentGraduationController {
                         FileComment newFile = new FileComment();
                         newFile.setName(fileName);
                         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                                .scheme("https")
                                 .path("/api/graduation/student/comment/fileUpload/")
                                 .path(fileName)
                                 .toUriString();
@@ -106,42 +109,35 @@ public class StudentAddCommentGraduationController {
                     + "Content: " + comment.getContent();
             newMail.setSubject(subject);
             newMail.setSubject(messenger);
-            if (personCurrent.getPersonId().equals(existSubject.getStudent1())) {
-                if (existSubject.getStudent2()!=null) {
-                    Student student2 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
-                    if (student2!=null) {
-                        mailService.sendMail(student2.getPerson().getUsername(), existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
-                    }
-                }else {
-                    mailService.sendMailNull(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
-                }
-            }else {
-                if (existSubject.getStudent1()!=null) {
-                    Student student1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
-                    if (student1!=null) {
-                        mailService.sendMail(student1.getPerson().getUsername(), existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
-                    }
-                }else {
-                    mailService.sendMailNull(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
-                }
+            Student student1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
+            Student student2 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
+            Student student3 = studentRepository.findById(existSubject.getStudent3()).orElse(null);
+            List<String> emailPerson = new ArrayList<>();
+            if (student1!=null){
+                emailPerson.add(student1.getPerson().getUsername());
             }
-            /*String referer = Contains.URL_LOCAL + "/api/student/task/detail/" + taskId;
-            return new ModelAndView("redirect:"+referer);*/
+            if (student2!=null){
+                emailPerson.add(student2.getPerson().getUsername());
+            }
+            if (student3!=null){
+                emailPerson.add(student3.getPerson().getUsername());
+            }
+            Lecturer instructor = lecturerRepository.findById(existSubject.getInstructorId().getLecturerId()).orElse(null);
+            if (instructor!=null){
+                emailPerson.add(instructor.getPerson().getUsername());
+            }
+            if (!emailPerson.isEmpty()){
+                mailService.sendMailToPerson(emailPerson,subject,messenger);
+            }
             return new ResponseEntity<>(existTask, HttpStatus.OK);
         }else{
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
 
     @GetMapping("/fileUpload/{fileName}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
-        // Load file as Resource
-        Resource resource =fileMaterialService.loadFileAsResource(fileName);
-
-        // Try to determine file's content type
+    public ResponseEntity<Resource> viewFile(@PathVariable String fileName, HttpServletRequest request) {
+        Resource resource = fileMaterialService.loadFileAsResource(fileName);
         String contentType = null;
         try {
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
@@ -149,14 +145,20 @@ public class StudentAddCommentGraduationController {
             logger.info("Could not determine file type.");
         }
 
-        // Fallback to the default content type if type could not be determined
         if(contentType == null) {
             contentType = "application/octet-stream";
         }
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
+    }
+    @GetMapping("/download/{fileName}")
+    public ResponseEntity<Resource> redirectToDownload(@PathVariable String fileName) {
+        String redirectUrl = "/fileUpload/" + fileName;
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header(HttpHeaders.LOCATION, redirectUrl)
+                .build();
     }
 }
