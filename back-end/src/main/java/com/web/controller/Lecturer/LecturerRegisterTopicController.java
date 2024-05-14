@@ -163,7 +163,6 @@ public class LecturerRegisterTopicController {
                         newSubject.setStudent1(student1);
                         studentId1.setSubjectId(newSubject);
                         studentList.add(studentId1);
-                        newSubject.setCheckStudent(true);
                         System.out.println("Sau if check sv1");
                     }
                     System.out.println("Trước if check sv2");
@@ -172,7 +171,6 @@ public class LecturerRegisterTopicController {
                         newSubject.setStudent2(student2);
                         studentId2.setSubjectId(newSubject);
                         studentList.add(studentId2);
-                        newSubject.setCheckStudent(true);
                         System.out.println("Sau if check sv2");
                     }
                     System.out.println("Trước if check sv3");
@@ -181,11 +179,12 @@ public class LecturerRegisterTopicController {
                         newSubject.setStudent3(student3);
                         studentId3.setSubjectId(newSubject);
                         System.out.println("Sau if check sv3");
-                        newSubject.setCheckStudent(true);
                         studentList.add(studentId3);
                     }
-                    if (student1==null){
+                    if (student1==null && student2==null && student3==null){
                         newSubject.setCheckStudent(false);
+                    }else {
+                        newSubject.setCheckStudent(true);
                     }
                     LocalDate nowDate = LocalDate.now();
                     newSubject.setYear(String.valueOf(nowDate));
@@ -232,7 +231,6 @@ public class LecturerRegisterTopicController {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
-            /*ModelAndView modelAndView = new ModelAndView("lecturer_detailTask");*/
             Task currentTask = taskRepository.findById(taskId).orElse(null);
             List<FileComment> fileCommentList = fileRepository.findAllByTask(currentTask);
             List<Comment> commentList = currentTask.getComments();

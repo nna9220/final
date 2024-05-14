@@ -155,7 +155,7 @@ public class AddCounterArgumentController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
-            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) 0,typeSubject);
+            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) -1,typeSubject);
             /*model.addObject("listSubject",subjectByCurrentLecturer);
             return model;*/
             Map<String,Object> response = new HashMap<>();
@@ -240,25 +240,24 @@ public class AddCounterArgumentController {
                         Student studentId1 = studentRepository.findById(student1).orElse(null);
                         newSubject.setStudent1(student1);
                         studentId1.setSubjectId(newSubject);
-                        newSubject.setCheckStudent(true);
                         studentList.add(studentId1);
                     }
                     if (student2!=null) {
                         Student studentId2 = studentRepository.findById(student2).orElse(null);
                         newSubject.setStudent2(student2);
                         studentId2.setSubjectId(newSubject);
-                        newSubject.setCheckStudent(true);
                         studentList.add(studentId2);
                     }
                     if (student3!=null) {
                         Student studentId3 = studentRepository.findById(student3).orElse(null);
                         newSubject.setStudent1(student3);
                         studentId3.setSubjectId(newSubject);
-                        newSubject.setCheckStudent(true);
                         studentList.add(studentId3);
                     }
-                    if (student1==null){
+                    if (student1==null && student2==null && student3==null){
                         newSubject.setCheckStudent(false);
+                    }else {
+                        newSubject.setCheckStudent(true);
                     }
                     LocalDate nowDate = LocalDate.now();
                     newSubject.setYear(String.valueOf(nowDate));
@@ -313,7 +312,7 @@ public class AddCounterArgumentController {
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
             Subject existSubject = subjectRepository.findById(id).orElse(null);
-            existSubject.setActive((byte) 0);
+            existSubject.setActive((byte) -1);
             subjectRepository.save(existSubject);
 
             String subject = "Topic: " + existSubject.getSubjectName() ;

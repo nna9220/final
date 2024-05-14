@@ -174,7 +174,6 @@ public class LecturerRegisterGraduationTopicController {
                         newSubject.setStudent1(student1);
                         studentId1.setSubjectGraduationId(newSubject);
                         studentList.add(studentId1);
-                        newSubject.setCheckStudent(true);
                         System.out.println("Sau if check sv1");
                     }
                     System.out.println("Trước if check sv2");
@@ -183,7 +182,6 @@ public class LecturerRegisterGraduationTopicController {
                         newSubject.setStudent2(student2);
                         studentId2.setSubjectGraduationId(newSubject);
                         studentList.add(studentId2);
-                        newSubject.setCheckStudent(true);
                         System.out.println("Sau if check sv2");
                     }
                     System.out.println("Trước if check sv3");
@@ -191,13 +189,14 @@ public class LecturerRegisterGraduationTopicController {
                         Student studentId3 = studentRepository.findById(student3).orElse(null);
                         newSubject.setStudent3(student3);
                         studentId3.setSubjectGraduationId(newSubject);
-                        newSubject.setCheckStudent(true);
                         System.out.println("Sau if check sv3");
                         studentList.add(studentId3);
 
                     }
-                    if (student1==null){
+                    if (student1==null && student2==null && student3==null){
                         newSubject.setCheckStudent(false);
+                    }else {
+                        newSubject.setCheckStudent(true);
                     }
                     LocalDate nowDate = LocalDate.now();
                     newSubject.setYear(String.valueOf(nowDate));
