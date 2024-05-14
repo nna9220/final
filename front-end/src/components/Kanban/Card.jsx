@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import axios from 'axios';
 import MoreHorizTwoToneIcon from '@mui/icons-material/MoreHorizTwoTone';
 import AlarmOnTwoToneIcon from '@mui/icons-material/AlarmOnTwoTone';
 import AddAlarmOutlinedIcon from '@mui/icons-material/AddAlarmOutlined';
@@ -52,7 +51,6 @@ const Card = ({ task, index }) => {
 
   const handleViewTask = (taskId) => {
     setSelectedTask(taskId);
-    // Gửi yêu cầu API với taskId đã chọn
     const userToken = getTokenFromUrlAndSaveToStorage();
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
@@ -77,7 +75,7 @@ const Card = ({ task, index }) => {
   const modalId = `exampleModal-${task.taskId}`;
 
   return (
-    <Draggable draggableId={task.id} index={index}>
+    <Draggable draggableId={task?.taskId?.toString()} index={index}>
       {(provided) => (
         <div className="card-items" ref={provided.innerRef}{...provided.draggableProps}{...provided.dragHandleProps}>
           <div class="dropdown">

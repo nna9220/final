@@ -14,7 +14,7 @@ function ManageLec() {
       <div className='context'>
         <Navbar />
         <hr></hr>
-        <h3 className='title-pb'>ĐỀ TÀI CỦA TÔI</h3>
+        <h3 className='title-pb-lec'>ĐỀ TÀI CỦA TÔI</h3>
         <div className='body-table'>
           <ManagermentTask />
         </div>

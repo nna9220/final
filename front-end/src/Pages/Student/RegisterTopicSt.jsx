@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import SidebarStudent from '../../components/Sidebar/SidebarStudent'
 import Navbar from '../../components/Navbar/Navbar'
 import './RegisterTopicSt.scss'
-import RegisTopicTable from '../../components/Table/RegisTopicTable'
+import RegisTopicTable from '../../components/RegiterTopicOfStudent/RegisTopicTable';
 
 function RegisterTopicSt() {
     useEffect(() => {
