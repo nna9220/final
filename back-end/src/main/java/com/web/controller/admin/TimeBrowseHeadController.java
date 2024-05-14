@@ -4,16 +4,11 @@ package com.web.controller.admin;
 
 import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
-import com.web.entity.Person;
-import com.web.entity.RegistrationPeriodLectuer;
-import com.web.entity.TimeBrowsOfHead;
-import com.web.entity.TypeSubject;
+import com.web.entity.*;
 import com.web.mapper.RegistrationPeriodMapper;
-import com.web.repository.PersonRepository;
-import com.web.repository.RegistrationPeriodLecturerRepository;
-import com.web.repository.TimeBrowseHeadRepository;
-import com.web.repository.TypeSubjectRepository;
+import com.web.repository.*;
 import com.web.service.Admin.RegistrationPeriodService;
+import com.web.service.MailServiceImpl;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +35,10 @@ public class TimeBrowseHeadController {
     private UserUtils userUtils;
     @Autowired
     private TypeSubjectRepository typeSubjectRepository;
+    @Autowired
+    private LecturerRepository lecturerRepository;
+    @Autowired
+    private MailServiceImpl mailService;
     private final TokenUtils tokenUtils;
     @Autowired
     public TimeBrowseHeadController(TokenUtils tokenUtils){
@@ -132,7 +132,23 @@ public class TimeBrowseHeadController {
                 System.out.println("data nhận về:" + start + " end : " + end);
                 existTimeBrowsOfHead.setTimeStart(convertToSqlDate(start));
                 existTimeBrowsOfHead.setTimeEnd(convertToSqlDate(end));
-                timeBrowseHeadRepository.save(existTimeBrowsOfHead);
+                var update = timeBrowseHeadRepository.save(existTimeBrowsOfHead);
+                //GỬI MAIL
+                //Dnah sách SV
+                List<Lecturer> lecturers = lecturerRepository.getListLecturerISHead("ROLE_HEAD");
+                List<String> emailLecturer = new ArrayList<>();
+                for (Lecturer lecturer:lecturers) {
+                    emailLecturer.add(lecturer.getPerson().getUsername());
+                }
+                MailStructure newMail = new MailStructure();
+                String subject = "THÔNG BÁO THỜI GIAN DUYỆT ĐỀ TÀI TIỂU LUẬN CHUYÊN NGÀNH CHO TBM";
+                String messenger = "Thời gian bắt đầu: " + update.getTimeStart()+"\n" +
+                        "Thời gian kết thúc: " + update.getTimeEnd() + "\n";
+                newMail.setSubject(subject);
+                newMail.setSubject(messenger);
+                if (!lecturers.isEmpty()){
+                    mailService.sendMailToStudents(emailLecturer,subject,messenger);
+                }
                 return new ResponseEntity<>(existTimeBrowsOfHead,HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

@@ -80,7 +80,7 @@ public class HomeHeadController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Subject existSubject = subjectRepository.findById(id).orElse(null);
             if (existSubject!=null){
-                existSubject.setScoreThesis(score);
+                /*existSubject.setScoreThesis(score);*/
                 subjectRepository.save(existSubject);
                 /*String referer = Contains.URL_LOCAL + "/api/head/counterArgumentSubject/detail/" + existSubject.getSubjectId();
                 System.out.println("Url: " + referer);

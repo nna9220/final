@@ -157,7 +157,7 @@ public class HeadManagerTopicGraduationController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Subject existSubject = subjectRepository.findById(id).orElse(null);
             if (existSubject!=null){
-                existSubject.setScoreThesis(score);
+                /*existSubject.setScoreThesis(score);*/
                 subjectRepository.save(existSubject);
 
                 return new ResponseEntity<>(existSubject,HttpStatus.OK);
