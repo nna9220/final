@@ -18,7 +18,6 @@ public class Council {
     @Column(name="council_id")
     private int councilId;
 
-
     @Column(name = "address")
     private String address;
 
