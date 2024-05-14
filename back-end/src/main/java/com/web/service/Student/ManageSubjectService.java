@@ -11,6 +11,7 @@ import com.web.repository.PersonRepository;
 import com.web.repository.StudentRepository;
 import com.web.repository.SubjectRepository;
 import com.web.service.FileMaterialService;
+import com.web.service.MailServiceImpl;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class ManageSubjectService {
     @Autowired
     private StudentRepository studentRepository;
     @Autowired
-    private LecturerRepository lecturerRepository;
+    private MailServiceImpl mailService;
     @Autowired
     private SubjectRepository subjectRepository;
     @Autowired
@@ -67,6 +68,10 @@ public class ManageSubjectService {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
                 subjectRepository.save(existedSubject);
+                Subject existSubject = subjectRepository.findById(id).orElse(null);
+                String subject = "Topic: " + existSubject.getSubjectName();
+                String messenger = "Topic: " + existSubject.getSubjectName() + " đã nộp báo cáo 50%!!";
+                mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
                 return new ResponseEntity<>(existedStudent,HttpStatus.OK);
             }else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -101,6 +106,11 @@ public class ManageSubjectService {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
                 subjectRepository.save(existedSubject);
+                Subject existSubject = subjectRepository.findById(id).orElse(null);
+                String subject = "Topic: " + existSubject.getSubjectName();
+                String messenger = "Topic: " + existSubject.getSubjectName() + " đã nộp báo cáo 100%!!";
+                mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
+
                 return new ResponseEntity<>(existedStudent,HttpStatus.OK);
             }else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
