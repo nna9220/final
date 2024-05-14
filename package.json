@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@dnd-kit/sortable": "^8.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@lourenci/react-kanban": "^2.1.0",
+    "ant": "^0.2.0",
+    "react-beautiful-dnd": "^13.1.1",
+    "react-dom": "^18.3.1",
+    "styled-components": "^6.1.11"
+  }
+}

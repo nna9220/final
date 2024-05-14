@@ -109,6 +109,9 @@ function SidebarLec() {
                                 <li className="sidebar-item">
                                     <a style={{ marginLeft: '10px' }} href="/managermentTopicPBLec" className="sidebar-link">Đề tài phản biện</a>
                                 </li>
+                                <li className="sidebar-item">
+                                    <a style={{ marginLeft: '10px' }} href="/thesisCommittee" className="sidebar-link">Hội đồng báo cáo</a>
+                                </li>
                             </ul>
                         </li>
                     </ul>

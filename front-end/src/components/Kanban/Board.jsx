@@ -21,26 +21,27 @@ const KanbanBoard = () => {
     timeStart: '',
     timeEnd: '',
     assignTo: '',
-  })
+  });
   const [error, setError] = useState(null);
+  const [currentDroppableId, setCurrentDroppableId] = useState('MustDo'); // State lưu trữ droppableId hiện tại
+
   const handleChangeAdd = (e) => {
     const { name, value } = e.target;
     setFormNewTask(prevState => ({
       ...prevState,
       [name]: value
-    }))
+    }));
   }
-
 
   const toggleTimeline = () => {
     setShowTimeLine(!showTimeLine);
     setShowListTask(false);
   }
+
   const toggleListTask = () => {
     setShowListTask(!showListTask);
     setShowTimeLine(false);
   }
-
 
   useEffect(() => {
     const userToken = getTokenFromUrlAndSaveToStorage();
@@ -58,7 +59,7 @@ const KanbanBoard = () => {
           })
           .catch(error => {
             console.error("Error fetching task list:", error);
-            setError("Bạn chưa có đề tài!!!!")
+            setError("Bạn chưa có đề tài!!!!");
           });
       }
     }
@@ -77,15 +78,12 @@ const KanbanBoard = () => {
       })
       .catch(error => {
         console.error("Error new task:", error);
-      })
+      });
   }
 
   const handleAddNewTask = () => {
     const userToken = getTokenFromUrlAndSaveToStorage();
 
-
-    console.log("Start: ", formNewTask.timeStart);
-    console.log("Requirement: ", formNewTask.requirement);
     axiosInstance.post('/student/task/create', formNewTask, {
       headers: {
         'Authorization': `Bearer ${userToken}`,
@@ -98,7 +96,7 @@ const KanbanBoard = () => {
       })
       .catch(error => {
         console.error("Error add new task:", error);
-      })
+      });
   }
 
   const handleDragEnd = (result) => {
@@ -106,20 +104,47 @@ const KanbanBoard = () => {
     if (!destination || (destination.droppableId === source.droppableId && destination.index === source.index)) {
       return;
     }
+
+    const movedTaskIndex = data.findIndex(task => task.id === draggableId);
+    const movedTask = { ...data[movedTaskIndex] };
     const updatedData = [...data];
-    const movedTask = updatedData.find(task => task.id === draggableId);
+
+    // Xóa nhiệm vụ khỏi danh sách nguồn
     updatedData.splice(source.index, 1);
+    // Thêm nhiệm vụ vào danh sách đích
     updatedData.splice(destination.index, 0, movedTask);
+
+    // Cập nhật trạng thái mới cho nhiệm vụ
+    switch (destination.droppableId) {
+      case 'MustDo':
+        movedTask.status = 'MustDo';
+        break;
+      case 'Doing':
+
+        movedTask.status = 'Doing';
+        break;
+      case 'Closed':
+        movedTask.status = 'Closed';
+        break;
+      default:
+        movedTask.status = 'MustDo';
+    }
     setData(updatedData);
-    // Gọi API hoặc cập nhật trạng thái task ở đây
+
+    updateTaskStatus(draggableId, movedTask.status);
+    setCurrentDroppableId(destination.droppableId); 
   };
 
   const updateTaskStatus = (taskId, status) => {
     const userToken = getTokenFromUrlAndSaveToStorage();
-    axiosInstance.post(`/student/task/updateStatus/${taskId}`, { selectedOption: status }, {
+
+    axiosInstance.post(`/student/task/updateStatus/${taskId}`, {status}, {
       headers: {
         'Authorization': `Bearer ${userToken}`,
       },
+      params: {
+        selectedOption: status
+      }
     })
       .then(response => {
         console.log("Task status updated successfully:", response.data);
@@ -221,9 +246,9 @@ const KanbanBoard = () => {
           {showListTask && (
             <DragDropContext onDragEnd={handleDragEnd}>
               <div className="kanban-board">
-                <Column title="Must Do" tasks={data.filter(task => task.status === 'MustDo')} droppableId="MustDo" />
-                <Column title="Doing" tasks={data.filter(task => task.status === 'Doing')} droppableId="Doing" />
-                <Column title="Closed" tasks={data.filter(task => task.status === 'Closed')} droppableId="Closed" />
+                <Column title="Must Do" tasks={data.filter(task => task.status && task.status === 'MustDo')} droppableId="MustDo" currentDroppableId={currentDroppableId} />
+                <Column title="Doing" tasks={data.filter(task => task.status && task.status === 'Doing')} droppableId="Doing" currentDroppableId={currentDroppableId} />
+                <Column title="Closed" tasks={data.filter(task => task.status && task.status === 'Closed')} droppableId="Closed" currentDroppableId={currentDroppableId} />
               </div>
             </DragDropContext>
           )}

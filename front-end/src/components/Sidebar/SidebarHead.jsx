@@ -133,6 +133,9 @@ function SidebarHead() {
                                     <a style={{ marginLeft: '10px' }} href="/managermentHead/TopicsPB" className="sidebar-link">Đề tài phản biện</a>
                                 </li>
                                 <li className="sidebar-item">
+                                    <a style={{ marginLeft: '10px' }} href="/managermentHead/thesisEvaluation" className="sidebar-link">Đánh giá khóa luận</a>
+                                </li>
+                                <li className="sidebar-item">
                                     <a style={{ marginLeft: '10px' }} href="/managermentHead/TopicsPB" className="sidebar-link">Đề tài đã thực hiện</a>
                                 </li>
                             </ul>

@@ -39,6 +39,8 @@ import ManagementTimeApprove from './Pages/Admin/ManagementTimeApprove';
 import ManagementTimeRegister from './Pages/Admin/ManagementTimeRegister';
 import DefensePanel from './Pages/Head/DefensePanel';
 import ManagementCriteria from './Pages/Head/ManagementCriteria';
+import ManageCommittee from './Pages/Teacher/ManageCommittee';
+import ManagementCommitteOfHead from './Pages/Head/ManagementCommitteOfHead';
 
 function App() {
   return (
@@ -75,6 +77,7 @@ function App() {
         <Route path='/managermentType' element={<ManagementType/>}/>
 
 
+
         <Route path="/homeStudent" element={<HomeStudent />} />
         <Route path="/managermentTopicStudent" element={<ManagementTopic />} />
         <Route path="/profileStudent" element={<ProfileST />} />
@@ -90,6 +93,7 @@ function App() {
         <Route path='/managementHead/topics' element={<ManagementProjects/>}/>
         <Route path="/managermentTopicHead" element={<TopicOfHead />} />
         <Route path="/managermentHead/TopicsPB" element={<ManageTopicPBOfHead />} />
+        <Route path="/managermentHead/thesisEvaluation" element={<ManagementCommitteOfHead />} />
         <Route path="/defensepanel" element={<DefensePanel />} />
 
 
@@ -98,6 +102,7 @@ function App() {
         <Route path='/registerTopicofLec' element={<RegisTopicLec/>}/>
         <Route path='/managermentTopicLec' element={<ManageLec/>}/>
         <Route path='/managermentTopicPBLec' element={<ManageTopicPB/>}/>
+        <Route path='/thesisCommittee' element={<ManageCommittee/>}/>
 
       </Routes>
     </>
