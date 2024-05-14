@@ -80,14 +80,13 @@ public class CRUDCriteriaController {
 
     @PostMapping("/delete/{id}")
     public ResponseEntity<?> deleteCriteria(@PathVariable int id,
-                                          @RequestHeader("Authorization") String authorizationHeader,
-                                          @RequestParam("nameCriteria") String nameCriteria,
-                                          @RequestParam("scoreCriteria") Double scoreCriteria){
+                                            @RequestHeader("Authorization") String authorizationHeader) {
         try {
-            return new ResponseEntity<>(criteriaService.removeCriteria(id,authorizationHeader),HttpStatus.CREATED);
-        }catch (Exception e){
-            System.err.println("Initial SessionFactory creation failed." + e);
-            throw new ExceptionInInitializerError(e);
+            criteriaService.removeCriteria(id, authorizationHeader);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            System.err.println("Error deleting criteria: " + e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
