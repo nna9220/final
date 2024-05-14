@@ -95,6 +95,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `person` WRITE;
 /*!40000 ALTER TABLE `person` DISABLE KEYS */;
+INSERT INTO `person` VALUES ('nna9920',_binary '','01 VVN','12/12/2002','Nguyen Thi',_binary '\0',NULL,'Na',NULL,'0987654321',NULL,_binary '','nna9220@gmail.com','ROLE_ADMIN');
 /*!40000 ALTER TABLE `person` ENABLE KEYS */;
 UNLOCK TABLES;
 
