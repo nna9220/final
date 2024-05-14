@@ -52,7 +52,7 @@ public class SubjectImplService {
                     newSubject.setSubjectName(subject.getSubjectName());
                     newSubject.setYear(String.valueOf(nowYear));
                     newSubject.setTypeSubject(typeSubject);
-                    newSubject.setActive((byte) 1);
+                    newSubject.setActive((byte) 0);
                     newSubject.setMajor(lecturer.getMajor());
                     newSubject.setStatus(false);
                     newSubject.setRequirement(subject.getRequirement());
@@ -68,6 +68,23 @@ public class SubjectImplService {
                         if (student2 != null) {
                             newSubject.setStudent2(subject.getStudent2());
                         }
+                    }
+                    if (subject.getStudent2()!=null) {
+                        Student student2 = studentRepository.findById(subject.getStudent2()).orElse(null);
+                        if (student2 != null) {
+                            newSubject.setStudent2(subject.getStudent2());
+                        }
+                    }
+                    if (subject.getStudent3()!=null) {
+                        Student student3 = studentRepository.findById(subject.getStudent3()).orElse(null);
+                        if (student3 != null) {
+                            newSubject.setStudent3(subject.getStudent3());
+                        }
+                    }
+                    if (subject.getStudent1()==null && subject.getStudent2()==null && subject.getStudent3()==null){
+                        newSubject.setCheckStudent(false);
+                    }else {
+                        newSubject.setCheckStudent(true);
                     }
                     newSubject.setInstructorId(lecturer);
                     newSubject.setExpected(subject.getExpected());
@@ -137,6 +154,22 @@ public class SubjectImplService {
                                 subject.setStudent2(stringValue);
                             } else if (cell.getCellType() == CellType.BLANK) {
                                 subject.setStudent2(null); // Hoặc đặt giá trị mặc định phù hợp
+                            } else {
+                                // Xử lý các loại ô khác không được hỗ trợ hoặc ném ra ngoại lệ
+                                throw new IllegalStateException("Unsupported cell type at column 6, row " + row.getRowNum() +
+                                        ". Cell type: " + cell.getCellType());
+                            }
+                        }
+                        case 5 -> {
+                            if (cell.getCellType() == CellType.STRING) {
+                                subject.setStudent3(cell.getStringCellValue());
+                            } else if (cell.getCellType() == CellType.NUMERIC) {
+                                // Xử lý giá trị số nguyên thành chuỗi
+                                int numericValue = (int) cell.getNumericCellValue();
+                                String stringValue = String.valueOf(numericValue);
+                                subject.setStudent3(stringValue);
+                            } else if (cell.getCellType() == CellType.BLANK) {
+                                subject.setStudent3(null); // Hoặc đặt giá trị mặc định phù hợp
                             } else {
                                 // Xử lý các loại ô khác không được hỗ trợ hoặc ném ra ngoại lệ
                                 throw new IllegalStateException("Unsupported cell type at column 6, row " + row.getRowNum() +

@@ -31,6 +31,10 @@ public class SubjectService {
         Subject oldSubject = subjectRepository.findById(id).orElse(null);
         if (oldSubject!= null){
             oldSubject.setStatus(true);
+            if (oldSubject.getStudent1()==null && oldSubject.getStudent2()==null && oldSubject.getStudent3()==null){
+                oldSubject.setCheckStudent(false);
+                oldSubject.setActive((byte)1);
+            }
             subjectRepository.save(oldSubject);
             return oldSubject;
         }else {

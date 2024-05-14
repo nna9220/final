@@ -86,11 +86,18 @@ public class StudentRegisterTopic {
                 if (existSubject != null) {
                     if (existSubject.getStudent1() == null) {
                         existSubject.setStudent1(currentStudent.getStudentId());
+                        existSubject.setActive((byte)1);
                         currentStudent.setSubjectId(existSubject);
                     } else if (existSubject.getStudent2() == null) {
                         existSubject.setStudent2(currentStudent.getStudentId());
+                        existSubject.setActive((byte)1);
+                        currentStudent.setSubjectId(existSubject);
+                    } else if (existSubject.getStudent3() == null) {
+                        existSubject.setStudent3(currentStudent.getStudentId());
+                        existSubject.setActive((byte)1);
                         currentStudent.setSubjectId(existSubject);
                     } else {
+                        existSubject.setActive((byte)0);
                         return new ResponseEntity<>("Đã đủ SVTH", HttpStatus.BAD_REQUEST);
                     }
                     subjectRepository.save(existSubject);
