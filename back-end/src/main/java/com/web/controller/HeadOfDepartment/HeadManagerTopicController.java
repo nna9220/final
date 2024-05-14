@@ -75,9 +75,6 @@ public class HeadManagerTopicController {
             response.put("listSubject",subjectByCurrentLecturer);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
@@ -87,21 +84,14 @@ public class HeadManagerTopicController {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
-            /*ModelAndView modelAndView = new ModelAndView("head_listTask");*/
             Lecturer currentLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             Subject currentSubject = subjectRepository.findById(subjectId).orElse(null);
             List<Task> taskList = currentSubject.getTasks();
-            /*modelAndView.addObject("listTask",taskList);
-            modelAndView.addObject("person", personCurrent);
-            return modelAndView;*/
             Map<String ,Object> response = new HashMap<>();
             response.put("person",personCurrent);
             response.put("listTask",taskList);
             return new ResponseEntity<>(response,HttpStatus.OK);
         }else{
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
@@ -111,15 +101,9 @@ public class HeadManagerTopicController {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
-            /*ModelAndView modelAndView = new ModelAndView("head_detailTask");*/
             Task currentTask = taskRepository.findById(taskId).orElse(null);
             List<FileComment> fileCommentList = fileRepository.findAllByTask(currentTask);
             List<Comment> commentList = currentTask.getComments();
-            /*modelAndView.addObject("task", currentTask);
-            modelAndView.addObject("person", personCurrent);
-            modelAndView.addObject("listFile", fileCommentList);
-            modelAndView.addObject("listComment", commentList);
-            return modelAndView;*/
             Map<String,Object> response = new HashMap<>();
             response.put("task",currentTask);
             response.put("person", personCurrent);
@@ -127,9 +111,6 @@ public class HeadManagerTopicController {
             response.put("listComment",commentList);
             return new ResponseEntity<>(response,HttpStatus.OK);
         }else{
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }

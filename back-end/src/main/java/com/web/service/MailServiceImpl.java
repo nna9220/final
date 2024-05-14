@@ -79,7 +79,16 @@ public class MailServiceImpl {
         simpleMailMessage.setText(messenger);
         // Set các địa chỉ email của giáo viên
         simpleMailMessage.setTo(lecturerEmails.toArray(new String[0]));
+        mailSender.send(simpleMailMessage);
+    }
 
+    public void sendMailToPerson(List<String> personEmails, String subject, String messenger) {
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setFrom(fromMail);
+        simpleMailMessage.setSubject(subject);
+        simpleMailMessage.setText(messenger);
+        // Set các địa chỉ email của những người muốn gửi mail
+        simpleMailMessage.setTo(personEmails.toArray(new String[0]));
         mailSender.send(simpleMailMessage);
     }
 }

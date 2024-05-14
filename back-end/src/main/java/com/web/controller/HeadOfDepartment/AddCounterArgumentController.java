@@ -319,16 +319,9 @@ public class AddCounterArgumentController {
             String subject = "Topic: " + existSubject.getSubjectName() ;
             String messenger = "Topic: " + existSubject.getSubjectName() + " đã bị xóa!!";
             mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
-            /*tring referer = Contains.URL_LOCAL +  "/api/head/subject";
-            // Thực hiện redirect trở lại trang trước đó
-            System.out.println("Url: " + referer);
-            // Thực hiện redirect trở lại trang trước đó
-            return new ModelAndView("redirect:" + referer);*/
+
             return new ResponseEntity<>(HttpStatus.OK);
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
@@ -336,8 +329,6 @@ public class AddCounterArgumentController {
     @PostMapping("/import")
     public ResponseEntity<?> importSubject(@RequestParam("file") MultipartFile file,  @RequestHeader("Authorization") String authorizationHeader) throws IOException {
 
-        /*String referer = Contains.URL_LOCAL +  "/api/head/subject";
-        return new ModelAndView("redirect:" + referer);*/
         return new ResponseEntity<>(service.importSubject(file,authorizationHeader), HttpStatus.OK);
     }
 }
