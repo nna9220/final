@@ -49,4 +49,10 @@ public class Student implements Serializable {
     @OneToMany(mappedBy = "assignTo", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Task> tasks;
+
+    @OneToOne(mappedBy = "student", cascade = CascadeType.ALL)
+    private ResultEssay resultEssay;
+
+    @OneToOne(mappedBy = "student", cascade = CascadeType.ALL)
+    private ResultGraduation resultGraduation;
 }

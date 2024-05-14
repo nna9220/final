@@ -2,6 +2,8 @@ package com.web.config;
 
 import com.web.entity.RegistrationPeriod;
 import com.web.entity.RegistrationPeriodLectuer;
+import com.web.entity.TimeAddSubjectOfHead;
+import com.web.entity.TimeBrowsOfHead;
 
 import java.sql.Date;
 import java.text.ParseException;
@@ -15,9 +17,8 @@ public class CompareTime {
     }
     private static boolean isCurrentTimeInInterval(Date start, Date end) {
         Date currentTime = new Date(System.currentTimeMillis()); // Lấy thời gian hiện tại
-
         // So sánh thời gian hiện tại với thời gian bắt đầu và kết thúc
-        return currentTime.after(end) && currentTime.before(start) || currentTime.equals(start) || currentTime.equals(end);
+        return currentTime.after(end) && currentTime.before(start);
 
     }
 
@@ -59,4 +60,29 @@ public class CompareTime {
         }
         return false;
     }
+
+    public static boolean isCurrentTimeInBrowseTimeHead(TimeBrowsOfHead timeBrowsOfHead){
+        Date currentTime = new Date(System.currentTimeMillis());
+        if (timeBrowsOfHead!=null){
+            System.out.println("start 1: " + timeBrowsOfHead.getTimeStart());
+            System.out.println("end 1: " + timeBrowsOfHead.getTimeEnd());
+            System.out.println("current: " + currentTime);
+            return isCurrentTimeInInterval(timeBrowsOfHead.getTimeStart(), timeBrowsOfHead.getTimeEnd());
+        }
+        return false;
+    }
+
+    public static boolean isCurrentTimeInAddSubjectTimeHead(TimeAddSubjectOfHead timeAddSubjectOfHead){
+        Date currentTime = new Date(System.currentTimeMillis());
+        if (timeAddSubjectOfHead!=null){
+            System.out.println("start 1: " + timeAddSubjectOfHead.getTimeStart());
+            System.out.println("end 1: " + timeAddSubjectOfHead.getTimeEnd());
+            System.out.println("current: " + currentTime);
+            return isCurrentTimeInInterval(timeAddSubjectOfHead.getTimeStart(), timeAddSubjectOfHead.getTimeEnd());
+        }
+        return false;
+    }
+
+
+
 }
