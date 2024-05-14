@@ -56,6 +56,8 @@ public class AddCounterArgumentController {
     @Autowired
     private LecturerRepository lecturerRepository;
     @Autowired
+    private TimeBrowseHeadRepository timeBrowseHeadRepository;
+    @Autowired
     private UserUtils userUtils;
     @Autowired
     private MailServiceImpl mailService;
@@ -289,12 +291,17 @@ public class AddCounterArgumentController {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
-            subjectService.browseSubject(id);
-            Subject existSubject = subjectRepository.findById(id).orElse(null);
-            String subject = "Topic: " + existSubject.getSubjectName() ;
-            String messenger = "Topic: " + existSubject.getSubjectName() + " đã được duyệt!!";
-            mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
-            return new ResponseEntity<>(HttpStatus.OK);
+            TimeBrowsOfHead timeBrowsOfHead = timeBrowseHeadRepository.findById(1).orElse(null);
+            if (CompareTime.isCurrentTimeInBrowseTimeHead(timeBrowsOfHead)) {
+                subjectService.browseSubject(id);
+                Subject existSubject = subjectRepository.findById(id).orElse(null);
+                String subject = "Topic: " + existSubject.getSubjectName();
+                String messenger = "Topic: " + existSubject.getSubjectName() + " đã được duyệt!!";
+                mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }else {
+                return new ResponseEntity<>("Không nằm trong thời gian duyệt",HttpStatus.BAD_REQUEST);
+            }
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

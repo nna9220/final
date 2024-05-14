@@ -142,10 +142,7 @@ public class StudentAddCommentController {
 
     @GetMapping("/fileUpload/{fileName}")
     public ResponseEntity<Resource> viewFile(@PathVariable String fileName, HttpServletRequest request) {
-        // Load file as Resource
         Resource resource = fileMaterialService.loadFileAsResource(fileName);
-
-        // Try to determine file's content type
         String contentType = null;
         try {
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
@@ -153,7 +150,6 @@ public class StudentAddCommentController {
             logger.info("Could not determine file type.");
         }
 
-        // Fallback to the default content type if type could not be determined
         if(contentType == null) {
             contentType = "application/octet-stream";
         }
@@ -165,10 +161,7 @@ public class StudentAddCommentController {
     }
     @GetMapping("/download/{fileName}")
     public ResponseEntity<Resource> redirectToDownload(@PathVariable String fileName) {
-        // Build the redirect URL
         String redirectUrl = "/fileUpload/" + fileName;
-
-        // Redirect to the download endpoint
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header(HttpHeaders.LOCATION, redirectUrl)
                 .build();
