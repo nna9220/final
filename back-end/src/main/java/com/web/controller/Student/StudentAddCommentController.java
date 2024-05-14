@@ -43,6 +43,8 @@ public class StudentAddCommentController {
     @Autowired
     private TaskRepository taskRepository;
     @Autowired
+    private LecturerRepository lecturerRepository;
+    @Autowired
     private FileMaterialService fileMaterialService;
     @Autowired
     private MailServiceImpl mailService;
@@ -110,32 +112,28 @@ public class StudentAddCommentController {
                     + "Content: " + comment.getContent();
             newMail.setSubject(subject);
             newMail.setSubject(messenger);
-            if (personCurrent.getPersonId().equals(existSubject.getStudent1())) {
-                if (existSubject.getStudent2()!=null) {
-                    Student student2 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
-                    if (student2!=null) {
-                        mailService.sendMail(student2.getPerson().getUsername(), existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
-                    }
-                }else {
-                    mailService.sendMailNull(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
-                }
-            }else {
-                if (existSubject.getStudent1()!=null) {
-                    Student student1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
-                    if (student1!=null) {
-                        mailService.sendMail(student1.getPerson().getUsername(), existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
-                    }
-                }else {
-                    mailService.sendMailNull(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
-                }
+            Student student1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
+            Student student2 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
+            Student student3 = studentRepository.findById(existSubject.getStudent3()).orElse(null);
+            List<String> emailPerson = new ArrayList<>();
+            if (student1!=null){
+                emailPerson.add(student1.getPerson().getUsername());
             }
-            /*String referer = Contains.URL_LOCAL + "/api/student/task/detail/" + taskId;
-            return new ModelAndView("redirect:"+referer);*/
+            if (student2!=null){
+                emailPerson.add(student2.getPerson().getUsername());
+            }
+            if (student3!=null){
+                emailPerson.add(student3.getPerson().getUsername());
+            }
+            Lecturer instructor = lecturerRepository.findById(existSubject.getInstructorId().getLecturerId()).orElse(null);
+            if (instructor!=null){
+                emailPerson.add(instructor.getPerson().getUsername());
+            }
+            if (!emailPerson.isEmpty()){
+                mailService.sendMailToPerson(emailPerson,subject,messenger);
+            }
             return new ResponseEntity<>(existTask, HttpStatus.OK);
         }else{
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }

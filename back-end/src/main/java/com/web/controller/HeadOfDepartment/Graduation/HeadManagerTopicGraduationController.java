@@ -72,9 +72,6 @@ public class HeadManagerTopicGraduationController {
             response.put("listSubject",subjectByCurrentLecturer);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
@@ -88,17 +85,11 @@ public class HeadManagerTopicGraduationController {
             Lecturer currentLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             Subject currentSubject = subjectRepository.findById(subjectId).orElse(null);
             List<Task> taskList = currentSubject.getTasks();
-            /*modelAndView.addObject("listTask",taskList);
-            modelAndView.addObject("person", personCurrent);
-            return modelAndView;*/
             Map<String ,Object> response = new HashMap<>();
             response.put("person",personCurrent);
             response.put("listTask",taskList);
             return new ResponseEntity<>(response,HttpStatus.OK);
         }else{
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
@@ -112,11 +103,7 @@ public class HeadManagerTopicGraduationController {
             Task currentTask = taskRepository.findById(taskId).orElse(null);
             List<FileComment> fileCommentList = fileRepository.findAllByTask(currentTask);
             List<Comment> commentList = currentTask.getComments();
-            /*modelAndView.addObject("task", currentTask);
-            modelAndView.addObject("person", personCurrent);
-            modelAndView.addObject("listFile", fileCommentList);
-            modelAndView.addObject("listComment", commentList);
-            return modelAndView;*/
+
             Map<String,Object> response = new HashMap<>();
             response.put("task",currentTask);
             response.put("person", personCurrent);
@@ -124,9 +111,6 @@ public class HeadManagerTopicGraduationController {
             response.put("listComment",commentList);
             return new ResponseEntity<>(response,HttpStatus.OK);
         }else{
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }

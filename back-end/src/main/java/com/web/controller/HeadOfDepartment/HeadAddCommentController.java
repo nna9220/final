@@ -86,6 +86,7 @@ public class HeadAddCommentController {
                         FileComment newFile = new FileComment();
                         newFile.setName(fileName);
                         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                                .scheme("https")
                                 .path("/api/head/comment/fileUpload/")
                                 .path(fileName)
                                 .toUriString();
@@ -111,16 +112,22 @@ public class HeadAddCommentController {
                     + "Change task: " + existTask.getRequirement()+"\n"
                     + "Content: " + comment.getContent();
 
-            Student studen1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
-            Student studen2 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
-
-            if (existSubject.getStudent2()!=null) {
-                mailService.sendMailStudents(studen2.getPerson().getUsername(), studen1.getPerson().getUsername(), subject, messenger);
-            }else {
-                mailService.sendMailStudent(studen1.getPerson().getUsername(),subject,messenger);
+            Student student1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
+            Student student2 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
+            Student student3 = studentRepository.findById(existSubject.getStudent3()).orElse(null);
+            List<String> emailPerson = new ArrayList<>();
+            if (student1!=null){
+                emailPerson.add(student1.getPerson().getUsername());
             }
-            /*String referer = Contains.URL +  "/api/head/manager/detail/" + taskId;
-            return new ModelAndView("redirect:"+referer);*/
+            if (student2!=null){
+                emailPerson.add(student2.getPerson().getUsername());
+            }
+            if (student3!=null){
+                emailPerson.add(student3.getPerson().getUsername());
+            }
+            if (!emailPerson.isEmpty()){
+                mailService.sendMailToPerson(emailPerson,subject,messenger);
+            }
             return new ResponseEntity<>(existSubject, HttpStatus.OK);
         }else{
             /*ModelAndView error = new ModelAndView();
@@ -131,10 +138,8 @@ public class HeadAddCommentController {
     }
 
     @GetMapping("/fileUpload/{fileName}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
-        // Load file as Resource
-        Resource resource =fileMaterialService.loadFileAsResource(fileName);
-        // Try to determine file's content type
+    public ResponseEntity<Resource> viewFile(@PathVariable String fileName, HttpServletRequest request) {
+        Resource resource = fileMaterialService.loadFileAsResource(fileName);
         String contentType = null;
         try {
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
@@ -142,14 +147,20 @@ public class HeadAddCommentController {
             logger.info("Could not determine file type.");
         }
 
-        // Fallback to the default content type if type could not be determined
         if(contentType == null) {
             contentType = "application/octet-stream";
         }
+
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
-
+    }
+    @GetMapping("/download/{fileName}")
+    public ResponseEntity<Resource> redirectToDownload(@PathVariable String fileName) {
+        String redirectUrl = "/fileUpload/" + fileName;
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header(HttpHeaders.LOCATION, redirectUrl)
+                .build();
     }
 }
