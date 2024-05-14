@@ -57,11 +57,6 @@ public class HomeHeadController {
         if (personCurrent != null && personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer currentLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             Subject existSubject = subjectRepository.findById(id).orElse(null);
-            /*ModelAndView modelAndView = new ModelAndView("head_editReviewTopic");
-            modelAndView.addObject("person", personCurrent);
-            modelAndView.addObject("lec", currentLecturer);
-            modelAndView.addObject("subject",existSubject);
-            return modelAndView;*/
             Map<String,Object> response = new HashMap<>();
             response.put("person",personCurrent);
             response.put("lec",currentLecturer);
@@ -82,22 +77,12 @@ public class HomeHeadController {
             if (existSubject!=null){
                 /*existSubject.setScoreThesis(score);*/
                 subjectRepository.save(existSubject);
-                /*String referer = Contains.URL_LOCAL + "/api/head/counterArgumentSubject/detail/" + existSubject.getSubjectId();
-                System.out.println("Url: " + referer);
-                // Thực hiện redirect trở lại trang trước đó
-                return new ModelAndView("redirect:" + referer);*/
                 return new ResponseEntity<>(existSubject,HttpStatus.OK);
 
             }else {
-                /*ModelAndView error = new ModelAndView();
-                error.addObject("errorMessage", "Không tìm thấy sinh viên");
-                return error;*/
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
@@ -110,18 +95,13 @@ public class HomeHeadController {
             Lecturer currentLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
             List<Subject> listSubject = subjectRepository.findSubjectsByThesisAdvisorId(currentLecturer,typeSubject);
-            /*ModelAndView modelAndView = new ModelAndView("head_listReviewTopic");
-            modelAndView.addObject("person", personCurrent);
-            modelAndView.addObject("lec", currentLecturer);
-            modelAndView.addObject("listSubject",listSubject);
-            return modelAndView;*/
+
             Map<String,Object> response = new HashMap<>();
             response.put("person", personCurrent);
             response.put("lec",currentLecturer);
             response.put("listSubject", listSubject);
             return new ResponseEntity<>(response,HttpStatus.OK);
         } else {
-           /* return new ModelAndView("error").addObject("errorMessage", "Bạn không có quyền truy cập.");*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
