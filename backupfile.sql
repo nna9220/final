@@ -18,6 +18,7 @@
 --
 -- Dumping data for table `authority`
 --
+create database registersubject;
 use registersubject;
 LOCK TABLES `authority` WRITE;
 /*!40000 ALTER TABLE `authority` DISABLE KEYS */;
