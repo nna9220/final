@@ -100,9 +100,10 @@ public class LecturerManageTutorialSubjectController {
 
     @PostMapping("/refuse/{subjectId}")
     public ResponseEntity<?> RefuseSubject(@PathVariable int subjectId,
-                                           @RequestHeader("Authorization") String authorizationHeader){
+                                           @RequestHeader("Authorization") String authorizationHeader,
+                                           @RequestParam("reason") String reason){
         try {
-            return new ResponseEntity<>(manageTutorialSubjectService.RefuseTheSubject(subjectId,authorizationHeader),HttpStatus.OK);
+            return new ResponseEntity<>(manageTutorialSubjectService.RefuseTheSubject(subjectId,authorizationHeader,reason),HttpStatus.OK);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);
