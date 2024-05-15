@@ -37,6 +37,8 @@ public class ManageTutorialSubjectService {
     private ResultEssayRepository resultEssayRepository;
     @Autowired
     private EvaluationCriteriaRepository evaluationCriteriaRepository;
+    @Autowired
+    private ResultGraduationRepository resultGraduationRepository;
 
     //Thông báo nộp 50%
     public ResponseEntity<?> NoticeOfFiftyReportSubmission(int id,@RequestHeader("Authorization") String authorizationHeader){
@@ -275,7 +277,7 @@ public class ManageTutorialSubjectService {
         }
     }
 
-    public ResponseEntity<?> RefuseTheSubject(int id,@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<?> RefuseTheSubject(int id,@RequestHeader("Authorization") String authorizationHeader,String reason) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
@@ -284,8 +286,7 @@ public class ManageTutorialSubjectService {
                 existedSubject.setActive((byte) 4);
                 subjectRepository.save(existedSubject);
                 String subject = "Topic: " + existedSubject.getSubjectName();
-                String messenger = "Topic: " + existedSubject.getSubjectName() + " không được duyệt, vui lòng chỉnh sửa và nộp lại trong 1 tuần tới! ";
-                mailService.sendMailStudent(existedSubject.getThesisAdvisorId().getPerson().getUsername(), subject, messenger);
+                String messenger = "Topic: " + existedSubject.getSubjectName() + " không được duyệt với lý do "+reason + ", vui lòng chỉnh sửa và nộp lại trong 1 tuần tới! ";
                 Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
                 Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
                 Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
@@ -310,4 +311,77 @@ public class ManageTutorialSubjectService {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
+    //KHÓA LUẬN TN
+    @Transactional
+    public ResponseEntity<?> BrowseMoveToThesisAdvisorGraduation(int id,@RequestHeader("Authorization") String authorizationHeader,
+                                                                 String review1,
+                                                                 String review2,
+                                                                 String review3,
+                                                                 String review4,
+                                                                 String review5,
+                                                                 Double score1,
+                                                                 Double score2,
+                                                                 Double score3,
+                                                                 Double score4,
+                                                                 Double score5,
+                                                                 Student StudentId) {
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+            Subject existedSubject = subjectRepository.findById(id).orElse(null);
+            if (existedSubject != null) {
+                if (existedSubject.getThesisAdvisorId() != null) {
+                    //Set active của đề tài
+                    existedSubject.setActive((byte) 6);
+                    subjectRepository.save(existedSubject);
+                    //Tạo mới bảng resultEssay
+                    ResultGraduation resultGraduation = new ResultGraduation();
+                    resultGraduation.setSubject(existedSubject);
+                    resultGraduation.setStudent(StudentId);
+                    resultGraduation.setScore1(score1);
+                    resultGraduation.setScore2(score2);
+                    resultGraduation.setScore3(score3);
+                    resultGraduation.setScore4(score4);
+                    resultGraduation.setScore5(score5);
+                    resultGraduation.setReview1(review1);
+                    resultGraduation.setReview2(review2);
+                    resultGraduation.setReview3(review3);
+                    resultGraduation.setReview4(review4);
+                    resultGraduation.setReview5(review5);
+                    resultGraduationRepository.save(resultGraduation);
+                    StudentId.setResultGraduation(resultGraduation);
+                    studentRepository.save(StudentId);
+                    //Gửi mail
+                    String subject = "Topic: " + existedSubject.getSubjectName();
+                    String messenger = "Topic: " + existedSubject.getSubjectName() + " đã được " + existedSubject.getInstructorId().getPerson().getFirstName() + " " + existedSubject.getInstructorId().getPerson().getLastName() + " duyệt!";
+                    mailService.sendMailStudent(existedSubject.getThesisAdvisorId().getPerson().getUsername(), subject, messenger);
+                    Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
+                    Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
+                    Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
+                    List<String> emailPerson = new ArrayList<>();
+                    if (student1!=null){
+                        emailPerson.add(student1.getPerson().getUsername());
+                    }
+                    if (student2!=null){
+                        emailPerson.add(student2.getPerson().getUsername());
+                    }
+                    if (student3!=null){
+                        emailPerson.add(student3.getPerson().getUsername());
+                    }
+                    if (!emailPerson.isEmpty()){
+                        mailService.sendMailToPerson(emailPerson,subject,messenger);
+                    }
+                    return new ResponseEntity<>(existedSubject, HttpStatus.OK);
+                }else {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
 }
