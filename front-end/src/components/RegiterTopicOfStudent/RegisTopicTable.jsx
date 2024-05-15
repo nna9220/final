@@ -9,42 +9,58 @@ import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutli
 function RegisTopicTable() {
     const [topics, setTopics] = useState([]);
     const [topicsRegistered, setTopicsRegistered] = useState([]);
-    const [registeredSuccess, setRegisteredSuccess] = useState(false); // Thêm biến trạng thái
+    const [registeredSuccess, setRegisteredSuccess] = useState(false); 
     const [errors, setErrors] =useState(null);
+    
     useEffect(() => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log("Token: " + userToken);
+    
         if (userToken) {
-            const tokenSt = sessionStorage.getItem(userToken);
+            const tokenSt = sessionStorage.getItem('userToken');
             if (!tokenSt) {
-                axiosInstance.get('/student/subject', {
-                    headers: {
-                        'Authorization': `Bearer ${userToken}`,
-                    },
-                })
-                .then(response => {
-                    console.log("DatalistSubject: ", response.data);
-                    const result = response.data;
-                    console.log("Data: ", response.data);
-                    if (result.person) {
-                        // Đã đến thời gian đăng ký
-                        if (result.subjectList) {
-                            setTopics(result.subjectList);
-                        } else if (result.subject) {
-                            setTopicsRegistered([result.subject]);
-                        }else {
-                            setErrors("Chưa đến thời gian đăng ký đề tài !!!");
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                });
+                sessionStorage.setItem('userToken', userToken);
             }
+    
+            axiosInstance.get('/student/subject', {
+                headers: {
+                    'Authorization': `Bearer ${userToken}`,
+                },
+            })
+            .then(response => {
+                console.log("DatalistSubject: ", response.data);
+                const result = response.data;
+                console.log("Data: ", response.data);
+    
+                // Log chi tiết các thuộc tính của result
+                if (result.person) {
+                    console.log("Person:", result.person);
+    
+                    if (result.subjectList) {
+                        console.log("Subject List:", result.subjectList);
+                        setTopics(result.subjectList);
+                    } else if (result.subject) {
+                        console.log("Registered Subject:", result.subject);
+                        setTopicsRegistered([result.subject]);
+                    } else {
+                        console.log("No subjects available for registration.");
+                        setErrors("Chưa đến thời gian đăng ký đề tài !!!");
+                    }
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching subjects:", error);
+                if (error.response && error.response.status === 404) {
+                    setErrors("Không tìm thấy sinh viên.");
+                } else if (error.response && error.response.status === 403) {
+                    setErrors("Bạn không có quyền truy cập.");
+                } else {
+                    setErrors("Có lỗi xảy ra khi lấy dữ liệu.");
+                }
+            });
         }
     }, []);
     
-
     const dangKyDeTai = (subjectId) => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         if (userToken) {

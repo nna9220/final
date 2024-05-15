@@ -35,7 +35,7 @@ function TableRegis() {
             const currentPeriod = periods.find(period => {
                 const startTime = convertStringToDate(period.registrationTimeStart).getTime();
                 const endTime = convertStringToDate(period.registrationTimeEnd).getTime();
-                return currentDateTime <= startTime && currentDateTime >= endTime;
+                return currentDateTime >= startTime && currentDateTime <= endTime;
             });
             setCurrentPeriod(currentPeriod);
             console.log("Thời gian hiện tại: ", currentDateTime);
@@ -63,6 +63,7 @@ function TableRegis() {
 
     const handleSubmitAdd = (e) => {
         e.preventDefault();
+        console.log("data add: ", formData);
         const userToken = getTokenFromUrlAndSaveToStorage();
         axiosInstance.post('/head/subject/register',
             formData
