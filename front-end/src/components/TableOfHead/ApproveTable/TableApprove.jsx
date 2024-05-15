@@ -19,6 +19,7 @@ function TableApprove() {
     const [showErrorToastDelete, setShowErrorToastDelete] = useState(false);
     const [showApproveToast, setShowApproveToast] = useState(false);
     const [showErrorToastApprove, setShowErrorToastApprove] = useState(false);
+    const [toastMessage, setToastMessage] = useState("Duyệt đề tài không thành công!");
 
     useEffect(() => {
         console.log("Token: " + userToken);
@@ -84,6 +85,11 @@ function TableApprove() {
             })
             .catch(error => {
                 console.error("Lỗi khi duyệt đề tài: ", error);
+                if (error.response && error.response.status === 400 && error.response.data === "Không nằm trong thời gian duyệt") {
+                    setToastMessage("Không nằm trong thời gian duyệt đề tài");
+                } else {
+                    setToastMessage("Duyệt đề tài không thành công!");
+                }
                 setShowErrorToastApprove(true);
             });
     };
@@ -174,7 +180,7 @@ function TableApprove() {
                     <strong className="me-auto" style={{ color: 'red' }}><ErrorOutlineOutlinedIcon /> Lỗi</strong>
                 </Toast.Header>
                 <Toast.Body>
-                    Duyệt đề tài không thành công!
+                    {toastMessage}
                 </Toast.Body>
             </Toast>
 
