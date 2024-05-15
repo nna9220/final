@@ -9,6 +9,7 @@ import com.web.mapper.RegistrationPeriodMapper;
 import com.web.repository.*;
 import com.web.service.Admin.RegistrationPeriodService;
 import com.web.service.MailServiceImpl;
+import com.web.utils.Contains;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,8 @@ import java.util.Map;
 public class TimeBrowseHeadController {
     @Autowired
     private TimeBrowseHeadRepository timeBrowseHeadRepository;
+    @Autowired
+    private AuthorityRepository authorityRepository;
     @Autowired
     private PersonRepository personRepository;
     @Autowired
@@ -134,8 +137,9 @@ public class TimeBrowseHeadController {
                 existTimeBrowsOfHead.setTimeEnd(convertToSqlDate(end));
                 var update = timeBrowseHeadRepository.save(existTimeBrowsOfHead);
                 //GỬI MAIL
-                //Dnah sách SV
-                List<Lecturer> lecturers = lecturerRepository.getListLecturerISHead("ROLE_HEAD");
+                //TBM
+                Authority authority = authorityRepository.findByName("ROLE_HEAD");
+                List<Lecturer> lecturers = lecturerRepository.getListLecturerISHead(authority);
                 List<String> emailLecturer = new ArrayList<>();
                 for (Lecturer lecturer:lecturers) {
                     emailLecturer.add(lecturer.getPerson().getUsername());

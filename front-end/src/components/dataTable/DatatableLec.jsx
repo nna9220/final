@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { DataGrid } from '@mui/x-data-grid';
 import './DatatableLec.scss';
 import { Modal, Button } from 'react-bootstrap';
@@ -17,7 +16,6 @@ import axiosInstance from '../../API/axios';
 
 function DatatableLec() {
     const [lectures, setLectures] = useState([]);
-    const [person, setPerson] = useState([]);
     const [author, setAuthors] = useState([]);
     const [major, setMajor] = useState([]);
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -51,7 +49,7 @@ function DatatableLec() {
         gender: '',
         birthDay: '',
         phone: '',
-        address:'',
+        address: '',
         major: '',
         author: ''
     });
@@ -94,6 +92,7 @@ function DatatableLec() {
                 setShowErrorToastAdd(true);
             });
     };
+
     const handleDelete = (row) => {
         setSelectedRow(row);
         setShowConfirmation(true);
@@ -168,6 +167,7 @@ function DatatableLec() {
             .then(response => {
                 const data = response.data;
                 if (data.lecturer && data.lecturer.person) {
+                    // Convert birthDay to YYYY-MM-DD format
                     const formattedDate = moment(data.lecturer.person.birthDay, "DD/MM/YYYY").format("YYYY-MM-DD");
                     data.lecturer.person.birthDay = formattedDate;
                     setUserEdit(data.lecturer.person);
@@ -181,6 +181,18 @@ function DatatableLec() {
                 console.error("Lỗi khi lấy thông tin sinh viên:", error);
             });
     };
+
+    function formatDate(dateString) {
+        const [year, month, day] = dateString.split('-');
+        return `${day}-${month}-${year}`;
+    }
+
+
+    function convertToISOFormat(dateString) {
+        const [day, month, year] = dateString.split('-');
+        return `${year}-${month}-${day}`;
+    }
+
 
     const handleSubmitEdit = () => {
         const id = userEdit.personId; // Sử dụng thông tin từ state userEdit
@@ -197,7 +209,7 @@ function DatatableLec() {
         formDataEdit.append('username', userEdit.username);
         formDataEdit.append('address', userEdit.address);
 
-        console.log(userEdit);
+        console.log(userEdit.birthDay);
         axiosInstance.post(`/admin/lecturer/edit/${id}`, formDataEdit, {
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
@@ -247,6 +259,8 @@ function DatatableLec() {
             [name]: value
         }));
     };
+
+
 
     const handleGenderChange = (e) => {
         const value = e.target.value === 'Nữ' ? true : false;
@@ -401,7 +415,7 @@ function DatatableLec() {
             </Toast>
 
             <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true" style={{ display: showModal ? 'block' : 'none' }}>
-                <div className="modal-dialog modal-lg modal-dialog modal-dialog-scrollable" onSubmit={handleSubmitEdit}>
+                <div className="modal-dialog modal-lg modal-dialog-scrollable" onSubmit={handleSubmitEdit}>
                     <form className="modal-content">
                         <div className="modal-header">
                             <h1 className="modal-title fs-5" id="exampleModalLabel1">CẬP NHẬT THÔNG TIN GIẢNG VIÊN</h1>
@@ -424,8 +438,8 @@ function DatatableLec() {
                             </div>
                             <div className='row mb-3'>
                                 <div className="col">
-                                    <label htmlFor='brithDay' className="form-label">Ngày sinh</label>
-                                    <input required type="date" className="form-control" id="brithDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} />
+                                    <label htmlFor='birthDay' className="form-label">Ngày sinh</label>
+                                    <input required type="date" className="form-control" id="birthDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} />
                                 </div>
                                 <div className="col">
                                     <label htmlFor='phone' className="form-label">Số điện thoại</label>
@@ -452,7 +466,7 @@ function DatatableLec() {
                             <div className='row mb-3'>
                                 <div className="col">
                                     <label htmlFor="class" className="form-label">Chuyên ngành</label>
-                                    <select required className="form-select" id="classes" defaultValue={userEdit.major} onChange={handleChange} name="major">
+                                    <select required className="form-select" id="classes" value={userEdit.major} onChange={handleChange} name="major">
                                         {major.map((majorItem, index) => (
                                             <option key={index} value={majorItem}>{majorItem}</option>
                                         ))}
@@ -460,7 +474,7 @@ function DatatableLec() {
                                 </div>
                                 <div className="col">
                                     <label htmlFor="authority" className="form-label">Role</label>
-                                    <select required className="form-select" id="authority" defaultValue={userEdit.authority} onChange={handleChange} name="authority">
+                                    <select required className="form-select" id="authority" value={userEdit.authority} onChange={handleChange} name="authority">
                                         {author && author.filter(Item => Item.name === 'ROLE_HEAD' || Item.name === 'ROLE_LECTURER').map((Item, index) => (
                                             <option key={index} value={Item.name}>{Item.name}</option>
                                         ))}
@@ -470,13 +484,6 @@ function DatatableLec() {
                             <div className="mb-3">
                                 <label htmlFor='address' className="form-label">Địa chỉ</label>
                                 <input type="text" className="form-control" id="address" name="address" value={userEdit.address} onChange={handleChange} />
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor='status' className="form-label">Trạng thái</label>
-                                <select className="form-select" id="status" name="status">
-                                    <option value="option1">True</option>
-                                    <option value="option2">False</option>
-                                </select>
                             </div>
                         </div>
                         <div className="modal-footer">
@@ -488,9 +495,10 @@ function DatatableLec() {
                     </form>
                 </div>
             </div>
+
             <div className="modal fade" id="AddLecturere" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: showModalAdd ? 'block' : 'none' }}>
                 <div className="modal-dialog modal-lg modal-dialog-scrollable" onSubmit={handleSubmitAdd}>
-                    <form className="modal-content">
+                    <form className="modal-content ">
                         <div className="modal-header">
                             <h1 className="modal-title fs-5" id="exampleModalLabel">THÊM GIẢNG VIÊN</h1>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -578,3 +586,4 @@ function DatatableLec() {
 }
 
 export default DatatableLec;
+

@@ -67,8 +67,8 @@ public class RegistrationPeriodGraduationLecturerController {
 
     @PostMapping("/create")
     public ResponseEntity<?> savePeriod(@RequestHeader("Authorization") String authorizationHeader, @RequestParam("periodName") String periodName,
-                                        @RequestParam("timeStart") Date timeStart,
-                                        @RequestParam("timeEnd") Date timeEnd, HttpServletRequest request){
+                                        @RequestParam("timeStart") String timeStart,
+                                        @RequestParam("timeEnd") String timeEnd, HttpServletRequest request){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
@@ -76,8 +76,8 @@ public class RegistrationPeriodGraduationLecturerController {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
             registrationPeriod.setTypeSubjectId(typeSubject);
             registrationPeriod.setRegistrationName(periodName);
-            registrationPeriod.setRegistrationTimeStart(timeStart);
-            registrationPeriod.setRegistrationTimeEnd(timeEnd);
+            registrationPeriod.setRegistrationTimeStart(convertToSqlDate(timeStart));
+            registrationPeriod.setRegistrationTimeEnd(convertToSqlDate(timeEnd));
             registrationPeriodRepository.save(registrationPeriod);
             return new ResponseEntity<>(registrationPeriod,HttpStatus.CREATED);
         }else {
@@ -122,7 +122,6 @@ public class RegistrationPeriodGraduationLecturerController {
     public ResponseEntity<?> updatePeriod(@PathVariable int periodId,
                                           @RequestParam("start") String start,
                                           @RequestParam("end") String end,
-                                          @RequestParam("typeSubject") TypeSubject typeSubject,
                                           @RequestHeader("Authorization") String authorizationHeader,
                                           @ModelAttribute("successMessage") String successMessage) throws ParseException {
         String token = tokenUtils.extractToken(authorizationHeader);
@@ -134,7 +133,6 @@ public class RegistrationPeriodGraduationLecturerController {
                 if (convertToSqlDate(end).before(convertToSqlDate(start))) {
                     return new ResponseEntity<>("Ngày kết thúc phải lớn hơn ngày bắt đầu", HttpStatus.BAD_REQUEST);
                 }
-                existRegistrationPeriod.setTypeSubjectId(typeSubject);
                 existRegistrationPeriod.setRegistrationTimeStart(convertToSqlDate(start));
                 existRegistrationPeriod.setRegistrationTimeEnd(convertToSqlDate(end));
                 var update = registrationPeriodRepository.save(existRegistrationPeriod);

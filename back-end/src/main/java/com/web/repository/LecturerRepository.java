@@ -1,5 +1,6 @@
 package com.web.repository;
 
+import com.web.entity.Authority;
 import com.web.entity.Lecturer;
 import com.web.entity.Person;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,5 +19,5 @@ public interface LecturerRepository extends JpaRepository<Lecturer, String> {
     List<Lecturer> getListLecturerNotCurrent(String lecId);
 
     @Query("select l from Lecturer l where l.authority =:authority")
-    List<Lecturer> getListLecturerISHead(String authority);
+    List<Lecturer> getListLecturerISHead(Authority authority);
 }
