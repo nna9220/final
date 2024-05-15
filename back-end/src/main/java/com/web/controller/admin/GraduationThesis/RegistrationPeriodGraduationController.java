@@ -73,15 +73,15 @@ public class RegistrationPeriodGraduationController {
     @PostMapping("/create")
     public ResponseEntity<?> savePeriod(@RequestHeader("Authorization") String authorizationHeader,
                                         @RequestParam("periodName") String periodName,
-                                        @RequestParam("timeStart") Date timeStart,
-                                        @RequestParam("timeEnd") Date timeEnd, HttpServletRequest request){
+                                        @RequestParam("timeStart") String timeStart,
+                                        @RequestParam("timeEnd") String timeEnd, HttpServletRequest request){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             RegistrationPeriod registrationPeriod = new RegistrationPeriod();
             registrationPeriod.setRegistrationName(periodName);
-            registrationPeriod.setRegistrationTimeStart(timeStart);
-            registrationPeriod.setRegistrationTimeEnd(timeEnd);
+            registrationPeriod.setRegistrationTimeStart(convertToSqlDate(timeStart));
+            registrationPeriod.setRegistrationTimeEnd(convertToSqlDate(timeEnd));
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
             registrationPeriod.setTypeSubjectId(typeSubject);
             registrationPeriodRepository.save(registrationPeriod);

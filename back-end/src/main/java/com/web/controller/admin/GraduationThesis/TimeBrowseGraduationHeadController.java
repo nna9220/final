@@ -5,10 +5,7 @@ package com.web.controller.admin.GraduationThesis;
 import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
 import com.web.entity.*;
-import com.web.repository.LecturerRepository;
-import com.web.repository.PersonRepository;
-import com.web.repository.TimeBrowseHeadRepository;
-import com.web.repository.TypeSubjectRepository;
+import com.web.repository.*;
 import com.web.service.MailServiceImpl;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +27,8 @@ import java.util.Map;
 public class TimeBrowseGraduationHeadController {
     @Autowired
     private TimeBrowseHeadRepository timeBrowseHeadRepository;
+    @Autowired
+    private AuthorityRepository authorityRepository;
     @Autowired
     private LecturerRepository lecturerRepository;
     @Autowired
@@ -137,7 +136,8 @@ public class TimeBrowseGraduationHeadController {
                 var update = timeBrowseHeadRepository.save(existTimeBrowsOfHead);
                 //GỬI MAIL
                 //Dnah sách SV
-                List<Lecturer> lecturers = lecturerRepository.getListLecturerISHead("ROLE_HEAD");
+                Authority authority = authorityRepository.findByName("ROLE_HEAD");
+                List<Lecturer> lecturers = lecturerRepository.getListLecturerISHead(authority);
                 List<String> emailLecturer = new ArrayList<>();
                 for (Lecturer lecturer:lecturers) {
                     emailLecturer.add(lecturer.getPerson().getUsername());
