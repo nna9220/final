@@ -95,28 +95,27 @@ public class StudentRegisterTopicGraduation {
                 if (existSubject != null) {
                     if (existSubject.getStudent1() == null) {
                         existSubject.setStudent1(currentStudent.getStudentId());
-                        currentStudent.setSubjectGraduationId(existSubject);
+                        existSubject.setActive((byte)1);
+                        currentStudent.setSubjectId(existSubject);
                     } else if (existSubject.getStudent2() == null) {
                         existSubject.setStudent2(currentStudent.getStudentId());
-                        currentStudent.setSubjectGraduationId(existSubject);
+                        existSubject.setActive((byte)1);
+                        currentStudent.setSubjectId(existSubject);
+                    } else if (existSubject.getStudent3() == null) {
+                        existSubject.setStudent3(currentStudent.getStudentId());
+                        existSubject.setActive((byte)1);
+                        currentStudent.setSubjectId(existSubject);
                     } else {
+                        existSubject.setActive((byte)0);
                         return new ResponseEntity<>("Đã đủ SVTH", HttpStatus.BAD_REQUEST);
                     }
                     subjectRepository.save(existSubject);
                     studentRepository.save(currentStudent);
-                    /*tring referer = request.getHeader("Referer");
-                    return new ModelAndView("redirect:" + referer);*/
                     return new ResponseEntity<>(currentStudent, HttpStatus.OK);
                 } else {
-                    /*ModelAndView error = new ModelAndView();
-                    error.addObject("errorMessage", "Không tồn tại đề tài này.");
-                    return error;*/
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 }
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
