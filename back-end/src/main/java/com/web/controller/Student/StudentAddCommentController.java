@@ -112,18 +112,24 @@ public class StudentAddCommentController {
                     + "Content: " + comment.getContent();
             newMail.setSubject(subject);
             newMail.setSubject(messenger);
-            Student student1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
-            Student student2 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
-            Student student3 = studentRepository.findById(existSubject.getStudent3()).orElse(null);
             List<String> emailPerson = new ArrayList<>();
-            if (student1!=null){
-                emailPerson.add(student1.getPerson().getUsername());
+            if (existSubject.getStudent1()!=null) {
+                Student student1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
+                if (student1.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                    emailPerson.add(student1.getPerson().getUsername());
+                }
             }
-            if (student2!=null){
-                emailPerson.add(student2.getPerson().getUsername());
+            if (existSubject.getStudent2()!=null) {
+                Student student2 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
+                if (student2.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                    emailPerson.add(student2.getPerson().getUsername());
+                }
             }
-            if (student3!=null){
-                emailPerson.add(student3.getPerson().getUsername());
+            if (existSubject.getStudent3()!=null) {
+                Student student3 = studentRepository.findById(existSubject.getStudent3()).orElse(null);
+                if (student3.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                    emailPerson.add(student3.getPerson().getUsername());
+                }
             }
             Lecturer instructor = lecturerRepository.findById(existSubject.getInstructorId().getLecturerId()).orElse(null);
             if (instructor!=null){

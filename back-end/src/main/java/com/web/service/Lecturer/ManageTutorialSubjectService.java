@@ -219,7 +219,7 @@ public class ManageTutorialSubjectService {
 
     //Duyệt đề tài qua GVPB - TIỂU LUẬN CHUYÊN NGHÀNH
     @Transactional
-    public ResponseEntity<?> BrowseMoveToThesisAdvisorEssay(int id,@RequestHeader("Authorization") String authorizationHeader, String review, Double score, Student StudentId) {
+    public ResponseEntity<?> BrowseMoveToThesisAdvisorEssay(int id,@RequestHeader("Authorization") String authorizationHeader) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
@@ -229,22 +229,6 @@ public class ManageTutorialSubjectService {
                     //Set active của đề tài
                     existedSubject.setActive((byte) 6);
                     subjectRepository.save(existedSubject);
-                    //Tạo mới bảng resultEssay
-                    ResultEssay resultEssay = new ResultEssay();
-                    resultEssay.setReviewInstructor(review);
-                    resultEssay.setScoreInstructor(score);
-                    resultEssay.setSubject(existedSubject);
-                    if (StudentId != null) {
-                        resultEssay.setStudent(StudentId);
-                        StudentId.setResultEssay(resultEssay);
-                        resultEssayRepository.save(resultEssay);
-                        studentRepository.save(StudentId);
-                    }else {
-                        // Xử lý trường hợp sinh viên không tồn tại
-                        // Có thể log lỗi hoặc ném ngoại lệ tùy thuộc vào yêu cầu của ứng dụng
-                        System.err.println("Student with ID " + StudentId + " not found.");
-                    }
-                    resultEssayRepository.save(resultEssay);
                     //Gửi mail
                     String subject = "Topic: " + existedSubject.getSubjectName();
                     String messenger = "Topic: " + existedSubject.getSubjectName() + " đã được " + existedSubject.getInstructorId().getPerson().getFirstName() + " " + existedSubject.getInstructorId().getPerson().getLastName() + " duyệt!";
@@ -314,18 +298,7 @@ public class ManageTutorialSubjectService {
 
     //KHÓA LUẬN TN
     @Transactional
-    public ResponseEntity<?> BrowseMoveToThesisAdvisorGraduation(int id,@RequestHeader("Authorization") String authorizationHeader,
-                                                                 String review1,
-                                                                 String review2,
-                                                                 String review3,
-                                                                 String review4,
-                                                                 String review5,
-                                                                 Double score1,
-                                                                 Double score2,
-                                                                 Double score3,
-                                                                 Double score4,
-                                                                 Double score5,
-                                                                 Student StudentId) {
+    public ResponseEntity<?> BrowseMoveToThesisAdvisorGraduation(int id,@RequestHeader("Authorization") String authorizationHeader) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
@@ -335,23 +308,6 @@ public class ManageTutorialSubjectService {
                     //Set active của đề tài
                     existedSubject.setActive((byte) 6);
                     subjectRepository.save(existedSubject);
-                    //Tạo mới bảng resultEssay
-                    ResultGraduation resultGraduation = new ResultGraduation();
-                    resultGraduation.setSubject(existedSubject);
-                    resultGraduation.setStudent(StudentId);
-                    resultGraduation.setScore1(score1);
-                    resultGraduation.setScore2(score2);
-                    resultGraduation.setScore3(score3);
-                    resultGraduation.setScore4(score4);
-                    resultGraduation.setScore5(score5);
-                    resultGraduation.setReview1(review1);
-                    resultGraduation.setReview2(review2);
-                    resultGraduation.setReview3(review3);
-                    resultGraduation.setReview4(review4);
-                    resultGraduation.setReview5(review5);
-                    resultGraduationRepository.save(resultGraduation);
-                    StudentId.setResultGraduation(resultGraduation);
-                    studentRepository.save(StudentId);
                     //Gửi mail
                     String subject = "Topic: " + existedSubject.getSubjectName();
                     String messenger = "Topic: " + existedSubject.getSubjectName() + " đã được " + existedSubject.getInstructorId().getPerson().getFirstName() + " " + existedSubject.getInstructorId().getPerson().getLastName() + " duyệt!";
