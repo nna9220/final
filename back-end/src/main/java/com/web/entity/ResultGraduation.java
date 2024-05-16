@@ -1,5 +1,6 @@
 package com.web.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,35 +17,12 @@ public class ResultGraduation {
     @Column(name="result_graduation_id")
     private int resultId;
 
-    @Column(name = "score_1")
-    private Double score1;
+    @Column(name = "score_Instructor")
+    private Double scoreInstructor;
 
-    @Column(name = "score_2")
-    private Double score2;
-
-    @Column(name = "score_3")
-    private Double score3;
-
-    @Column(name = "score_4")
-    private Double score4;
-
-    @Column(name = "score_5")
-    private Double score5;
-
-    @Column(name = "review_1")
-    private String review1;
-
-    @Column(name = "review_2")
-    private String review2;
-
-    @Column(name = "review_3")
-    private String review3;
-
-    @Column(name = "review_4")
-    private String review4;
-
-    @Column(name = "review_5")
-    private String review5;
+    @OneToMany(mappedBy = "scoreGraduation", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<ScoreGraduation> scoreCouncil;
 
     @ManyToOne
     @JoinColumn(name = "subject_id")

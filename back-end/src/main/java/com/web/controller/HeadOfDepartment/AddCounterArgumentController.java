@@ -34,7 +34,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +47,8 @@ public class AddCounterArgumentController {
     private SubjectImplService service;
     @Autowired
     private SubjectService subjectService;
+    @Autowired
+    private ResultEssayRepository resultEssayRepository;
     @Autowired
     private PersonRepository personRepository;
     @Autowired
@@ -66,6 +67,8 @@ public class AddCounterArgumentController {
     private ReportService reportService;
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private CouncilRepository councilRepository;
     @Autowired
     private RegistrationPeriodLecturerRepository registrationPeriodLecturerRepository;
 
@@ -123,22 +126,39 @@ public class AddCounterArgumentController {
         }
     }
 
+    //Phân Giảng viên phản biện - TLCN
     @PostMapping("/addCounterArgumrnt/{subjectId}/{lecturerId}")
     public ResponseEntity<?> addCounterArgumrnt(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String lecturerId){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
-            System.out.println("Chào");
             if (existedSubject != null) {
                 Lecturer currentLecturer = lecturerRepository.findById(lecturerId).orElse(null);
                 List<Subject> addSub = new ArrayList<>();
                 addSub.add(existedSubject);
                 if (currentLecturer != null) {
+                    //Tạo list GV để thêm vào hội đồng
+                    List<Lecturer> lecturers = new ArrayList<>();
+                    lecturers.add(existedSubject.getThesisAdvisorId());
+                    lecturers.add(existedSubject.getInstructorId());
+                    //Tạo mới hội đồng
+                    Council council = new Council();
+                    council.setLecturers(lecturers);
+                    councilRepository.save(council);
                     currentLecturer.setListSubCounterArgument(addSub);
                     existedSubject.setThesisAdvisorId(currentLecturer);
                     lecturerRepository.save(currentLecturer);
                     subjectRepository.save(existedSubject);
+                    //Mail thông báo hội đồng đã được lập
+                    String subject = "THÀNH LẬP HỘI ĐỒNG";
+                    String messenger = "HỘI ĐỒNG PHẢN BIỆN ĐỀ TÀI " +existedSubject.getSubjectName() + " ĐÃ ĐƯỢC THÀNH LẬP!" ;
+                    List<String> emailPerson = new ArrayList<>();
+                    emailPerson.add(existedSubject.getInstructorId().getPerson().getUsername());
+                    emailPerson.add(existedSubject.getThesisAdvisorId().getPerson().getUsername());
+                    if (!emailPerson.isEmpty()){
+                        mailService.sendMailToPerson(emailPerson,subject,messenger);
+                    }
                 }
             }
             return new ResponseEntity<>(existedSubject, HttpStatus.OK);
@@ -267,6 +287,8 @@ public class AddCounterArgumentController {
                     }
                     if (student1==null){
                         newSubject.setCheckStudent(false);
+                    }else {
+                        newSubject.setCheckStudent(true);
                     }
                     LocalDate nowDate = LocalDate.now();
                     newSubject.setYear(String.valueOf(nowDate));
@@ -315,12 +337,13 @@ public class AddCounterArgumentController {
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
             Subject existSubject = subjectRepository.findById(id).orElse(null);
-            existSubject.setActive((byte) 0);
+            existSubject.setActive((byte) -1);
             subjectRepository.save(existSubject);
 
             String subject = "Topic: " + existSubject.getSubjectName() ;
             String messenger = "Topic: " + existSubject.getSubjectName() + " đã bị xóa!!";
             mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
+
             return new ResponseEntity<>(HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -329,9 +352,6 @@ public class AddCounterArgumentController {
 
     @PostMapping("/import")
     public ResponseEntity<?> importSubject(@RequestParam("file") MultipartFile file,  @RequestHeader("Authorization") String authorizationHeader) throws IOException {
-
-        /*String referer = Contains.URL_LOCAL +  "/api/head/subject";
-        return new ModelAndView("redirect:" + referer);*/
         return new ResponseEntity<>(service.importSubject(file,authorizationHeader), HttpStatus.OK);
     }
 }

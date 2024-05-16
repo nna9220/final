@@ -84,9 +84,6 @@ public class Subject implements Serializable {
         this.checkStudent = false;
     }
 
-    @ManyToMany(mappedBy = "lecturers")
-    private List<Council> councils;
-
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
     private List<ResultEssay> resultEssays;
 
