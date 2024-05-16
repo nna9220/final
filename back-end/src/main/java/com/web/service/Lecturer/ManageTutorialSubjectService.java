@@ -256,7 +256,6 @@ public class ManageTutorialSubjectService {
                     //Gửi mail
                     String subject = "Topic: " + existedSubject.getSubjectName();
                     String messenger = "Topic: " + existedSubject.getSubjectName() + " đã được " + existedSubject.getInstructorId().getPerson().getFirstName() + " " + existedSubject.getInstructorId().getPerson().getLastName() + " duyệt!";
-                    mailService.sendMailStudent(existedSubject.getThesisAdvisorId().getPerson().getUsername(), subject, messenger);
                     List<String> emailPerson = new ArrayList<>();
                     if (existedSubject.getStudent1()!=null) {
                         Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
@@ -347,7 +346,6 @@ public class ManageTutorialSubjectService {
                     //Gửi mail
                     String subject = "Topic: " + existedSubject.getSubjectName();
                     String messenger = "Topic: " + existedSubject.getSubjectName() + " đã được " + existedSubject.getInstructorId().getPerson().getFirstName() + " " + existedSubject.getInstructorId().getPerson().getLastName() + " duyệt!";
-                    mailService.sendMailStudent(existedSubject.getThesisAdvisorId().getPerson().getUsername(), subject, messenger);
                     List<String> emailPerson = new ArrayList<>();
                     if (existedSubject.getStudent1()!=null) {
                         Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);

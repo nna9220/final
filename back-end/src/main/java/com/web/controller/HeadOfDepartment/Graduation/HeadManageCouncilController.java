@@ -1,4 +1,4 @@
-package com.web.controller.HeadOfDepartment;
+package com.web.controller.HeadOfDepartment.Graduation;
 
 import com.web.entity.TypeSubject;
 import com.web.repository.TypeSubjectRepository;
@@ -20,7 +20,7 @@ public class HeadManageCouncilController {
     @GetMapping("/listSubject")
     public ResponseEntity<?> getListSubject(@RequestHeader("Authorization") String authorizationHeader){
         try {
-            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
             return new ResponseEntity<>(manageCouncilService.getListSubject(authorizationHeader,typeSubject), HttpStatus.OK);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
