@@ -56,19 +56,26 @@ public class ManageTutorialSubjectService {
                         "GVHD: " + personCurrent.getUsername() + "\n"
                         + "Sinh viên vui lòng truy cập website https://hcmute.workon.space/ để thực hiện nộp báo cáo 50% trong vòng 1 tuần kể từ ngày " + today + " đến ngày " + nextWeek;
 
-                Student student1 = studentRepository.findById(newSubject.getStudent1()).orElse(null);
-                Student student2 = studentRepository.findById(newSubject.getStudent2()).orElse(null);
-                Student student3 = studentRepository.findById(newSubject.getStudent3()).orElse(null);
                 List<String> emailPerson = new ArrayList<>();
-                if (student1!=null){
-                    emailPerson.add(student1.getPerson().getUsername());
+                if (existedSubject.getStudent1()!=null) {
+                    Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
+                    if (student1.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                        emailPerson.add(student1.getPerson().getUsername());
+                    }
                 }
-                if (student2!=null){
-                    emailPerson.add(student2.getPerson().getUsername());
+                if (existedSubject.getStudent2()!=null) {
+                    Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
+                    if (student2.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                        emailPerson.add(student2.getPerson().getUsername());
+                    }
                 }
-                if (student3!=null){
-                    emailPerson.add(student3.getPerson().getUsername());
+                if (existedSubject.getStudent3()!=null) {
+                    Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
+                    if (student3.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                        emailPerson.add(student3.getPerson().getUsername());
+                    }
                 }
+
                 if (!emailPerson.isEmpty()){
                     mailService.sendMailToPerson(emailPerson,subject,messenger);
                 }
@@ -98,19 +105,26 @@ public class ManageTutorialSubjectService {
                 String messenger = "Topic: " + existedSubject.getSubjectName()+"\n" +
                         "GVHD: " + personCurrent.getUsername() + "\n"
                         + "Sinh viên vui lòng truy cập website https://hcmute.workon.space/ để thực hiện nộp báo cáo 50% trong vòng 1 tuần kể từ ngày " + today + " đến ngày " + nextWeek;
-                Student student1 = studentRepository.findById(newSubject.getStudent1()).orElse(null);
-                Student student2 = studentRepository.findById(newSubject.getStudent2()).orElse(null);
-                Student student3 = studentRepository.findById(newSubject.getStudent3()).orElse(null);
                 List<String> emailPerson = new ArrayList<>();
-                if (student1!=null){
-                    emailPerson.add(student1.getPerson().getUsername());
+                if (newSubject.getStudent1()!=null) {
+                    Student student1 = studentRepository.findById(newSubject.getStudent1()).orElse(null);
+                    if (student1.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                        emailPerson.add(student1.getPerson().getUsername());
+                    }
                 }
-                if (student2!=null){
-                    emailPerson.add(student2.getPerson().getUsername());
+                if (newSubject.getStudent2()!=null) {
+                    Student student2 = studentRepository.findById(newSubject.getStudent2()).orElse(null);
+                    if (student2.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                        emailPerson.add(student2.getPerson().getUsername());
+                    }
                 }
-                if (student3!=null){
-                    emailPerson.add(student3.getPerson().getUsername());
+                if (newSubject.getStudent3()!=null) {
+                    Student student3 = studentRepository.findById(newSubject.getStudent3()).orElse(null);
+                    if (student3.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                        emailPerson.add(student3.getPerson().getUsername());
+                    }
                 }
+
                 if (!emailPerson.isEmpty()){
                     mailService.sendMailToPerson(emailPerson,subject,messenger);
                 }
@@ -137,19 +151,26 @@ public class ManageTutorialSubjectService {
                         "GVHD: " + personCurrent.getUsername() + "\n"
                         + "Sinh viên vui lòng truy cập website https://hcmute.workon.space/ để thực hiện nộp báo cáo 100% trong vòng 1 tuần kể từ ngày " + today + " đến ngày " + nextWeek;
 
-                Student student1 = studentRepository.findById(newSubject.getStudent1()).orElse(null);
-                Student student2 = studentRepository.findById(newSubject.getStudent2()).orElse(null);
-                Student student3 = studentRepository.findById(newSubject.getStudent3()).orElse(null);
                 List<String> emailPerson = new ArrayList<>();
-                if (student1!=null){
-                    emailPerson.add(student1.getPerson().getUsername());
+                if (newSubject.getStudent1()!=null) {
+                    Student student1 = studentRepository.findById(newSubject.getStudent1()).orElse(null);
+                    if (student1.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                        emailPerson.add(student1.getPerson().getUsername());
+                    }
                 }
-                if (student2!=null){
-                    emailPerson.add(student2.getPerson().getUsername());
+                if (newSubject.getStudent2()!=null) {
+                    Student student2 = studentRepository.findById(newSubject.getStudent2()).orElse(null);
+                    if (student2.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                        emailPerson.add(student2.getPerson().getUsername());
+                    }
                 }
-                if (student3!=null){
-                    emailPerson.add(student3.getPerson().getUsername());
+                if (newSubject.getStudent3()!=null) {
+                    Student student3 = studentRepository.findById(newSubject.getStudent3()).orElse(null);
+                    if (student3.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                        emailPerson.add(student3.getPerson().getUsername());
+                    }
                 }
+
                 if (!emailPerson.isEmpty()){
                     mailService.sendMailToPerson(emailPerson,subject,messenger);
                 }
@@ -177,19 +198,26 @@ public class ManageTutorialSubjectService {
                 String messenger = "Topic: " + existedSubject.getSubjectName()+"\n" +
                         "GVHD: " + personCurrent.getUsername() + "\n"
                         + "Sinh viên vui lòng truy cập website https://hcmute.workon.space/ để thực hiện nộp báo cáo 50% trong vòng 1 tuần kể từ ngày " + today + " đến ngày " + nextWeek;
-                Student student1 = studentRepository.findById(newSubject.getStudent1()).orElse(null);
-                Student student2 = studentRepository.findById(newSubject.getStudent2()).orElse(null);
-                Student student3 = studentRepository.findById(newSubject.getStudent3()).orElse(null);
                 List<String> emailPerson = new ArrayList<>();
-                if (student1!=null){
-                    emailPerson.add(student1.getPerson().getUsername());
+                if (newSubject.getStudent1()!=null) {
+                    Student student1 = studentRepository.findById(newSubject.getStudent1()).orElse(null);
+                    if (student1.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                        emailPerson.add(student1.getPerson().getUsername());
+                    }
                 }
-                if (student2!=null){
-                    emailPerson.add(student2.getPerson().getUsername());
+                if (newSubject.getStudent2()!=null) {
+                    Student student2 = studentRepository.findById(newSubject.getStudent2()).orElse(null);
+                    if (student2.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                        emailPerson.add(student2.getPerson().getUsername());
+                    }
                 }
-                if (student3!=null){
-                    emailPerson.add(student3.getPerson().getUsername());
+                if (newSubject.getStudent3()!=null) {
+                    Student student3 = studentRepository.findById(newSubject.getStudent3()).orElse(null);
+                    if (student3.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                        emailPerson.add(student3.getPerson().getUsername());
+                    }
                 }
+
                 if (!emailPerson.isEmpty()){
                     mailService.sendMailToPerson(emailPerson,subject,messenger);
                 }
@@ -249,19 +277,26 @@ public class ManageTutorialSubjectService {
                     String subject = "Topic: " + existedSubject.getSubjectName();
                     String messenger = "Topic: " + existedSubject.getSubjectName() + " đã được " + existedSubject.getInstructorId().getPerson().getFirstName() + " " + existedSubject.getInstructorId().getPerson().getLastName() + " duyệt!";
                     mailService.sendMailStudent(existedSubject.getThesisAdvisorId().getPerson().getUsername(), subject, messenger);
-                    Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
-                    Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
-                    Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
                     List<String> emailPerson = new ArrayList<>();
-                    if (student1!=null){
-                        emailPerson.add(student1.getPerson().getUsername());
+                    if (existedSubject.getStudent1()!=null) {
+                        Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
+                        if (student1.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                            emailPerson.add(student1.getPerson().getUsername());
+                        }
                     }
-                    if (student2!=null){
-                        emailPerson.add(student2.getPerson().getUsername());
+                    if (existedSubject.getStudent2()!=null) {
+                        Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
+                        if (student2.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                            emailPerson.add(student2.getPerson().getUsername());
+                        }
                     }
-                    if (student3!=null){
-                        emailPerson.add(student3.getPerson().getUsername());
+                    if (existedSubject.getStudent3()!=null) {
+                        Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
+                        if (student3.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                            emailPerson.add(student3.getPerson().getUsername());
+                        }
                     }
+
                     if (!emailPerson.isEmpty()){
                         mailService.sendMailToPerson(emailPerson,subject,messenger);
                     }
@@ -287,19 +322,26 @@ public class ManageTutorialSubjectService {
                 subjectRepository.save(existedSubject);
                 String subject = "Topic: " + existedSubject.getSubjectName();
                 String messenger = "Topic: " + existedSubject.getSubjectName() + " không được duyệt với lý do "+reason + ", vui lòng chỉnh sửa và nộp lại trong 1 tuần tới! ";
-                Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
-                Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
-                Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
                 List<String> emailPerson = new ArrayList<>();
-                if (student1 != null) {
-                    emailPerson.add(student1.getPerson().getUsername());
+                if (existedSubject.getStudent1()!=null) {
+                    Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
+                    if (student1.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                        emailPerson.add(student1.getPerson().getUsername());
+                    }
                 }
-                if (student2 != null) {
-                    emailPerson.add(student2.getPerson().getUsername());
+                if (existedSubject.getStudent2()!=null) {
+                    Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
+                    if (student2.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                        emailPerson.add(student2.getPerson().getUsername());
+                    }
                 }
-                if (student3 != null) {
-                    emailPerson.add(student3.getPerson().getUsername());
+                if (existedSubject.getStudent3()!=null) {
+                    Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
+                    if (student3.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                        emailPerson.add(student3.getPerson().getUsername());
+                    }
                 }
+
                 if (!emailPerson.isEmpty()) {
                     mailService.sendMailToPerson(emailPerson, subject, messenger);
                 }
@@ -356,18 +398,24 @@ public class ManageTutorialSubjectService {
                     String subject = "Topic: " + existedSubject.getSubjectName();
                     String messenger = "Topic: " + existedSubject.getSubjectName() + " đã được " + existedSubject.getInstructorId().getPerson().getFirstName() + " " + existedSubject.getInstructorId().getPerson().getLastName() + " duyệt!";
                     mailService.sendMailStudent(existedSubject.getThesisAdvisorId().getPerson().getUsername(), subject, messenger);
-                    Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
-                    Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
-                    Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
                     List<String> emailPerson = new ArrayList<>();
-                    if (student1!=null){
-                        emailPerson.add(student1.getPerson().getUsername());
+                    if (existedSubject.getStudent1()!=null) {
+                        Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
+                        if (student1.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                            emailPerson.add(student1.getPerson().getUsername());
+                        }
                     }
-                    if (student2!=null){
-                        emailPerson.add(student2.getPerson().getUsername());
+                    if (existedSubject.getStudent2()!=null) {
+                        Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
+                        if (student2.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                            emailPerson.add(student2.getPerson().getUsername());
+                        }
                     }
-                    if (student3!=null){
-                        emailPerson.add(student3.getPerson().getUsername());
+                    if (existedSubject.getStudent3()!=null) {
+                        Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
+                        if (student3.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                            emailPerson.add(student3.getPerson().getUsername());
+                        }
                     }
                     if (!emailPerson.isEmpty()){
                         mailService.sendMailToPerson(emailPerson,subject,messenger);

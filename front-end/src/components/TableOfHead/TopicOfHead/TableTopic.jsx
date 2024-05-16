@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
-import './TableTopic.scss'
-import DetailsIcon from '@mui/icons-material/Details';
-import ViewListOutlinedIcon from '@mui/icons-material/ViewListOutlined'; import { Link } from 'react-router-dom';
+import './TableTopic.scss';
+import { Toast } from 'react-bootstrap';
+import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
+import { BsPentagonHalf } from "react-icons/bs";
+import { BsPentagonFill } from "react-icons/bs";
+import { BsCursorFill } from "react-icons/bs";
 import ManagementTask from '../../KanbanOfHead/ManagementTask';
 import axiosInstance from '../../../API/axios';
 
@@ -12,9 +15,11 @@ function TableTopic() {
   const [selectedSubjectId, setSelectedSubjectId] = useState(null);
   const [selectedSubjectName, setSelectedSubjectName] = useState("");
   const [showBackButton, setShowBackButton] = useState(false);
+  const [showSubmitButton, setShowSubmitButton] = useState(true);
   const userToken = getTokenFromUrlAndSaveToStorage();
-  const [scores, setScores] = useState({}); // Sử dụng object để lưu trữ điểm cho mỗi đề tài
-
+  const [scores, setScores] = useState({});
+  const [subjectIdForSubmit50, setSubjectIdForSubmit50] = useState(null);
+  const [showToastSuccess, setShowToastSuccess] = useState(false);
   useEffect(() => {
     console.log("TokenTopic: " + userToken);
     if (userToken) {
@@ -28,7 +33,6 @@ function TableTopic() {
           .then(response => {
             console.log("Topic: ", response.data);
             setTopics(response.data.listSubject);
-            // Khởi tạo điểm mặc định cho mỗi đề tài
             const initialScores = {};
             response.data.listSubject.forEach(topic => {
               initialScores[topic.subjectId] = 0;
@@ -42,16 +46,18 @@ function TableTopic() {
     }
   }, [userToken]);
 
-  const handleShowManagementTask = (subjectId, subjectName) => { // Thêm tham số để nhận tên đề tài
+  const handleShowManagementTask = (subjectId, subjectName) => {
     setSelectedSubjectId(subjectId);
-    setSelectedSubjectName(subjectName); // Lưu trữ tên đề tài được chọn
+    setSelectedSubjectName(subjectName);
     setShowManagementTask(true);
     setShowBackButton(true);
+    setShowSubmitButton(false);
   };
 
   const handleGoBack = () => {
     setShowManagementTask(false);
     setShowBackButton(false);
+    setShowSubmitButton(true);
   };
 
   const handleScoreChange = (subjectId, event) => {
@@ -60,10 +66,41 @@ function TableTopic() {
       ...prevScores,
       [subjectId]: value
     }));
-  }
+  };
+
+  const handleSubmit50 = () => {
+    console.log(subjectIdForSubmit50);
+    if (subjectIdForSubmit50) {
+      axiosInstance.post(`/head/manageTutorial/fiftyRecent/${subjectIdForSubmit50}`, {}, {
+        headers: {
+          'Authorization': `Bearer ${userToken}`,
+        }
+      })
+        .then(response => {
+          console.log('Yêu cầu nộp báo cáo 50% đã được gửi thành công:', response.data);
+          setShowToastSuccess(true);
+        })
+        .catch(error => {
+          console.error('Lỗi khi gửi yêu cầu nộp báo cáo 50%:', error);
+        });
+    }
+  };
 
   return (
     <div>
+      {showSubmitButton && (
+        <>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <button className="submit50-all" style={{ marginRight: '10px' }} type="button" data-bs-toggle="modal" data-bs-target="#submit50">
+              Nộp báo cáo 50%
+            </button>
+            <button className="submit100-all" type="button" data-bs-toggle="modal" data-bs-target="#submit100">
+              Nộp báo cáo 100%
+            </button>
+          </div>
+        </>
+      )}
+
       {showBackButton && (
         <>
           <div className='group-lecturer'>
@@ -75,19 +112,19 @@ function TableTopic() {
             </nav>
             <button data-bs-toggle="modal" data-bs-target="#confirmSuccess">Hoàn thành đề tài</button>
           </div>
-          <div class="modal fade" id="confirmSuccess" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="exampleModalLabel">XÁC NHẬN HOÀN THÀNH ĐỀ TÀI</h1>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <div className="modal fade" id="confirmSuccess" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h1 className="modal-title fs-5" id="exampleModalLabel">XÁC NHẬN HOÀN THÀNH ĐỀ TÀI</h1>
+                  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div className="modal-body">
                   Bạn chắc chắn muốn hoàn thành đề tài này không?
                 </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="button" class="btn btn-primary">Confirm</button>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" className="btn btn-primary">Confirm</button>
                 </div>
               </div>
             </div>
@@ -102,14 +139,14 @@ function TableTopic() {
             <thead>
               <tr>
                 <th scope="col">#</th>
-                <th scope="col" style={{ width: '300px' }}>Tên đề tài</th>
+                <th scope="col" style={{ width: '250px' }}>Tên đề tài</th>
                 <th scope="col">GVHD</th>
                 <th scope="col">GVPB</th>
-                <th scope="col">Sinh viên 1</th>
-                <th scope="col">Sinh viên 2</th>
-                <th scope="col">Sinh viên 3</th>
-                <th scope="col">Yêu cầu</th>
-                <th scope="col">Action</th>
+                <th scope="col">SV1</th>
+                <th scope="col">SV2</th>
+                <th scope="col">SV3</th>
+                <th scope="col" style={{ width: '150px' }}>Yêu cầu</th>
+                <th scope="col" style={{ width: '150px' }}>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -124,7 +161,13 @@ function TableTopic() {
                   <td>{item.student3}</td>
                   <td>{item.requirement}</td>
                   <td>
-                    <button style={{ marginRight: '20px' }} class="btn btn-primary" type="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Đi đến chi tiết để quản lý đề tài" onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}><DetailsIcon /></button>
+                    <button className="management" type="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Đi đến chi tiết để quản lý đề tài" onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}><BsCursorFill /></button>
+                    <button className="submit50" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-placement="bottom" title="Yêu cầu nộp báo cáo 50%" onClick={() => setSubjectIdForSubmit50(item.subjectId)}>
+                      <BsPentagonHalf />
+                    </button>
+                    <button className="submit100" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal1" data-bs-placement="bottom" title="Yêu cầu nộp báo cáo 100%">
+                      <BsPentagonFill />
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -132,8 +175,101 @@ function TableTopic() {
           </table>
         )}
       </div>
+
+      <div>
+        <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h1 className="modal-title fs-5" id="exampleModalLabel">Thông báo</h1>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div className="modal-body">
+                Yêu cầu nộp báo cáo 50% cho đề tài này?
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmit50}>Confirm</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="modal fade" id="exampleModal1" tabIndex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h1 className="modal-title fs-5" id="exampleModalLabel">Thông báo</h1>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div className="modal-body">
+                Yêu cầu nộp báo cáo 100% cho đề tài này?
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" className="btn btn-primary">Confirm</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="modal fade" id="submit50" tabIndex="-1" aria-labelledby="exampleModalLabel50" aria-hidden="true">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h1 className="modal-title fs-5" id="exampleModalLabel50">Thông báo</h1>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div className="modal-body">
+                Yêu cầu nôp báo cáo 50% cho toàn bộ đề tài?
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" className="btn btn-primary">Confirm</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="modal fade" id="submit100" tabIndex="-1" aria-labelledby="exampleModalLabel100" aria-hidden="true">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h1 className="modal-title fs-5" id="exampleModalLabel100">Thông báo</h1>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div className="modal-body">
+                Yêu cầu nôp báo cáo 100% cho toàn bộ đề tài?
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" className="btn btn-primary">Confirm</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <Toast show={showToastSuccess} onClose={() => setShowToastSuccess(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
+          <Toast.Header>
+            <strong className="me-auto">Thông báo</strong>
+          </Toast.Header>
+          <Toast.Body>
+            <DoneOutlinedIcon /> Yêu cầu nộp báo cáo 50% đã được gửi thành công!
+          </Toast.Body>
+        </Toast>
+
+        <Toast show={showToastSuccess} onClose={() => setShowToastSuccess(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
+          <Toast.Header>
+            <strong className="me-auto">Thông báo</strong>
+          </Toast.Header>
+          <Toast.Body>
+            <DoneOutlinedIcon /> Yêu cầu nộp báo cáo 100% đã được gửi thành công!
+          </Toast.Body>
+        </Toast>
+      </div>
     </div>
-  )
+  );
 }
 
 export default TableTopic;

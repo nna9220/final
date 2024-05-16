@@ -12,15 +12,28 @@ function TopicPBTable() {
     const [activeTLChuyenNganh, setActiveTLChuyenNganh] = useState(false);
     const [activeKhoaLuan, setActiveKhoaLuan] = useState(false);
     const [detail, setDetail] = useState('');
+    const [scores, setScores] = useState({});
+    const [criterias, setCriterias] = useState([]);
     const userToken = getTokenFromUrlAndSaveToStorage();
-    const [scores, setScores] = useState({
-        criteria1: 0,
-        criteria2: 0,
-        criteria3: 0,
-        criteria4: 0,
-        criteria5: 0,
-        criteria6: 0
-    });
+
+    useEffect(() => {
+        fetchTopics();
+        handleListCriteria();
+    }, []);
+
+    const fetchTopics = () => {
+        axiosInstance.get('/lecturer/counterArgumentSubject', {
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+            },
+        })
+            .then(response => {
+                setTopics(response.data.listSubject);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    };
 
     const handleScoreChange = (criteria, value) => {
         setScores(prevScores => ({
@@ -28,30 +41,23 @@ function TopicPBTable() {
             [criteria]: parseFloat(value) || 0
         }));
     };
+
     const totalScore = Object.values(scores).reduce((total, score) => total + score, 0);
 
-    useEffect(() => {
-        console.log("TokenTopic: " + userToken);
-        if (userToken) {
-            const tokenSt = sessionStorage.getItem(userToken);
-            if (!tokenSt) {
-                axiosInstance.get('/lecturer/counterArgumentSubject', {
-                    headers: {
-                        'Authorization': `Bearer ${userToken}`,
-                    },
-                })
-                    .then(response => {
-                        console.log("Topic: ", response.data);
-                        setTopics(response.data.listSubject);
-                        setActiveTLChuyenNganh(true);
-                        setActiveKhoaLuan(false);
-                    })
-                    .catch(error => {
-                        console.error(error);
-                    });
-            }
-        }
-    }, [userToken]);
+    const handleListCriteria = () => {
+        axiosInstance.get('/lecturer/manageTutorial/listCriteria', {
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+            },
+        })
+            .then(response => {
+                console.log(response.data.body);
+                setCriterias(response.data.body);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    };
 
     const detailTopic = (id) => {
         const userToken = getTokenFromUrlAndSaveToStorage();
@@ -134,14 +140,14 @@ function TopicPBTable() {
                     </table>
                 </div>
             </div>
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-xl modal-dialog-scrollable">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Đánh giá</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div className="modal-dialog modal-xl modal-dialog-scrollable">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h1 className="modal-title fs-5" id="exampleModalLabel">Đánh giá</h1>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body">
+                        <div className="modal-body">
                             <h5>Thông tin đề tài</h5>
                             <div>
                                 <p>1. Tên đề tài: {detail.subject?.subjectName}</p>
@@ -154,86 +160,88 @@ function TopicPBTable() {
                                 <p>Sinh viên 2: {detail.subject?.student2}</p>
                                 <p>Sinh viên 3: {detail.subject?.student3}</p>
                             </div>
-                            <hr></hr>
+                            <hr />
                             <h5>Tiêu chí đánh giá</h5>
                             <table className='table-bordered table'>
                                 <thead>
                                     <tr>
                                         <th>Tiêu Chí Đánh Giá</th>
-                                        <th>Sinh viên 1</th>
-                                        <th>Sinh viên 2</th>
-                                        <th>Sinh viên 3</th>
+                                        {topics.map((_, index) => (
+                                            <th key={index}>Sinh viên {index + 1}</th>
+                                        ))}
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {Object.keys(scores).map(criteria => (
-                                        <tr key={criteria}>
-                                            <td className='criteria'>{criteria}</td>
-                                            <td>
-                                                <input type='number' step='0.25' max={1} min={0} value={scores[criteria]}
-                                                    onChange={(e) => {
-                                                        const value = parseFloat(e.target.value);
-                                                        if (value > 1) {
-                                                            handleScoreChange(criteria, 1);
-                                                        } else {
-                                                            handleScoreChange(criteria, value);
-                                                        }
-                                                    }}
-                                                />
-
-                                            </td>
-                                            <td>
-                                                <input type='number' step='0.25' max={1} min={0} value={scores[criteria]}
-                                                    onChange={(e) => {
-                                                        const value = parseFloat(e.target.value);
-                                                        if (value > 1) {
-                                                            handleScoreChange(criteria, 1);
-                                                        } else {
-                                                            handleScoreChange(criteria, value);
-                                                        }
-                                                    }}
-                                                />
-
-                                            </td>
-                                            <td>
-                                                <input type='number' step='0.25' max={1} min={0} value={scores[criteria]}
-                                                    onChange={(e) => {
-                                                        const value = parseFloat(e.target.value);
-                                                        if (value > 1) {
-                                                            handleScoreChange(criteria, 1);
-                                                        } else {
-                                                            handleScoreChange(criteria, value);
-                                                        }
-                                                    }}
-                                                />
-
-                                            </td>
+                                    {criterias.map((criteria, criteriaIndex) => (
+                                        <tr key={criteriaIndex}>
+                                            <td className='criteria'>{criteria.criteriaName}</td>
+                                            {topics.map((_, topicIndex) => (
+                                                <td key={topicIndex}>
+                                                    <input
+                                                        type='number'
+                                                        step='0.25'
+                                                        max={criteria.criteriaScore}
+                                                        min={0}
+                                                        value={scores[`${criteria.criteriaName}_${topicIndex}`] || 0}
+                                                        onChange={(e) => handleScoreChange(`${criteria.criteriaName}_${topicIndex}`, e.target.value)}
+                                                    />
+                                                </td>
+                                            ))}
                                         </tr>
                                     ))}
                                     <tr>
                                         <td className='criteria-sum'>Tổng</td>
-                                        <td><input type='number' step='0.25' max={1} min={0} className='score' readOnly value={totalScore.toFixed(2)}></input></td>
-                                        <td><input type='number' step='0.25' max={1} min={0} className='score' readOnly value={totalScore.toFixed(2)}></input></td>
-                                        <td><input type='number' step='0.25' max={1} min={0} className='score' readOnly value={totalScore.toFixed(2)}></input></td>
-
+                                        {topics.map((_, index) => (
+                                            <td key={index}>
+                                                <input
+                                                    type='number'
+                                                    step='0.25'
+                                                    max={1}
+                                                    min={0}
+                                                    className='score'
+                                                    readOnly
+                                                    value={Object.keys(criterias).reduce((sum, criteria) => {
+                                                        return sum + parseFloat(scores[`${criteria}_${index}`] || 0);
+                                                    }, 0).toFixed(2)}
+                                                />
+                                            </td>
+                                        ))}
                                     </tr>
                                 </tbody>
                             </table>
-
-                            <hr></hr>
+                            <hr />
                             <h5>Nhận xét, đánh giá</h5>
-                            <div class="form-floating">
-                                <textarea class="form-control" id="comment" name="text" placeholder="Comment goes here"></textarea>
-                                <label for="comment">Nhận xét</label>
+                            <div className="form-floating">
+                                <textarea
+                                    className="form-control"
+                                    id="comment"
+                                    name="text"
+                                    placeholder="Comment goes here"
+                                ></textarea>
+                                <label htmlFor="comment">Nhận xét</label>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={addScore}>Confirm</button>
+                        <div className="modal-footer">
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                data-bs-dismiss="modal"
+                            >
+                                Close
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                data-bs-dismiss="modal"
+                                onClick={addScore}
+                            >
+                                Confirm
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     )
 }

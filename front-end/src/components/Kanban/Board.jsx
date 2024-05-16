@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Column from './Column';
@@ -12,10 +13,12 @@ import DnsOutlinedIcon from '@mui/icons-material/DnsOutlined';
 import axiosInstance from '../../API/axios';
 
 const KanbanBoard = () => {
+  const userToken = getTokenFromUrlAndSaveToStorage();
   const [data, setData] = useState([]);
   const [newTask, setNewTask] = useState([]);
   const [showTimeLine, setShowTimeLine] = useState(false);
   const [showListTask, setShowListTask] = useState(true);
+  const [file, setFile] = useState(null);
   const [formNewTask, setFormNewTask] = useState({
     requirement: '',
     timeStart: '',
@@ -44,6 +47,10 @@ const KanbanBoard = () => {
   }
 
   useEffect(() => {
+    loadList();   
+  }, []);
+
+  const loadList = () => {
     const userToken = getTokenFromUrlAndSaveToStorage();
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
@@ -63,7 +70,7 @@ const KanbanBoard = () => {
           });
       }
     }
-  }, []);
+  }
 
   const handleNewTask = () => {
     const userToken = getTokenFromUrlAndSaveToStorage();
@@ -148,14 +155,45 @@ const KanbanBoard = () => {
     })
       .then(response => {
         console.log("Task status updated successfully:", response.data);
+        loadList();
       })
       .catch(error => {
         console.error("Error updating task status:", error);
       });
   }
 
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
+
+  const handleSubmitReport = (reportType) => {
+    if (file) {
+      const formData = new FormData();
+      formData.append('fileInput', file);
+
+      const url = reportType === 'fifty' ? '/student/manage/submit/fifty' : '/student/manage/submit/oneHundred';
+
+      axiosInstance.post(url, formData, {
+        headers: {
+          'Authorization': `Bearer ${userToken}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+        .then(response => {
+          toast.success('Nộp báo cáo thành công!');
+        })
+        .catch(error => {
+          toast.error('Lỗi khi nộp báo cáo: ' + error.message);
+          console.error('Error:', error);
+        });
+    } else {
+      toast.error('Vui lòng chọn file trước khi nộp!');
+    }
+  };
+
   return (
     <div>
+      <ToastContainer/>
       {error && <h4 className='elter-error-no-topic'><ReportProblemOutlinedIcon /> {error}</h4>}
       {!error &&
         <div>
@@ -178,12 +216,12 @@ const KanbanBoard = () => {
                   <div class="modal-body">
                     <div class="mb-3">
                       <label for="formFile" class="form-label">Chọn file báo cáo : </label>
-                      <input class="form-control" type="file" id="formFile" />
+                      <input class="form-control" type="file" id="formFile" onChange={handleFileChange}/>
                     </div>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitReport}>Submit</button>
                   </div>
                 </div>
               </div>
