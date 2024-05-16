@@ -62,20 +62,12 @@ public class StudentAddTaskController {
                 Student studen2 = studentRepository.findById(currentSubject.getStudent2()).orElse(null);
                 studentList.add(studen2);
             }
-            /*modelAndView.addObject("student", currentStudent);
-            modelAndView.addObject("person", personCurrent);
-            modelAndView.addObject("subject", currentSubject);
-            modelAndView.addObject("listStudentGroup", studentList);
-            return modelAndView;*/
             Map<String,Object> response = new HashMap<>();
             response.put("student", currentStudent);
             response.put("subject", currentSubject);
             response.put("listStudentGroup", studentList);
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
