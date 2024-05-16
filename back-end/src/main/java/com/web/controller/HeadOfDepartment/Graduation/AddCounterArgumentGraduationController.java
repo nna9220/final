@@ -39,6 +39,8 @@ public class AddCounterArgumentGraduationController {
     @Autowired
     private PersonRepository personRepository;
     @Autowired
+    private CouncilRepository councilRepository;
+    @Autowired
     private TypeSubjectRepository typeSubjectRepository;
     @Autowired
     private SubjectRepository subjectRepository;
@@ -103,16 +105,11 @@ public class AddCounterArgumentGraduationController {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
             List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByAsisAdvisorAndMajor(true,existedLecturer.getMajor(),typeSubject);
-            /*model.addObject("listSubject",subjectByCurrentLecturer);
-            return model;*/
             Map<String,Object> response = new HashMap<>();
             response.put("person",personCurrent);
             response.put("listSubject",subjectByCurrentLecturer);
             return new ResponseEntity<>(response,HttpStatus.OK);
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
@@ -131,16 +128,19 @@ public class AddCounterArgumentGraduationController {
                 if (currentLecturer != null) {
                     currentLecturer.setListSubCounterArgument(addSub);
                     existedSubject.setThesisAdvisorId(currentLecturer);
+                    //Thêm GVPB vào hội đồng
+                    Council council = new Council();
+                    List<Lecturer> lecturers = new ArrayList<>();
+                    lecturers.add(existedSubject.getThesisAdvisorId());
+                    council.setLecturers(lecturers);
+                    var newCouncil = councilRepository.save(council);
+                    existedSubject.setCouncil(newCouncil);
                     lecturerRepository.save(currentLecturer);
                     subjectRepository.save(existedSubject);
                 }
             }
-
             return new ResponseEntity<>(existedSubject, HttpStatus.OK);
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }

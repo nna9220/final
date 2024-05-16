@@ -84,22 +84,9 @@ public class HeadManageTutorialSubjectGraduationController {
 
     @PostMapping("/browse-score/{subjectId}")
     public ResponseEntity<?> browseToThesisAndScoreOfInstructor(@PathVariable int subjectId,
-                                                                @RequestParam("review1") String review1,
-                                                                @RequestParam("review2") String review2,
-                                                                @RequestParam("review3") String review3,
-                                                                @RequestParam("review4") String review4,
-                                                                @RequestParam("review5") String review5,
-                                                                @RequestParam("score1") Double score1,
-                                                                @RequestParam("score2") Double score2,
-                                                                @RequestParam("score3") Double score3,
-                                                                @RequestParam("score4") Double score4,
-                                                                @RequestParam("score5") Double score5,
-                                                                @RequestParam("studentId") Student studentId,
                                                                 @RequestHeader("Authorization") String authorizationHeader){
         try {
-            return new ResponseEntity<>(manageTutorialSubjectService.BrowseMoveToThesisAdvisorGraduation(subjectId,authorizationHeader,
-                    review1,review2,review3,review4,review5,
-                    score1,score2,score3,score4,score5,studentId),HttpStatus.OK);
+            return new ResponseEntity<>(manageTutorialSubjectService.BrowseMoveToThesisAdvisorGraduation(subjectId,authorizationHeader),HttpStatus.OK);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);

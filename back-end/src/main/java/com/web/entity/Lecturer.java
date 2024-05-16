@@ -43,6 +43,8 @@ public class Lecturer implements Serializable {
     @JsonIgnore
     private List<Task> tasks;
 
-
+    @OneToMany(mappedBy = "scoreGraduation", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<ScoreGraduation> scoreGraduationList;
 
 }
