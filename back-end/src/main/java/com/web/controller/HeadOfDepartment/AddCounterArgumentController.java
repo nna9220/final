@@ -48,6 +48,8 @@ public class AddCounterArgumentController {
     @Autowired
     private SubjectService subjectService;
     @Autowired
+    private ResultEssayRepository resultEssayRepository;
+    @Autowired
     private PersonRepository personRepository;
     @Autowired
     private TypeSubjectRepository typeSubjectRepository;
@@ -65,6 +67,8 @@ public class AddCounterArgumentController {
     private ReportService reportService;
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private CouncilRepository councilRepository;
     @Autowired
     private RegistrationPeriodLecturerRepository registrationPeriodLecturerRepository;
 
@@ -123,22 +127,39 @@ public class AddCounterArgumentController {
         }
     }
 
+    //Phân Giảng viên phản biện - TLCN
     @PostMapping("/addCounterArgumrnt/{subjectId}/{lecturerId}")
     public ResponseEntity<?> addCounterArgumrnt(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String lecturerId){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
-            System.out.println("Chào");
             if (existedSubject != null) {
                 Lecturer currentLecturer = lecturerRepository.findById(lecturerId).orElse(null);
                 List<Subject> addSub = new ArrayList<>();
                 addSub.add(existedSubject);
                 if (currentLecturer != null) {
+                    //Tạo list GV để thêm vào hội đồng
+                    List<Lecturer> lecturers = new ArrayList<>();
+                    lecturers.add(existedSubject.getThesisAdvisorId());
+                    lecturers.add(existedSubject.getInstructorId());
+                    //Tạo mới hội đồng
+                    Council council = new Council();
+                    council.setLecturers(lecturers);
+                    councilRepository.save(council);
                     currentLecturer.setListSubCounterArgument(addSub);
                     existedSubject.setThesisAdvisorId(currentLecturer);
                     lecturerRepository.save(currentLecturer);
                     subjectRepository.save(existedSubject);
+                    //Mail thông báo hội đồng đã được lập
+                    String subject = "THÀNH LẬP HỘI ĐỒNG";
+                    String messenger = "HỘI ĐỒNG PHẢN BIỆN ĐỀ TÀI " +existedSubject.getSubjectName() + " ĐÃ ĐƯỢC THÀNH LẬP!" ;
+                    List<String> emailPerson = new ArrayList<>();
+                    emailPerson.add(existedSubject.getInstructorId().getPerson().getUsername());
+                    emailPerson.add(existedSubject.getThesisAdvisorId().getPerson().getUsername());
+                    if (!emailPerson.isEmpty()){
+                        mailService.sendMailToPerson(emailPerson,subject,messenger);
+                    }
                 }
             }
             return new ResponseEntity<>(existedSubject, HttpStatus.OK);
@@ -156,16 +177,11 @@ public class AddCounterArgumentController {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
             List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) -1,typeSubject);
-            /*model.addObject("listSubject",subjectByCurrentLecturer);
-            return model;*/
             Map<String,Object> response = new HashMap<>();
             response.put("person",personCurrent);
             response.put("lstSubject",subjectByCurrentLecturer);
             return new ResponseEntity<>(response,HttpStatus.OK);
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }

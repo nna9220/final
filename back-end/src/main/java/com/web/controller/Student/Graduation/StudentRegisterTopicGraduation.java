@@ -53,7 +53,6 @@ public class StudentRegisterTopicGraduation {
                     if (CompareTime.isCurrentTimeInPeriodStudent(periodList)) {
                         TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
                         List<Subject> subjectList = subjectRepository.findSubjectByStatusAndMajorAndStudent(true, currentStudent.getMajor(),typeSubject);
-
                         Map<String,Object> response = new HashMap<>();
                         response.put("person",personCurrent);
                         response.put("subjectList", subjectList);
