@@ -24,6 +24,10 @@ public class Council {
     @Column(name = "date_time")
     private Date timeReport;
 
+    @OneToOne
+    @JoinColumn(name = "subject", unique = true)
+    private Subject subject;
+
     @ManyToMany
     @JoinTable(
             name = "council_lecturer",

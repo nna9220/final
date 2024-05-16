@@ -5,7 +5,9 @@ import javax.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -86,4 +88,12 @@ public class Subject implements Serializable {
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
     private List<ResultGraduation> resultGraduations;
+
+    @ManyToMany
+    @JoinTable(
+            name = "subject_criteria",
+            joinColumns = @JoinColumn(name = "subject_id"),
+            inverseJoinColumns = @JoinColumn(name = "criteria_id")
+    )
+    private Set<EvaluationCriteria> criteria = new HashSet<>();
 }
