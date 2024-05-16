@@ -4,6 +4,7 @@ import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
 import com.web.entity.*;
 import com.web.repository.*;
+import com.web.service.MailServiceImpl;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,8 @@ public class ManageCouncilService {
     private SubjectRepository subjectRepository;
     @Autowired
     private LecturerRepository lecturerRepository;
+    @Autowired
+    private MailServiceImpl mailService;
 
     public ResponseEntity<?> getListSubject(String authorizationHeader, TypeSubject typeSubject) {
         String token = tokenUtils.extractToken(authorizationHeader);
@@ -76,6 +79,16 @@ public class ManageCouncilService {
                     }
                     council.setLecturers(lecturers);
                     councilRepository.save(council);
+                    List<String> emailPerson = new ArrayList<>();
+                    String subjectMail = "HỘI ĐỒNG PHẢN BIỆN ĐỀ TÀI " + subject.getSubjectName();
+                    String messenger = "Đã được phân hội đồng phản biện đề tài: " + subject.getSubjectName();
+                    for (Lecturer l: council.getLecturers()) {
+                        emailPerson.add(l.getPerson().getUsername());
+                    }
+                    if (!emailPerson.isEmpty()){
+                        mailService.sendMailToPerson(emailPerson,subjectMail,messenger);
+                    }
+
                     return new ResponseEntity<>(council,HttpStatus.CREATED);
                 }else{
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
