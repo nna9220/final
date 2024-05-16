@@ -39,6 +39,8 @@ public class AddCounterArgumentGraduationController {
     @Autowired
     private PersonRepository personRepository;
     @Autowired
+    private CouncilRepository councilRepository;
+    @Autowired
     private TypeSubjectRepository typeSubjectRepository;
     @Autowired
     private SubjectRepository subjectRepository;
@@ -52,8 +54,6 @@ public class AddCounterArgumentGraduationController {
     private ReportService reportService;
     @Autowired
     private StudentRepository studentRepository;
-    @Autowired
-    private CouncilRepository councilRepository;
     @Autowired
     private RegistrationPeriodLecturerRepository registrationPeriodLecturerRepository;
 
@@ -128,6 +128,13 @@ public class AddCounterArgumentGraduationController {
                 if (currentLecturer != null) {
                     currentLecturer.setListSubCounterArgument(addSub);
                     existedSubject.setThesisAdvisorId(currentLecturer);
+                    //Thêm GVPB vào hội đồng
+                    Council council = new Council();
+                    List<Lecturer> lecturers = new ArrayList<>();
+                    lecturers.add(existedSubject.getThesisAdvisorId());
+                    council.setLecturers(lecturers);
+                    var newCouncil = councilRepository.save(council);
+                    existedSubject.setCouncil(newCouncil);
                     lecturerRepository.save(currentLecturer);
                     subjectRepository.save(existedSubject);
                 }
