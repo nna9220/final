@@ -1,4 +1,4 @@
-package com.web.controller.HeadOfDepartment;
+package com.web.controller.Lecturer.Graduation;
 
 import com.web.entity.TypeSubject;
 import com.web.repository.SubjectRepository;
@@ -11,9 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/head/council")
+@RequestMapping("/api/lecturer/council/graduation")
 @RequiredArgsConstructor
-public class HeadCouncilController {
+public class LecturerCouncilGraduationController {
     @Autowired
     private EvaluationAndScoringService evaluationAndScoringService;
     @Autowired
@@ -24,7 +24,7 @@ public class HeadCouncilController {
     @GetMapping("/listSubject")
     public ResponseEntity<?> getListCouncilOfLecturer(@RequestHeader("Authorization") String authorizationHeader){
         try {
-            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
             return new ResponseEntity<>(evaluationAndScoringService.getListCouncilOfLecturer(authorizationHeader,typeSubject), HttpStatus.OK);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
@@ -42,19 +42,4 @@ public class HeadCouncilController {
         }
     }
 
-    @PostMapping("/evaluation-scoring/{id}")
-    public ResponseEntity<?> evaluationAndScoring(@PathVariable int id,@RequestHeader("Authorization") String authorizationHeader,
-                                                  @RequestParam("score1Student") Double score1,
-                                                  @RequestParam("scoreStudent2") Double score2,
-                                                  @RequestParam("scoreStudent3") Double score3,
-                                                  @RequestParam("reviewStudent1") String review1,
-                                                  @RequestParam("reviewStudent2") String review2,
-                                                  @RequestParam("reviewStudent3") String review3){
-        try {
-            return new ResponseEntity<>(evaluationAndScoringService.evaluationAndScoringEssay(authorizationHeader,id,review1,review2,review3,score1,score2,score3),HttpStatus.OK);
-        }catch (Exception e){
-            System.err.println("Initial SessionFactory creation failed." + e);
-            throw new ExceptionInInitializerError(e);
-        }
-    }
 }
