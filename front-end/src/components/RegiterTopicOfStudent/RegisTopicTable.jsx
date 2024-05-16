@@ -85,7 +85,7 @@ function RegisTopicTable() {
     };
 
     return (
-        <div className='home-table-register-student'>
+        <div className='home-table'>
             {topics.length > 0 ? (
                 <table className="table table-hover">
                     <thead>

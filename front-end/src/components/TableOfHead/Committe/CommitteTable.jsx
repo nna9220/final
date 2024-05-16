@@ -1,6 +1,30 @@
 import React from 'react'
+import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
+import axiosInstance from '../../../API/axios';
+import { useState, useEffect } from 'react';
 
 function CommitteTable() {
+    const userToken = getTokenFromUrlAndSaveToStorage();
+    const [criterias, setCriterias] = useState([]);
+
+    useEffect(() => {
+        console.log("Token: " + userToken);
+        if (userToken) {
+            axiosInstance.get('/head/manageTutorial/listCriteria', {
+                headers: {
+                    'Authorization': `Bearer ${userToken}`,
+                },
+            })
+                .then(response => {
+                    console.log("Criterias: ", response.data);
+                    setCriterias(response.data);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        };
+    }, [userToken]);
+
     return (
         <div style={{ margin: '20px' }}>
             <div className='body-table-committe'>

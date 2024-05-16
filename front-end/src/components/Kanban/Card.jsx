@@ -25,6 +25,10 @@ const Card = ({ task, index }) => {
     setCommentFiles(e.target.files);
   };
 
+  useEffect(() => {
+    handleViewTask(task.taskId);
+  }, [task.taskId]);
+
   const handleSubmitComment = async (e) => {
     const userToken = getTokenFromUrlAndSaveToStorage();
     e.preventDefault();
@@ -40,10 +44,17 @@ const Card = ({ task, index }) => {
       const response = await axiosInstance.post(`/student/comment/create/${task.taskId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${userToken}`, // Thay thế userToken bằng cách lấy từ storage hoặc một cách thích hợp khác
+          'Authorization': `Bearer ${userToken}`,
         },
       });
       console.log('Comment created successfully:', response.data);
+      const newComment = response.data;
+      setDetail((prevDetail) => ({
+        ...prevDetail,
+        listComment: [...prevDetail.listComment, newComment],
+      }));
+      setCommentContent('');
+      setCommentFiles([]);
     } catch (error) {
       console.error('Error creating comment:', error);
     }
@@ -137,13 +148,12 @@ const Card = ({ task, index }) => {
                       <div key={commentIndex}>
                         <div className='comment-item'>
                           <div className='header-comment'>
-                            <label className='name-post'>{comment.poster.firstName + ' ' + comment.poster.lastName}</label>
+                            <label className='name-post'>{comment.poster?.firstName + ' ' + comment.poster?.lastName}</label>
                             <label className='time-post'>{comment.dateSubmit}</label>
                           </div>
                           <div className='body-comment'>
                             <label className='content'>{comment.content}</label><br />
                             {file && file.map((files, fileIndex) => {
-                              // Kiểm tra xem tệp có thuộc về comment hiện tại không
                               if (files.commentId.commentId === comment.commentId) {
                                 return (
                                   <div key={fileIndex}>

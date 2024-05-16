@@ -89,6 +89,7 @@ public class StudentManageEssayController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
+
     @GetMapping("/download/{fileName}")
     public ResponseEntity<Resource> redirectToDownload(@PathVariable String fileName) {
         String redirectUrl = "/fileUpload/" + fileName;
