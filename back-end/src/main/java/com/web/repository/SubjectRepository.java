@@ -40,4 +40,7 @@ public interface SubjectRepository extends JpaRepository<Subject, Integer> {
 
     @Query("select s from Subject s where s.active =: active")
     public List<Subject> findSubjectByActive(Byte active);
+
+    @Query("select s from Subject s where s.active >=: active and s.status=true and s.major=:major and s.typeSubject=:typeSubject")
+    public List<Subject> findSubjectByActiveAndStatusAndMajorAndType(Byte active, Major major, TypeSubject typeSubject);
 }
