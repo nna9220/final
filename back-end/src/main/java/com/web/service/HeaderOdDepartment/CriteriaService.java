@@ -3,16 +3,18 @@ package com.web.service.HeaderOdDepartment;
 import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
 import com.web.entity.*;
-import com.web.repository.EvaluationCriteriaRepository;
-import com.web.repository.LecturerRepository;
-import com.web.repository.PersonRepository;
-import com.web.repository.TypeSubjectRepository;
+import com.web.repository.*;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestHeader;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class CriteriaService {
@@ -28,18 +30,29 @@ public class CriteriaService {
     private PersonRepository personRepository;
     @Autowired
     private LecturerRepository lecturerRepository;
+    @Autowired
+    private SubjectRepository subjectRepository;
 
     public ResponseEntity<?> saveCriteria(@RequestHeader("Authorization") String authorizationHeader, TypeSubject typeSubject, String nameCriteria, Double scoreCriteria){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+            //Tìm kiếm tất cả Đề tài theo chuyên ngành, loại đề tài và set tiêu chí là cái này
+            Set<Subject> subjects = subjectRepository.getSubjectByMajorAnType(existedLecturer.getMajor(),typeSubject);
             EvaluationCriteria evaluationCriteria = new EvaluationCriteria();
             evaluationCriteria.setMajor(existedLecturer.getMajor());
             evaluationCriteria.setCriteriaName(nameCriteria);
             evaluationCriteria.setTypeSubject(typeSubject);
             evaluationCriteria.setCriteriaScore(scoreCriteria);
+            evaluationCriteria.setSubjects(subjects);
             evaluationCriteriaRepository.save(evaluationCriteria);
+            Set<EvaluationCriteria> evaluationCriteriaList = new HashSet<>();
+            evaluationCriteriaList.add(evaluationCriteria);
+            for (Subject subject:subjects) {
+                subject.setCriteria(evaluationCriteriaList);
+            }
+            subjectRepository.saveAll(subjects);
             return new ResponseEntity<>(evaluationCriteria,HttpStatus.CREATED);
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

@@ -78,7 +78,10 @@ public class ManageCouncilService {
                         }
                     }
                     council.setLecturers(lecturers);
+                    council.setSubject(subject);
                     councilRepository.save(council);
+                    subject.setCouncil(council);
+                    subjectRepository.save(subject);
                     List<String> emailPerson = new ArrayList<>();
                     String subjectMail = "HỘI ĐỒNG PHẢN BIỆN ĐỀ TÀI " + subject.getSubjectName();
                     String messenger = "Đã được phân hội đồng phản biện đề tài: " + subject.getSubjectName();
