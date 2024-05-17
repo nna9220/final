@@ -59,7 +59,6 @@ const ManagementTask = ({ subjectId }) => {
   }, [subjectId]);
 
   const onDragEnd = (result) => {
-    // Code xử lý kéo và thả task tại đây
   };
 
   return (
