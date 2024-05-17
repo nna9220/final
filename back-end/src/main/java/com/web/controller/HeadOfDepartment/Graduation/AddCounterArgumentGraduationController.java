@@ -133,6 +133,7 @@ public class AddCounterArgumentGraduationController {
                     List<Lecturer> lecturers = new ArrayList<>();
                     lecturers.add(existedSubject.getThesisAdvisorId());
                     council.setLecturers(lecturers);
+                    council.setSubject(existedSubject);
                     var newCouncil = councilRepository.save(council);
                     existedSubject.setCouncil(newCouncil);
                     lecturerRepository.save(currentLecturer);

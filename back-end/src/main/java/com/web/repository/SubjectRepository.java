@@ -9,11 +9,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface SubjectRepository extends JpaRepository<Subject, Integer> {
     @Query("select s from Subject s where s.major =:major and s.typeSubject=:typeSubject")
     public List<Subject> getSubjectByMajor(Major major, TypeSubject typeSubject);
+
+    @Query("select s from Subject s where s.major =:major and s.typeSubject=:typeSubject")
+    public Set<Subject> getSubjectByMajorAnType(Major major, TypeSubject typeSubject);
     @Query("select s from Subject s where s.typeSubject=:type")
     public List<Subject> findAllSubject(TypeSubject type);
 
@@ -38,9 +42,16 @@ public interface SubjectRepository extends JpaRepository<Subject, Integer> {
     @Query("select s from Subject s where s.typeSubject=:id")
     public List<Subject> findSubjectByType(TypeSubject id);
 
-    @Query("select s from Subject s where s.active =: active")
+    @Query("select s from Subject s where s.active =:active")
     public List<Subject> findSubjectByActive(Byte active);
 
     @Query("select s from Subject s where s.active >=:active and s.status=true and s.major=:major and s.typeSubject=:typeSubject")
     public List<Subject> findSubjectByActiveAndStatusAndMajorAndType(Byte active, Major major, TypeSubject typeSubject);
+
+    @Query("select s from Subject s where s.thesisAdvisorId=:id and s.status=:status and s.typeSubject=:typeSubject and s.active=:active")
+    public List<Subject> findSubjectByThesisAndStatusAndActiveAndTypeSubject(Lecturer id, Boolean status, TypeSubject typeSubject,Byte active);
+
+    @Query("select s from Subject s where s.typeSubject=:typeSubject")
+    public List<Subject> findSubjectByTypeSubject(TypeSubject typeSubject);
+
 }

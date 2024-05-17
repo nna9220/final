@@ -83,6 +83,19 @@ public class LecturerManageTutorialSubjectController {
         }
     }
 
+    //Danh sách đề tài SV đã nộp báo cáo 100%
+    @GetMapping("/list-subject")
+    public ResponseEntity<?> getListSubjectHaveReport(@RequestHeader("Authorization") String authorizationHeader){
+        try {
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            return new ResponseEntity<>(manageTutorialSubjectService.getListOfSubjectHaveReportOneHundred(authorizationHeader,typeSubject),HttpStatus.OK);
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    //Xác nhận đề tài chuyển qua GVPB
     @PostMapping("/browse-score/{subjectId}")
     public ResponseEntity<?> browseToThesisAndScoreOfInstructor(@PathVariable int subjectId,
                                                                 @RequestHeader("Authorization") String authorizationHeader){
@@ -95,6 +108,7 @@ public class LecturerManageTutorialSubjectController {
 
     }
 
+    //Từ chối đề tài
     @PostMapping("/refuse/{subjectId}")
     public ResponseEntity<?> RefuseSubject(@PathVariable int subjectId,
                                            @RequestHeader("Authorization") String authorizationHeader,
@@ -107,5 +121,8 @@ public class LecturerManageTutorialSubjectController {
         }
 
     }
+
+
+    //Duyệt đề tài hoàn thành
 
 }
