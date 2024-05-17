@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import './TableTopic.scss';
-import { Toast } from 'react-bootstrap';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import { BsPentagonHalf } from "react-icons/bs";
 import { BsPentagonFill } from "react-icons/bs";
@@ -19,6 +20,7 @@ function TableTopic() {
   const userToken = getTokenFromUrlAndSaveToStorage();
   const [scores, setScores] = useState({});
   const [subjectIdForSubmit50, setSubjectIdForSubmit50] = useState(null);
+  const [subjectIdForSubmit100, setSubjectIdForSubmit100] = useState(null);
   const [showToastSuccess, setShowToastSuccess] = useState(false);
   useEffect(() => {
     console.log("TokenTopic: " + userToken);
@@ -78,16 +80,69 @@ function TableTopic() {
       })
         .then(response => {
           console.log('Yêu cầu nộp báo cáo 50% đã được gửi thành công:', response.data);
-          setShowToastSuccess(true);
+          toast.success("Yêu cầu nộp báo cáo 50% đã được gửi thành công!")
         })
         .catch(error => {
           console.error('Lỗi khi gửi yêu cầu nộp báo cáo 50%:', error);
+          toast.error("Lỗi khi gửi yêu cầu nộp báo cáo 50%")
         });
     }
   };
 
+  const handleSubmit100 = () => {
+    console.log(subjectIdForSubmit100);
+    if (subjectIdForSubmit100) {
+      axiosInstance.post(`/head/manageTutorial/fiftyRecent/${subjectIdForSubmit100}`, {}, {
+        headers: {
+          'Authorization': `Bearer ${userToken}`,
+        }
+      })
+        .then(response => {
+          console.log('Yêu cầu nộp báo cáo 100% đã được gửi thành công:', response.data);
+          toast.success("Yêu cầu nộp báo cáo 100% đã được gửi thành công!")
+        })
+        .catch(error => {
+          console.error('Lỗi khi gửi yêu cầu nộp báo cáo 100%:', error);
+          toast.error("Lỗi khi gửi yêu cầu nộp báo cáo 100%")
+        });
+    }
+  };
+
+  const handleSubmitAll50 = () => {
+    axiosInstance.post('/head/manageTutorial/fiftyRecent/listSubject', {}, {
+      headers: {
+        'Authorization': `Bearer ${userToken}`,
+      }
+    })
+      .then(response => {
+        console.log('Yêu cầu nộp báo cáo 50% cho toàn bộ đề tài đã được gửi thành công:', response.data);
+        toast.success("Yêu cầu nộp báo cáo 50% cho toàn bộ đề tài đã được gửi thành công!")
+      })
+      .catch(error => {
+        console.error('Lỗi khi gửi yêu cầu nộp báo cáo 50% cho toàn bộ đề tài:', error);
+        toast.error("Lỗi khi gửi yêu cầu nộp báo cáo 50% cho toàn bộ đề tài")
+      });
+  };
+
+  const handleSubmitAll100 = () => {
+    axiosInstance.post('/head/manageTutorial/OneHundredRecent/listSubject', {}, {
+      headers: {
+        'Authorization': `Bearer ${userToken}`,
+      }
+    })
+      .then(response => {
+        console.log('Yêu cầu nộp báo cáo 100% cho toàn bộ đề tài đã được gửi thành công:', response.data);
+        toast.success("Yêu cầu nộp báo cáo 100% cho toàn bộ đề tài đã được gửi thành công!")
+      })
+      .catch(error => {
+        console.error('Lỗi khi gửi yêu cầu nộp báo cáo 100% cho toàn bộ đề tài:', error);
+        toast.error("Lỗi khi gửi yêu cầu nộp báo cáo 100% cho toàn bộ đề tài")
+      });
+  };
+
   return (
     <div>
+      <ToastContainer/>
       {showSubmitButton && (
         <>
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -207,7 +262,7 @@ function TableTopic() {
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" className="btn btn-primary">Confirm</button>
+                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmit100}>Confirm</button>
               </div>
             </div>
           </div>
@@ -225,7 +280,7 @@ function TableTopic() {
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" className="btn btn-primary">Confirm</button>
+                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitAll50}>Confirm</button>
               </div>
             </div>
           </div>
@@ -243,30 +298,11 @@ function TableTopic() {
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" className="btn btn-primary">Confirm</button>
+                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitAll100}>Confirm</button>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div>
-        <Toast show={showToastSuccess} onClose={() => setShowToastSuccess(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
-          <Toast.Header>
-            <strong className="me-auto">Thông báo</strong>
-          </Toast.Header>
-          <Toast.Body>
-            <DoneOutlinedIcon /> Yêu cầu nộp báo cáo 50% đã được gửi thành công!
-          </Toast.Body>
-        </Toast>
-
-        <Toast show={showToastSuccess} onClose={() => setShowToastSuccess(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
-          <Toast.Header>
-            <strong className="me-auto">Thông báo</strong>
-          </Toast.Header>
-          <Toast.Body>
-            <DoneOutlinedIcon /> Yêu cầu nộp báo cáo 100% đã được gửi thành công!
-          </Toast.Body>
-        </Toast>
       </div>
     </div>
   );

@@ -126,7 +126,6 @@ function DataTable() {
         })
             .then(response => {
                 if (response.status === 200) {
-                    // Xóa thành công
                     setStudents(prevState => prevState.filter(student => student.studentId !== studentId));
                     setShowConfirmation(false);
                     setShowConfirmationRestore(false);
@@ -543,7 +542,7 @@ function DataTable() {
             </div>
 
             <div className="modal fade" id="AddStudent" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: showModalAdd ? 'block' : 'none' }}>
-                <div className="modal-dialog modal-lg modal-dialog-scrollable" onSubmit={handleSubmitAdd}>
+                <div className="modal-dialog modal-lg modal-dialog-scrollable">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h1 className="modal-title fs-5" id="exampleModalLabel">THÊM SINH VIÊN</h1>
@@ -628,7 +627,7 @@ function DataTable() {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModalAdd(false)}>Đóng</button>
-                            <button type="submit" className="btn btn-primary" data-bs-dismiss="modal">Thêm</button>
+                            <button type="submit" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitAdd}>Thêm</button>
                         </div>
                     </div>
                 </div>
