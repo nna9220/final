@@ -223,7 +223,7 @@ function ManagermentTask() {
                   <button className="submit50" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-placement="bottom" title="Yêu cầu nộp báo cáo 50%" onClick={() => setSubjectIdForSubmit50(item.subjectId)}>
                     <BsPentagonHalf />
                   </button>
-                  <button className="submit100" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal1" data-bs-placement="bottom" title="Yêu cầu nộp báo cáo 100%">
+                  <button className="submit100" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal1" data-bs-placement="bottom" title="Yêu cầu nộp báo cáo 100%" onClick={() => setSubjectIdForSubmit100(item.subjectId)}>
                     <BsPentagonFill />
                   </button>
                 </td>

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import './TableApprove.scss';
-import { Toast } from 'react-bootstrap';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { DataGrid } from '@mui/x-data-grid'; // Import DataGrid
-import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
-import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import PlaylistRemoveOutlinedIcon from '@mui/icons-material/PlaylistRemoveOutlined';
 import PlaylistAddCheckOutlinedIcon from '@mui/icons-material/PlaylistAddCheckOutlined';
 import axiosInstance from '../../../API/axios';
@@ -12,99 +11,101 @@ import RestoreOutlinedIcon from '@mui/icons-material/RestoreOutlined';
 
 function TableApproveBeforePBKL() {
     const [topics, setTopics] = useState([]);
+    const [timeApprove, setTimeApprove] = useState([]);
+    const [currentPeriod, setCurrentPeriod] = useState(null);
     const [topicsDeleted, setTopicsDeleted] = useState([]);
     const userToken = getTokenFromUrlAndSaveToStorage();
     const [showTable, setShowTable] = useState(false);
-    const [showDeleteToast, setShowDeleteToast] = useState(false);
-    const [showErrorToastDelete, setShowErrorToastDelete] = useState(false);
-    const [showApproveToast, setShowApproveToast] = useState(false);
-    const [showErrorToastApprove, setShowErrorToastApprove] = useState(false);
+    const [subjectIdToRefuse, setSubjectIdToRefuse] = useState(null);
+    const [reason, setReason] = useState('');
 
     useEffect(() => {
         console.log("Token: " + userToken);
         if (userToken) {
-            const tokenSt = sessionStorage.getItem(userToken);
-            if (!tokenSt) {
-                loadListDelete();
-                loadTopics();
-            }
+            loadTopics();
+            loadTimeApprove();
         }
     }, [userToken]);
 
+    useEffect(() => {
+        if (timeApprove.length > 0) {
+            const currentDate = new Date();
+            const currentDateTime = currentDate.getTime();
+            const currentPeriod = timeApprove.find(time => {
+                const startTime = convertStringToDate(time.timeStart).getTime();
+                const endTime = convertStringToDate(time.timeEnd).getTime();
+                return currentDateTime >= startTime && currentDateTime <= endTime;
+            });
+            setCurrentPeriod(currentPeriod);
+            console.log("Thời gian hiện tại: ", currentDateTime);
+        }
+    }, [timeApprove]);
+
     const loadTopics = () => {
-    
-        axiosInstance.get('/subjectGraduation', {
+        axiosInstance.get('/head/manageCritical/graduation/listSubject', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
         })
             .then(response => {
-                console.log("Topic: ", response.data);
-                const topicsWithId = response.data.listSubject.map((topic, index) => ({
-                    ...topic,
-                    id: topic.subjectId,
-                    instructorName: topic.instructorId.person.firstName + ' ' + topic.instructorId.person.lastName
-                }));
-                setTopics(topicsWithId);
+                console.log("TopicBeforeApprove: ", response.data);
+                setTopics(response.data);
             })
             .catch(error => {
                 console.error(error);
             });
     };
 
-    const loadListDelete = () => {
-        axiosInstance.get('/subject/delete', {
+    const loadTimeApprove= () => {
+        axiosInstance.get('/head/manageCritical/graduation/listSubject', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
         })
             .then(response => {
-                console.log("Topic deleted: ", response.data);
-                loadTopics();
-                const topicsDeletedWithId = response.data.lstSubject.map((topic, index) => ({
-                    ...topic,
-                    id: topic.subjectId,
-                    instructorName: topic.instructorId.person.firstName + ' ' + topic.instructorId.person.lastName
-                }));
-                setTopicsDeleted(topicsDeletedWithId);            })
+                const dataTimeApproveArray = response.data.timeBrowse || [];
+                setTimeApprove(dataTimeApproveArray);
+                console.log('Times: ', dataTimeApproveArray);
+            })
             .catch(error => {
                 console.error(error);
             });
-    }
+    };
 
-    const handleApprove = (id) => {
-        axiosInstance.post(`/subjectGraduation/browse/${id}`, null, {
+    const handleApproveSubject = (subjectId) => {
+        axiosInstance.post(`/head/manageCritical/graduation/browse-score/${subjectId}`, {}, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
         })
             .then(response => {
-                console.log("Duyệt thành công");
-                loadTopics(); // Load lại danh sách sau khi duyệt thành công
-                setShowApproveToast(true);
+                console.log('Subject approved:', response.data);
+                toast.success("Đề tài đã được chấp nhận và chuyển đến hội đồng!");
+                loadTopics();  // Reload topics after approving
             })
             .catch(error => {
-                console.error("Lỗi khi duyệt đề tài: ", error);
-                setShowErrorToastApprove(true);
+                console.error('Error approving subject:', error);
+                toast.error("Lỗi khi chấp nhận đề tài");
             });
     };
 
-    const handleDelete = (id) => {
-        axiosInstance.post(`/subject/delete/${id}`, null, {
+    const handleRefuseSubject = () => {
+        axiosInstance.post(`/head/manageTutorial/graduation/refuse/${subjectIdToRefuse}`, { reason }, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
         })
             .then(response => {
-                console.log("Xóa thành công");
-                loadTopics(); // Load lại danh sách sau khi duyệt thành công
-                setShowDeleteToast(true);
+                toast.success("Đề tài đã bị từ chối!");
+                loadTopics();  // Reload topics after refusing
+                setSubjectIdToRefuse(null);  // Reset after processing
+                setReason('');  // Clear reason
             })
             .catch(error => {
-                console.error("Lỗi khi xóa đề tài: ", error);
-                setShowErrorToastDelete(true);
+                toast.error("Lỗi khi từ chối đề tài");
+                console.error('Error refusing subject:', error);
             });
-    }
+    };
 
     const columns = [
         { field: 'id', headerName: '#', width: 60 },
@@ -125,12 +126,11 @@ function TableApproveBeforePBKL() {
                             <p className='text'><RestoreOutlinedIcon /></p>
                         </button>
                     ) : (
-
                         <div style={{ display: 'flex' }}>
-                            <button className='button-res' onClick={() => handleApprove(params.row.id)}>
+                            <button className='button-res' onClick={() => handleApproveSubject(params.row.subjectId)}>
                                 <p className='text'>Duyệt</p>
                             </button>
-                            <button className='button-res-de' onClick={() => handleDelete(params.row.id)}>
+                            <button className='button-res-de'>
                                 <p className='text'>Xóa</p>
                             </button>
                         </div>
@@ -140,75 +140,90 @@ function TableApproveBeforePBKL() {
         },
     ];
 
+    const isWithinApprovalPeriod = () => {
+        const now = new Date();
+        console.log("now", (now));
+        if (currentPeriod) {
+            const timeStart = convertStringToDate(currentPeriod.timeStart);
+            const timeEnd = convertStringToDate(currentPeriod.timeEnd);
+            return now >= timeStart && now <= timeEnd;
+        }
+        return false;
+    };
+
+    function convertStringToDate(dateTimeString) {
+        const [datePart, timePart] = dateTimeString.split(' ');
+        const [day, month, year] = datePart.split('/');
+        const [hour, minute, second] = timePart.split(':');
+        // Chú ý rằng month - 1 vì tháng trong JavaScript bắt đầu từ 0
+        return new Date(year, month - 1, day, hour, minute, second);
+    }
+
     return (
         <div className='body-table'>
-             <Toast show={showDeleteToast} onClose={() => setShowDeleteToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
-                <Toast.Header>
-                    <strong className="me-auto">Thông báo</strong>
-                </Toast.Header>
-                <Toast.Body>
-                    <DoneOutlinedIcon /> Đề tài đã được xóa!
-                </Toast.Body>
-            </Toast>
+            <ToastContainer />
+            {isWithinApprovalPeriod() ? (
+                <>
+                    <button className='button-listDelete-approve' onClick={() => setShowTable(!showTable)}>
+                        {showTable ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách đề tài chưa duyệt</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách đề tài đã xóa</>}
+                    </button>
 
-            <Toast show={showErrorToastDelete} onClose={() => setShowErrorToastDelete(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
-                <Toast.Header>
-                    <strong className="me-auto" style={{ color: 'red' }}><ErrorOutlineOutlinedIcon /> Lỗi</strong>
-                </Toast.Header>
-                <Toast.Body>
-                    Xóa đề tài không thành công!
-                </Toast.Body>
-            </Toast>
-            
-            <Toast show={showApproveToast} onClose={() => setShowApproveToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
-                <Toast.Header>
-                    <strong className="me-auto">Thông báo</strong>
-                </Toast.Header>
-                <Toast.Body>
-                    <DoneOutlinedIcon /> Đề tài đã được duyệt!
-                </Toast.Body>
-            </Toast>
-
-            <Toast show={showErrorToastApprove} onClose={() => setShowErrorToastApprove(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
-                <Toast.Header>
-                    <strong className="me-auto" style={{ color: 'red' }}><ErrorOutlineOutlinedIcon /> Lỗi</strong>
-                </Toast.Header>
-                <Toast.Body>
-                    Duyệt đề tài không thành công!
-                </Toast.Body>
-            </Toast>
-
-            <button className='button-listDelete-approve' onClick={() => setShowTable(!showTable)}>
-                    {showTable ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách đề tài chưa duyệt</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách đề tài đã xóa</>}
-            </button>
-
-            {showTable ? (
-                <div>
-                    <div className='home-table table-approve'>
-                        <DataGrid
-                            rows={topicsDeleted}
-                            columns={columns}
-                            initialState={{
-                                ...topics.initialState,
-                                pagination: { paginationModel: { pageSize: 10 } },
-                            }}
-                            pageSizeOptions={[10, 25, 50]}
-                        />
-                    </div>
-                </div>
+                    {showTable ? (
+                        <div>
+                            <div className='home-table table-approve'>
+                                <DataGrid
+                                    rows={topicsDeleted}
+                                    columns={columns}
+                                    initialState={{
+                                        ...topics.initialState,
+                                        pagination: { paginationModel: { pageSize: 10 } },
+                                    }}
+                                    pageSizeOptions={[10, 25, 50]}
+                                />
+                            </div>
+                        </div>
+                    ) : (
+                        <div className='home-table table-approve'>
+                            <DataGrid
+                                rows={topics}
+                                columns={columns}
+                                initialState={{
+                                    ...topics.initialState,
+                                    pagination: { paginationModel: { pageSize: 10 } },
+                                }}
+                                pageSizeOptions={[10, 25, 50]}
+                            />
+                        </div>
+                    )}
+                </>
             ) : (
-                <div className='home-table table-approve'>
-                    <DataGrid
-                        rows={topics}
-                        columns={columns}
-                        initialState={{
-                            ...topics.initialState,
-                            pagination: { paginationModel: { pageSize: 10 } },
-                        }}
-                        pageSizeOptions={[10, 25, 50]}
-                    />
+                <div className='alert-danger-approve'>
+                    <p>Không nằm trong thời gian duyệt đề tài trước khi phản biện !!!</p>
                 </div>
             )}
+
+<div>
+                <div className="modal fade" id="refuseModal" tabIndex="-1" aria-labelledby="refuseModalLabel" aria-hidden="true">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h1 className="modal-title fs-5" id="refuseModalLabel">Từ chối đề tài</h1>
+                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="mb-3">
+                                    <label htmlFor="refuseReason" className="form-label">Lý do từ chối</label>
+                                    <input type="text" className="form-control" id="refuseReason" value={reason} onChange={(e) => setReason(e.target.value)} />
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-primary" onClick={handleRefuseSubject} data-bs-dismiss="modal">Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

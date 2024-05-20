@@ -8,7 +8,8 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import RestoreOutlinedIcon from '@mui/icons-material/RestoreOutlined';
 import PlaylistAddCheckOutlinedIcon from '@mui/icons-material/PlaylistAddCheckOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
-import { Toast } from 'react-bootstrap';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import moment from 'moment';
@@ -82,14 +83,13 @@ function DatatableLec() {
             })
             .then(response => {
                 console.log('Giảng viên đã được tạo thành công:', response.data);
-                setShowModalAdd(false);
-                setShowAddToast(true);
-
+                loadData();
+                toast.success("Thêm giảng viên thành công!");
             })
             .catch(error => {
                 console.error(error);
+                toast.error("Lỗi khi thêm giảng viên")
                 console.log("Lỗi");
-                setShowErrorToastAdd(true);
             });
     };
 
@@ -114,6 +114,7 @@ function DatatableLec() {
                     setLectures(prevState => prevState.filter(lecturer => lecturer.lecturerId !== lecturerId));
                     setShowConfirmation(false);
                     setShowDeleteToast(true);
+                    loadData();
                     console.log('Xóa thành công');
                 } else if (response.status === 404) {
                     console.log('Sinh viên không tồn tại.');
@@ -130,11 +131,12 @@ function DatatableLec() {
         setShowConfirmation(false);
     };
 
-    const [isDataFetched, setIsDataFetched] = useState(false);
-
     useEffect(() => {
-        if (!isDataFetched) {
-            const tokenSt = sessionStorage.getItem('userToken');
+        loadData();
+    },[]);
+
+    const loadData = () => {
+        const tokenSt = sessionStorage.getItem('userToken');
             if (tokenSt) {
                 axiosInstance.get('/admin/lecturer', {
                     headers: {
@@ -154,8 +156,7 @@ function DatatableLec() {
                         console.error("error: ", error);
                     });
             }
-        }
-    }, [isDataFetched]);
+    }
 
     const handleEdit = (id) => {
         console.log("id student", id);
@@ -181,18 +182,6 @@ function DatatableLec() {
                 console.error("Lỗi khi lấy thông tin sinh viên:", error);
             });
     };
-
-    function formatDate(dateString) {
-        const [year, month, day] = dateString.split('-');
-        return `${day}-${month}-${year}`;
-    }
-
-
-    function convertToISOFormat(dateString) {
-        const [day, month, year] = dateString.split('-');
-        return `${year}-${month}-${day}`;
-    }
-
 
     const handleSubmitEdit = () => {
         const id = userEdit.personId; // Sử dụng thông tin từ state userEdit
@@ -368,51 +357,6 @@ function DatatableLec() {
                     </Button>
                 </Modal.Footer>
             </Modal>
-
-            <Toast show={showSuccessToast} onClose={() => setShowSuccessToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
-                <Toast.Header>
-                    <strong className="me-auto">Thông báo</strong>
-                </Toast.Header>
-                <Toast.Body>
-                    <DoneOutlinedIcon /> Cập nhật thông tin thành công!
-                </Toast.Body>
-            </Toast>
-
-            <Toast show={showDeleteToast} onClose={() => setShowDeleteToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
-                <Toast.Header>
-                    <strong className="me-auto">Thông báo</strong>
-                </Toast.Header>
-                <Toast.Body>
-                    <DoneOutlinedIcon /> Xóa giảng viên thành công!
-                </Toast.Body>
-            </Toast>
-
-            <Toast show={showErrorToast} onClose={() => setShowErrorToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
-                <Toast.Header>
-                    <strong className="me-auto" style={{ color: 'red' }}><ErrorOutlineOutlinedIcon /> Lỗi</strong>
-                </Toast.Header>
-                <Toast.Body>
-                    Đã xảy ra lỗi khi cập nhật thông tin!
-                </Toast.Body>
-            </Toast>
-
-            <Toast show={showAddToast} onClose={() => setShowAddToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
-                <Toast.Header>
-                    <strong className="me-auto">Thông báo</strong>
-                </Toast.Header>
-                <Toast.Body>
-                    <DoneOutlinedIcon /> Thêm giảng viên thành công!
-                </Toast.Body>
-            </Toast>
-
-            <Toast show={showErrorToastAdd} onClose={() => setShowErrorToastAdd(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
-                <Toast.Header>
-                    <strong className="me-auto" style={{ color: 'red' }}><ErrorOutlineOutlinedIcon /> Lỗi</strong>
-                </Toast.Header>
-                <Toast.Body>
-                    Thêm giảng viên không thành công!
-                </Toast.Body>
-            </Toast>
 
             <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true" style={{ display: showModal ? 'block' : 'none' }}>
                 <div className="modal-dialog modal-lg modal-dialog-scrollable" onSubmit={handleSubmitEdit}>

@@ -1,6 +1,34 @@
-import React from 'react'
-import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
+import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
+import axiosInstance from '../../../API/axios';
+import { useState, useEffect } from 'react';
 function DataTableTopicSuccess() {
+
+    const userToken = getTokenFromUrlAndSaveToStorage();
+    const [subject, setSubject] = useState([]);
+
+    useEffect(() => {
+        loadData();
+    }, [userToken]);
+
+
+    const loadData = () => {
+        console.log("Token: " + userToken);
+        if (userToken) {
+            axiosInstance.get('/head/manager/council/listSubject', {
+                headers: {
+                    'Authorization': `Bearer ${userToken}`,
+                },
+            })
+                .then(response => {
+                    console.log("Subject: ", response.data);
+                    setSubject(response.data);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        };
+    }
+
     return (
         <div>
             <div className='body-table'>
