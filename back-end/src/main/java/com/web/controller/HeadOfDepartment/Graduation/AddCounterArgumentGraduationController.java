@@ -90,9 +90,6 @@ public class AddCounterArgumentGraduationController {
             response.put("subject", currentSubject);
             return new ResponseEntity<>(response,HttpStatus.OK);
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }

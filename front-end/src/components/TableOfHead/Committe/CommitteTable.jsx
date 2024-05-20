@@ -5,19 +5,19 @@ import { useState, useEffect } from 'react';
 
 function CommitteTable() {
     const userToken = getTokenFromUrlAndSaveToStorage();
-    const [criterias, setCriterias] = useState([]);
+    const [committe, setCommitte] = useState([]);
 
     useEffect(() => {
         console.log("Token: " + userToken);
         if (userToken) {
-            axiosInstance.get('/head/manageTutorial/listCriteria', {
+            axiosInstance.get('/head/council/listSubject', {
                 headers: {
                     'Authorization': `Bearer ${userToken}`,
                 },
             })
                 .then(response => {
-                    console.log("Criterias: ", response.data);
-                    setCriterias(response.data);
+                    console.log("Committe: ", response.data);
+                    setCommitte(response.data.body);
                 })
                 .catch(error => {
                     console.error(error);
@@ -42,18 +42,22 @@ function CommitteTable() {
                         </tr>
                     </thead>
                     <tbody>
-                        <td>1</td>
-                        <td>Website Đăng ký học phần</td>
-                        <td>Huỳnh Xuân Phụng</td>
-                        <td>Lê Vĩnh Thịnh</td>
-                        <td>20110753</td>
-                        <td>20110678</td>
-                        <td></td>
-                        <td>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                Lập hội đồng
-                            </button>
-                        </td>
+                        {committe.map((item, index) => (
+                            <tr>
+                                <th scope="row">{index + 1}</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                        Đánh giá
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>
