@@ -1,46 +1,83 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import axiosInstance from '../../../API/axios';
-import { useState, useEffect } from 'react';
 
 function CommitteeTable() {
     const [topics, setTopics] = useState([]);
+    const [criterias, setCriterias] = useState([]);
+    const [detail, setDetail] = useState(null);
+    const [scores, setScores] = useState({});
     const userToken = getTokenFromUrlAndSaveToStorage();
-    const [subjectIdDetail, setSubjectIdDetail] = useState(null)
+    const [subjectIdDetail, setSubjectIdDetail] = useState(null);
 
     useEffect(() => {
-        listTopic();
+        if (userToken) {
+            listTopic();
+            listCriteria();
+        }
     }, [userToken]);
 
+    useEffect(() => {
+        if (subjectIdDetail) {
+            detailTopic();
+        }
+    }, [subjectIdDetail]);
+
+    const handleScoreChange = (criteriaKey, value) => {
+        setScores(prevScores => ({
+            ...prevScores,
+            [criteriaKey]: value
+        }));
+    };
+
+    //Đây phải là danh sách council, bên be t đặt tên nhầm
+
     const listTopic = () => {
-        axiosInstance.get('/lecturer/council/listSubject', {
+        axiosInstance.get('/lecturer/council/listCouncil', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             }
         })
             .then(response => {
-                console.log("TopicTL: ", response.data);
+                console.log("Danh sách đề tài: ", response.data);
                 setTopics(response.data.body);
             })
             .catch(error => {
                 console.error(error);
             });
-    }
+    };
 
     const detailTopic = () => {
+        console.log("ID: ", subjectIdDetail);
         axiosInstance.get(`/lecturer/council/detail/${subjectIdDetail}`, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             }
         })
             .then(response => {
-                console.log("TopicTL: ", response.data);
-                setTopics(response.data.body);
+                console.log("Chi tiết:", response.data);
+                setDetail(response.data.body);
+                setCriterias(response.data.body.subject.criteria);
+            })
+            .catch(error => {
+                console.error('Lỗi lấy chi tiết:', error);
+            });
+    };
+
+    const listCriteria = () => {
+        axiosInstance.get('/lecturer/council/listCriteria', {
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+            }
+        })
+            .then(response => {
+                console.log("Tiêu chí: ", response.data);
+                setCriterias(response.data.body);
             })
             .catch(error => {
                 console.error(error);
             });
-    }
+    };
 
     return (
         <div style={{ margin: '20px' }}>
@@ -55,13 +92,13 @@ function CommitteeTable() {
                             <th scope='col'>SV 1</th>
                             <th scope='col'>SV 2</th>
                             <th scope='col'>SV 3</th>
-                            <th scope='col'>Action</th>
+                            <th scope='col'>Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
                         {topics.map((item, index) => (
                             <tr key={index}>
-                                <td>{index+1}</td>
+                                <td>{index + 1}</td>
                                 <td>{item.subject?.subjectName}</td>
                                 <td>{item.subject?.instructorId?.person?.firstName + ' ' + item.subject?.instructorId?.person?.lastName}</td>
                                 <td>{item.subject?.thesisAdvisorId?.person?.firstName + ' ' + item.subject?.thesisAdvisorId?.person?.lastName}</td>
@@ -69,102 +106,119 @@ function CommitteeTable() {
                                 <td>{item.subject?.student2}</td>
                                 <td>{item.subject?.student3}</td>
                                 <td>
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                        onClick={() => {
+                                            setDetail(item.subject);
+                                            setSubjectIdDetail(item.councilId);
+                                        }}>
                                         Đánh giá
                                     </button>
                                 </td>
+                                <td style={{ display: 'none' }}>{item.subject?.subjectId}</td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
 
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Đánh giá</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div className="modal-dialog modal-xl modal-dialog-scrollable">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h1 className="modal-title fs-5" id="exampleModalLabel">Đánh giá</h1>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="time" class="form-label">Thời gian</label>
-                                <input type="datetime-local" class="form-control" id="time" />
-                            </div>
-                            <h6>Danh sách thành viên hội đồng: </h6>
+                        <div className="modal-body">
+                            <h5>Thông tin đề tài</h5>
                             <div>
-                                <table className='table-bordered table'>
-                                    <thead>
-                                        <tr>
-                                            <th>Số thứ tự</th>
-                                            <th>Thành viên</th>
-                                            <th>Họ và tên</th>
+                                <p>1. Tên đề tài: {detail?.subject?.subjectName}</p>
+                            </div>
+                            <hr />
+                            <h5>Tiêu chí đánh giá</h5>
+                            <table className='table-bordered table'>
+                                <thead>
+                                    <tr>
+                                        <th>Tiêu chí đánh giá</th>
+                                        {topics.map((_, index) => (
+                                            <th key={index}>Sinh viên {index + 1}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {criterias.map((criteria, criteriaIndex) => (
+                                        <tr key={criteriaIndex}>
+                                            <td className='criteria'>{criteria.criteriaName}</td>
+                                            {topics.map((topic, topicIndex) => (
+                                                <td key={topicIndex}>
+                                                    <input
+                                                        type='number'
+                                                        step='0.25'
+                                                        max={criteria.criteriaScore}
+                                                        min={0}
+                                                        value={scores[`${criteria.criteriaName}_${topic.subjectId}`] || 0}
+                                                        onChange={(e) => handleScoreChange(`${criteria.criteriaName}_${topic.subjectId}`, e.target.value)}
+                                                    />
+                                                </td>
+                                            ))}
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>Thành viên 1</td>
-                                            <td>
-                                                <select>
-                                                    <option value="giang-vien-1">Giảng viên 1</option>
-                                                    <option value="giang-vien-2">Giảng viên 2</option>
-                                                </select>
+                                    ))}
+                                    <tr>
+                                        <td className='criteria-sum'>Tổng</td>
+                                        {topics.map((_, index) => (
+                                            <td key={index}>
+                                                <input
+                                                    type='number'
+                                                    step='0.25'
+                                                    max={1}
+                                                    min={0}
+                                                    className='score'
+                                                    readOnly
+                                                    value={criterias.reduce((sum, criteria) => {
+                                                        return sum + parseFloat(scores[`${criteria.criteriaName}_${index}`] || 0);
+                                                    }, 0).toFixed(2)}
+                                                />
                                             </td>
-                                        </tr>
-                                        <tr>
-                                            <td>2</td>
-                                            <td>Thành viên 2</td>
-                                            <td>
-                                                <select>
-                                                    <option value="giang-vien-1">Giảng viên 1</option>
-                                                    <option value="giang-vien-2">Giảng viên 2</option>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>3</td>
-                                            <td>Thành viên 3 </td>
-                                            <td>
-                                                <select>
-                                                    <option value="giang-vien-1">Giảng viên 1</option>
-                                                    <option value="giang-vien-2">Giảng viên 2</option>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>4</td>
-                                            <td>Thành viên 4</td>
-                                            <td>
-                                                <select>
-                                                    <option value="giang-vien-1">Giảng viên 1</option>
-                                                    <option value="giang-vien-2">Giảng viên 2</option>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>5</td>
-                                            <td>Thành viên 5</td>
-                                            <td>
-                                                <select>
-                                                    <option value="giang-vien-1">Giảng viên 1</option>
-                                                    <option value="giang-vien-2">Giảng viên 2</option>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                        ))}
+                                    </tr>
+                                    <tr>
+                                        <td className='criteria-sum' id="review">Đánh giá</td>
+                                        <input></input>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <hr />
+                            <h5>Nhận xét, đánh giá</h5>
+                            <div className="form-floating">
+                                <textarea
+                                    className="form-control"
+                                    id="comment"
+                                    name="text"
+                                    placeholder="Comment goes here"
+                                ></textarea>
+                                <label htmlFor="comment">Nhận xét</label>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">Save changes</button>
+                        <div className="modal-footer">
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                data-bs-dismiss="modal"
+                            >
+                                Đóng
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                data-bs-dismiss="modal"
+                            >
+                                Xác nhận
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
-export default CommitteeTable
+export default CommitteeTable;

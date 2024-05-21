@@ -96,6 +96,26 @@ public class EvaluationAndScoringService {
         }
     }
 
+
+    public ResponseEntity<Map<String,Object>> detailSubject(String authorizationHeader, int id){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+            Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+            Subject existedSubject = subjectRepository.findById(id).orElse(null);
+            if (existedSubject!=null){
+                Map<String,Object> response = new HashMap<>();
+                response.put("council", existedSubject.getCouncil());
+                response.put("subject",existedSubject);
+                return new ResponseEntity<>(response,HttpStatus.OK);
+            }else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
     //GV chấm điểm cho từng sinh viên và đánh giá - TLCN - Hội đồng là GVHD và GVPB
     public ResponseEntity<?> evaluationAndScoringEssay(String authorizationHeader, int subjectId,
                                                        String studentId1,String studentId2,String studentId3,

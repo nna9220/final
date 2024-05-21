@@ -4,6 +4,7 @@ import com.web.entity.TypeSubject;
 import com.web.repository.SubjectRepository;
 import com.web.repository.TypeSubjectRepository;
 import com.web.service.Council.EvaluationAndScoringService;
+import com.web.service.Lecturer.ManageTutorialSubjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,8 +21,9 @@ public class LecturerCouncilController {
     private TypeSubjectRepository typeSubjectRepository;
     @Autowired
     private SubjectRepository subjectRepository;
-
-    @GetMapping("/listSubject")
+    @Autowired
+    private ManageTutorialSubjectService manageTutorialSubjectService;
+    @GetMapping("/listCouncil")
     public ResponseEntity<?> getListCouncilOfLecturer(@RequestHeader("Authorization") String authorizationHeader){
         try {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
@@ -42,6 +44,16 @@ public class LecturerCouncilController {
         }
     }
 
+    @GetMapping("/listCriteria")
+    public ResponseEntity<?> getListCriteria(@RequestHeader("Authorization") String authorizationHeader){
+        try {
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            return new ResponseEntity<>(manageTutorialSubjectService.getListCriteria(authorizationHeader,typeSubject),HttpStatus.OK);
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
     @PostMapping("/evaluation-scoring/{id}")
     public ResponseEntity<?> evaluationAndScoring(@PathVariable int id,@RequestHeader("Authorization") String authorizationHeader,
                                                   @RequestParam("studentId1") String studentId1,
