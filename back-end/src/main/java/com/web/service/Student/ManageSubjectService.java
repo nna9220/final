@@ -50,7 +50,7 @@ public class ManageSubjectService {
             Student existedStudent = studentRepository.findById(personCurrent.getPersonId()).orElse(null);
             if (existedSubject!=null){
                 if (existedSubject.getFiftyPercent()==null) {
-                    existedSubject.setActive((byte) 5);
+                    existedSubject.setActive((byte) 3);
                     //nộp file
                     if (!files.isEmpty()) {
                         String fileName = fileMaterialService.storeFile(files);
@@ -78,7 +78,7 @@ public class ManageSubjectService {
                     //xóa file cũ:
                     fileRepository.delete(fileComment);
                     existedSubject.setFiftyPercent(null);
-                    existedSubject.setActive((byte) 5);
+                    existedSubject.setActive((byte) 3);
                     //nộp file
                     if (!files.isEmpty()) {
                         String fileName = fileMaterialService.storeFile(files);

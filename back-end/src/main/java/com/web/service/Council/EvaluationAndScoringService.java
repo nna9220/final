@@ -38,6 +38,8 @@ public class EvaluationAndScoringService {
     private ResultGraduationRepository resultGraduationRepository;
     @Autowired
     private CouncilRepository councilRepository;
+    @Autowired
+    private ScoreGraduationRepository scoreGraduationRepository;
 
     //Của GV trong hội đồng
     //Sau khi GVPB duyệt active =7
@@ -47,7 +49,7 @@ public class EvaluationAndScoringService {
     //Giảng viên đánh giá, chấm điểm cho từng sinh viên
 
 
-    //Lấy ra danh sách đề tài phản biện của GV hiện tại, status = true, active=6, typeSubject
+    //Lấy ra danh sách đề tài hội đồng phản biện của GV hiện tại, status = true, active=8, typeSubject
     public ResponseEntity<?> getListCouncilOfLecturer(String authorizationHeader, TypeSubject typeSubject){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -59,7 +61,7 @@ public class EvaluationAndScoringService {
                 Subject subject = council.getSubject();
                 if (council.getSubject().getTypeSubject()==typeSubject){
                     if (subject.isStatus()) {
-                        if (subject.getActive() == 6) {
+                        if (subject.getActive() == 8) {
                             councilResponse.add(council);
                         }
                     }
@@ -94,19 +96,20 @@ public class EvaluationAndScoringService {
     }
 
     //GV chấm điểm cho từng sinh viên và đánh giá - TLCN - Hội đồng là GVHD và GVPB
-    public ResponseEntity<?> evaluationAndScoringEssay(String authorizationHeader, int id,
+    public ResponseEntity<?> evaluationAndScoringEssay(String authorizationHeader, int subjectId,
+                                                       String studentId1,String studentId2,String studentId3,
                                                        String reviewStudent1, String reviewStudent2, String reviewStudent3,
                                                        Double scoreStudent1, Double scoreStudent2, Double scoreStudent3) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            Subject existedSubject = subjectRepository.findById(id).orElse(null);
+            Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
             if (existedSubject!=null){
                 //Kiểm tra xem có tồn tại SVTH k
                 if (existedSubject.getStudent1()!=null){
                     //Tìm Sv
-                    Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
+                    Student student1 = studentRepository.findById(studentId1).orElse(null);
                     if (student1!=null) {
                         //Kiểm tra xem student này đã có kết quả chưa
                         ResultEssay existedResultEssay = resultEssayRepository.findResultEssayByStudentAndSubject(student1, existedSubject);
@@ -122,6 +125,8 @@ public class EvaluationAndScoringService {
                                 resultEssayStudent1.setScoreThesis(scoreStudent1);
                                 resultEssayStudent1.setReviewThesis(reviewStudent1);
                             }
+                            existedSubject.setActive((byte)9);
+                            subjectRepository.save(existedSubject);
                             resultEssayRepository.save(resultEssayStudent1);
                             student1.setResultEssay(resultEssayStudent1);
                         } else {
@@ -133,6 +138,8 @@ public class EvaluationAndScoringService {
                                 existedResultEssay.setReviewThesis(reviewStudent1);
                                 existedResultEssay.setSubject(existedSubject);
                                 existedResultEssay.setStudent(student1);
+                                existedSubject.setActive((byte)9);
+                                subjectRepository.save(existedSubject);
                                 resultEssayRepository.save(existedResultEssay);
                             }else {
                                 //nếu là gvpb thì set cho gvhd
@@ -140,6 +147,8 @@ public class EvaluationAndScoringService {
                                 existedResultEssay.setReviewInstructor(reviewStudent1);
                                 existedResultEssay.setSubject(existedSubject);
                                 existedResultEssay.setStudent(student1);
+                                existedSubject.setActive((byte)9);
+                                subjectRepository.save(existedSubject);
                                 resultEssayRepository.save(existedResultEssay);
                             }
                         }
@@ -148,7 +157,7 @@ public class EvaluationAndScoringService {
                 //student2
                 if (existedSubject.getStudent2()!=null){
                     //Tìm Sv
-                    Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
+                    Student student2 = studentRepository.findById(studentId2).orElse(null);
                     if (student2!=null) {
                         //Kiểm tra xem student này đã có kết quả chưa
                         ResultEssay existedResultEssay = resultEssayRepository.findResultEssayByStudentAndSubject(student2, existedSubject);
@@ -164,6 +173,8 @@ public class EvaluationAndScoringService {
                                 resultEssayStudent2.setScoreThesis(scoreStudent2);
                                 resultEssayStudent2.setReviewThesis(reviewStudent2);
                             }
+                            existedSubject.setActive((byte)9);
+                            subjectRepository.save(existedSubject);
                             resultEssayRepository.save(resultEssayStudent2);
                             student2.setResultEssay(resultEssayStudent2);
                         } else {
@@ -175,6 +186,8 @@ public class EvaluationAndScoringService {
                                 existedResultEssay.setReviewThesis(reviewStudent2);
                                 existedResultEssay.setSubject(existedSubject);
                                 existedResultEssay.setStudent(student2);
+                                existedSubject.setActive((byte)9);
+                                subjectRepository.save(existedSubject);
                                 resultEssayRepository.save(existedResultEssay);
                             }else {
                                 //nếu là gvpb thì set cho gvhd
@@ -182,6 +195,8 @@ public class EvaluationAndScoringService {
                                 existedResultEssay.setReviewInstructor(reviewStudent2);
                                 existedResultEssay.setSubject(existedSubject);
                                 existedResultEssay.setStudent(student2);
+                                existedSubject.setActive((byte)9);
+                                subjectRepository.save(existedSubject);
                                 resultEssayRepository.save(existedResultEssay);
                             }
                         }
@@ -191,7 +206,7 @@ public class EvaluationAndScoringService {
                 //student3
                 if (existedSubject.getStudent3()!=null){
                     //Tìm Sv
-                    Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
+                    Student student3 = studentRepository.findById(studentId3).orElse(null);
                     if (student3!=null) {
                         //Kiểm tra xem student này đã có kết quả chưa
                         ResultEssay existedResultEssay = resultEssayRepository.findResultEssayByStudentAndSubject(student3, existedSubject);
@@ -207,6 +222,8 @@ public class EvaluationAndScoringService {
                                 resultEssayStudent3.setScoreThesis(scoreStudent3);
                                 resultEssayStudent3.setReviewThesis(reviewStudent3);
                             }
+                            existedSubject.setActive((byte)9);
+                            subjectRepository.save(existedSubject);
                             resultEssayRepository.save(resultEssayStudent3);
                             student3.setResultEssay(resultEssayStudent3);
                         } else {
@@ -218,6 +235,8 @@ public class EvaluationAndScoringService {
                                 existedResultEssay.setReviewThesis(reviewStudent3);
                                 existedResultEssay.setSubject(existedSubject);
                                 existedResultEssay.setStudent(student3);
+                                existedSubject.setActive((byte)9);
+                                subjectRepository.save(existedSubject);
                                 resultEssayRepository.save(existedResultEssay);
                             }else {
                                 //nếu là gvpb thì set cho gvhd
@@ -225,6 +244,8 @@ public class EvaluationAndScoringService {
                                 existedResultEssay.setReviewInstructor(reviewStudent3);
                                 existedResultEssay.setSubject(existedSubject);
                                 existedResultEssay.setStudent(student3);
+                                existedSubject.setActive((byte)9);
+                                subjectRepository.save(existedSubject);
                                 resultEssayRepository.save(existedResultEssay);
                             }
                         }
@@ -239,16 +260,65 @@ public class EvaluationAndScoringService {
         }
     }
 
-   /* //đánh giá chấm điểm kltn
-
-    public ResponseEntity<?> evaluationAndScoringGraduation(String authorizationHeader, int id,
+    //đánh giá chấm điểm kltn
+    //mỗi sv c 1 result
+    //1 result có nhiều score-graduation và 1 điểm của GVHD
+    //1 score-graduation do 1 GV chấm điểm và đánh giá
+    //1 GV trong hội đồng sẽ chấm cho 3 SV
+    //Mỗi 1 giao diện của GV chấm điểm load ra 3 cột của 3 sinh viên và các tiêu chí chấm điểm của đề tài đó
+    //Tổng điểm các tiêu chí và đánh giá sinh viên ở hàng cuối cùng
+    //Lấy chi tiết đề tài để lấy được thng tin các SV và tiêu chí
+    //Tạo mới 1 Result cho mỗi sv
+    //Sau đó tạo mới 1 score-graduation connect với Result đó
+    //Result này connect đến với subject - mỗi subject có nhiều nhất 3 result
+    /*public ResponseEntity<?> evaluationAndScoringGraduation(String authorizationHeader, int subjectId,
+                                                            String studentId1,String studentId2,String studentId3,
                                                             String reviewStudent1, String reviewStudent2, String reviewStudent3,
                                                             Double scoreStudent1, Double scoreStudent2, Double scoreStudent3){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+            Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
+            if (existedSubject!=null){
+                //Kiểm tra xem có tồn tại SVTH k
+                if (existedSubject.getStudent1()!=null){
+                    //Tìm Sv
+                    Student student1 = studentRepository.findById(studentId1).orElse(null);
+                    if (student1!=null) {
+                        //Kiểm tra xem student này đã có kết quả chưa
+                        ResultGraduation existedResultGraduation = resultGraduationRepository.findResultGraduationByStudentAndSubject(student1, existedSubject);
+                        if (existedResultGraduation == null) {
+                            //nếu chưa có, tạo mới 1 result -
+                            ResultGraduation resultGraduation = new ResultGraduation();
+                            //Kiểm tra  Người dùng đăng nhập hiện tại đã có score cho result đó chưa,
+                            // chưa thì tạo mới, rồi thì thông báo đã chấm điêm
 
+
+                        } else {
+                            //Chỉnh sửa result có sẵn - Kiểm tra xe GV đó cho điểm chưa
+                            if (existedResultGraduation.getScoreThesis()!=null){
+                                //nếu là gvhd thì set cho gvpb
+                                existedResultGraduation.setScoreThesis(scoreStudent1);
+                                existedResultGraduation.setReviewThesis(reviewStudent1);
+                                existedResultGraduation.setSubject(existedSubject);
+                                existedResultGraduation.setStudent(student1);
+                                existedSubject.setActive((byte)9);
+                                subjectRepository.save(existedSubject);
+                                resultEssayRepository.save(existedResultGraduation);
+                            }else {
+                                //nếu là gvpb thì set cho gvhd
+                                existedResultGraduation.setScoreInstructor(scoreStudent1);
+                                existedResultGraduation.setReviewInstructor(reviewStudent1);
+                                existedResultGraduation.setSubject(existedSubject);
+                                existedResultGraduation.setStudent(student1);
+                                existedSubject.setActive((byte)9);
+                                subjectRepository.save(existedSubject);
+                                resultEssayRepository.save(existedResultGraduation);
+                            }
+                        }
+                    }
+                }
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
