@@ -9,7 +9,7 @@ import com.web.mapper.SubjectMapper;
 import com.web.repository.*;
 import com.web.service.Admin.StudentService;
 import com.web.service.Admin.SubjectService;
-import com.web.service.Lecturer.LecturerSubjectService;
+import com.web.service.Lecturer.LecturerAddScoreGraduationService;
 import com.web.utils.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ public class HeadManagerTopicGraduationController {
     @Autowired
     private StudentService studentService;
     @Autowired
-    private LecturerSubjectService lecturerSubjectService;
+    private LecturerAddScoreGraduationService lecturerSubjectService;
     @Autowired
     private PersonRepository personRepository;
     @Autowired
