@@ -1,4 +1,4 @@
-package com.web.service.Lecturer;
+package com.web.service.HeaderOdDepartment;
 
 import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ManageCriticalSubjectService {
+public class BrowseSubjectToThesisService {
     @Autowired
     private PersonRepository personRepository;
     @Autowired
@@ -34,7 +34,7 @@ public class ManageCriticalSubjectService {
     @Autowired
     private StudentRepository studentRepository;
 
-    //Lấy ra danh sách đề tài phản biện của GV hiện tại, status = true, active=6, typeSubject
+    //Danh sách các đề tài có active=6
     public ResponseEntity<?> getListOfSubjectHaveReportOneHundred(String authorizationHeader, TypeSubject typeSubject){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -47,8 +47,8 @@ public class ManageCriticalSubjectService {
         }
     }
 
-    //Duyệt đề tài đưa ra hội đồng phản biện
-    public ResponseEntity<?> CompletedSubjectBrowseToCouncil(String authorizationHeader, int id){
+    //Duyệt đề tài qua GVPB - Của trưởng bộ môn
+    public ResponseEntity<?> CompletedSubjectBrowseToThesis(String authorizationHeader, int id){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
@@ -77,20 +77,11 @@ public class ManageCriticalSubjectService {
                         emailPerson.add(student3.getPerson().getUsername());
                     }
                 }
-                if (existedSubject.getCouncil()!=null) {
-                    for (Lecturer lecturer : existedSubject.getCouncil().getLecturers()) {
-                        if (lecturer!=existedLecturer) {
-                            emailPerson.add(lecturer.getPerson().getUsername());
-                        }
-                    }
-                    String subject = "Topic: " + existedSubject.getSubjectName();
-                    String messenger = "Topic: " + existedSubject.getSubjectName() + " đã được GVPB phê duyệt, truy cập website để biết thông tin ngày giờ, địa điểm phản biện";
-                    //Gửi mail cho Hội đồng - SV
-                    mailService.sendMailToPerson(emailPerson,subject,messenger);
-                }else { //Nếu chưa có thì thông báo truy cập tạo hội đồng
-                    //Kiểm tra nếu mã trả về mã 302 - Check mã rồi ra TB
-                    return new ResponseEntity<>(HttpStatus.FOUND);
-                }
+                emailPerson.add(existedSubject.getThesisAdvisorId().getPerson().getUsername());
+                String subject = "Topic: " + existedSubject.getSubjectName();
+                String messenger = "Topic: " + existedSubject.getSubjectName() + " đã được Trưởng bộ môn phê duyệt thông qua GVPB, truy cập website để biết thông tin ngày giờ, địa điểm phản biện";
+                //Gửi mail cho Hội đồng - SV
+                mailService.sendMailToPerson(emailPerson,subject,messenger);
                 return new ResponseEntity<>(existedSubject,HttpStatus.OK);
             }else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -99,4 +90,7 @@ public class ManageCriticalSubjectService {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
+
+
 }

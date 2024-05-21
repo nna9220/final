@@ -243,6 +243,8 @@ public class ManageTutorialSubjectService {
         }
     }
 
+    //GVHD DUYỆT ĐỀ TÀI QUA TRƯỞNG BỘ MÔN
+
     //Lấy ra danh sách đề tài của GV này có status=true, active=6, type subject = typSubject
     public ResponseEntity<?> getListOfSubjectHaveReportOneHundred(String authorizationHeader, TypeSubject typeSubject){
         String token = tokenUtils.extractToken(authorizationHeader);
@@ -272,25 +274,26 @@ public class ManageTutorialSubjectService {
                     String subject = "Topic: " + existedSubject.getSubjectName();
                     String messenger = "Topic: " + existedSubject.getSubjectName() + " đã được " + existedSubject.getInstructorId().getPerson().getFirstName() + " " + existedSubject.getInstructorId().getPerson().getLastName() + " duyệt là hoàn thành, truy cập website để xem chi tiết";
                     List<String> emailPerson = new ArrayList<>();
-                    emailPerson.add(existedSubject.getThesisAdvisorId().getPerson().getUsername());
-                    if (existedSubject.getStudent1()!=null) {
-                        Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
-                        if (student1.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                            emailPerson.add(student1.getPerson().getUsername());
+                    Lecturer head = lecturerRepository.getLecturerISHead("ROLE_HEAD",existedSubject.getInstructorId().getMajor());
+                    emailPerson.add(head.getPerson().getUsername());
+                        if (existedSubject.getStudent1()!=null) {
+                            Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
+                            if (student1.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                                emailPerson.add(student1.getPerson().getUsername());
+                            }
                         }
-                    }
-                    if (existedSubject.getStudent2()!=null) {
-                        Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
-                        if (student2.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                            emailPerson.add(student2.getPerson().getUsername());
+                        if (existedSubject.getStudent2()!=null) {
+                            Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
+                            if (student2.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                                emailPerson.add(student2.getPerson().getUsername());
+                            }
                         }
-                    }
-                    if (existedSubject.getStudent3()!=null) {
-                        Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
-                        if (student3.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                            emailPerson.add(student3.getPerson().getUsername());
+                        if (existedSubject.getStudent3()!=null) {
+                            Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
+                            if (student3.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                                emailPerson.add(student3.getPerson().getUsername());
+                            }
                         }
-                    }
                     if (!emailPerson.isEmpty()){
                         mailService.sendMailToPerson(emailPerson,subject,messenger);
                     }
@@ -361,9 +364,10 @@ public class ManageTutorialSubjectService {
                     subjectRepository.save(existedSubject);
                     //Gửi mail
                     String subject = "Topic: " + existedSubject.getSubjectName();
-                    String messenger = "Topic: " + existedSubject.getSubjectName() + " đã được " + existedSubject.getInstructorId().getPerson().getFirstName() + " " + existedSubject.getInstructorId().getPerson().getLastName() + " duyệt!";
+                    String messenger = "Topic: " + existedSubject.getSubjectName() + " đã được " + existedSubject.getInstructorId().getPerson().getFirstName() + " " + existedSubject.getInstructorId().getPerson().getLastName() + " duyệt là hoàn thành, truy cập website để xem chi tiết!";
                     List<String> emailPerson = new ArrayList<>();
-                    emailPerson.add(existedSubject.getThesisAdvisorId().getPerson().getUsername());
+                    Lecturer head = lecturerRepository.getLecturerISHead("ROLE_HEAD",existedSubject.getInstructorId().getMajor());
+                    emailPerson.add(head.getPerson().getUsername());
                     if (existedSubject.getStudent1()!=null) {
                         Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
                         if (student1.getPerson().getPersonId()!=personCurrent.getPersonId()) {
@@ -396,5 +400,9 @@ public class ManageTutorialSubjectService {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
+
+
+    //duyệt đề tài qua GVPB
 
 }
