@@ -17,7 +17,7 @@ function DefensePanel() {
                 <hr></hr>
                 <div className='context-menu'>
                     <div className='context-title'>
-                        <h3 className='title-re'>LẬP HỘI ĐỒNG</h3>
+                        <h3 className='title-re'>HỘI ĐỒNG BÁO CÁO</h3>
                     </div>
                     <DataTableTopicSuccess/>
                 </div>

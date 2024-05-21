@@ -29,6 +29,8 @@ public class HeadBrowseSubjectGraduationToThesisController {
             throw new ExceptionInInitializerError(e);
         }
     }
+
+    //TBM duyệt ề tài qua cho GVPB
     @PostMapping("/accept-subject-to-thesis/{subjectId}")
     public ResponseEntity<?> CompletedSubjectBrowseToCouncil(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader){
         try {

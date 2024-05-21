@@ -1,5 +1,6 @@
 package com.web.repository;
 
+import com.web.entity.Authority;
 import com.web.entity.Lecturer;
 import com.web.entity.Major;
 import com.web.entity.Person;
@@ -22,5 +23,5 @@ public interface LecturerRepository extends JpaRepository<Lecturer, String> {
     List<Lecturer> getListLecturerISHead(String authority);
 
     @Query("select l from Lecturer l where l.authority =:authority and l.major=:major")
-    Lecturer getLecturerISHead(String authority, Major major);
+    Lecturer getLecturerISHead(Authority authority, Major major);
 }

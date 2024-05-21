@@ -9,7 +9,7 @@ import com.web.repository.PersonRepository;
 import com.web.repository.SubjectRepository;
 import com.web.repository.TimeBrowseHeadRepository;
 import com.web.repository.TypeSubjectRepository;
-import com.web.service.Lecturer.ManageCriticalSubjectService;
+import com.web.service.Lecturer.ThesisBrowseSubjectToCouncil;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +28,7 @@ public class HeadManageCriticalSubjectController {
     @Autowired
     private SubjectRepository subjectRepository;
     @Autowired
-    private ManageCriticalSubjectService manageCriticalSubjectService;
+    private ThesisBrowseSubjectToCouncil thesisBrowseSubjectToCouncil;
     @Autowired
     private PersonRepository personRepository;
     @Autowired
@@ -46,7 +46,7 @@ public class HeadManageCriticalSubjectController {
     public ResponseEntity<?> getListSubject(@RequestHeader("Authorization") String authorizationHeader){
         try {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
-            return new ResponseEntity<>(manageCriticalSubjectService.getListOfSubjectHaveReportOneHundred(authorizationHeader,typeSubject), HttpStatus.OK);
+            return new ResponseEntity<>(thesisBrowseSubjectToCouncil.getListOfSubjectWasHeadBrowse(authorizationHeader,typeSubject), HttpStatus.OK);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);
@@ -71,10 +71,11 @@ public class HeadManageCriticalSubjectController {
         }
     }
 
+    //GVPB duyệt đề tài qua hội đồng
     @PostMapping("/accept-subject-to-council/{subjectId}")
     public ResponseEntity<?> CompletedSubjectBrowseToCouncil(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader){
         try {
-            return new ResponseEntity<>(manageCriticalSubjectService.CompletedSubjectBrowseToCouncil(authorizationHeader,subjectId),HttpStatus.OK);
+            return new ResponseEntity<>(thesisBrowseSubjectToCouncil.CompletedSubjectBrowseToCouncil(authorizationHeader,subjectId),HttpStatus.OK);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);

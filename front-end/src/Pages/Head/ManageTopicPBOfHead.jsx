@@ -3,8 +3,8 @@ import SidebarHead from '../../components/Sidebar/SidebarHead'
 import Navbar from '../../components/Navbar/Navbar'
 import './ManageTopicPBOfHead.scss'
 import { useState, useEffect } from 'react'
-import TopicPBTableHead from '../../components/TableOfHead/TopicKLOfHead/TopicPBTableHead'
-import TopicKLPBTableHead from '../../components/TableOfHead/TopicKLOfHead/TopicKLPBTableHead'
+import TopicPBTableHead from '../../components/TableOfHead/TopicPBOfHead/TopicPBTableHead'
+import TopicKLPBTableHead from '../../components/TableOfHead/TopicPBOfHead/TopicKLPBTableHead'
 
 function ManageTopicPBOfHead() {
   useEffect(() => {

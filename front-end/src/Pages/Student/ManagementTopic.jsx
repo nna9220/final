@@ -19,7 +19,6 @@ function ManagementTopic() {
           <div className='header-notification'>
             <h4 className='title'>QUẢN LÝ ĐỀ TÀI</h4>
           </div>
-          {/* Render the KanbanBoard component directly */}
           <KanbanBoard />
         </div>
       </div>

@@ -1,24 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import CreditScoreOutlinedIcon from '@mui/icons-material/CreditScoreOutlined';
 import axiosInstance from '../../API/axios';
-import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined';
-import TopicOutlinedIcon from '@mui/icons-material/TopicOutlined';
 import './TopicPBTable.scss'
+import { Link } from 'react-router-dom';
 
 function TopicPBTable() {
     const [topics, setTopics] = useState([]);
-    const [activeTLChuyenNganh, setActiveTLChuyenNganh] = useState(false);
-    const [activeKhoaLuan, setActiveKhoaLuan] = useState(false);
     const [detail, setDetail] = useState('');
     const [scores, setScores] = useState({});
     const [criterias, setCriterias] = useState([]);
     const userToken = getTokenFromUrlAndSaveToStorage();
-
+    const [subjectIdForAccept, setSubjectIdForAccept] = useState(null);
     useEffect(() => {
         fetchTopics();
-        handleListCriteria();
     }, []);
 
     const fetchTopics = () => {
@@ -29,30 +26,6 @@ function TopicPBTable() {
         })
             .then(response => {
                 setTopics(response.data.listSubject);
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    };
-
-    const handleScoreChange = (criteria, value) => {
-        setScores(prevScores => ({
-            ...prevScores,
-            [criteria]: parseFloat(value) || 0
-        }));
-    };
-
-    const totalScore = Object.values(scores).reduce((total, score) => total + score, 0);
-
-    const handleListCriteria = () => {
-        axiosInstance.get('/lecturer/manageTutorial/listCriteria', {
-            headers: {
-                'Authorization': `Bearer ${userToken}`,
-            },
-        })
-            .then(response => {
-                console.log(response.data.body);
-                setCriterias(response.data.body);
             })
             .catch(error => {
                 console.error(error);
@@ -81,29 +54,28 @@ function TopicPBTable() {
         }
     }
 
-    const addScore = (id) => {
-        const userToken = getTokenFromUrlAndSaveToStorage();
-        console.log("Token: " + userToken);
-        if (userToken) {
-            const tokenSt = sessionStorage.getItem(userToken);
-            if (!tokenSt) {
-                axiosInstance.post(`/lecturer/addScore/${id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${userToken}`,
-                    },
+    const handleAccept = () => {
+        console.log(subjectIdForAccept);
+        if (subjectIdForAccept) {
+            axiosInstance.post(`/lecturer/manageCritical/accept-subject-to-council/${subjectIdForAccept}`, {}, {
+                headers: {
+                    'Authorization': `Bearer ${userToken}`,
+                }
+            })
+                .then(response => {
+                    console.log('Đề tài đã được duyệt qua hội đồng', response.data);
+                    toast.success("Đề tài đã được duyệt qua hội đồng!")
                 })
-                    .then(response => {
-                        console.log("DetailTopic: ", response.data);
-                    })
-                    .catch(error => {
-                        console.error(error);
-                    });
-            }
+                .catch(error => {
+                    console.error('Lỗi duyệt đề tài qua hội đồng:', error);
+                    toast.error("Lỗi duyệt đề tài qua hội đồng")
+                });
         }
     }
 
     return (
         <div style={{ display: 'grid' }}>
+            <ToastContainer />
             <div>
                 <div className='home-table-topicPB'>
                     <table className="table table-hover">
@@ -116,7 +88,7 @@ function TopicPBTable() {
                                 <th scope="col">Sinh viên 2</th>
                                 <th scope="col">Sinh viên 3</th>
                                 <th scope="col">Yêu cầu</th>
-                                <th scope='col'>Chấm điểm</th>
+                                <th scope='col'>Đánh giá</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -130,7 +102,7 @@ function TopicPBTable() {
                                     <td>{item.student3}</td>
                                     <td>{item.requirement}</td>
                                     <td>
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => detailTopic(item.subjectId)}>
+                                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => { detailTopic(item.subjectId); setSubjectIdForAccept(item.subjectId) }} disabled={item.active === 6}>
                                             <CreditScoreOutlinedIcon />
                                         </button>
                                     </td>
@@ -161,80 +133,31 @@ function TopicPBTable() {
                                 <p>Sinh viên 3: {detail.subject?.student3}</p>
                             </div>
                             <hr />
-                            <h5>Tiêu chí đánh giá</h5>
-                            <table className='table-bordered table'>
-                                <thead>
-                                    <tr>
-                                        <th>Tiêu Chí Đánh Giá</th>
-                                        {topics.map((_, index) => (
-                                            <th key={index}>Sinh viên {index + 1}</th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {criterias.map((criteria, criteriaIndex) => (
-                                        <tr key={criteriaIndex}>
-                                            <td className='criteria'>{criteria.criteriaName}</td>
-                                            {topics.map((_, topicIndex) => (
-                                                <td key={topicIndex}>
-                                                    <input
-                                                        type='number'
-                                                        step='0.25'
-                                                        max={criteria.criteriaScore}
-                                                        min={0}
-                                                        value={scores[`${criteria.criteriaName}_${topicIndex}`] || 0}
-                                                        onChange={(e) => handleScoreChange(`${criteria.criteriaName}_${topicIndex}`, e.target.value)}
-                                                    />
-                                                </td>
-                                            ))}
-                                        </tr>
-                                    ))}
-                                    <tr>
-                                        <td className='criteria-sum'>Tổng</td>
-                                        {topics.map((_, index) => (
-                                            <td key={index}>
-                                                <input
-                                                    type='number'
-                                                    step='0.25'
-                                                    max={1}
-                                                    min={0}
-                                                    className='score'
-                                                    readOnly
-                                                    value={Object.keys(criterias).reduce((sum, criteria) => {
-                                                        return sum + parseFloat(scores[`${criteria}_${index}`] || 0);
-                                                    }, 0).toFixed(2)}
-                                                />
-                                            </td>
-                                        ))}
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <hr />
-                            <h5>Nhận xét, đánh giá</h5>
-                            <div className="form-floating">
-                                <textarea
-                                    className="form-control"
-                                    id="comment"
-                                    name="text"
-                                    placeholder="Comment goes here"
-                                ></textarea>
-                                <label htmlFor="comment">Nhận xét</label>
+                            <h5>File báo cáo</h5>
+                            <div>
+                                <p>Báo cáo 50% :
+                                    <span className="file-name">
+                                        {detail.subject?.fiftyPercent?.name}
+                                    </span>
+                                    <a href={detail.subject?.fiftyPercent?.url} className="file-link">
+                                        {detail.subject?.fiftyPercent?.url}
+                                    </a>
+                                </p>
+                                <p>Báo cáo 100% :
+                                    <span className="file-name">
+                                        {detail.subject?.oneHundredPercent?.name}
+                                    </span>
+                                    <a href={detail.subject?.oneHundredPercent?.url} className="file-link">
+                                        {detail.subject?.oneHundredPercent?.url}
+                                    </a>
+                                </p>
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button
-                                type="button"
-                                className="btn btn-secondary"
-                                data-bs-dismiss="modal"
-                            >
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
                                 Close
                             </button>
-                            <button
-                                type="button"
-                                className="btn btn-primary"
-                                data-bs-dismiss="modal"
-                                onClick={addScore}
-                            >
+                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleAccept}>
                                 Confirm
                             </button>
                         </div>

@@ -22,6 +22,8 @@ public class ManageTutorialSubjectService {
     @Autowired
     private LecturerRepository lecturerRepository;
     @Autowired
+    private AuthorityRepository authorityRepository;
+    @Autowired
     private StudentRepository studentRepository;
     @Autowired
     private SubjectRepository subjectRepository;
@@ -245,13 +247,14 @@ public class ManageTutorialSubjectService {
 
     //GVHD DUYỆT ĐỀ TÀI QUA TRƯỞNG BỘ MÔN
 
-    //Lấy ra danh sách đề tài của GV này có status=true, active=6, type subject = typSubject
+    //Lấy ra danh sách đề tài của GV này có status=true, active=5, type subject = typSubject
     public ResponseEntity<?> getListOfSubjectHaveReportOneHundred(String authorizationHeader, TypeSubject typeSubject){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             List<Subject> existedSubjects = subjectRepository.findSubjectByInstructorAndStatusAndActiveAndTypeSubject(existedLecturer,true,typeSubject,(byte)5);
+            System.out.println("Ds đề tài: " + existedSubjects);
             return new ResponseEntity<>(existedSubjects, HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -274,7 +277,8 @@ public class ManageTutorialSubjectService {
                     String subject = "Topic: " + existedSubject.getSubjectName();
                     String messenger = "Topic: " + existedSubject.getSubjectName() + " đã được " + existedSubject.getInstructorId().getPerson().getFirstName() + " " + existedSubject.getInstructorId().getPerson().getLastName() + " duyệt là hoàn thành, truy cập website để xem chi tiết";
                     List<String> emailPerson = new ArrayList<>();
-                    Lecturer head = lecturerRepository.getLecturerISHead("ROLE_HEAD",existedSubject.getInstructorId().getMajor());
+                    Authority authority = authorityRepository.findByName("ROLE_HEAD");
+                    Lecturer head = lecturerRepository.getLecturerISHead(authority,existedSubject.getInstructorId().getMajor());
                     emailPerson.add(head.getPerson().getUsername());
                         if (existedSubject.getStudent1()!=null) {
                             Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
@@ -366,7 +370,8 @@ public class ManageTutorialSubjectService {
                     String subject = "Topic: " + existedSubject.getSubjectName();
                     String messenger = "Topic: " + existedSubject.getSubjectName() + " đã được " + existedSubject.getInstructorId().getPerson().getFirstName() + " " + existedSubject.getInstructorId().getPerson().getLastName() + " duyệt là hoàn thành, truy cập website để xem chi tiết!";
                     List<String> emailPerson = new ArrayList<>();
-                    Lecturer head = lecturerRepository.getLecturerISHead("ROLE_HEAD",existedSubject.getInstructorId().getMajor());
+                    Authority authority = authorityRepository.findByName("ROLE_HEAD");
+                    Lecturer head = lecturerRepository.getLecturerISHead(authority,existedSubject.getInstructorId().getMajor());
                     emailPerson.add(head.getPerson().getUsername());
                     if (existedSubject.getStudent1()!=null) {
                         Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);

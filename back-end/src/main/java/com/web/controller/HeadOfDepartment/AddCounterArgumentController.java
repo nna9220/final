@@ -145,10 +145,18 @@ public class AddCounterArgumentController {
                     //Tạo mới hội đồng
                     Council council = new Council();
                     council.setLecturers(lecturers);
+                    council.setSubject(existedSubject);
                     councilRepository.save(council);
+                    List<Council> councils = new ArrayList<>();
+                    councils.add(council);
+                    //set GVHD và GVPB
+                    Lecturer instructor = existedSubject.getInstructorId();
+                    instructor.setCouncils(councils);
+                    currentLecturer.setCouncils(councils);
                     currentLecturer.setListSubCounterArgument(addSub);
                     existedSubject.setThesisAdvisorId(currentLecturer);
                     lecturerRepository.save(currentLecturer);
+                    lecturerRepository.save(instructor);
                     subjectRepository.save(existedSubject);
                     //Mail thông báo hội đồng đã được lập
                     String subject = "THÀNH LẬP HỘI ĐỒNG";
