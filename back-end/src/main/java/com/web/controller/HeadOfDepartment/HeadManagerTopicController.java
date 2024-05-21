@@ -1,7 +1,6 @@
 package com.web.controller.HeadOfDepartment;
 
 
-import antlr.Token;
 import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
 import com.web.controller.admin.LecturerController;
@@ -10,7 +9,7 @@ import com.web.mapper.SubjectMapper;
 import com.web.repository.*;
 import com.web.service.Admin.StudentService;
 import com.web.service.Admin.SubjectService;
-import com.web.service.Lecturer.LecturerSubjectService;
+import com.web.service.Lecturer.LecturerAddScoreGraduationService;
 import com.web.utils.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +40,7 @@ public class HeadManagerTopicController {
     @Autowired
     private StudentService studentService;
     @Autowired
-    private LecturerSubjectService lecturerSubjectService;
+    private LecturerAddScoreGraduationService lecturerSubjectService;
     @Autowired
     private PersonRepository personRepository;
     @Autowired
