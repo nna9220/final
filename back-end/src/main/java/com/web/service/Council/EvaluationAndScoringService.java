@@ -56,12 +56,13 @@ public class EvaluationAndScoringService {
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             List<Council> councils = councilRepository.getListCouncilByLecturer(existedLecturer);
+            System.out.println();
             List<Council> councilResponse = new ArrayList<>();
             for (Council council:councils) {
                 Subject subject = council.getSubject();
                 if (council.getSubject().getTypeSubject()==typeSubject){
                     if (subject.isStatus()) {
-                        if (subject.getActive() == 6) {
+                        if (subject.getActive() == 8) {
                             councilResponse.add(council);
                         }
                     }

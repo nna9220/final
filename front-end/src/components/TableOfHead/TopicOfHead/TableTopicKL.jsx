@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import './TableTopic.scss'
-import { BsPentagonHalf } from "react-icons/bs";
-import { BsPentagonFill } from "react-icons/bs";
-import { BsCursorFill } from "react-icons/bs";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
+import ViewComfyAltOutlinedIcon from '@mui/icons-material/ViewComfyAltOutlined';
 import ManagementTask from '../../KanbanOfHead/ManagementTask';
 import axiosInstance from '../../../API/axios';
 
@@ -17,7 +17,12 @@ function TableTopicKL() {
   const [showBackButton, setShowBackButton] = useState(false);
   const userToken = getTokenFromUrlAndSaveToStorage();
   const [scores, setScores] = useState({}); // Sử dụng object để lưu trữ điểm cho mỗi đề tài
-
+  const [subjectIdForSubmit50, setSubjectIdForSubmit50] = useState(null);
+  const [subjectIdForSubmit100, setSubjectIdForSubmit100] = useState(null);
+  const [subjectIdForApproval, setSubjectIdForApproval] = useState(null);
+  const [subjectIdForRefuse, setSubjectIdForRefuse] = useState(null);
+  const [subjectName, setSubjectName] = useState('');
+  const [refusalReason, setRefusalReason] = useState("");
 
   useEffect(() => {
     console.log("TokenTopic: " + userToken);
@@ -54,17 +59,121 @@ function TableTopicKL() {
     setShowSubmitButton(true);
   };
 
-  const handleScoreChange = (subjectId, event) => {
-    const value = parseFloat(event.target.value);
-    setScores(prevScores => ({
-      ...prevScores,
-      [subjectId]: value
-    }));
-  }
+  const handleSubmit50 = () => {
+    console.log(subjectIdForSubmit50);
+    if (subjectIdForSubmit50) {
+      axiosInstance.post(`/head/manageTutorial/graduation/fiftyRecent/${subjectIdForSubmit50}`, {}, {
+        headers: {
+          'Authorization': `Bearer ${userToken}`,
+        }
+      })
+        .then(response => {
+          console.log('Yêu cầu nộp báo cáo 50% đã được gửi thành công:', response.data);
+          toast.success("Yêu cầu nộp báo cáo 50% đã được gửi thành công!")
+        })
+        .catch(error => {
+          console.error('Lỗi khi gửi yêu cầu nộp báo cáo 50%:', error);
+          toast.error("Lỗi khi gửi yêu cầu nộp báo cáo 50%")
+        });
+    }
+  };
+
+  const handleSubmit100 = () => {
+    console.log(subjectIdForSubmit100);
+    if (subjectIdForSubmit100) {
+      axiosInstance.post(`/head/manageTutorial/graduation/fiftyRecent/${subjectIdForSubmit100}`, {}, {
+        headers: {
+          'Authorization': `Bearer ${userToken}`,
+        }
+      })
+        .then(response => {
+          console.log('Yêu cầu nộp báo cáo 100% đã được gửi thành công:', response.data);
+          toast.success("Yêu cầu nộp báo cáo 100% đã được gửi thành công!")
+        })
+        .catch(error => {
+          console.error('Lỗi khi gửi yêu cầu nộp báo cáo 100%:', error);
+          toast.error("Lỗi khi gửi yêu cầu nộp báo cáo 100%")
+        });
+    }
+  };
+
+  const handleSubmitAll50 = () => {
+    axiosInstance.post('/head/manageTutorial/graduation/fiftyRecent/listSubject', {}, {
+      headers: {
+        'Authorization': `Bearer ${userToken}`,
+      }
+    })
+      .then(response => {
+        console.log('Yêu cầu nộp báo cáo 50% cho toàn bộ đề tài đã được gửi thành công:', response.data);
+        toast.success("Yêu cầu nộp báo cáo 50% cho toàn bộ đề tài đã được gửi thành công!")
+      })
+      .catch(error => {
+        console.error('Lỗi khi gửi yêu cầu nộp báo cáo 50% cho toàn bộ đề tài:', error);
+        toast.error("Lỗi khi gửi yêu cầu nộp báo cáo 50% cho toàn bộ đề tài")
+      });
+  };
+
+  const handleSubmitAll100 = () => {
+    axiosInstance.post('/head/manageTutorial/graduation/OneHundredRecent/listSubject', {}, {
+      headers: {
+        'Authorization': `Bearer ${userToken}`,
+      }
+    })
+      .then(response => {
+        console.log('Yêu cầu nộp báo cáo 100% cho toàn bộ đề tài đã được gửi thành công:', response.data);
+        toast.success("Yêu cầu nộp báo cáo 100% cho toàn bộ đề tài đã được gửi thành công!")
+      })
+      .catch(error => {
+        console.error('Lỗi khi gửi yêu cầu nộp báo cáo 100% cho toàn bộ đề tài:', error);
+        toast.error("Lỗi khi gửi yêu cầu nộp báo cáo 100% cho toàn bộ đề tài")
+      });
+  };
+
+  const handleSubmitApproval = () => {
+    console.log(subjectIdForApproval);
+    if (subjectIdForApproval) {
+      axiosInstance.post(`/head/manageTutorial/graduation/browse-score/${subjectIdForApproval}`, {}, {
+        headers: {
+          'Authorization': `Bearer ${userToken}`,
+        }
+      })
+        .then(response => {
+          console.log('Duyệt đề tài qua phản biên thành công:', response.data);
+          toast.success("Duyệt đề tài qua phản biên thành công!")
+        })
+        .catch(error => {
+          console.error('Lỗi khi duyệt đề tài qua phản biện:', error);
+          toast.error("Lỗi khi duyệt đề tài qua phản biện!")
+        });
+    }
+  };
+
+  const handleSubmitRefuse = () => {
+    console.log(subjectIdForRefuse);
+    if (subjectIdForRefuse) {
+      axiosInstance.post(`/head/manageTutorial/graduation/refuse/${subjectIdForRefuse}`, null, {
+        headers: {
+          'Authorization': `Bearer ${userToken}`,
+        },
+        params: {
+          reason: refusalReason
+        }
+      })
+        .then(response => {
+          console.log('Đề tài đã bị từ chối thành công:', response.data);
+          toast.success("Đề tài đã bị từ chối thành công!")
+        })
+        .catch(error => {
+          console.error('Lỗi khi từ chối đề tài:', error);
+          toast.error("Lỗi khi từ chối đề tài")
+        });
+    }
+  };
 
   return (
     <>
       <div className='home-table-assign'>
+        <ToastContainer />
         {showSubmitButton && (
           <>
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -78,12 +187,34 @@ function TableTopicKL() {
           </>
         )}
         {showBackButton && (
-          <nav aria-label="breadcrumb">
-            <ol className="breadcrumb">
-              <li className="breadcrumb-item"><a href="#" onClick={handleGoBack}>Danh sách đề tài</a></li>
-              <li className="breadcrumb-item active" aria-current="page">{selectedSubjectName}</li> {/* Sử dụng tên đề tài được lưu trữ */}
-            </ol>
-          </nav>
+          <>
+            <div className='group-lecturer'>
+              <nav aria-label="breadcrumb">
+                <ol className="breadcrumb">
+                  <li className="breadcrumb-item"><a href="#" onClick={handleGoBack}>Danh sách đề tài</a></li>
+                  <li className="breadcrumb-item active" aria-current="page">{selectedSubjectName}</li>
+                </ol>
+              </nav>
+              <button data-bs-toggle="modal" data-bs-target="#confirmSuccess">Hoàn thành đề tài</button>
+            </div>
+            <div className="modal fade" id="confirmSuccess" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div className="modal-dialog">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h1 className="modal-title fs-5" id="exampleModalLabel">XÁC NHẬN HOÀN THÀNH ĐỀ TÀI</h1>
+                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div className="modal-body">
+                    Bạn chắc chắn muốn hoàn thành đề tài này không?
+                  </div>
+                  <div className="modal-footer">
+                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" className="btn btn-primary">Confirm</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
         )}
         {showManagementTask ? (
           <ManagementTask subjectId={selectedSubjectId} />
@@ -98,12 +229,11 @@ function TableTopicKL() {
                 <th scope="col">Sinh viên 1</th>
                 <th scope="col">Sinh viên 2</th>
                 <th scope="col">Sinh viên 3</th>
-                <th scope="col">Yêu cầu</th>
                 <th scope="col">Action</th>
               </tr>
             </thead>
             <tbody>
-              {topics.map((item, index) => (
+              {topics.filter(item => item.active === 5).map((item, index) => (
                 <tr key={index}>
                   <th scope='row'>{index + 1}</th>
                   <td>{item.subjectName}</td>
@@ -112,15 +242,21 @@ function TableTopicKL() {
                   <td>{item.student1}</td>
                   <td>{item.student2}</td>
                   <td>{item.student3}</td>
-                  <td>{item.requirement}</td>
                   <td>
-                    <button className="management" type="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Đi đến chi tiết để quản lý đề tài" onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}><BsCursorFill /></button>
-                    <button className="submit50" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-placement="bottom" title="Yêu cầu nộp báo cáo 50%">
-                      <BsPentagonHalf />
-                    </button>
-                    <button className="submit100" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal1" data-bs-placement="bottom" title="Yêu cầu nộp báo cáo 100%">
-                      <BsPentagonFill />
-                    </button>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <button className="management" type="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Đi đến chi tiết để quản lý đề tài" onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}><ViewComfyAltOutlinedIcon /></button>
+                      <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          <MenuOutlinedIcon />
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-placement="bottom" onClick={() => { setSubjectIdForSubmit50(item.subjectId); setSubjectName(item.subjectName) }}>Yêu cầu nộp báo cáo 50%</button></li>
+                          <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal1" data-bs-placement="bottom" onClick={() => { setSubjectIdForSubmit100(item.subjectId); setSubjectName(item.subjectName) }}>Yêu cầu nộp báo cáo 100%</button></li>
+                          <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#modalApproval" data-bs-placement="bottom" onClick={() => { setSubjectIdForApproval(item.subjectId); setSubjectName(item.subjectName) }}>Duyệt đề tài qua phản biện</button></li>
+                          <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#modalRefuse" data-bs-placement="bottom" onClick={() => { setSubjectIdForRefuse(item.subjectId); setSubjectName(item.subjectName) }}>Từ chối đề tài</button></li>
+                        </ul>
+                      </div>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -129,73 +265,115 @@ function TableTopicKL() {
         )}
       </div>
       <div>
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Thông báo</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                Yêu cầu nôp báo cáo 50% cho đề tài này?
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Confirm</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Thông báo</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                Yêu cầu nôp báo cáo 100% cho đề tài này?
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Confirm</button>
+        <div>
+          <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h1 className="modal-title fs-5" id="exampleModalLabel">Thông báo</h1>
+                  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div className="modal-body">
+                  Yêu cầu nộp báo cáo 50% cho đề tài {subjectName} này?
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmit50}>Confirm</button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="modal fade" id="submit50" tabindex="-1" aria-labelledby="exampleModalLabel50" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel50">Thông báo</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                Yêu cầu nôp báo cáo 50% cho toàn bộ đề tài?
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Confirm</button>
+          <div className="modal fade" id="exampleModal1" tabIndex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true">
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h1 className="modal-title fs-5" id="exampleModalLabel">Thông báo</h1>
+                  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div className="modal-body">
+                  Yêu cầu nộp báo cáo 100% cho đề tài {subjectName} này?
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmit100}>Confirm</button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="modal fade" id="submit100" tabindex="-1" aria-labelledby="exampleModalLabel100" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel100">Thông báo</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <div className="modal fade" id="submit50" tabIndex="-1" aria-labelledby="exampleModalLabel50" aria-hidden="true">
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h1 className="modal-title fs-5" id="exampleModalLabel50">Thông báo</h1>
+                  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div className="modal-body">
+                  Yêu cầu nôp báo cáo 50% cho toàn bộ đề tài?
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitAll50}>Confirm</button>
+                </div>
               </div>
-              <div class="modal-body">
-                Yêu cầu nôp báo cáo 100% cho toàn bộ đề tài?
+            </div>
+          </div>
+
+          <div className="modal fade" id="submit100" tabIndex="-1" aria-labelledby="exampleModalLabel100" aria-hidden="true">
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h1 className="modal-title fs-5" id="exampleModalLabel100">Thông báo</h1>
+                  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div className="modal-body">
+                  Yêu cầu nôp báo cáo 100% cho toàn bộ đề tài?
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitAll100}>Confirm</button>
+                </div>
               </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Confirm</button>
+            </div>
+          </div>
+
+          <div className="modal fade" id="modalApproval" tabIndex="-1" aria-labelledby="exampleModalApproval" aria-hidden="true">
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h1 className="modal-title fs-5" id="exampleModalApproval">Duyệt đề tài</h1>
+                  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div className="modal-body">
+                  Xác nhận duyệt đề tài {subjectName} qua phản biện
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitApproval}>Confirm</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="modal fade" id="modalRefuse" tabIndex="-1" aria-labelledby="exampleModalRefuse" aria-hidden="true">
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h1 className="modal-title fs-5" id="exampleModalRefuse">Từ chối đề tài</h1>
+                  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div className="modal-body">
+                  Đề tài {subjectName}
+                  <div class="mb-3">
+                    <label for="reason" class="form-label">Lý do từ chối</label>
+                    <input type="text" class="form-control" id="reason" value={refusalReason} onChange={(e) => setRefusalReason(e.target.value)} />
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitRefuse}>Confirm</button>
+                </div>
               </div>
             </div>
           </div>

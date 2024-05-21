@@ -47,4 +47,13 @@ public class Lecturer implements Serializable {
     @JsonIgnore
     private List<ScoreGraduation> scoreGraduationList;
 
+    @ManyToMany
+    @JoinTable(
+            name = "council_lecturer",
+            joinColumns = @JoinColumn(name = "lecturer_id"),
+            inverseJoinColumns = @JoinColumn(name = "council_id")
+    )
+    @JsonIgnore // hoặc @JsonManagedReference
+    private List<Council> councils;
+
 }

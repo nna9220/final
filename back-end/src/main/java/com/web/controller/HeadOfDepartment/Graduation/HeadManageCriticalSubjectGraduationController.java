@@ -9,7 +9,6 @@ import com.web.repository.PersonRepository;
 import com.web.repository.SubjectRepository;
 import com.web.repository.TimeBrowseHeadRepository;
 import com.web.repository.TypeSubjectRepository;
-import com.web.service.Lecturer.ManageCriticalSubjectService;
 import com.web.utils.UserUtils;
 import com.web.service.Lecturer.ThesisBrowseSubjectToCouncil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +28,6 @@ public class HeadManageCriticalSubjectGraduationController {
     private TypeSubjectRepository typeSubjectRepository;
     @Autowired
     private SubjectRepository subjectRepository;
-    @Autowired
-    private ManageCriticalSubjectService manageCriticalSubjectService;
     @Autowired
     private PersonRepository personRepository;
     @Autowired

@@ -4,6 +4,43 @@ import axiosInstance from '../../../API/axios';
 import { useState, useEffect } from 'react';
 
 function CommitteeTable() {
+    const [topics, setTopics] = useState([]);
+    const userToken = getTokenFromUrlAndSaveToStorage();
+    const [subjectIdDetail, setSubjectIdDetail] = useState(null)
+
+    useEffect(() => {
+        listTopic();
+    }, [userToken]);
+
+    const listTopic = () => {
+        axiosInstance.get('/lecturer/council/listSubject', {
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+            }
+        })
+            .then(response => {
+                console.log("TopicTL: ", response.data);
+                setTopics(response.data.body);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+
+    const detailTopic = () => {
+        axiosInstance.get(`/lecturer/council/detail/${subjectIdDetail}`, {
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+            }
+        })
+            .then(response => {
+                console.log("TopicTL: ", response.data);
+                setTopics(response.data.body);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
 
     return (
         <div style={{ margin: '20px' }}>
@@ -22,18 +59,22 @@ function CommitteeTable() {
                         </tr>
                     </thead>
                     <tbody>
-                        <td>1</td>
-                        <td>Website Đăng ký học phần</td>
-                        <td>Huỳnh Xuân Phụng</td>
-                        <td>Lê Vĩnh Thịnh</td>
-                        <td>20110753</td>
-                        <td>20110678</td>
-                        <td></td>
-                        <td>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                Lập hội đồng
-                            </button>
-                        </td>
+                        {topics.map((item, index) => (
+                            <tr key={index}>
+                                <td>{index+1}</td>
+                                <td>{item.subject?.subjectName}</td>
+                                <td>{item.subject?.instructorId?.person?.firstName + ' ' + item.subject?.instructorId?.person?.lastName}</td>
+                                <td>{item.subject?.thesisAdvisorId?.person?.firstName + ' ' + item.subject?.thesisAdvisorId?.person?.lastName}</td>
+                                <td>{item.subject?.student1}</td>
+                                <td>{item.subject?.student2}</td>
+                                <td>{item.subject?.student3}</td>
+                                <td>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                        Đánh giá
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>
@@ -42,7 +83,7 @@ function CommitteeTable() {
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Lập hội đồng</h1>
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Đánh giá</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">

@@ -87,6 +87,7 @@ public class LecturerManageTutorialSubjectController {
     @GetMapping("/list-subject")
     public ResponseEntity<?> getListSubjectHaveReport(@RequestHeader("Authorization") String authorizationHeader){
         try {
+            System.out.println("List subject");
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
             return new ResponseEntity<>(manageTutorialSubjectService.getListOfSubjectHaveReportOneHundred(authorizationHeader,typeSubject),HttpStatus.OK);
         }catch (Exception e){
@@ -95,7 +96,7 @@ public class LecturerManageTutorialSubjectController {
         }
     }
 
-    //Xác nhận đề tài hoàn thành - chuyển qua TBM
+    //Xác nhận đề tài hoàn thành - chuyển qua TBM - Do GVHD thực hiện
     @PostMapping("/browse/{subjectId}")
     public ResponseEntity<?> browseToThesisAndScoreOfInstructor(@PathVariable int subjectId,
                                                                 @RequestHeader("Authorization") String authorizationHeader){

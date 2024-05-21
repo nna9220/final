@@ -138,8 +138,8 @@ public class TimeBrowseHeadController {
                 var update = timeBrowseHeadRepository.save(existTimeBrowsOfHead);
                 //GỬI MAIL
                 //TBM
-                Authority authority = authorityRepository.findByName("ROLE_HEAD");
-                List<Lecturer> lecturers = lecturerRepository.getListLecturerISHead(authority);
+                Authority authority = authorityRepository.findByName("ROLE_ADMIN");
+                List<Lecturer> lecturers = lecturerRepository.getListLecturerISHead("ROLE_ADMIN");
                 List<String> emailLecturer = new ArrayList<>();
                 for (Lecturer lecturer:lecturers) {
                     emailLecturer.add(lecturer.getPerson().getUsername());
