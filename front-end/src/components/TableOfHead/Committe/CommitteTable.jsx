@@ -17,7 +17,7 @@ function CommitteTable() {
             })
                 .then(response => {
                     console.log("Committe: ", response.data);
-                    setCommitte(response.data.body);
+                    setCommitte(response.data);
                 })
                 .catch(error => {
                     console.error(error);
@@ -45,7 +45,7 @@ function CommitteTable() {
                         {committe.map((item, index) => (
                             <tr>
                                 <th scope="row">{index + 1}</th>
-                                <td></td>
+                                <td>{item.subjectName}</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>

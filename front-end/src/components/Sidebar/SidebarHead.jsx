@@ -115,7 +115,7 @@ function SidebarHead() {
                                     <a style={{ marginLeft: '10px' }} href="/managementHead/criteria" className="sidebar-link">Tiêu chí phản biện</a>
                                 </li>
                                 <li className="sidebar-item">
-                                    <a style={{ marginLeft: '10px' }} href="/defensepanel" className="sidebar-link">Lập hội đồng</a>
+                                    <a style={{ marginLeft: '10px' }} href="/defensepanel" className="sidebar-link">Hội đồng báo cáo</a>
                                 </li>
                             </ul>
                         </li>
