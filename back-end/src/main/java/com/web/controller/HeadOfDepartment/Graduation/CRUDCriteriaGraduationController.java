@@ -84,7 +84,7 @@ public class CRUDCriteriaGraduationController {
                                           @RequestParam("nameCriteria") String nameCriteria,
                                           @RequestParam("scoreCriteria") Double scoreCriteria){
         try {
-            return new ResponseEntity<>(criteriaService.removeCriteria(id,authorizationHeader),HttpStatus.CREATED);
+            return criteriaService.removeCriteria(id,authorizationHeader);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);

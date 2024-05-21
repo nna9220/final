@@ -6,6 +6,7 @@ import com.web.entity.TypeSubject;
 import com.web.repository.LecturerRepository;
 import com.web.repository.SubjectRepository;
 import com.web.repository.TypeSubjectRepository;
+import com.web.service.Council.EvaluationAndScoringService;
 import com.web.service.Lecturer.ManageTutorialSubjectService;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ public class LecturerManageTutorialSubjectGraduationController {
     private TokenUtils tokenUtils;
     @Autowired
     private ManageTutorialSubjectService manageTutorialSubjectService;
+    @Autowired
+    private EvaluationAndScoringService evaluationAndScoringService;
 
     @PostMapping("/fiftyRecent/{subjectId}")
     public ResponseEntity<?> NoticeOfFiftyReportSubmission(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader){
@@ -100,6 +103,48 @@ public class LecturerManageTutorialSubjectGraduationController {
                                            @RequestParam("reason") String reason){
         try {
             return new ResponseEntity<>(manageTutorialSubjectService.RefuseTheSubject(subjectId,authorizationHeader,reason),HttpStatus.OK);
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+
+    }
+
+    //GVHD Chấm điểm đề tài khóa liaanj
+    @PostMapping("/instructor-addScore-graduation/{id}")
+    public ResponseEntity<?> InstructorScoringGraduation(@PathVariable int id,@RequestHeader("Authorization") String authorizationHeader,
+                                                         @RequestParam("studentId1") String studentId1,
+                                                         @RequestParam("studentId2") String studentId2,
+                                                         @RequestParam("studentId3") String studentId3,
+                                                         @RequestParam("score1Student") Double score1,
+                                                         @RequestParam("scoreStudent2") Double score2,
+                                                         @RequestParam("scoreStudent3") Double score3){
+        try {
+           return evaluationAndScoringService.InstructorAddScoreGraduation(id,authorizationHeader,score1,score2,score3,studentId1,studentId2,studentId3);
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    //Danh sách đề tài hướng dẫn đã hoàn thành (hội đồng đã chấm điểm)
+    @GetMapping("/subjects/successful")
+    public ResponseEntity<?> getListSubjectSuccessful(@RequestHeader("Authorization") String authorizationHeader){
+        try {
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
+            return new ResponseEntity<>(manageTutorialSubjectService.getListSubjectSuccessful(authorizationHeader,typeSubject),HttpStatus.OK);
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+
+    }
+
+    //Detail
+    @GetMapping("/subjects/successful/detail/{id}")
+    public ResponseEntity<?> getDetailSubjectSuccessful(@PathVariable int id,@RequestHeader("Authorization") String authorizationHeader){
+        try {
+            return new ResponseEntity<>(manageTutorialSubjectService.getDetailSubjectSuccessful(id,authorizationHeader),HttpStatus.OK);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);

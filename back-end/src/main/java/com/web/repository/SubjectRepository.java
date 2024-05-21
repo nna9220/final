@@ -54,4 +54,7 @@ public interface SubjectRepository extends JpaRepository<Subject, Integer> {
     @Query("select s from Subject s where s.typeSubject=:typeSubject")
     public List<Subject> findSubjectByTypeSubject(TypeSubject typeSubject);
 
+    @Query("select s from Subject s where s.active=:active and s.instructorId=:lecturer and s.typeSubject=:typeSubject")
+    public List<Subject> findSubjectByActiveAndInstructorIdAndType(Byte active, Lecturer lecturer,TypeSubject typeSubject);
+
 }
