@@ -23,7 +23,7 @@ public class ScoreGraduation {
 
     @ManyToOne
     @JoinColumn(name = "leturer_id")
-    private Lecturer scoreGraduation;
+    private Lecturer byLecturer;
 
     @ManyToOne
     @JoinColumn(name = "result_graduation_id")

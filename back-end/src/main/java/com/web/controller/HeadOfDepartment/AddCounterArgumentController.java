@@ -287,15 +287,9 @@ public class AddCounterArgumentController {
                 }
             }
             else {
-                /*odelAndView error = new ModelAndView();
-                error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-                return error;*/
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
         }catch (Exception e){
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "lỗi.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
     }

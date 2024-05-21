@@ -20,7 +20,7 @@ public class ResultGraduation {
     @Column(name = "score_Instructor")
     private Double scoreInstructor;
 
-    @OneToMany(mappedBy = "scoreGraduation", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "resultGraduation", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<ScoreGraduation> scoreCouncil;
 
