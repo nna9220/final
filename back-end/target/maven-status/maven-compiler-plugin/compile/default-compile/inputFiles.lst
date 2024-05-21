@@ -13,7 +13,9 @@ F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\dto\response\Stude
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\Student\StudentAddCommentController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\Student\Graduation\StudentAddCommentGraduationController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\dto\response\SchoolYearResponse.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\admin\TimeAddSubjectHeadController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\HomePageController.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\repository\TimeBrowseHeadRepository.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\service\Admin\StudentService.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\dto\request\SubjectRequest.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\HeadOfDepartment\HeadAddCommentController.java
@@ -23,6 +25,7 @@ F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\repository\Lecture
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\service\UserService.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\MailController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\Comment.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\TimeBrowsOfHead.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\exception\NotFoundException.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\service\Admin\RegistrationPeriodService.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\HeadOfDepartment\Graduation\AddCounterArgumentGraduationController.java
@@ -80,6 +83,7 @@ F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\repository\Authori
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\dto\response\TaskResponse.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\Lecturer\LecturerAddCommentController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\Student\Graduation\StudentAddTaskGraduationController.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\admin\TimeBrowseHeadController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\Lecturer.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\jwt\JwtAuthenticationFilter.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\config\SecurityUtils.java
@@ -143,8 +147,10 @@ F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\service\SubjectImp
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\config\DatabaseConfiguration.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\admin\GraduationThesis\RegistrationPeriodGraduationController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\admin\RegistrationPeriodController.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\admin\GraduationThesis\TimeBrowseGraduationHeadController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\dto\request\LecturerRequest.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\Authority.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\repository\TimeAddSubjectHeadRepository.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\dto\response\CommentResponse.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\Person.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\mapper\RegistrationPeriodMapper.java
@@ -159,6 +165,8 @@ F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\Roles.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\api\UserResource.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\admin\RegistrationPeriodLecturerController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\MailStructure.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\entity\TimeAddSubjectOfHead.java
+F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\admin\GraduationThesis\TimeAddSubjectGraduationHeadController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\config\MailSenderConfig.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\controller\admin\LecturerController.java
 F:\Learn\3Nam4\Nam4_HKII\final\back-end\src\main\java\com\web\exception\MyFileNotFoundException.java

@@ -2,6 +2,7 @@ com\web\controller\admin\PersonController.class
 com\web\api\AuthorityRest.class
 com\web\config\CorsConfig$1.class
 com\web\dto\response\CommentResponse.class
+com\web\entity\TimeBrowsOfHead.class
 com\web\dto\response\SubjectResponse.class
 com\web\entity\RegistrationPeriod.class
 com\web\controller\Student\Graduation\StudentAddCommentGraduationController.class
@@ -51,6 +52,7 @@ com\web\mapper\TypeSubjectMapper.class
 com\web\config\TokenUtils.class
 com\web\mapper\StudentMapperImpl.class
 com\web\controller\Student\Graduation\StudentAddTaskGraduationController.class
+com\web\controller\admin\TimeAddSubjectHeadController.class
 com\web\dto\request\SchoolYearRequest.class
 com\web\utils\FileFactory.class
 com\web\controller\HeadOfDepartment\AddCounterArgumentController.class
@@ -67,6 +69,7 @@ com\web\controller\HeadOfDepartment\HeadAddCommentController.class
 com\web\controller\admin\RegistrationPeriodController.class
 com\web\dto\response\TypeSubjectResponse.class
 com\web\repository\StudentRepository.class
+com\web\repository\TimeBrowseHeadRepository.class
 com\web\mapper\RegistrationPeriodMapper.class
 com\web\utils\CommonPage$1.class
 com\web\config\OAuth2AuthenticationSuccessHandler.class
@@ -87,6 +90,7 @@ com\web\dto\request\RegistrationPeriodLecturerRequest.class
 com\web\controller\admin\GraduationThesis\RegistrationPeriodGraduationLecturerController.class
 com\web\entity\Lecturer.class
 com\web\service\Admin\RegistrationPeriodService.class
+com\web\controller\admin\GraduationThesis\TimeBrowseGraduationHeadController.class
 com\web\controller\View.class
 com\web\mapper\RegistrationPeriodMapperImpl.class
 com\web\repository\FileRepository.class
@@ -109,6 +113,7 @@ com\web\dto\request\SubjectRequest.class
 com\web\config\CorsFilter.class
 com\web\entity\Task.class
 com\web\repository\StudentClassRepository.class
+com\web\controller\admin\TimeBrowseHeadController.class
 com\web\entity\Authority.class
 com\web\entity\FileComment.class
 com\web\config\WebSecurityConfig.class
@@ -120,6 +125,7 @@ com\web\controller\Student\StudentRegisterTopic.class
 com\web\controller\Student\Graduation\StudentRegisterTopicGraduation.class
 com\web\dto\TokenDto.class
 com\web\entity\Subject.class
+com\web\entity\TimeAddSubjectOfHead.class
 com\web\config\WebConfig.class
 com\web\controller\Lecturer\LecturerRegisterTopicController.class
 com\web\controller\Student\StudentAddCommentController.class
@@ -142,6 +148,7 @@ com\web\entity\Notification.class
 com\web\mapper\SchoolYearMapperImpl.class
 com\web\service\Admin\LecturerService.class
 com\web\utils\ExcelUtils.class
+com\web\repository\TimeAddSubjectHeadRepository.class
 com\web\utils\CommonPage.class
 com\web\exception\ApplicationException.class
 com\web\controller\HeadOfDepartment\HeadManagerTopicController.class
@@ -168,6 +175,7 @@ com\web\controller\HeadOfDepartment\HomeHeadController.class
 com\web\mapper\LecturerMapperImpl.class
 com\web\controller\Lecturer\LecturerAddCommentController.class
 com\web\controller\admin\LecturerController.class
+com\web\controller\admin\GraduationThesis\TimeAddSubjectGraduationHeadController.class
 com\web\config\JwtUtils.class
 com\web\dto\request\StudentClassRequest.class
 com\web\exception\ErrorResponse.class
