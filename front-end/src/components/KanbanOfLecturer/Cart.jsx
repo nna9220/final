@@ -11,8 +11,43 @@ import axiosInstance from '../../API/axios';
 
 const Card = ({ task, index }) => {
     const [selectedTask, setSelectedTask] = useState(null);
-    const [detail, setDetail] = useState([])
+    const [detail, setDetail] = useState([]);
+    const [files, setFiles] = useState([]);
+    const [commentContent, setCommentContent] = useState('');
+    const [commentFiles, setCommentFiles] = useState([]);
 
+    const handleCommentChange = (e) => {
+        setCommentContent(e.target.value);
+    };
+
+    const handleFileChange = (e) => {
+        setCommentFiles(e.target.files);
+    };
+
+    const handleSubmitComment = async (e) => {
+        const userToken = getTokenFromUrlAndSaveToStorage();
+        e.preventDefault();
+        console.log("taskID-post: ", task.taskId);
+        try {
+            const formData = new FormData();
+            formData.append('content', commentContent);
+            for (const file of commentFiles) {
+                formData.append('fileInput', file);
+            }
+
+            console.log("Comment-post: ", formData);
+            const response = await axiosInstance.post(`/lecturer/comment/create/${task.taskId}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${userToken}`,
+                },
+            });
+            console.log('Comment created successfully:', response.data);
+        } catch (error) {
+            console.error('Error creating comment:', error);
+        }
+    };
+    
     const handleViewTask = (taskId) => {
         setSelectedTask(taskId);
         // Gửi yêu cầu API với taskId đã chọn
@@ -45,7 +80,7 @@ const Card = ({ task, index }) => {
                 >
                     <div class="dropdown">
                         <label className='title-task-st'>{task.requirement}</label>
-                        <button class="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{border: 'none', backgroundColor: 'white' }} >
+                        <button class="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{ border: 'none', backgroundColor: 'white' }} >
                             <MoreHorizTwoToneIcon />
                         </button>
                         <ul class="dropdown-menu">
@@ -86,18 +121,16 @@ const Card = ({ task, index }) => {
                                         </div>
                                     </div>
                                     <div>
-                                        <div class="mb-3">
-                                            <label for="exampleFormControlTextarea1" class="form-label">Comment</label>
-                                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <input class="form-control" type="file" id="formFile" />
-                                    </div>
-                                    <div className='button-container'>
-                                        <button className='btn-comment' >
-                                            Comment
-                                        </button>
+                                        <form onSubmit={handleSubmitComment}>
+                                            <div class="mb-3">
+                                                <label for="commentContent" class="form-label">Comment</label>
+                                                <textarea class="form-control" id="commentContent" rows="3" value={commentContent} onChange={handleCommentChange}></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <input type="file" class="form-control" id="commentFile" onChange={handleFileChange} multiple />
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Post Comment</button>
+                                        </form>
                                     </div>
                                     <div className='comment-items'>
                                         {detail.listComment && detail.listComment.map((comment, index) => (
@@ -109,6 +142,18 @@ const Card = ({ task, index }) => {
                                                     </div>
                                                     <div className='body-comment'>
                                                         <label className='content'>{comment.content}</label><br />
+                                                        {files && files.map((file, fileIndex) => {
+                                                            // Kiểm tra xem tệp có thuộc về comment hiện tại không
+                                                            if (file.commentId.commentId === comment.commentId) {
+                                                                return (
+                                                                    <div key={fileIndex}>
+                                                                        <a href={file.url}><p>{file.name}</p></a>
+                                                                    </div>
+                                                                );
+                                                            } else {
+                                                                return null;
+                                                            }
+                                                        })}
                                                     </div>
                                                 </div>
                                             </div>
@@ -122,8 +167,8 @@ const Card = ({ task, index }) => {
                             </div>
                         </div>
                     </div>
-                    <div style={{justifyItems:'flex-end'}}>
-                </div>
+                    <div style={{ justifyItems: 'flex-end' }}>
+                    </div>
                 </div>
             )}
         </Draggable>

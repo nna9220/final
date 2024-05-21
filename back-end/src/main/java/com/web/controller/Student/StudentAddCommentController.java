@@ -86,7 +86,7 @@ public class StudentAddCommentController {
                         FileComment newFile = new FileComment();
                         newFile.setName(fileName);
                         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                                .scheme("https")
+//                                .scheme("https")
                                 .path("/api/student/comment/fileUpload/")
                                 .path(fileName)
                                 .toUriString();
@@ -131,6 +131,7 @@ public class StudentAddCommentController {
                     emailPerson.add(student3.getPerson().getUsername());
                 }
             }
+
             Lecturer instructor = lecturerRepository.findById(existSubject.getInstructorId().getLecturerId()).orElse(null);
             if (instructor!=null){
                 emailPerson.add(instructor.getPerson().getUsername());

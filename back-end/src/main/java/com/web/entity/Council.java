@@ -28,11 +28,7 @@ public class Council {
     @JoinColumn(name = "subject", unique = true)
     private Subject subject;
 
-    @ManyToMany
-    @JoinTable(
-            name = "council_lecturer",
-            joinColumns = @JoinColumn(name = "council_id"),
-            inverseJoinColumns = @JoinColumn(name = "lecturer_id")
-    )
+    @ManyToMany(mappedBy = "councils")
+    @JsonIgnore
     private List<Lecturer> lecturers;
 }

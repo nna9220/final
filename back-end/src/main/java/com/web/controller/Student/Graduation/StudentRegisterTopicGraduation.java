@@ -64,23 +64,18 @@ public class StudentRegisterTopicGraduation {
                     }
                 }
                 else {
-                    //ModelAndView modelAndView = new ModelAndView("QuanLyDeTaiDaDK_SV");
                     Subject existSubject = subjectRepository.findById(currentStudent.getSubjectGraduationId().getSubjectId()).orElse(null);
                     Map<String,Object> response = new HashMap<>();
                     response.put("person",personCurrent);
                     response.put("subject", existSubject);
                     return new ResponseEntity<>(response,HttpStatus.OK);
-                    /*modelAndView.addObject("subject", existSubject);
-                    modelAndView.addObject("person", personCurrent);
-                    return modelAndView;*/
+
                 }
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-                //return new ModelAndView("error").addObject("errorMessage", "Không tìm thấy sinh viên.");
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            //return new ModelAndView("error").addObject("errorMessage", "Bạn không có quyền truy cập.");
         }
     }
 
@@ -95,17 +90,16 @@ public class StudentRegisterTopicGraduation {
                     if (existSubject.getStudent1() == null) {
                         existSubject.setStudent1(currentStudent.getStudentId());
                         existSubject.setActive((byte)1);
-                        currentStudent.setSubjectId(existSubject);
+                        currentStudent.setSubjectGraduationId(existSubject);
                     } else if (existSubject.getStudent2() == null) {
                         existSubject.setStudent2(currentStudent.getStudentId());
                         existSubject.setActive((byte)1);
-                        currentStudent.setSubjectId(existSubject);
+                        currentStudent.setSubjectGraduationId(existSubject);
                     } else if (existSubject.getStudent3() == null) {
                         existSubject.setStudent3(currentStudent.getStudentId());
                         existSubject.setActive((byte)1);
-                        currentStudent.setSubjectId(existSubject);
+                        currentStudent.setSubjectGraduationId(existSubject);
                     } else {
-                        existSubject.setActive((byte)0);
                         return new ResponseEntity<>("Đã đủ SVTH", HttpStatus.BAD_REQUEST);
                     }
                     subjectRepository.save(existSubject);

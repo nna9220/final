@@ -49,13 +49,14 @@ public class EvaluationAndScoringService {
     //Giảng viên đánh giá, chấm điểm cho từng sinh viên
 
 
-    //Lấy ra danh sách đề tài hội đồng phản biện của GV hiện tại, status = true, active=8, typeSubject
+    //Lấy ra danh sách đề tài phản biện của GV hiện tại, status = true, active=6, typeSubject
     public ResponseEntity<?> getListCouncilOfLecturer(String authorizationHeader, TypeSubject typeSubject){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             List<Council> councils = councilRepository.getListCouncilByLecturer(existedLecturer);
+            System.out.println();
             List<Council> councilResponse = new ArrayList<>();
             for (Council council:councils) {
                 Subject subject = council.getSubject();

@@ -76,8 +76,8 @@ public class ManageSubjectService {
                 }else {
                     FileComment fileComment = existedSubject.getFiftyPercent();
                     //xóa file cũ:
-                    fileRepository.delete(fileComment);
                     existedSubject.setFiftyPercent(null);
+                    fileRepository.delete(fileComment);
                     existedSubject.setActive((byte) 3);
                     //nộp file
                     if (!files.isEmpty()) {
@@ -119,8 +119,11 @@ public class ManageSubjectService {
             if (existedSubject!=null){
                 if (existedSubject.getOneHundredPercent()==null) {
                     existedSubject.setActive((byte) 5);
+
+                    System.out.println("Sau khi ktra null");
                     //nộp file
                     if (!files.isEmpty()) {
+                        System.out.println("Kiểm tra file k rỗng");
                         String fileName = fileMaterialService.storeFile(files);
                         FileComment newFile = new FileComment();
                         newFile.setName(fileName);
@@ -140,13 +143,13 @@ public class ManageSubjectService {
                     String subject = "Topic: " + existSubject.getSubjectName();
                     String messenger = "Topic: " + existSubject.getSubjectName() + " đã nộp báo cáo 100%!!";
                     mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
-
                     return new ResponseEntity<>(existedStudent, HttpStatus.OK);
                 }else {
                     FileComment fileComment = existedSubject.getOneHundredPercent();
+                    System.out.println("File cũ: " + fileComment.getName());
                     //xóa file cũ:
-                    fileRepository.delete(fileComment);
                     existedSubject.setOneHundredPercent(null);
+                    fileRepository.delete(fileComment);
                     existedSubject.setActive((byte) 5);
                     //nộp file
                     if (!files.isEmpty()) {
@@ -160,7 +163,7 @@ public class ManageSubjectService {
                                 .toUriString();
                         newFile.setUrl(fileDownloadUri);
                         var fileSave = fileMaterialService.uploadFile(newFile);
-                        existedSubject.setFiftyPercent(fileSave);
+                        existedSubject.setOneHundredPercent(fileSave);
                     } else {
                         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                     }

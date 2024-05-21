@@ -29,6 +29,7 @@ public class HeadManageTutorialSubjectController {
     @Autowired
     private ManageTutorialSubjectService manageTutorialSubjectService;
 
+    //
     @PostMapping("/fiftyRecent/{subjectId}")
     public ResponseEntity<?> NoticeOfFiftyReportSubmission(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader){
         try {
@@ -71,6 +72,7 @@ public class HeadManageTutorialSubjectController {
         }
     }
 
+    //aget  list tiêu chí
     @GetMapping("/listCriteria")
     public ResponseEntity<?> getListCriteria(@RequestHeader("Authorization") String authorizationHeader){
         try {
@@ -82,6 +84,19 @@ public class HeadManageTutorialSubjectController {
         }
     }
 
+    @GetMapping("/list-subject")
+    public ResponseEntity<?> getListSubjectHaveReport(@RequestHeader("Authorization") String authorizationHeader){
+        try {
+            System.out.println("List subject");
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            return new ResponseEntity<>(manageTutorialSubjectService.getListOfSubjectHaveReportOneHundred(authorizationHeader,typeSubject),HttpStatus.OK);
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    //GVHD duyệt đề tài qua cho TBM
     @PostMapping("/browse/{subjectId}")
     public ResponseEntity<?> browseToThesisAndScoreOfInstructor(@PathVariable int subjectId,
                                                                 @RequestHeader("Authorization") String authorizationHeader){
@@ -91,9 +106,10 @@ public class HeadManageTutorialSubjectController {
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);
         }
-
     }
 
+
+    //GVHD Từ chối đề tài
     @PostMapping("/refuse/{subjectId}")
     public ResponseEntity<?> RefuseSubject(@PathVariable int subjectId,
                                            @RequestHeader("Authorization") String authorizationHeader,

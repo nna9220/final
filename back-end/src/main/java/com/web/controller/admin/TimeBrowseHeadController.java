@@ -9,6 +9,7 @@ import com.web.mapper.RegistrationPeriodMapper;
 import com.web.repository.*;
 import com.web.service.Admin.RegistrationPeriodService;
 import com.web.service.MailServiceImpl;
+import com.web.utils.Contains;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,8 @@ import java.util.Map;
 public class TimeBrowseHeadController {
     @Autowired
     private TimeBrowseHeadRepository timeBrowseHeadRepository;
+    @Autowired
+    private AuthorityRepository authorityRepository;
     @Autowired
     private PersonRepository personRepository;
     @Autowired
@@ -111,9 +114,8 @@ public class TimeBrowseHeadController {
             java.util.Date parsedDate = dateFormat.parse(dateString);
             return new Date(parsedDate.getTime());
         } catch (ParseException e) {
-            // Xử lý ngoại lệ khi có lỗi trong quá trình chuyển đổi
             e.printStackTrace();
-            return null; // hoặc throw một Exception phù hợp
+            return null;
         }
     }
     @PostMapping("/edit/{periodId}")
@@ -135,8 +137,9 @@ public class TimeBrowseHeadController {
                 existTimeBrowsOfHead.setTimeEnd(convertToSqlDate(end));
                 var update = timeBrowseHeadRepository.save(existTimeBrowsOfHead);
                 //GỬI MAIL
-                //Dnah sách SV
-                List<Lecturer> lecturers = lecturerRepository.getListLecturerISHead("ROLE_HEAD");
+                //TBM
+                Authority authority = authorityRepository.findByName("ROLE_ADMIN");
+                List<Lecturer> lecturers = lecturerRepository.getListLecturerISHead("ROLE_ADMIN");
                 List<String> emailLecturer = new ArrayList<>();
                 for (Lecturer lecturer:lecturers) {
                     emailLecturer.add(lecturer.getPerson().getUsername());

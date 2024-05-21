@@ -1,0 +1,62 @@
+.body-table {
+    display: grid;
+
+    .button-listDelete-approve {
+        width: fit-content;
+        justify-content: end;
+        background-color: white;
+        margin-bottom: 10px;
+        border: none;
+        padding: 5px;
+        font-weight: 500;
+        color: rgb(34, 126, 95);
+
+        &:hover {
+            font-weight: bold;
+        }
+    }
+
+    .table-approve {
+        margin-top: 10px;
+        padding: 10px;
+        margin: 10px;
+    }
+}
+
+.button-res {
+    border: none;
+    background-color: white;
+
+    .text {
+        padding: 5px;
+        text-align: center;
+        color: rgb(35, 113, 87);
+        font-weight: bold;
+    }
+
+    &:hover{
+        font-size: larger;
+    }
+}
+
+.button-res-de {
+    border: none;
+    background-color: white;
+
+    .text {
+        padding: 5px;
+        text-align: center;
+        color: rgb(212, 97, 55);
+        font-weight: bold;
+    }
+    &:hover{
+        font-size: larger;
+    }
+}
+
+.alert-danger-approve{
+    text-align: center;
+    font-weight: bold;
+    font-size: large;
+    color: red;
+}

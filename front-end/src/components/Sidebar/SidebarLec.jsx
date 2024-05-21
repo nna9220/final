@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
 import './SidebarLec.scss'
+import { FcReadingEbook } from "react-icons/fc";
 
 function SidebarLec() {
     const [expand, setExpand] = useState(true);
@@ -67,9 +68,8 @@ function SidebarLec() {
                     <hr style={{ color: '#fff' }}></hr>
                     {!isAvatarVisible && (
                         <div className="sidebar-header">
-                            <div className="user-pic" style={{ color: '#fff' }}>
-                                <i className="fa fa-user-circle fa-4x" aria-hidden="true"></i>
-                            </div>
+                            <FcReadingEbook size={70} />
+
                             <div className="user-info">
                                 <span className="user-name"><strong>{lec.firstName + ' ' + lec.lastName}</strong></span>
                                 <span className="user-role">Giảng viên</span>
@@ -108,6 +108,9 @@ function SidebarLec() {
                                 </li>
                                 <li className="sidebar-item">
                                     <a style={{ marginLeft: '10px' }} href="/managermentTopicPBLec" className="sidebar-link">Đề tài phản biện</a>
+                                </li>
+                                <li className="sidebar-item">
+                                    <a style={{ marginLeft: '10px' }} href="/thesisCommittee" className="sidebar-link">Hội đồng báo cáo</a>
                                 </li>
                             </ul>
                         </li>

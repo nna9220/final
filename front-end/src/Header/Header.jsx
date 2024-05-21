@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FcGoogle } from "react-icons/fc";
 import { NavLink } from "react-router-dom";
 import './header.scss';
 
@@ -6,8 +7,8 @@ const Navbar = () => {
     const [menu, setMenu] = useState("home");
 
     const handleLoginClick = () => {
-        window.location.href = 'http://hcmute.workon.space/oauth2/authorization/google';
-        /*window.location.href = 'http://localhost:5000/oauth2/authorization/google';*/
+        /*window.location.href = 'http://hcmute.workon.space/oauth2/authorization/google';*/
+        window.location.href = 'http://localhost:5000/oauth2/authorization/google';
     };
     
     return (
@@ -30,8 +31,9 @@ const Navbar = () => {
                 </nav>
                 <div class="login-button">
                     <button className="btn" onClick={handleLoginClick}>
-                        <i className="fab fa-google-plus-g"></i> Đăng nhập
-                    </button>
+                        <i className="fab fa-google-plus-g"></i> 
+                        <FcGoogle size={25}/>  Đăng nhập
+                    </button> 
                 </div>
             </header>
         </div>

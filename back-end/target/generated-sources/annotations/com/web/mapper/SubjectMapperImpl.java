@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-05-07T15:02:51+0700",
-    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 17.0.8 (Oracle Corporation)"
+    date = "2024-05-21T17:10:04+0700",
+    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 18.0.2 (Oracle Corporation)"
 )
 @Component
 public class SubjectMapperImpl implements SubjectMapper {
@@ -31,7 +31,6 @@ public class SubjectMapperImpl implements SubjectMapper {
         if ( subject.getMajor() != null ) {
             subjectResponse.setMajor( subject.getMajor().name() );
         }
-        subjectResponse.setReview( subject.getReview() );
         subjectResponse.setRequirement( subject.getRequirement() );
         subjectResponse.setExpected( subject.getExpected() );
         subjectResponse.setStatus( subject.isStatus() );
@@ -76,7 +75,6 @@ public class SubjectMapperImpl implements SubjectMapper {
         if ( subjectRequest.getMajor() != null ) {
             subject.setMajor( Enum.valueOf( Major.class, subjectRequest.getMajor() ) );
         }
-        subject.setReview( subjectRequest.getReview() );
         subject.setRequirement( subjectRequest.getRequirement() );
         subject.setExpected( subjectRequest.getExpected() );
         subject.setTypeSubject( subjectRequest.getTypeSubject() );

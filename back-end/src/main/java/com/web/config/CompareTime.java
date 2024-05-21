@@ -18,7 +18,7 @@ public class CompareTime {
     private static boolean isCurrentTimeInInterval(Date start, Date end) {
         Date currentTime = new Date(System.currentTimeMillis()); // Lấy thời gian hiện tại
         // So sánh thời gian hiện tại với thời gian bắt đầu và kết thúc
-        return currentTime.after(end) && currentTime.before(start);
+        return currentTime.before(end) && currentTime.after(start);
 
     }
 

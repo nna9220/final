@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import axios from 'axios';
 import MoreHorizTwoToneIcon from '@mui/icons-material/MoreHorizTwoTone';
 import AlarmOnTwoToneIcon from '@mui/icons-material/AlarmOnTwoTone';
 import AddAlarmOutlinedIcon from '@mui/icons-material/AddAlarmOutlined';
@@ -26,6 +25,10 @@ const Card = ({ task, index }) => {
     setCommentFiles(e.target.files);
   };
 
+  useEffect(() => {
+    handleViewTask(task.taskId);
+  }, [task.taskId]);
+
   const handleSubmitComment = async (e) => {
     const userToken = getTokenFromUrlAndSaveToStorage();
     e.preventDefault();
@@ -38,24 +41,27 @@ const Card = ({ task, index }) => {
       }
 
       console.log("Comment-post: ", formData);
-      // Gửi yêu cầu POST để tạo comment
       const response = await axiosInstance.post(`/student/comment/create/${task.taskId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${userToken}`, // Thay thế userToken bằng cách lấy từ storage hoặc một cách thích hợp khác
+          'Authorization': `Bearer ${userToken}`,
         },
       });
       console.log('Comment created successfully:', response.data);
-      // Cập nhật danh sách comment hoặc thực hiện các bước cần thiết khác
+      const newComment = response.data;
+      setDetail((prevDetail) => ({
+        ...prevDetail,
+        listComment: [...prevDetail.listComment, newComment],
+      }));
+      setCommentContent('');
+      setCommentFiles([]);
     } catch (error) {
       console.error('Error creating comment:', error);
-      // Xử lý lỗi nếu cần
     }
   };
 
   const handleViewTask = (taskId) => {
     setSelectedTask(taskId);
-    // Gửi yêu cầu API với taskId đã chọn
     const userToken = getTokenFromUrlAndSaveToStorage();
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
@@ -80,12 +86,12 @@ const Card = ({ task, index }) => {
   const modalId = `exampleModal-${task.taskId}`;
 
   return (
-    <Draggable draggableId={task.id} index={index}>
+    <Draggable draggableId={task?.taskId?.toString()} index={index}>
       {(provided) => (
         <div className="card-items" ref={provided.innerRef}{...provided.draggableProps}{...provided.dragHandleProps}>
           <div class="dropdown">
             <label className='title-task-st'>{task.requirement}</label>
-            <button class="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{border: 'none', backgroundColor: 'white' }} >
+            <button class="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{ border: 'none', backgroundColor: 'white' }} >
               <MoreHorizTwoToneIcon />
             </button>
             <ul class="dropdown-menu">
@@ -134,7 +140,7 @@ const Card = ({ task, index }) => {
                       <div class="mb-3">
                         <input type="file" class="form-control" id="commentFile" onChange={handleFileChange} multiple />
                       </div>
-                      <button type="submit" class="btn btn-primary">Submit</button>
+                      <button type="submit" class="btn btn-primary">Post Comment</button>
                     </form>
                   </div>
                   <div className='comment-items'>
@@ -142,13 +148,12 @@ const Card = ({ task, index }) => {
                       <div key={commentIndex}>
                         <div className='comment-item'>
                           <div className='header-comment'>
-                            <label className='name-post'>{comment.poster.firstName + ' ' + comment.poster.lastName}</label>
+                            <label className='name-post'>{comment.poster?.firstName + ' ' + comment.poster?.lastName}</label>
                             <label className='time-post'>{comment.dateSubmit}</label>
                           </div>
                           <div className='body-comment'>
                             <label className='content'>{comment.content}</label><br />
                             {file && file.map((files, fileIndex) => {
-                              // Kiểm tra xem tệp có thuộc về comment hiện tại không
                               if (files.commentId.commentId === comment.commentId) {
                                 return (
                                   <div key={fileIndex}>

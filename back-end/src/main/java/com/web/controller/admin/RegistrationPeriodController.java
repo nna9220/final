@@ -73,15 +73,15 @@ public class RegistrationPeriodController {
     @PostMapping("/create")
     public ResponseEntity<?> savePeriod(@RequestHeader("Authorization") String authorizationHeader,
                                         @RequestParam("periodName") String periodName,
-                                   @RequestParam("timeStart") Date timeStart,
-                                   @RequestParam("timeEnd") Date timeEnd, HttpServletRequest request){
+                                   @RequestParam("timeStart") String timeStart,
+                                   @RequestParam("timeEnd") String timeEnd, HttpServletRequest request){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             RegistrationPeriod registrationPeriod = new RegistrationPeriod();
             registrationPeriod.setRegistrationName(periodName);
-            registrationPeriod.setRegistrationTimeStart(timeStart);
-            registrationPeriod.setRegistrationTimeEnd(timeEnd);
+            registrationPeriod.setRegistrationTimeStart(convertToSqlDate(timeStart));
+            registrationPeriod.setRegistrationTimeEnd(convertToSqlDate(timeEnd));
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
             registrationPeriod.setTypeSubjectId(typeSubject);
             registrationPeriodRepository.save(registrationPeriod);
@@ -89,7 +89,6 @@ public class RegistrationPeriodController {
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-
     }
 
     @GetMapping("/{periodId}")
@@ -117,10 +116,13 @@ public class RegistrationPeriodController {
     private java.sql.Date convertToSqlDate(String dateString) {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            System.out.println("trước đổi");
             java.util.Date parsedDate = dateFormat.parse(dateString);
+            System.out.println("Sau đổi");
             return new java.sql.Date(parsedDate.getTime());
         } catch (ParseException e) {
             // Xử lý ngoại lệ khi có lỗi trong quá trình chuyển đổi
+            System.out.println("lỗi: " + e);
             e.printStackTrace();
             return null; // hoặc throw một Exception phù hợp
         }
@@ -134,15 +136,18 @@ public class RegistrationPeriodController {
                                           @ModelAttribute("successMessage") String successMessage) throws ParseException {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
+        System.out.println("Trước check role");
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             RegistrationPeriod existRegistrationPeriod = registrationPeriodRepository.findById(periodId).orElse(null);
             if (existRegistrationPeriod != null) {
+
                 if (convertToSqlDate(end).before(convertToSqlDate(start))) {
-                    return new ResponseEntity<>("Ngày kết thúc phải lớn hơn ngày bắt đầu", HttpStatus.BAD_REQUEST);
+                       return new ResponseEntity<>("Ngày kết thúc phải lớn hơn ngày bắt đầu", HttpStatus.BAD_REQUEST);
                 }
                 System.out.println("data nhận về:" + start + " end : " + end);
                 existRegistrationPeriod.setRegistrationTimeStart(convertToSqlDate(start));
                 existRegistrationPeriod.setRegistrationTimeEnd(convertToSqlDate(end));
+
                 var update = registrationPeriodRepository.save(existRegistrationPeriod);
                 //GỬI MAIL
                 //Dnah sách SV

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import React from 'react';
+import { FcReadingEbook } from "react-icons/fc";
 import './EditProfileLec.scss';
 import AutoFixNormalOutlinedIcon from '@mui/icons-material/AutoFixNormalOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
@@ -14,7 +15,7 @@ function EditProfileLec() {
         birthDay: '',
         phone: '',
         gender: '',
-        address:'',
+        address: '',
     });
     const [showModal, setShowModal] = useState(false);
     const [showSuccessToast, setShowSuccessToast] = useState(false);
@@ -197,7 +198,7 @@ function EditProfileLec() {
             lastName: user.lastName,
             birthDay: user.birthDay,
             phone: user.phone,
-            gender: user.gender, 
+            gender: user.gender,
             address: user.address
         });
         setEditingMode(false);
@@ -246,7 +247,7 @@ function EditProfileLec() {
                                 <div class="account-settings">
                                     <div class="user-profile">
                                         <div class="user-avatar">
-                                            <img src="/assets/team-1.jpg" alt="Maxwell Admin" />
+                                            <FcReadingEbook size={100}/>
                                         </div>
                                         <h5 class="user-name">{user.firstName + ' ' + user.lastName}</h5>
                                         <h6 class="user-email">{user.username}</h6>
@@ -291,7 +292,7 @@ function EditProfileLec() {
                                         </div>
                                     </div>
                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
+                                        <div class="form-group">
                                             <label for="birthDay">Ngày sinh</label>
                                             <input type="date" class="form-control" id="birthDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} disabled={!editingMode} />
                                         </div>

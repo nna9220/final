@@ -126,24 +126,45 @@ public class LecturerRegisterTopicController {
         }
     }
 
+    @GetMapping("/periodLecturer")
+    public ResponseEntity<?> getPeriod(@RequestHeader("Authorization") String authorizationHeader){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            List<RegistrationPeriodLectuer> registrationPeriods = registrationPeriodLecturerRepository.findAllPeriodEssay(typeSubject);
+            return new ResponseEntity<>(registrationPeriods, HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
 
     @PostMapping("/register")
-    public ResponseEntity<?> lecturerRegisterTopic(@RequestParam("subjectName") String name,
-                                                   @RequestParam("requirement") String requirement,
-                                                   @RequestParam("expected") String expected,
-                                                   @RequestParam(value = "student1", required = false) String student1,
-                                                   @RequestParam(value = "student2", required = false) String student2,
-                                                   @RequestParam(value = "student3", required = false) String student3,
-                                                   @RequestHeader("Authorization") String authorizationHeader,
-                                                   HttpServletRequest request) {
+    public ResponseEntity<?> lecturerRegisterTopic(
+            @RequestParam("subjectName") String name,
+            @RequestParam("requirement") String requirement,
+            @RequestParam("expected") String expected,
+            @RequestParam(value = "student1", required = false) String student1,
+            @RequestParam(value = "student2", required = false) String student2,
+            @RequestParam(value = "student3", required = false) String student3,
+            @RequestHeader("Authorization") String authorizationHeader,
+            HttpServletRequest request) {
         try {
             LocalDateTime current = LocalDateTime.now();
-            System.out.println(current);
+            System.out.println("Current time: " + current);
             String token = tokenUtils.extractToken(authorizationHeader);
             Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+            System.out.println("Current person: " + personCurrent);
+
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
-            if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
+            System.out.println("TypeSubject: " + typeSubject);
+
+            if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") ||
+                    personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+
                 List<RegistrationPeriodLectuer> periodList = registrationPeriodLecturerRepository.findAllPeriodEssay(typeSubject);
+                System.out.println("Period list: " + periodList);
+
                 if (CompareTime.isCurrentTimeInPeriodSLecturer(periodList)) {
                     Subject newSubject = new Subject();
                     newSubject.setSubjectName(name);
@@ -151,56 +172,62 @@ public class LecturerRegisterTopicController {
                     newSubject.setExpected(expected);
                     newSubject.setActive((byte) 0);
                     newSubject.setStatus(false);
-                    //Tìm kiếm giảng viên hiện tại
-                    Lecturer existLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-                    newSubject.setInstructorId(existLecturer);
-                    newSubject.setMajor(existLecturer.getMajor());
-                    //Tìm sinh viên qua mã sinh viên
-                    List<Student> studentList = new ArrayList<>();
-                    System.out.println("Trước if check sv1");
-                    if (student1 != null) {
-                        Student studentId1 = studentRepository.findById(student1).orElse(null);
-                        newSubject.setStudent1(student1);
-                        studentId1.setSubjectId(newSubject);
-                        studentList.add(studentId1);
-                        System.out.println("Sau if check sv1");
-                    }
-                    System.out.println("Trước if check sv2");
-                    if (student2 != null) {
-                        Student studentId2 = studentRepository.findById(student2).orElse(null);
-                        newSubject.setStudent2(student2);
-                        studentId2.setSubjectId(newSubject);
-                        studentList.add(studentId2);
-                        System.out.println("Sau if check sv2");
-                    }
-                    System.out.println("Trước if check sv3");
-                    if (student3 != null) {
-                        Student studentId3 = studentRepository.findById(student3).orElse(null);
-                        newSubject.setStudent3(student3);
-                        studentId3.setSubjectId(newSubject);
-                        System.out.println("Sau if check sv3");
-                        studentList.add(studentId3);
-                    }
-                    if (student1==null && student2==null && student3==null){
-                        newSubject.setCheckStudent(false);
-                    }else {
-                        newSubject.setCheckStudent(true);
-                    }
-                    LocalDate nowDate = LocalDate.now();
-                    newSubject.setYear(String.valueOf(nowDate));
-                    newSubject.setTypeSubject(typeSubject);
-                    subjectRepository.save(newSubject);
-                    studentRepository.saveAll(studentList);
 
-                    return new ResponseEntity<>(newSubject,HttpStatus.CREATED);
-                }else {
-                    return new ResponseEntity<>(personCurrent,HttpStatus.OK);
+                    Lecturer existLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+                    System.out.println("Exist lecturer: " + existLecturer);
+
+                    if (existLecturer != null) {
+                        newSubject.setInstructorId(existLecturer);
+                        newSubject.setMajor(existLecturer.getMajor());
+
+                        List<Student> studentList = new ArrayList<>();
+                        if (student1 != null) {
+                            Student studentId1 = studentRepository.findById(student1).orElse(null);
+                            if (studentId1 != null) {
+                                newSubject.setStudent1(student1);
+                                studentId1.setSubjectId(newSubject);
+                                studentList.add(studentId1);
+                            }
+                        }
+
+                        if (student2 != null) {
+                            Student studentId2 = studentRepository.findById(student2).orElse(null);
+                            if (studentId2 != null) {
+                                newSubject.setStudent2(student2);
+                                studentId2.setSubjectId(newSubject);
+                                studentList.add(studentId2);
+                            }
+                        }
+
+                        if (student3 != null) {
+                            Student studentId3 = studentRepository.findById(student3).orElse(null);
+                            if (studentId3 != null) {
+                                newSubject.setStudent3(student3);
+                                studentId3.setSubjectId(newSubject);
+                                studentList.add(studentId3);
+                            }
+                        }
+
+                        newSubject.setCheckStudent(student1 != null || student2 != null || student3 != null);
+                        LocalDate nowDate = LocalDate.now();
+                        newSubject.setYear(String.valueOf(nowDate));
+                        newSubject.setTypeSubject(typeSubject);
+
+                        subjectRepository.save(newSubject);
+                        studentRepository.saveAll(studentList);
+
+                        return new ResponseEntity<>(newSubject, HttpStatus.CREATED);
+                    } else {
+                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Lecturer không tồn tại
+                    }
+                } else {
+                    return new ResponseEntity<>(HttpStatus.OK); // Thời gian không hợp lệ
                 }
+            } else {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN); // Không đủ quyền
             }
-            else {
-                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            }
-        }catch (Exception e){
+        } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
     }
