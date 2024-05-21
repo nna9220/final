@@ -45,15 +45,12 @@ public class CriteriaService {
             evaluationCriteria.setCriteriaName(nameCriteria);
             evaluationCriteria.setTypeSubject(typeSubject);
             evaluationCriteria.setCriteriaScore(scoreCriteria);
-            evaluationCriteria.setSubjects(subjects);
             evaluationCriteriaRepository.save(evaluationCriteria);
-            Set<EvaluationCriteria> evaluationCriteriaList = new HashSet<>();
-            evaluationCriteriaList.add(evaluationCriteria);
-            for (Subject subject:subjects) {
-                subject.setCriteria(evaluationCriteriaList);
+            for (Subject subject : subjects) {
+                subject.getCriteria().add(evaluationCriteria);
             }
             subjectRepository.saveAll(subjects);
-            return new ResponseEntity<>(evaluationCriteria,HttpStatus.CREATED);
+            return new ResponseEntity<>(HttpStatus.CREATED);
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

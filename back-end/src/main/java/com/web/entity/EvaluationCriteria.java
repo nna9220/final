@@ -1,5 +1,6 @@
 package com.web.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,5 +40,6 @@ public class EvaluationCriteria {
     private List<ResultGraduation> resultGraduations;
 
     @ManyToMany(mappedBy = "criteria")
+    @JsonBackReference
     private Set<Subject> subjects = new HashSet<>();
 }
