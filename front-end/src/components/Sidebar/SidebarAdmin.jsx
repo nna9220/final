@@ -8,6 +8,7 @@ import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined';
 import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
 import ViewListOutlinedIcon from '@mui/icons-material/ViewListOutlined';
 import BallotOutlinedIcon from '@mui/icons-material/BallotOutlined';
+import { FcPortraitMode } from "react-icons/fc";
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
 import './SidebarAdmin.scss'
@@ -62,9 +63,7 @@ const SidebarAdmin = () => {
           <hr style={{ color: '#fff' }}></hr>
           {!isAvatarVisible && (
             <div className="sidebar-header">
-              <div className="user-pic" style={{ color: '#fff' }}>
-                <i className="fa fa-user-circle fa-4x" aria-hidden="true"></i>
-              </div>
+              <FcPortraitMode size={70}/>
               <div className="user-info">
                 <span className="user-name"><strong>{admin.firstName + ' ' + admin.lastName}</strong></span>
                 <span className="user-role">Administrator</span>
@@ -113,6 +112,18 @@ const SidebarAdmin = () => {
               <a href="/managermentPeriod" className="sidebar-link">
                 <i className="lni lni-cog"><AppRegistrationOutlinedIcon /></i>
                 <span>Quản lý đợt đăng ký</span>
+              </a>
+            </li>
+            <li className="sidebar-item">
+              <a href="/managermentApproveTime" className="sidebar-link">
+                <i className="lni lni-cog"><AppRegistrationOutlinedIcon /></i>
+                <span>Quản lý duyệt đề tài</span>
+              </a>
+            </li>
+            <li className="sidebar-item">
+              <a href="/managermentRegisterTime" className="sidebar-link">
+                <i className="lni lni-cog"><AppRegistrationOutlinedIcon /></i>
+                <span>Quản lý thời gian đăng kí</span>
               </a>
             </li>
             <li className="sidebar-item">

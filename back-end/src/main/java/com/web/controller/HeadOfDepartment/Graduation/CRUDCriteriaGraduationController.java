@@ -43,7 +43,7 @@ public class CRUDCriteriaGraduationController {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
-            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
             //Tìm GV
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             List<EvaluationCriteria> evaluationCriteria = evaluationCriteriaRepository.getEvaluationCriteriaByTypeSubjectAndCriteriaId(typeSubject, existedLecturer.getMajor());
@@ -80,14 +80,13 @@ public class CRUDCriteriaGraduationController {
 
     @PostMapping("/delete/{id}")
     public ResponseEntity<?> deleteCriteria(@PathVariable int id,
-                                          @RequestHeader("Authorization") String authorizationHeader,
-                                          @RequestParam("nameCriteria") String nameCriteria,
-                                          @RequestParam("scoreCriteria") Double scoreCriteria){
+                                            @RequestHeader("Authorization") String authorizationHeader) {
         try {
-            return criteriaService.removeCriteria(id,authorizationHeader);
-        }catch (Exception e){
-            System.err.println("Initial SessionFactory creation failed." + e);
-            throw new ExceptionInInitializerError(e);
+            criteriaService.removeCriteria(id, authorizationHeader);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            System.err.println("Error deleting criteria: " + e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

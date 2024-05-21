@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Modal, Button } from 'react-bootstrap';
 import './dataTable.scss';
 import PlaylistRemoveOutlinedIcon from '@mui/icons-material/PlaylistRemoveOutlined';
@@ -62,15 +61,12 @@ function DataTable() {
 
     const handleChangeAdd = (e) => {
         const { name, value } = e.target;
-        // Nếu trường nhập liệu là giới tính, cập nhật trực tiếp vào state formData
-        const intValue = (name === 'id' || name === 'year') ? parseInt(value) : value;
         if (name === 'gender') {
             setFormData(prevState => ({
                 ...prevState,
-                [name]: value === 'Nữ' // Chuyển giá trị về true nếu là "Nữ", ngược lại là false
+                [name]: value === 'Nữ'
             }));
         } else {
-            // Các trường nhập liệu khác
             setFormData(prevState => ({
                 ...prevState,
                 [name]: value
@@ -130,7 +126,6 @@ function DataTable() {
         })
             .then(response => {
                 if (response.status === 200) {
-                    // Xóa thành công
                     setStudents(prevState => prevState.filter(student => student.studentId !== studentId));
                     setShowConfirmation(false);
                     setShowConfirmationRestore(false);
@@ -546,10 +541,9 @@ function DataTable() {
                 </div>
             </div>
 
-
             <div className="modal fade" id="AddStudent" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: showModalAdd ? 'block' : 'none' }}>
                 <div className="modal-dialog modal-lg modal-dialog-scrollable">
-                    <div className="modal-content was-validated">
+                    <div className="modal-content">
                         <div className="modal-header">
                             <h1 className="modal-title fs-5" id="exampleModalLabel">THÊM SINH VIÊN</h1>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -557,7 +551,7 @@ function DataTable() {
                         <div className="modal-body">
                             <div className="mb-3">
                                 <label htmlFor="id" className="form-label">MSSV</label>
-                                <input type="text" className="form-control" id="id" name="personId" value={formData.personId} onChange={handleChangeAdd} required />
+                                <input required type="text" className="form-control" id="id" name="personId" value={formData.personId} onChange={handleChangeAdd} />
                             </div>
                             <div className="row mb-3">
                                 <div className="col">
@@ -577,6 +571,7 @@ function DataTable() {
                                 <div className="col">
                                     <label htmlFor="phone" className="form-label">Số điện thoại</label>
                                     <input type="text" className="form-control" id="phone" name="phone" value={formData.phone} onChange={handleChangeAdd} required />
+                                    <div class="form-text">Số điện thoại gồm 10 số.</div>
                                 </div>
                             </div>
                             <div className="row mb-3">
@@ -584,11 +579,11 @@ function DataTable() {
                                     <label htmlFor='genderAdd' className="form-label">Giới tính</label>
                                     <div style={{ display: 'flex' }}>
                                         <div>
-                                            <input type="radio" id="nam" name="gender" value="Nam" checked={formData.gender === false} onChange={handleChangeAdd} />
+                                            <input required type="radio" id="nam" name="gender" value="Nam" checked={formData.gender === false} onChange={handleChangeAdd} />
                                             <label htmlFor="nam">Nam</label>
                                         </div>
                                         <div>
-                                            <input type="radio" id="nu" name="gender" value="Nữ" checked={formData.gender === true} onChange={handleChangeAdd} />
+                                            <input required type="radio" id="nu" name="gender" value="Nữ" checked={formData.gender === true} onChange={handleChangeAdd} />
                                             <label htmlFor="nu">Nữ</label>
                                         </div>
                                     </div>
@@ -632,7 +627,7 @@ function DataTable() {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModalAdd(false)}>Đóng</button>
-                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitAdd}>Thêm</button>
+                            <button type="submit" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitAdd}>Thêm</button>
                         </div>
                     </div>
                 </div>

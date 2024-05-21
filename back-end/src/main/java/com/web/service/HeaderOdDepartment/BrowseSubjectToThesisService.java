@@ -38,9 +38,15 @@ public class BrowseSubjectToThesisService {
     public ResponseEntity<?> getListOfSubjectHaveReportOneHundred(String authorizationHeader, TypeSubject typeSubject){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+        System.out.println("Hello");
+        if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+            System.out.println("sauif check role");
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            List<Subject> existedSubjects = subjectRepository.findSubjectByThesisAndStatusAndActiveAndTypeSubject(existedLecturer,true,typeSubject,(byte)6);
+            List<Subject> existedSubjects = subjectRepository.findSubjectByMajorAndStatusAndActiveAndTypeSubject(existedLecturer.getMajor(),true,typeSubject,(byte)6);
+            System.out.println(existedSubjects.size());
+            for (Subject s :existedSubjects) {
+                System.out.println("list subject" + s.getSubjectName());
+            }
             return new ResponseEntity<>(existedSubjects, HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

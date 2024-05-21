@@ -84,7 +84,6 @@ const Booard = ({ subjectId }) => {
             <Column className='column' title="Must Do" tasks={data.filter(task => task.status === 'MustDo')} droppableId="MustDo" />
             <Column className='column' title="Doing" tasks={data.filter(task => task.status === 'Doing')} droppableId="Doing" />
             <Column className='column' title="Closed" tasks={data.filter(task => task.status === 'Closed')} droppableId="Closed" />
-            {/* Các cột khác */}
           </div>
         </DragDropContext>
       )}

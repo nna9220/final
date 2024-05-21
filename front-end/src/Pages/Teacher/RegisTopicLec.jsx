@@ -2,9 +2,9 @@ import React from 'react'
 import SidebarLec from '../../components/Sidebar/SidebarLec'
 import Navbar from '../../components/Navbar/Navbar'
 import './RegisTopicLec.scss'
-import RegisTopicOfLecturer from '../../components/Table/RegisTopicOfLecturer'
+import RegisTopicOfLecturer from '../../components/TableOfLecturer/RegisTopicOfLecturer'
 import { useState, useEffect } from 'react'
-import RegisTopicOfLecturerKL from '../../components/Table/RegisTopicOfLecturerKL'
+import RegisTopicOfLecturerKL from '../../components/TableOfLecturer/RegisTopicOfLecturerKL'
 
 function RegisTopicLec() {
   useEffect(() => {

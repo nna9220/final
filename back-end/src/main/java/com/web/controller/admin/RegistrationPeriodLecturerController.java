@@ -59,8 +59,7 @@ public class RegistrationPeriodLecturerController {
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
-            //List<RegistrationPeriodLectuer> registrationPeriods = registrationPeriodRepository.findAllPeriodEssay(typeSubject);
-            List<RegistrationPeriodLectuer> registrationPeriods = registrationPeriodRepository.findAll();
+            List<RegistrationPeriodLectuer> registrationPeriods = registrationPeriodRepository.findAllPeriodEssay(typeSubject);
             List<TypeSubject> typeSubjects = typeSubjectRepository.findAll();
             Map<String,Object> response = new HashMap<>();
             response.put("period",registrationPeriods);
@@ -73,9 +72,10 @@ public class RegistrationPeriodLecturerController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> savePeriod(@RequestHeader("Authorization") String authorizationHeader, @RequestParam("periodName") String periodName,
-                                   @RequestParam("timeStart") Date timeStart,
-                                   @RequestParam("timeEnd") Date timeEnd, HttpServletRequest request){
+    public ResponseEntity<?> savePeriod(@RequestHeader("Authorization") String authorizationHeader,
+                                        @RequestParam("periodName") String periodName,
+                                   @RequestParam("timeStart") String timeStart,
+                                   @RequestParam("timeEnd") String timeEnd, HttpServletRequest request){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
@@ -83,8 +83,8 @@ public class RegistrationPeriodLecturerController {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
             registrationPeriod.setTypeSubjectId(typeSubject);
             registrationPeriod.setRegistrationName(periodName);
-            registrationPeriod.setRegistrationTimeStart(timeStart);
-            registrationPeriod.setRegistrationTimeEnd(timeEnd);
+            registrationPeriod.setRegistrationTimeStart(convertToSqlDate(timeStart));
+            registrationPeriod.setRegistrationTimeEnd(convertToSqlDate(timeEnd));
             registrationPeriodRepository.save(registrationPeriod);
             return new ResponseEntity<>(registrationPeriod,HttpStatus.CREATED);
         }else {
@@ -121,7 +121,6 @@ public class RegistrationPeriodLecturerController {
             java.util.Date parsedDate = dateFormat.parse(dateString);
             return new java.sql.Date(parsedDate.getTime());
         } catch (ParseException e) {
-            // Xử lý ngoại lệ khi có lỗi trong quá trình chuyển đổi
             e.printStackTrace();
             return null; // hoặc throw một Exception phù hợp
         }
@@ -130,7 +129,6 @@ public class RegistrationPeriodLecturerController {
     public ResponseEntity<?> updatePeriod(@PathVariable int periodId,
                                           @RequestParam("start") String start,
                                           @RequestParam("end") String end,
-                                          @RequestParam("typeSubject") TypeSubject typeSubject,
                                           @RequestHeader("Authorization") String authorizationHeader,
                                           @ModelAttribute("successMessage") String successMessage) throws ParseException {
         String token = tokenUtils.extractToken(authorizationHeader);
@@ -142,7 +140,6 @@ public class RegistrationPeriodLecturerController {
                     return new ResponseEntity<>("Ngày kết thúc phải lớn hơn ngày bắt đầu", HttpStatus.BAD_REQUEST);
                 }
                 System.out.println("data nhận về:" + start + " end : " + end);
-                existRegistrationPeriod.setTypeSubjectId(typeSubject);
                 existRegistrationPeriod.setRegistrationTimeStart(convertToSqlDate(start));
                 existRegistrationPeriod.setRegistrationTimeEnd(convertToSqlDate(end));
                 var update = registrationPeriodRepository.save(existRegistrationPeriod);

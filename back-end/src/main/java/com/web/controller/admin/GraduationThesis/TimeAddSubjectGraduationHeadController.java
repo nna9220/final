@@ -77,7 +77,6 @@ public class TimeAddSubjectGraduationHeadController {
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-
     }
 
     @GetMapping("/{timeId}")

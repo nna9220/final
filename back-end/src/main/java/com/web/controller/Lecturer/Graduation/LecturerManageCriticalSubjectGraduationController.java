@@ -30,6 +30,7 @@ public class LecturerManageCriticalSubjectGraduationController {
             throw new ExceptionInInitializerError(e);
         }
     }
+    //GVPB duyệt đề tài qua cho Hội đồng
     @PostMapping("/accept-subject-to-council/{subjectId}")
     public ResponseEntity<?> CompletedSubjectBrowseToCouncil(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader){
         try {

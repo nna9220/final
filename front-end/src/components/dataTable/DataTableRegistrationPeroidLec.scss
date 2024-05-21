@@ -19,3 +19,44 @@
         color: white;
     }
 }
+
+.border-container {
+    position: relative;
+    border: 1px solid #b3afaf; 
+    border-radius: 5px;
+    margin-bottom: 30px;
+}
+
+.border-container::before {
+    content: "Tiểu luận chuyên ngành"; 
+    position: absolute;
+    top: -20px;
+    left: -15px; 
+    padding: 5px 20px;
+    background-color: #fff;
+    font-size: 18px;
+    font-weight: bold; 
+    color: #358c79;
+}
+
+.border-container-2 {
+    position: relative;
+    border: 1px solid #b3afaf; 
+    border-radius: 5px;
+}
+
+.border-container-2::before {
+    content: "Khóa luận tốt nghiệp"; 
+    position: absolute;
+    top: -20px;
+    left: -15px; 
+    padding: 5px 20px;
+    background-color: #fff;
+    font-size: 18px;
+    font-weight: bold; 
+    color: #358c79;
+}
+
+.body-table-period {
+    margin: 20px;
+}

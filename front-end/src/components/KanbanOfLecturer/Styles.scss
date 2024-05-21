@@ -141,3 +141,16 @@
         margin-top: 20px;
     }
 }
+
+.group-lecturer{
+    display: flex;
+    justify-content: space-between;
+    button {
+        padding: 8px;
+        border: 1px solid;
+        background-color: #1572A1;
+        color: white;
+        font-weight: bold;
+    }
+    margin-bottom: 20px;
+}

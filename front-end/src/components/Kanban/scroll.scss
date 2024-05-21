@@ -41,22 +41,73 @@
     padding: 8px;
     margin-bottom: 8px;
     cursor: grab;
-  }
-  
-  .draggable:hover {
+}
+
+.draggable:hover {
     background-color: blue;
     color: white;
-  }
-  
-  .droppable {
+}
+
+.droppable {
     background-color: lightgray;
     padding: 16px;
-  }
-  
-  .dragging-over {
+}
+
+.dragging-over {
     border: 2px dashed blue;
-  }
-  
+}
+
+.elter-error-no-topic {
+    text-align: center;
+    color: #FF6C22;
+}
+
+.button-submitTopic {
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px;
+
+    .submit-1 {
+        margin-right: 20px;
+        padding: 8px;
+        border-radius: 5px;
+        border: none;
+        background-color: #59b9e8;
+        color: white;
+    }
+
+    .submit-2 {
+        padding: 8px;
+        border-radius: 5px;
+        border: none;
+        background-color: #1572A1;
+        color: white;
+    }
+}
+
+.draggable-item {
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-bottom: 8px;
+    padding: 8px;
+}
+
+
+.droppable-container {
+    background-color: #f2f2f2;
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    padding: 8px;
+}
+
+.draggable-item.is-dragging {
+    opacity: 0.5;
+}
+
+.droppable-container.is-over {
+    background-color: #e0f7fa;
+}
 
 /*Card*/
 .modal-body {
@@ -167,3 +218,35 @@
         padding: 16px;
     }
 }
+
+
+.column {
+    margin: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    width: 250px;
+  }
+  
+  .draggable-item {
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-bottom: 8px;
+    padding: 8px;
+  }
+  
+  .draggable-item.is-dragging {
+    opacity: 0.5;
+  }
+  
+  .droppable-container {
+    background-color: #f2f2f2;
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    padding: 8px;
+  }
+  
+  .droppable-container.is-over {
+    background-color: #e0f7fa;
+  }
+  

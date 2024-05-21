@@ -98,7 +98,6 @@ public class AddCounterArgumentController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Subject currentSubject = subjectRepository.findById(subjectId).orElse(null);
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            /*ModelAndView model = new ModelAndView("ListLecturerAddCounterArgument");*/
             List<Lecturer> lecturerList = lecturerRepository.getListLecturerNotCurrent(existedLecturer.getLecturerId());
             Map<String,Object> response = new HashMap<>();
             response.put("listLecturer", lecturerList);
@@ -146,10 +145,18 @@ public class AddCounterArgumentController {
                     //Tạo mới hội đồng
                     Council council = new Council();
                     council.setLecturers(lecturers);
+                    council.setSubject(existedSubject);
                     councilRepository.save(council);
+                    List<Council> councils = new ArrayList<>();
+                    councils.add(council);
+                    //set GVHD và GVPB
+                    Lecturer instructor = existedSubject.getInstructorId();
+                    instructor.setCouncils(councils);
+                    currentLecturer.setCouncils(councils);
                     currentLecturer.setListSubCounterArgument(addSub);
                     existedSubject.setThesisAdvisorId(currentLecturer);
                     lecturerRepository.save(currentLecturer);
+                    lecturerRepository.save(instructor);
                     subjectRepository.save(existedSubject);
                     //Mail thông báo hội đồng đã được lập
                     String subject = "THÀNH LẬP HỘI ĐỒNG";
@@ -168,7 +175,6 @@ public class AddCounterArgumentController {
         }
     }
 
-
     @GetMapping("/delete")
     public ResponseEntity<Map<String,Object>> getDanhSachDeTaiDaXoa(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
@@ -176,7 +182,7 @@ public class AddCounterArgumentController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
-            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) -1,typeSubject);
+            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) 0,typeSubject);
             Map<String,Object> response = new HashMap<>();
             response.put("person",personCurrent);
             response.put("lstSubject",subjectByCurrentLecturer);
@@ -215,6 +221,20 @@ public class AddCounterArgumentController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
+    @GetMapping("/periodHead")
+    public ResponseEntity<?> getPeriod(@RequestHeader("Authorization") String authorizationHeader){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            List<RegistrationPeriodLectuer> registrationPeriods = registrationPeriodLecturerRepository.findAllPeriodEssay(typeSubject);
+            return new ResponseEntity<>(registrationPeriods, HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
 
     @PostMapping("/register")
     public ResponseEntity<?> lecturerRegisterTopic(@RequestParam("subjectName") String name,
@@ -256,21 +276,24 @@ public class AddCounterArgumentController {
                         Student studentId1 = studentRepository.findById(student1).orElse(null);
                         newSubject.setStudent1(student1);
                         studentId1.setSubjectId(newSubject);
+                        newSubject.setCheckStudent(true);
                         studentList.add(studentId1);
                     }
                     if (student2!=null) {
                         Student studentId2 = studentRepository.findById(student2).orElse(null);
                         newSubject.setStudent2(student2);
                         studentId2.setSubjectId(newSubject);
+                        newSubject.setCheckStudent(true);
                         studentList.add(studentId2);
                     }
                     if (student3!=null) {
                         Student studentId3 = studentRepository.findById(student3).orElse(null);
                         newSubject.setStudent1(student3);
                         studentId3.setSubjectId(newSubject);
+                        newSubject.setCheckStudent(true);
                         studentList.add(studentId3);
                     }
-                    if (student1==null && student2==null && student3==null){
+                    if (student1==null){
                         newSubject.setCheckStudent(false);
                     }else {
                         newSubject.setCheckStudent(true);
@@ -337,7 +360,6 @@ public class AddCounterArgumentController {
 
     @PostMapping("/import")
     public ResponseEntity<?> importSubject(@RequestParam("file") MultipartFile file,  @RequestHeader("Authorization") String authorizationHeader) throws IOException {
-
         return new ResponseEntity<>(service.importSubject(file,authorizationHeader), HttpStatus.OK);
     }
 }
