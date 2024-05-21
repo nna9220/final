@@ -82,7 +82,7 @@ public class HeadManageTutorialSubjectController {
         }
     }
 
-    @PostMapping("/browse-score/{subjectId}")
+    @PostMapping("/browse/{subjectId}")
     public ResponseEntity<?> browseToThesisAndScoreOfInstructor(@PathVariable int subjectId,
                                                                 @RequestHeader("Authorization") String authorizationHeader){
         try {

@@ -95,8 +95,8 @@ public class LecturerManageTutorialSubjectController {
         }
     }
 
-    //Xác nhận đề tài chuyển qua GVPB
-    @PostMapping("/browse-score/{subjectId}")
+    //Xác nhận đề tài hoàn thành - chuyển qua TBM
+    @PostMapping("/browse/{subjectId}")
     public ResponseEntity<?> browseToThesisAndScoreOfInstructor(@PathVariable int subjectId,
                                                                 @RequestHeader("Authorization") String authorizationHeader){
         try {
@@ -121,8 +121,5 @@ public class LecturerManageTutorialSubjectController {
         }
 
     }
-
-
-    //Duyệt đề tài hoàn thành
 
 }

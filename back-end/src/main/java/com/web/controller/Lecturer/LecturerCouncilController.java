@@ -44,6 +44,9 @@ public class LecturerCouncilController {
 
     @PostMapping("/evaluation-scoring/{id}")
     public ResponseEntity<?> evaluationAndScoring(@PathVariable int id,@RequestHeader("Authorization") String authorizationHeader,
+                                                  @RequestParam("studentId1") String studentId1,
+                                                  @RequestParam("studentId2") String studentId2,
+                                                  @RequestParam("studentId3") String studentId3,
                                                   @RequestParam("score1Student") Double score1,
                                                   @RequestParam("scoreStudent2") Double score2,
                                                   @RequestParam("scoreStudent3") Double score3,
@@ -51,7 +54,7 @@ public class LecturerCouncilController {
                                                   @RequestParam("reviewStudent2") String review2,
                                                   @RequestParam("reviewStudent3") String review3){
         try {
-            return new ResponseEntity<>(evaluationAndScoringService.evaluationAndScoringEssay(authorizationHeader,id,review1,review2,review3,score1,score2,score3),HttpStatus.OK);
+            return new ResponseEntity<>(evaluationAndScoringService.evaluationAndScoringEssay(authorizationHeader,id,studentId1,studentId2,studentId3,review1,review2,review3,score1,score2,score3),HttpStatus.OK);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);

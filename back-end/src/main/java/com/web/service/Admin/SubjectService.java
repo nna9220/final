@@ -33,7 +33,7 @@ public class SubjectService {
             oldSubject.setStatus(true);
             if (oldSubject.getStudent1()==null && oldSubject.getStudent2()==null && oldSubject.getStudent3()==null){
                 oldSubject.setCheckStudent(false);
-                oldSubject.setActive((byte)1);
+                oldSubject.setActive((byte)0);
             }
             subjectRepository.save(oldSubject);
             return oldSubject;
