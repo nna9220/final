@@ -48,28 +48,44 @@ public class EvaluationAndScoringService {
 
 
     //Lấy ra danh sách đề tài phản biện của GV hiện tại, status = true, active=6, typeSubject
-    public ResponseEntity<?> getListCouncilOfLecturer(String authorizationHeader, TypeSubject typeSubject){
-        String token = tokenUtils.extractToken(authorizationHeader);
-        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
-            Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            List<Council> councils = councilRepository.getListCouncilByLecturer(existedLecturer);
-            List<Council> councilResponse = new ArrayList<>();
-            for (Council council:councils) {
-                Subject subject = council.getSubject();
-                if (council.getSubject().getTypeSubject()==typeSubject){
-                    if (subject.isStatus()) {
-                        if (subject.getActive() == 6) {
+    public ResponseEntity<?> getListCouncilOfLecturer(String authorizationHeader, TypeSubject typeSubject) {
+        try {
+            String token = tokenUtils.extractToken(authorizationHeader);
+            Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+
+            if (personCurrent == null || personCurrent.getAuthorities() == null) {
+                return new ResponseEntity<>("Invalid person or authorities", HttpStatus.BAD_REQUEST);
+            }
+
+            String roleName = personCurrent.getAuthorities().getName();
+            if ("ROLE_LECTURER".equals(roleName) || "ROLE_HEAD".equals(roleName)) {
+                Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+                if (existedLecturer == null) {
+                    return new ResponseEntity<>("Lecturer not found", HttpStatus.NOT_FOUND);
+                }
+
+                List<Council> councils = councilRepository.getListCouncilByLecturer(existedLecturer);
+                List<Council> councilResponse = new ArrayList<>();
+
+                for (Council council : councils) {
+                    Subject subject = council.getSubject();
+                    if (subject != null && typeSubject.equals(subject.getTypeSubject())) {
+                        if (subject.isStatus() && subject.getActive() == 6) {
                             councilResponse.add(council);
                         }
                     }
                 }
+
+                return new ResponseEntity<>(councilResponse, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
-            return new ResponseEntity<>(councilResponse,HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     //Chi tiết council -- get detail của subject từ council
     public ResponseEntity<Map<String,Object>> detailCouncil(String authorizationHeader, int id){
