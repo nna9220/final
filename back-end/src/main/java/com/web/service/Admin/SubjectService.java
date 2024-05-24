@@ -35,6 +35,9 @@ public class SubjectService {
                 oldSubject.setCheckStudent(false);
                 oldSubject.setActive((byte)0);
             }
+            if (oldSubject.getCheckStudent()){
+                oldSubject.setActive((byte)1);
+            }
             subjectRepository.save(oldSubject);
             return oldSubject;
         }else {

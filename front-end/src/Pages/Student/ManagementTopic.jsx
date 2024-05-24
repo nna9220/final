@@ -6,7 +6,7 @@ import './ManagementTopic.scss';
 
 function ManagementTopic() {
   useEffect(() => {
-    document.title = "Quản lý đề tài";
+    document.title = "Quản lý đề tài - Tiểu luận tiêu ngành";
   }, []);
 
   return (
@@ -17,7 +17,7 @@ function ManagementTopic() {
         <hr />
         <div className='widgets'>
           <div className='header-notification'>
-            <h4 className='title'>QUẢN LÝ ĐỀ TÀI</h4>
+            <h4 className='title'>QUẢN LÝ ĐỀ TÀI - TIỂU LUẬN CHUYÊN NGÀNH</h4>
           </div>
           <KanbanBoard />
         </div>

@@ -1,7 +1,10 @@
 package com.web.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
@@ -43,6 +46,7 @@ public class Subject implements Serializable {
 
     @ManyToOne
     @JoinColumn(name="type_id_subject")
+    @JsonBackReference
     private TypeSubject typeSubject;
 
     @Column(name="status")
@@ -98,5 +102,6 @@ public class Subject implements Serializable {
             joinColumns = @JoinColumn(name = "subject_id"),
             inverseJoinColumns = @JoinColumn(name = "criteria_id")
     )
+    @JsonManagedReference
     private Set<EvaluationCriteria> criteria = new HashSet<>();
 }

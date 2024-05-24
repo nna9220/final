@@ -56,23 +56,73 @@ public class EvaluationAndScoringService {
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             List<Council> councils = councilRepository.getListCouncilByLecturer(existedLecturer);
-            System.out.println();
             List<Council> councilResponse = new ArrayList<>();
             for (Council council:councils) {
                 Subject subject = council.getSubject();
+                System.out.println("before chẹc type");
+                System.out.println("type: " + council.getSubject().getTypeSubject().getTypeName());
                 if (council.getSubject().getTypeSubject()==typeSubject){
+                    System.out.println("before check status");
                     if (subject.isStatus()) {
-                        if (subject.getActive() == 8) {
+                        System.out.println("before chekc active");
+                        if (subject.getActive() == (byte)8) {
+                            System.out.println("goal");
                             councilResponse.add(council);
+                            System.out.println("council: " + council);
+                            System.out.println("subject: "+subject.getSubjectName());
                         }
                     }
                 }
+            }
+            for (Council c:councilResponse) {
+                System.out.println(c.getSubject().getSubjectName());
             }
             return new ResponseEntity<>(councilResponse,HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
+    public ResponseEntity<Map<String,Object>> getListCouncilOfLecturerGraduation(String authorizationHeader, TypeSubject typeSubject){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+            Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+            List<Council> councils = councilRepository.getListCouncilByLecturer(existedLecturer);
+            List<Council> councilResponse = new ArrayList<>();
+            for (Council council:councils) {
+                Subject subject = council.getSubject();
+                System.out.println("before chẹc type");
+                System.out.println("type: " + council.getSubject().getTypeSubject().getTypeName());
+                if (council.getSubject().getTypeSubject()==typeSubject){
+                    System.out.println("before check status");
+                    if (subject.isStatus()) {
+                        System.out.println("before chekc active");
+                        if (subject.getActive() == (byte)8) {
+                            System.out.println("goal");
+                            councilResponse.add(council);
+                            System.out.println("council: " + council);
+                            System.out.println("subject: "+subject.getSubjectName());
+                        }
+                    }
+                }
+            }
+            List<Subject> list = new ArrayList<>();
+            for (Council c:councilResponse) {
+                System.out.println(c.getSubject().getSubjectName());
+                list.add(c.getSubject());
+            }
+            Map<String,Object> response = new HashMap<>();
+            response.put("council",councilResponse);
+            response.put("subjects",list);
+            return new ResponseEntity<>(response,HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+
+
 
     //Chi tiết council -- get detail của subject từ council
     public ResponseEntity<Map<String,Object>> detailCouncil(String authorizationHeader, int id){
@@ -87,6 +137,26 @@ public class EvaluationAndScoringService {
                 response.put("listLecturer",existedCouncil.getLecturers());
                 response.put("subject",existedCouncil.getSubject());
                 response.put("criteria",existedCouncil.getSubject().getCriteria());
+                return new ResponseEntity<>(response,HttpStatus.OK);
+            }else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+
+    public ResponseEntity<Map<String,Object>> detailSubject(String authorizationHeader, int id){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+            Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+            Subject existedSubject = subjectRepository.findById(id).orElse(null);
+            if (existedSubject!=null){
+                Map<String,Object> response = new HashMap<>();
+                response.put("council", existedSubject.getCouncil());
+                response.put("subject",existedSubject);
                 return new ResponseEntity<>(response,HttpStatus.OK);
             }else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -126,7 +196,6 @@ public class EvaluationAndScoringService {
                                 resultEssayStudent1.setScoreThesis(scoreStudent1);
                                 resultEssayStudent1.setReviewThesis(reviewStudent1);
                             }
-                            existedSubject.setActive((byte)9);
                             subjectRepository.save(existedSubject);
                             resultEssayRepository.save(resultEssayStudent1);
                             student1.setResultEssay(resultEssayStudent1);
@@ -134,24 +203,25 @@ public class EvaluationAndScoringService {
                         } else {
                             //Chỉnh sửa result có sẵn
                             //Check xem GVHD hay GVPB đã cho điểm
-                            if (existedResultEssay.getScoreThesis()!=null){
+                            System.out.println("Có r");
+                            if (existedResultEssay.getScoreThesis()==null){
                                 //nếu là gvhd thì set cho gvpb
                                 existedResultEssay.setScoreThesis(scoreStudent1);
                                 existedResultEssay.setReviewThesis(reviewStudent1);
                                 existedResultEssay.setSubject(existedSubject);
                                 existedResultEssay.setStudent(student1);
-                                existedSubject.setActive((byte)9);
                                 subjectRepository.save(existedSubject);
                                 resultEssayRepository.save(existedResultEssay);
                                 student1.setResultEssay(existedResultEssay);
+                                existedSubject.setActive((byte)9);
                                 studentRepository.save(student1);
                             }else {
                                 //nếu là gvpb thì set cho gvhd
                                 existedResultEssay.setScoreInstructor(scoreStudent1);
                                 existedResultEssay.setReviewInstructor(reviewStudent1);
                                 existedResultEssay.setSubject(existedSubject);
-                                existedResultEssay.setStudent(student1);
                                 existedSubject.setActive((byte)9);
+                                existedResultEssay.setStudent(student1);
                                 subjectRepository.save(existedSubject);
                                 resultEssayRepository.save(existedResultEssay);
                                 student1.setResultEssay(existedResultEssay);
@@ -179,7 +249,6 @@ public class EvaluationAndScoringService {
                                 resultEssayStudent2.setScoreThesis(scoreStudent2);
                                 resultEssayStudent2.setReviewThesis(reviewStudent2);
                             }
-                            existedSubject.setActive((byte)9);
                             subjectRepository.save(existedSubject);
                             resultEssayRepository.save(resultEssayStudent2);
                             student2.setResultEssay(resultEssayStudent2);
@@ -187,7 +256,7 @@ public class EvaluationAndScoringService {
                         } else {
                             //Chỉnh sửa result có sẵn
                             //Check xem GVHD hay GVPB đã cho điểm
-                            if (existedResultEssay.getScoreThesis()!=null){
+                            if (existedResultEssay.getScoreThesis()==null){
                                 //nếu là gvhd thì set cho gvpb
                                 existedResultEssay.setScoreThesis(scoreStudent2);
                                 existedResultEssay.setReviewThesis(reviewStudent2);
@@ -233,7 +302,6 @@ public class EvaluationAndScoringService {
                                 resultEssayStudent3.setScoreThesis(scoreStudent3);
                                 resultEssayStudent3.setReviewThesis(reviewStudent3);
                             }
-                            existedSubject.setActive((byte)9);
                             subjectRepository.save(existedSubject);
                             resultEssayRepository.save(resultEssayStudent3);
                             student3.setResultEssay(resultEssayStudent3);
@@ -241,7 +309,7 @@ public class EvaluationAndScoringService {
                         } else {
                             //Chỉnh sửa result có sẵn
                             //Check xem GVHD hay GVPB đã cho điểm
-                            if (existedResultEssay.getScoreThesis()!=null){
+                            if (existedResultEssay.getScoreThesis()==null){
                                 //nếu là gvhd thì set cho gvpb
                                 existedResultEssay.setScoreThesis(scoreStudent3);
                                 existedResultEssay.setReviewThesis(reviewStudent3);
@@ -316,12 +384,12 @@ public class EvaluationAndScoringService {
                             scoreGraduation.setByLecturer(existedLecturer);
                             scoreGraduation.setReview(reviewStudent1);
                             scoreGraduation.setResultGraduation(resultGraduation);
-                            scoreGraduationRepository.save(scoreGraduation);
                             //Tạo mới 1 list score rỗng, bỏ score mới tạo vào và set list score này cho result
                             List<ScoreGraduation> scoreGraduationList = new ArrayList<>();
                             scoreGraduationList.add(scoreGraduation);
                             resultGraduation.setScoreCouncil(scoreGraduationList);
                             resultGraduationRepository.save(resultGraduation);
+                            scoreGraduationRepository.save(scoreGraduation);
                             //Tạo mới list result để gán cho subject
                             List<ResultGraduation> resultGraduations = new ArrayList<>();
                             resultGraduations.add(resultGraduation);

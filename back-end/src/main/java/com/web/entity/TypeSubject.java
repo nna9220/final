@@ -2,6 +2,8 @@ package com.web.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import java.io.Serializable;
@@ -23,7 +25,7 @@ public class TypeSubject implements Serializable {
     private String typeName;
 
     @OneToMany(mappedBy = "typeSubject", cascade = CascadeType.ALL)
-    @JsonIgnore
+    @JsonManagedReference
     private List<Subject> subjectsList;
 
     @OneToMany(mappedBy = "typeSubjectId",orphanRemoval = true)

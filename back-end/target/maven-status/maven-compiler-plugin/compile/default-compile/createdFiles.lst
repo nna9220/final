@@ -2,9 +2,12 @@ com\web\controller\admin\PersonController.class
 com\web\api\AuthorityRest.class
 com\web\dto\response\CommentResponse.class
 com\web\dto\response\SubjectResponse.class
+com\web\controller\Lecturer\Graduation\LecturerCouncilGraduationController.class
+com\web\controller\Lecturer\Graduation\LecturerManageCriticalSubjectGraduationController.class
 com\web\dto\response\PersonResponse.class
 com\web\dto\response\RegistrationPeriodResponse.class
 com\web\utils\CloudinaryService.class
+com\web\service\Council\EvaluationAndScoringService.class
 com\web\entity\Person.class
 com\web\repository\NotificationRepository.class
 com\web\controller\Lecturer\HomeLecturerController.class
@@ -12,10 +15,12 @@ com\web\jwt\JwtTokenProvider.class
 com\web\controller\admin\StudentController.class
 com\web\config\CompareTime.class
 com\web\entity\TypeSubject.class
+com\web\service\Lecturer\LecturerAddScoreGraduationService.class
 com\web\repository\RegistrationPeriodLecturerRepository.class
 com\web\dto\request\PersonRequest.class
 com\web\entity\SchoolYear.class
 com\web\controller\HeadOfDepartment\Graduation\HeadManageTutorialSubjectGraduationController.class
+com\web\controller\Lecturer\LecturerManageCriticalSubjectController.class
 com\web\dto\request\LecturerRequest.class
 com\web\dto\request\TaskRequest.class
 com\web\dto\request\FileRequest.class
@@ -45,6 +50,7 @@ com\web\dto\response\TypeSubjectResponse.class
 com\web\repository\StudentRepository.class
 com\web\mapper\RegistrationPeriodMapper.class
 com\web\controller\Student\Graduation\StudentManageGraduationController.class
+com\web\controller\HeadOfDepartment\HeadManageCriticalSubjectController.class
 com\web\utils\CommonPage$1.class
 com\web\config\TokenAuthenticationFilter.class
 com\web\controller\admin\HomeAdminController.class
@@ -62,6 +68,7 @@ com\web\controller\admin\GraduationThesis\TimeBrowseGraduationHeadController.cla
 com\web\controller\View.class
 com\web\mapper\RegistrationPeriodMapperImpl.class
 com\web\repository\FileRepository.class
+com\web\controller\HeadOfDepartment\Graduation\HeadManageCriticalSubjectGraduationController.class
 com\web\service\ReportService.class
 com\web\controller\HeadOfDepartment\Graduation\AddCounterArgumentGraduationController.class
 com\web\entity\RegistrationPeriodLectuer.class
@@ -71,6 +78,7 @@ com\web\repository\SchoolYearRepository.class
 com\web\entity\EvaluationCriteria.class
 com\web\entity\Task.class
 com\web\entity\Authority.class
+com\web\controller\HeadOfDepartment\HeadCouncilController.class
 com\web\dto\request\StudentRequest.class
 com\web\config\DatabaseConfiguration.class
 com\web\controller\admin\TypeSubjectController.class
@@ -110,6 +118,7 @@ com\web\entity\ResultGraduation.class
 com\web\repository\TaskRepository.class
 com\web\entity\Major.class
 com\web\mapper\PersonMapper.class
+com\web\controller\HeadOfDepartment\Graduation\HeadEvaluationAndScoringGraduationController.class
 com\web\config\CorsConfig$1.class
 com\web\entity\TimeBrowsOfHead.class
 com\web\entity\RegistrationPeriod.class
@@ -126,7 +135,6 @@ com\web\dto\response\StudentResponse.class
 com\web\mapper\StudentClassMapperImpl.class
 com\web\exception\MyFileNotFoundException.class
 com\web\api\UserResource.class
-com\web\service\Lecturer\LecturerSubjectService.class
 com\web\service\UserService.class
 com\web\dto\response\SchoolYearResponse.class
 com\web\mapper\SubjectMapper.class
@@ -135,12 +143,16 @@ com\web\controller\HeadOfDepartment\Graduation\HeadManagerTopicGraduationControl
 com\web\config\CorsConfig.class
 com\web\entity\Council.class
 com\web\mapper\TypeSubjectMapper.class
+com\web\controller\Lecturer\LecturerCouncilController.class
+com\web\repository\ScoreGraduationRepository.class
 com\web\mapper\StudentMapperImpl.class
+com\web\controller\HeadOfDepartment\HeadBrowseSubjectToThesisController.class
 com\web\dto\request\SchoolYearRequest.class
 com\web\controller\HeadOfDepartment\AddCounterArgumentController.class
 com\web\service\Admin\StudentClassService.class
 com\web\repository\PersonRepository.class
 com\web\dto\request\NotificationRequest.class
+com\web\service\Lecturer\ThesisBrowseSubjectToCouncil.class
 com\web\controller\admin\RegistrationPeriodController.class
 com\web\repository\TimeBrowseHeadRepository.class
 com\web\config\OAuth2AuthenticationSuccessHandler.class
@@ -161,6 +173,7 @@ com\web\entity\StudentClass.class
 com\web\service\MailServiceImpl.class
 com\web\service\Admin\SubjectImportKLTN.class
 com\web\dto\response\NotificationResponse.class
+com\web\controller\HeadOfDepartment\Graduation\HeadBrowseSubjectGraduationToThesisController.class
 com\web\entity\RoleName.class
 com\web\dto\request\SubjectRequest.class
 com\web\config\CorsFilter.class
@@ -170,6 +183,7 @@ com\web\entity\FileComment.class
 com\web\config\WebSecurityConfig.class
 com\web\controller\admin\SubjectController.class
 com\web\controller\Student\Graduation\StudentRegisterTopicGraduation.class
+com\web\service\HeaderOdDepartment\BrowseSubjectToThesisService.class
 com\web\entity\Subject.class
 com\web\entity\TimeAddSubjectOfHead.class
 com\web\controller\Student\StudentAddCommentController.class

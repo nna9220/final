@@ -238,7 +238,7 @@ export default function TopicTable() {
                         </tr>
                     </thead>
                     <tbody>
-                        {topics.filter(item => item.active === 5).map((item, index) => (
+                        {topics.map((item, index) => (
                             <tr key={index}>
                                 <th scope='row'>{index + 1}</th>
                                 <td>{item.subjectName}</td>
@@ -246,7 +246,7 @@ export default function TopicTable() {
                                 <td>{item.student1 || ''}</td>
                                 <td>{item.student2 || ''}</td>
                                 <td>{item.student3 || ''}</td>
-                                <td>{item.typeSubject.typeName || ''}</td>
+                                <td>{item.typeSubject?.typeName || ''}</td>
                                 <td>
                                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <button className="management" type="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Đi đến chi tiết để quản lý đề tài" onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}><ViewComfyAltOutlinedIcon /></button>

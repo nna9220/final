@@ -103,7 +103,6 @@ public class HomeLecturerController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            //return new ModelAndView("error").addObject("errorMessage", "Bạn không có quyền truy cập.");
         }
     }
     @GetMapping("/counterArgumentSubject/detail/{id}")
@@ -120,7 +119,6 @@ public class HomeLecturerController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            //return new ModelAndView("error").addObject("errorMessage", "Bạn không có quyền truy cập.");
         }
     }
 

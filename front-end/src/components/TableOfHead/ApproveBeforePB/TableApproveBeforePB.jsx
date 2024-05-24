@@ -120,8 +120,8 @@ function TableApproveBeforePB() {
                                 <tr>
                                     <th scope="row">{index + 1}</th>
                                     <td> {item.subjectName}</td>
-                                    <td> {item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName}</td>
-                                    <td> {item.thesisAdvisorId.person.firstName + ' ' + item.thesisAdvisorId.person.lastName}</td>
+                                    <td> {item.instructorId?.person?.firstName + ' ' + item.instructorId?.person?.lastName}</td>
+                                    <td> {item.thesisAdvisorId?.person?.firstName + ' ' + item.thesisAdvisorId?.person?.lastName}</td>
                                     <td> {item.student1}</td>
                                     <td> {item.student2}</td>
                                     <td> {item.student3}</td>

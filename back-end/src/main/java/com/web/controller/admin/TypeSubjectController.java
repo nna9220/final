@@ -6,6 +6,7 @@ import com.web.entity.TypeSubject;
 import com.web.mapper.TypeSubjectMapper;
 import com.web.dto.request.TypeSubjectRequest;
 import com.web.repository.PersonRepository;
+import com.web.repository.TypeSubjectRepository;
 import com.web.service.Admin.TypeSubjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,8 @@ public class TypeSubjectController {
     private TypeSubjectMapper typeSubjectMapper;
     @Autowired
     private PersonRepository personRepository;
+    @Autowired
+    private TypeSubjectRepository typeSubjectRepository;
 
     @GetMapping("/list")
     public ResponseEntity<?> getTypeSub(){
@@ -33,19 +36,12 @@ public class TypeSubjectController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> saveTypeSubject(@RequestBody TypeSubjectRequest typeSubjectRequest){
+    public ResponseEntity<?> saveTypeSubject(@RequestParam("typeName") String typeName){
         /*if (CheckedPermission.isAdmin(personRepository)) {*/
-            typeSubjectRequest.setTypeName(typeSubjectRequest.getTypeName());
-        /*{
-          "typeName": "Tiểu Luận Chuyên Ngành"
-            },
-            {
-          "typeName": "Khóa Luận Tốt Nghiệp"
-        }*/
-            return new ResponseEntity<>(typeSubjectService.createTypeSubject(typeSubjectRequest), HttpStatus.CREATED);
-        /*}else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }*/
+        TypeSubject typeSubject = new TypeSubject();
+            typeSubject.setTypeName(typeName);
+            typeSubjectRepository.save(typeSubject);
+            return new ResponseEntity<>(typeSubject, HttpStatus.CREATED);
     }
 
 }

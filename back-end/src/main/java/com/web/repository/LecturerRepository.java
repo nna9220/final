@@ -19,8 +19,11 @@ public interface LecturerRepository extends JpaRepository<Lecturer, String> {
     @Query("select l from Lecturer l where l.lecturerId <>:lecId")
     List<Lecturer> getListLecturerNotCurrent(String lecId);
 
+    @Query("select l from Lecturer l where l.lecturerId <>:lecId and l.lecturerId<>:thesisId")
+    List<Lecturer> getListLecturerNotInstructorAndThesis(String lecId, String thesisId);
+
     @Query("select l from Lecturer l where l.authority =:authority")
-    List<Lecturer> getListLecturerISHead(String authority);
+    List<Lecturer> getListLecturerISHead(Authority authority);
 
     @Query("select l from Lecturer l where l.authority =:authority and l.major=:major")
     Lecturer getLecturerISHead(Authority authority, Major major);

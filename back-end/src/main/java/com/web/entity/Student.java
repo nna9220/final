@@ -1,5 +1,6 @@
 package com.web.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import javax.persistence.*;
@@ -39,11 +40,13 @@ public class Student implements Serializable {
     //Tiểu luận
     @ManyToOne
     @JoinColumn(name="subject_id")
+    @JsonIgnore
     private Subject subjectId;
 
     //Khóa luận
     @ManyToOne
     @JoinColumn(name="subjectGraduation_id")
+    @JsonIgnore
     private Subject subjectGraduationId;
 
     @OneToMany(mappedBy = "assignTo", cascade = CascadeType.ALL)
@@ -51,8 +54,10 @@ public class Student implements Serializable {
     private List<Task> tasks;
 
     @OneToOne(mappedBy = "student", cascade = CascadeType.ALL)
+    @JsonIgnore
     private ResultEssay resultEssay;
 
     @OneToOne(mappedBy = "student", cascade = CascadeType.ALL)
+    @JsonIgnore
     private ResultGraduation resultGraduation;
 }

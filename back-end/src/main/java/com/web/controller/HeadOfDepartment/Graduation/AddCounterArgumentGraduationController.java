@@ -83,7 +83,7 @@ public class AddCounterArgumentGraduationController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Subject currentSubject = subjectRepository.findById(subjectId).orElse(null);
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            List<Lecturer> lecturerList = lecturerRepository.getListLecturerNotCurrent(existedLecturer.getLecturerId());
+            List<Lecturer> lecturerList = lecturerRepository.getListLecturerNotCurrent(currentSubject.getInstructorId().getLecturerId());
             Map<String,Object> response = new HashMap<>();
             response.put("listLecturer", lecturerList);
             response.put("person",personCurrent);
@@ -128,17 +128,22 @@ public class AddCounterArgumentGraduationController {
                     //Thêm GVPB vào hội đồng
                     Council council = new Council();
                     List<Lecturer> lecturers = new ArrayList<>();
-                    lecturers.add(existedSubject.getThesisAdvisorId());
+                    lecturers.add(currentLecturer);
                     council.setLecturers(lecturers);
                     council.setSubject(existedSubject);
                     var newCouncil = councilRepository.save(council);
                     existedSubject.setCouncil(newCouncil);
-                    List<Council> councils = new ArrayList<>();
-                    councils.add(newCouncil);
+                    if (currentLecturer.getCouncils()!=null){
+                        currentLecturer.getCouncils().add(newCouncil);
+                    }else {
+                        List<Council> councils = new ArrayList<>();
+                        councils.add(newCouncil);
+                        currentLecturer.setCouncils(councils);
+                    }
                     //set GVPB
-                    currentLecturer.setCouncils(councils);
                     currentLecturer.setListSubCounterArgument(addSub);
                     existedSubject.setThesisAdvisorId(currentLecturer);
+                    existedSubject.setCouncil(council);
                     lecturerRepository.save(currentLecturer);
                     subjectRepository.save(existedSubject);
                 }
@@ -169,17 +174,16 @@ public class AddCounterArgumentGraduationController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<String,Object>> getDanhSachDeTai(@RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<?> getDanhSachDeTai(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        System.out.println("Before check role");
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+            System.out.println("Aftẻ check role");
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
-            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) 1,typeSubject);
-            Map<String,Object> response = new HashMap<>();
-            response.put("person", personCurrent);
-            response.put("listSubject", subjectByCurrentLecturer);
-            return new ResponseEntity<>(response,HttpStatus.OK);
+            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) 0,typeSubject);
+            return new ResponseEntity<>(subjectByCurrentLecturer,HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
