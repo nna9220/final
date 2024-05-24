@@ -154,7 +154,7 @@ const Card = ({ task, index }) => {
                           <div className='body-comment'>
                             <label className='content'>{comment.content}</label><br />
                             {file && file.map((files, fileIndex) => {
-                              if (files.commentId.commentId === comment.commentId) {
+                              if (files.commentId?.commentId === comment.commentId) {
                                 return (
                                   <div key={fileIndex}>
                                     <a href={files.url}><p>{files.url}</p></a>

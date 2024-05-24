@@ -1,5 +1,6 @@
 package com.web.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 
@@ -45,6 +46,7 @@ public class Subject implements Serializable {
 
     @ManyToOne
     @JoinColumn(name="type_id_subject")
+    @JsonBackReference
     private TypeSubject typeSubject;
 
     @Column(name="status")

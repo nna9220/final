@@ -9,58 +9,58 @@ import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutli
 function RegisTopicTable() {
     const [topics, setTopics] = useState([]);
     const [topicsRegistered, setTopicsRegistered] = useState([]);
-    const [registeredSuccess, setRegisteredSuccess] = useState(false); 
-    const [errors, setErrors] =useState(null);
-    
+    const [registeredSuccess, setRegisteredSuccess] = useState(false);
+    const [errors, setErrors] = useState(null);
+
     useEffect(() => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log("Token: " + userToken);
-    
+
         if (userToken) {
             const tokenSt = sessionStorage.getItem('userToken');
             if (!tokenSt) {
                 sessionStorage.setItem('userToken', userToken);
             }
-    
+
             axiosInstance.get('/student/subject', {
                 headers: {
                     'Authorization': `Bearer ${userToken}`,
                 },
             })
-            .then(response => {
-                console.log("DatalistSubject: ", response.data);
-                const result = response.data;
-                console.log("Data: ", response.data);
-    
-                // Log chi tiết các thuộc tính của result
-                if (result.person) {
-                    console.log("Person:", result.person);
-    
-                    if (result.subjectList) {
-                        console.log("Subject List:", result.subjectList);
-                        setTopics(result.subjectList);
-                    } else if (result.subject) {
-                        console.log("Registered Subject:", result.subject);
-                        setTopicsRegistered([result.subject]);
-                    } else {
-                        console.log("No subjects available for registration.");
-                        setErrors("Chưa đến thời gian đăng ký đề tài !!!");
+                .then(response => {
+                    console.log("DatalistSubject: ", response.data);
+                    const result = response.data;
+                    console.log("Data: ", response.data);
+
+                    // Log chi tiết các thuộc tính của result
+                    if (result.person) {
+                        console.log("Person:", result.person);
+
+                        if (result.subjectList) {
+                            console.log("Subject List:", result.subjectList);
+                            setTopics(result.subjectList);
+                        } else if (result.subject) {
+                            console.log("Registered Subject:", result.subject);
+                            setTopicsRegistered([result.subject]);
+                        } else {
+                            console.log("No subjects available for registration.");
+                            setErrors("Chưa đến thời gian đăng ký đề tài !!!");
+                        }
                     }
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching subjects:", error);
-                if (error.response && error.response.status === 404) {
-                    setErrors("Không tìm thấy sinh viên.");
-                } else if (error.response && error.response.status === 403) {
-                    setErrors("Bạn không có quyền truy cập.");
-                } else {
-                    setErrors("Có lỗi xảy ra khi lấy dữ liệu.");
-                }
-            });
+                })
+                .catch(error => {
+                    console.error("Error fetching subjects:", error);
+                    if (error.response && error.response.status === 404) {
+                        setErrors("Không tìm thấy sinh viên.");
+                    } else if (error.response && error.response.status === 403) {
+                        setErrors("Bạn không có quyền truy cập.");
+                    } else {
+                        setErrors("Bạn đã hoàn thành tiểu luận chuyên ngành.");
+                    }
+                });
         }
     }, []);
-    
+
     const dangKyDeTai = (subjectId) => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         if (userToken) {
@@ -146,13 +146,20 @@ function RegisTopicTable() {
                                                 <label>Tên đề tài: <label className='content-name'>{topic.subjectName}</label></label>
                                             </div>
                                             <div className='items-content-topic'>
-                                                <label>Loại đề tài: <label className='content-name'>{topic.typeSubject.typeName}</label></label>
+                                                <label>Loại đề tài: <label className='content-name'>{topic.typeSubject?.typeName}</label></label>
                                             </div>
                                             <div className='items-content-topic' >
-                                                <label>Giảng viên hướng dẫn: <label className='content-name'>{topic.instructorId.person.firstName + ' ' + topic.instructorId.person.lastName}</label></label>
+                                                <label>Giảng viên hướng dẫn: <label className='content-name'>{topic.instructorId?.person?.firstName + ' ' + topic.instructorId?.person?.lastName}</label></label>
                                             </div>
                                             <div className='items-content-topic'>
-                                                <label>Giảng viên phản biện: <label className='content-name'>{topic.thesisAdvisorId.person.firstName + ' ' + topic.thesisAdvisorId.person.lastName}</label></label>
+                                                <label>
+                                                    Giảng viên phản biện:
+                                                    <label className='content-name'>
+                                                        {topic.thesisAdvisorId && topic.thesisAdvisorId.person
+                                                            ? topic.thesisAdvisorId.person.firstName + ' ' + topic.thesisAdvisorId.person.lastName
+                                                            : 'Chưa có'}
+                                                    </label>
+                                                </label>
                                             </div>
                                             <div className='items-content-topic'>
                                                 <a>Nhóm sinh viên thực hiện</a><br />

@@ -1,5 +1,6 @@
 package com.web.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,6 +31,7 @@ public class ResultEssay {
 
     @ManyToOne
     @JoinColumn(name = "subject_id")
+    @JsonBackReference
     private Subject subject;
 
     @OneToOne
