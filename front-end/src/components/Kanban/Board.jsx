@@ -47,7 +47,7 @@ const KanbanBoard = () => {
   }
 
   useEffect(() => {
-    loadList();   
+    loadList();  
   }, []);
 
   const loadList = () => {
@@ -80,8 +80,10 @@ const KanbanBoard = () => {
       },
     })
       .then(response => {
-        console.log("newTask: ", response.data);
+        console.log("newTask: ", response.data.listStudentGroup);
         setNewTask(response.data.listStudentGroup);
+        
+        console.log("newTask2: ", newTask);//gán có dô đâu
       })
       .catch(error => {
         console.error("Error new task:", error);
@@ -166,21 +168,42 @@ const KanbanBoard = () => {
     setFile(event.target.files[0]);
   };
 
-  const handleSubmitReport = (reportType) => {
+  const handleSubmitReportFifty = () => {
     if (file) {
       const formData = new FormData();
       formData.append('fileInput', file);
 
-      const url = reportType === 'fifty' ? '/student/manage/submit/fifty' : '/student/manage/submit/oneHundred';
-
-      axiosInstance.post(url, formData, {
+      axiosInstance.post('/student/manage/submit/fifty', formData, {
         headers: {
           'Authorization': `Bearer ${userToken}`,
           'Content-Type': 'multipart/form-data',
         },
       })
         .then(response => {
-          toast.success('Nộp báo cáo thành công!');
+          toast.success('Nộp báo cáo 50% thành công!');
+        })
+        .catch(error => {
+          toast.error('Lỗi khi nộp báo cáo: ' + error.message);
+          console.error('Error:', error);
+        });
+    } else {
+      toast.error('Vui lòng chọn file trước khi nộp!');
+    }
+  };
+
+  const handleSubmitReport100 = () => {
+    if (file) {
+      const formData = new FormData();
+      formData.append('fileInput', file);
+
+      axiosInstance.post('/student/manage/submit/oneHundred', formData, {
+        headers: {
+          'Authorization': `Bearer ${userToken}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+        .then(response => {
+          toast.success('Nộp báo cáo 100% thành công!');
         })
         .catch(error => {
           toast.error('Lỗi khi nộp báo cáo: ' + error.message);
@@ -198,19 +221,19 @@ const KanbanBoard = () => {
       {!error &&
         <div>
           <div className='button-submitTopic'>
-            <button className='submit-1' data-bs-toggle="modal" data-bs-target="#submit">
+            <button className='submit-1' data-bs-toggle="modal" data-bs-target="#submit50">
               Nộp báo cáo lần 1
             </button>
 
-            <button className='submit-2' data-bs-toggle="modal" data-bs-target="#submit">
+            <button className='submit-2' data-bs-toggle="modal" data-bs-target="#submit100">
               Nộp báo cáo lần 2
             </button>
 
-            <div class="modal fade" id="submit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade" id="submit50" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Nộp báo cáo</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Nộp báo cáo 50%</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body">
@@ -221,7 +244,28 @@ const KanbanBoard = () => {
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitReport}>Submit</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitReportFifty}>Submit</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal fade" id="submit100" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Nộp báo cáo 100%</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="mb-3">
+                      <label for="formFile" class="form-label">Chọn file báo cáo : </label>
+                      <input class="form-control" type="file" id="formFile" onChange={handleFileChange}/>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitReport100}>Submit</button>
                   </div>
                 </div>
               </div>
@@ -264,7 +308,7 @@ const KanbanBoard = () => {
                     <select class="form-select" id="assignTo" name="assignTo" value={formNewTask.assignTo} onChange={handleChangeAdd}>
                       <option value="" selected disabled>Chọn thành viên</option>
                       {newTask.map((option, index) => (
-                        <option key={index} value={option.studentId}>{option.person.firstName + ' ' + option.person.lastName} </option>
+                        <option key={index} value={option.studentId}>{option.person?.firstName + ' ' + option.person?.lastName} </option>
                       ))}
                     </select>
                     <label for="assignTo" class="form-label">Giao cho:</label>

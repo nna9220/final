@@ -26,6 +26,7 @@ public class Council {
 
     @OneToOne
     @JoinColumn(name = "subject", unique = true)
+    @JsonIgnore
     private Subject subject;
 
     @ManyToMany(mappedBy = "councils")

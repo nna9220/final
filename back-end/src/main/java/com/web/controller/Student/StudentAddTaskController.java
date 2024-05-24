@@ -65,6 +65,7 @@ public class StudentAddTaskController {
             Map<String,Object> response = new HashMap<>();
             response.put("student", currentStudent);
             response.put("subject", currentSubject);
+
             response.put("listStudentGroup", studentList);
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } else {
@@ -202,7 +203,6 @@ public class StudentAddTaskController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
-
 
     @GetMapping("/detail/{taskId}")
     public ResponseEntity<Map<String,Object>> getDetail(@RequestHeader("Authorization") String authorizationHeader, @PathVariable int taskId){

@@ -28,15 +28,15 @@ function DataTableType() {
     const handleAddType = () => {
         const tokenSt = sessionStorage.getItem('userToken');
         if (tokenSt) {
-            axiosInstance.post('/admin/typeSubject/create', { typeName: newTypeName }, {
+            axiosInstance.post('/admin/typeSubject/create',null,{
+                params:{ typeName: newTypeName }, 
                 headers: {
                     'Authorization': `Bearer ${tokenSt}`,
+                    'Content-Type': 'application/json',
                 },
             })
             .then(response => {
-                // Update the state with the new type
                 setType([...type, response.data]);
-                // Clear the input field
                 setNewTypeName('');
             })
             .catch(error => {

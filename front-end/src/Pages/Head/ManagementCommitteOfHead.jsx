@@ -23,7 +23,7 @@ function ManagementCommitteOfHead() {
                 <div className='context-menu'>
                     <div className='context-title'>
                         <div className='title-re'>
-                            <h3>ĐÁNH GIÁ KHÓA LUẬN</h3>
+                            <h3>HỘI ĐỒNG BÁO CÁO</h3>
                         </div>
                     </div>
                     <div className='context-nd'>

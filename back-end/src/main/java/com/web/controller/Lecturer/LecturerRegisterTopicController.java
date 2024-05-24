@@ -63,6 +63,8 @@ public class LecturerRegisterTopicController {
     private UserUtils userUtils;
     @Autowired
     private RegistrationPeriodRepository registrationPeriodRepository;
+    @Autowired
+    private EvaluationCriteriaRepository evaluationCriteriaRepository;
 
     private final TokenUtils tokenUtils;
     @Autowired
@@ -207,7 +209,10 @@ public class LecturerRegisterTopicController {
                                 studentList.add(studentId3);
                             }
                         }
-
+                        Set<EvaluationCriteria> evaluationCriteria = evaluationCriteriaRepository.getEvaluationCriteriaByTypeSubject(typeSubject);
+                        if (evaluationCriteria!=null){
+                            newSubject.setCriteria(evaluationCriteria);
+                        }
                         newSubject.setCheckStudent(student1 != null || student2 != null || student3 != null);
                         LocalDate nowDate = LocalDate.now();
                         newSubject.setYear(String.valueOf(nowDate));

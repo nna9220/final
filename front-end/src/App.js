@@ -41,6 +41,7 @@ import DefensePanel from './Pages/Head/DefensePanel';
 import ManagementCriteria from './Pages/Head/ManagementCriteria';
 import ManageCommittee from './Pages/Teacher/ManageCommittee';
 import ManagementCommitteOfHead from './Pages/Head/ManagementCommitteOfHead';
+import ManagementTopicGraduation from './Pages/Student/ManagementTopicGraduation';
 
 function App() {
   return (
@@ -80,6 +81,7 @@ function App() {
 
         <Route path="/homeStudent" element={<HomeStudent />} />
         <Route path="/managermentTopicStudent" element={<ManagementTopic />} />
+        <Route path="/managermentTopicGraduationStudent" element={<ManagementTopicGraduation />} />
         <Route path="/profileStudent" element={<ProfileST />} />
         <Route path="/RegisTopicStudent" element={<RegisterTopicSt />} />
 

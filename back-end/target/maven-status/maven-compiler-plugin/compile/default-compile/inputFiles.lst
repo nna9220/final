@@ -22,6 +22,7 @@ D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\dto\response\PersonRes
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\Lecturer\LecturerManageTutorialSubjectController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\jwt\JWTConfigurer.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\dto\request\StudentClassRequest.java
+D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\service\HeaderOdDepartment\BrowseSubjectToThesisService.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\repository\ResultGraduationRepository.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\repository\RegistrationPeriodRepository.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\api\AuthorityRest.java
@@ -33,6 +34,7 @@ D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\service\Admin\SubjectI
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\service\ViewAndDownloadFileService.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\exception\RestErrorHandler.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\dto\CustomUserDetails.java
+D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\Lecturer\LecturerCouncilController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\dto\TokenDto.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\utils\ExcelUtils.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\dto\request\SchoolYearRequest.java
@@ -42,6 +44,7 @@ D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\service\HeaderOdDepart
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\entity\FileComment.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\HeadOfDepartment\Graduation\CRUDCriteriaGraduationController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\utils\ExportConfig.java
+D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\HeadOfDepartment\HeadManageCriticalSubjectController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\repository\FileRepository.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\ProfileLecturerController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\admin\GraduationThesis\RegistrationPeriodGraduationController.java
@@ -58,6 +61,8 @@ D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\service\Student\Manage
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\repository\CouncilRepository.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\HeadOfDepartment\HeadAddCommentController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\config\CompareTime.java
+D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\service\Lecturer\LecturerAddScoreGraduationService.java
+D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\HeadOfDepartment\HeadCouncilController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\config\WebSecurityConfig.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\utils\Contains.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\Student\HomeStudentController.java
@@ -69,7 +74,6 @@ D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\exception\NotFoundExce
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\dto\response\StudentClassResponse.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\Student\Graduation\StudentManageGraduationController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\repository\TimeAddSubjectHeadRepository.java
-D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\service\Lecturer\LecturerSubjectService.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\admin\HomeAdminController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\repository\NotificationRepository.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\dto\response\LecturerResponse.java
@@ -78,6 +82,7 @@ D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\dto\response\Notificat
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\entity\Comment.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\HomePageController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\repository\RegistrationPeriodLecturerRepository.java
+D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\Lecturer\LecturerManageCriticalSubjectController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\admin\SubjectController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\dto\request\FileRequest.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\exception\BaseException.java
@@ -96,14 +101,17 @@ D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\dto\response\Registrat
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\utils\CommonPage.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\utils\CellConfig.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\service\Admin\LecturerService.java
+D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\Lecturer\Graduation\LecturerCouncilGraduationController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\dto\request\CommentRequest.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\Lecturer\LecturerAddCommentController.java
+D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\Lecturer\Graduation\LecturerManageCriticalSubjectGraduationController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\entity\RegistrationPeriod.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\admin\PersonController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\config\CheckRole.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\HeadOfDepartment\Graduation\HeadManageTutorialSubjectGraduationController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\HeadOfDepartment\Graduation\AddCounterArgumentGraduationController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\entity\Major.java
+D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\service\Lecturer\ThesisBrowseSubjectToCouncil.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\HeadOfDepartment\AddCounterArgumentController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\repository\LecturerRepository.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\Lecturer\Graduation\LecturerRegisterGraduationTopicController.java
@@ -112,6 +120,7 @@ D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\dto\response\SchoolYea
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\entity\Person.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\service\Admin\SubjectImportKLTN.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\config\FileStorageProperties.java
+D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\HeadOfDepartment\Graduation\HeadBrowseSubjectGraduationToThesisController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\utils\MailService.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\entity\Council.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\entity\Student.java
@@ -137,7 +146,9 @@ D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\dto\request\LecturerRe
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\service\Admin\TypeSubjectService.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\Lecturer\Graduation\LecturerAddCommentGraduationController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\entity\Authority.java
+D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\repository\ScoreGraduationRepository.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\dto\request\RegistrationPeriodLecturerRequest.java
+D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\HeadOfDepartment\HeadBrowseSubjectToThesisController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\entity\TimeAddSubjectOfHead.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\config\MailSenderConfig.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\admin\RegistrationPeriodLecturerController.java
@@ -183,8 +194,10 @@ D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\repository\TaskReposit
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\mapper\SchoolYearMapper.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\service\HeaderOdDepartment\ManageCouncilService.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\jwt\JwtTokenProvider.java
+D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\service\Council\EvaluationAndScoringService.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\Student\StudentManageEssayController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\dto\request\TypeSubjectRequest.java
+D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\HeadOfDepartment\Graduation\HeadEvaluationAndScoringGraduationController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\repository\PersonRepository.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\service\Admin\SubjectService.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\entity\RoleName.java
@@ -196,4 +209,5 @@ D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\entity\ResultGraduatio
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\entity\Notification.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\mapper\StudentClassMapper.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\HeadOfDepartment\CRUDCriteriaController.java
+D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\controller\HeadOfDepartment\Graduation\HeadManageCriticalSubjectGraduationController.java
 D:\KLTN\FinalProject\final\back-end\src\main\java\com\web\jwt\JwtAuthenticationFilter.java
