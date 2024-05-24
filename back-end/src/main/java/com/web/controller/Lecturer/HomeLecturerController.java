@@ -96,11 +96,6 @@ public class HomeLecturerController {
             Lecturer currentLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
             List<Subject> listSubject = subjectRepository.findSubjectsByThesisAdvisorId(currentLecturer,typeSubject);
-            /*ModelAndView modelAndView = new ModelAndView("lecturer_listReviewTopic");
-            modelAndView.addObject("person", personCurrent);
-            modelAndView.addObject("lec", currentLecturer);
-            modelAndView.addObject("listSubject",listSubject);
-            return modelAndView;*/
             Map<String,Object> response = new HashMap<>();
             response.put("person", personCurrent);
             response.put("lec",currentLecturer);
@@ -111,7 +106,6 @@ public class HomeLecturerController {
             //return new ModelAndView("error").addObject("errorMessage", "Bạn không có quyền truy cập.");
         }
     }
-
     @GetMapping("/counterArgumentSubject/detail/{id}")
     public ResponseEntity<Map<String,Object>> getDetailCounterArgument(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
@@ -119,11 +113,6 @@ public class HomeLecturerController {
         if (personCurrent != null && personCurrent.getAuthorities().getName().equals("ROLE_LECTURER")) {
             Lecturer currentLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             Subject existSubject = subjectRepository.findById(id).orElse(null);
-            /*ModelAndView modelAndView = new ModelAndView("lecturer_editReviewTopic");
-            modelAndView.addObject("person", personCurrent);
-            modelAndView.addObject("lec", currentLecturer);
-            modelAndView.addObject("subject",existSubject);
-            return modelAndView;*/
             Map<String,Object> response = new HashMap<>();
             response.put("person",personCurrent);
             response.put("lec",currentLecturer);

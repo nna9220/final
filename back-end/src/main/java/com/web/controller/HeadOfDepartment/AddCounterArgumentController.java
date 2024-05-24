@@ -140,7 +140,7 @@ public class AddCounterArgumentController {
                 if (currentLecturer != null) {
                     //Tạo list GV để thêm vào hội đồng
                     List<Lecturer> lecturers = new ArrayList<>();
-                    lecturers.add(existedSubject.getThesisAdvisorId());
+                    lecturers.add(currentLecturer);
                     lecturers.add(existedSubject.getInstructorId());
                     //Tạo mới hội đồng
                     Council council = new Council();
