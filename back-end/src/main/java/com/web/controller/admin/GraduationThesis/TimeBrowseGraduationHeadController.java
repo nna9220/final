@@ -137,7 +137,7 @@ public class TimeBrowseGraduationHeadController {
                 //GỬI MAIL
                 //Dnah sách SV
                 Authority authority = authorityRepository.findByName("ROLE_HEAD");
-                List<Lecturer> lecturers = lecturerRepository.getListLecturerISHead(String.valueOf(authority));
+                List<Lecturer> lecturers = lecturerRepository.getListLecturerISHead(authority);
                 List<String> emailLecturer = new ArrayList<>();
                 for (Lecturer lecturer:lecturers) {
                     emailLecturer.add(lecturer.getPerson().getUsername());

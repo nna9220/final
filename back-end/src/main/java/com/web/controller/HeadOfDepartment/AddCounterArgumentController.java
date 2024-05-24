@@ -74,7 +74,6 @@ public class AddCounterArgumentController {
 
     private final TokenUtils tokenUtils;
 
-
     @GetMapping("/export")
     public void generateExcelReport(HttpServletResponse response, HttpSession session) throws Exception{
 
@@ -98,7 +97,7 @@ public class AddCounterArgumentController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Subject currentSubject = subjectRepository.findById(subjectId).orElse(null);
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            List<Lecturer> lecturerList = lecturerRepository.getListLecturerNotCurrent(existedLecturer.getLecturerId());
+            List<Lecturer> lecturerList = lecturerRepository.getListLecturerNotCurrent(currentSubject.getInstructorId().getLecturerId());
             Map<String,Object> response = new HashMap<>();
             response.put("listLecturer", lecturerList);
             response.put("person",personCurrent);
@@ -147,6 +146,7 @@ public class AddCounterArgumentController {
                     council.setLecturers(lecturers);
                     council.setSubject(existedSubject);
                     councilRepository.save(council);
+                    System.out.println("council: " + council.getCouncilId());
                     List<Council> councils = new ArrayList<>();
                     councils.add(council);
                     //set GVHD và GVPB
@@ -155,6 +155,7 @@ public class AddCounterArgumentController {
                     currentLecturer.setCouncils(councils);
                     currentLecturer.setListSubCounterArgument(addSub);
                     existedSubject.setThesisAdvisorId(currentLecturer);
+                    existedSubject.setCouncil(council);
                     lecturerRepository.save(currentLecturer);
                     lecturerRepository.save(instructor);
                     subjectRepository.save(existedSubject);

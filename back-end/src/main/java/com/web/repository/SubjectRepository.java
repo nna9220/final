@@ -1,9 +1,6 @@
 package com.web.repository;
 
-import com.web.entity.Lecturer;
-import com.web.entity.Major;
-import com.web.entity.Subject;
-import com.web.entity.TypeSubject;
+import com.web.entity.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -33,7 +30,7 @@ public interface SubjectRepository extends JpaRepository<Subject, Integer> {
     @Query("select s from Subject s where s.status=:status and s.major=:major and s.active=:active and s.typeSubject=:typeSubject")
     public List<Subject> findSubjectByStatusAndMajorAndActive(boolean status, Major major, Byte active, TypeSubject typeSubject);
 
-    @Query("select s from Subject s where s.checkStudent=false and (s.student1 is null and  s.student2 is null and s.student3 is null) and s.status=:status and s.major=:major and s.typeSubject=:typeSubject")
+    @Query("select s from Subject s where s.checkStudent=false and (s.student1 is null or  s.student2 is null or s.student3 is null) and s.status=:status and s.major=:major and s.typeSubject=:typeSubject")
     public List<Subject> findSubjectByStatusAndMajorAndStudent(boolean status, Major major,TypeSubject typeSubject);
 
     @Query("select s from Subject s where s.thesisAdvisorId IS NULL and s.major=:major and s.status=:status and s.typeSubject=:typeSubject")
@@ -50,6 +47,10 @@ public interface SubjectRepository extends JpaRepository<Subject, Integer> {
 
     @Query("select s from Subject s where s.instructorId=:id and s.status=:status and s.typeSubject=:typeSubject and s.active=:active")
     public List<Subject> findSubjectByThesisAndStatusAndActiveAndTypeSubject(Lecturer id, Boolean status, TypeSubject typeSubject,Byte active);
+
+    @Query("select s from Subject s where s.council=:id and s.status=:status and s.typeSubject=:typeSubject and s.active=:active")
+    public List<Subject> findSubjectByCouncilAndStatusAndActiveAndTypeSubject(Council id, Boolean status, TypeSubject typeSubject, Byte active);
+
 
     @Query("select s from Subject s where s.major=:major and s.status=:status and s.typeSubject=:typeSubject and s.active=:active")
     public List<Subject> findSubjectByMajorAndStatusAndActiveAndTypeSubject(Major major, Boolean status, TypeSubject typeSubject,Byte active);

@@ -27,10 +27,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/lecturer/subjectGraduation")
@@ -56,6 +53,8 @@ public class LecturerRegisterGraduationTopicController {
     private LecturerAddScoreGraduationService lecturerSubjectService;
     @Autowired
     private PersonRepository personRepository;
+    @Autowired
+    private EvaluationCriteriaRepository evaluationCriteriaRepository;
     @Autowired
     private StudentRepository studentRepository;
     @Autowired
@@ -103,7 +102,7 @@ public class LecturerRegisterGraduationTopicController {
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
             List<Subject> subjectList = subjectRepository.findSubjectByActive((byte)8);
-            List<Student> studentList = studentRepository.getStudentSubjectGraduationNull(subjectList);
+            List<Student> studentList = studentRepository.getStudentSubjectGraduationNull();
             for (int i =0;i<studentList.size();i++){
                 System.out.println(studentList.get(i));
             }
@@ -130,6 +129,18 @@ public class LecturerRegisterGraduationTopicController {
         }
     }
 
+    @GetMapping("/periodLecturer")
+    public ResponseEntity<?> getPeriod(@RequestHeader("Authorization") String authorizationHeader){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
+            List<RegistrationPeriodLectuer> registrationPeriods = registrationPeriodLecturerRepository.findAllPeriodEssay(typeSubject);
+            return new ResponseEntity<>(registrationPeriods, HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
 
     //Đăng ký đề tài
     @PostMapping("/register")
@@ -197,6 +208,10 @@ public class LecturerRegisterGraduationTopicController {
                         newSubject.setCheckStudent(false);
                     }else {
                         newSubject.setCheckStudent(true);
+                    }
+                    Set<EvaluationCriteria> evaluationCriteria = evaluationCriteriaRepository.getEvaluationCriteriaByTypeSubject(typeSubject);
+                    if (evaluationCriteria!=null){
+                        newSubject.setCriteria(evaluationCriteria);
                     }
                     LocalDate nowDate = LocalDate.now();
                     newSubject.setYear(String.valueOf(nowDate));

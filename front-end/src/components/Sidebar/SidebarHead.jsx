@@ -115,7 +115,7 @@ function SidebarHead() {
                                     <a style={{ marginLeft: '10px' }} href="/managementHead/criteria" className="sidebar-link">Tiêu chí phản biện</a>
                                 </li>
                                 <li className="sidebar-item">
-                                    <a style={{ marginLeft: '10px' }} href="/defensepanel" className="sidebar-link">Hội đồng báo cáo</a>
+                                    <a style={{ marginLeft: '10px' }} href="/defensepanel" className="sidebar-link">Lập hội đồng</a>
                                 </li>
                             </ul>
                         </li>
@@ -133,7 +133,7 @@ function SidebarHead() {
                                     <a style={{ marginLeft: '10px' }} href="/managermentHead/TopicsPB" className="sidebar-link">Đề tài phản biện</a>
                                 </li>
                                 <li className="sidebar-item">
-                                    <a style={{ marginLeft: '10px' }} href="/managermentHead/thesisEvaluation" className="sidebar-link">Đánh giá khóa luận</a>
+                                    <a style={{ marginLeft: '10px' }} href="/managermentHead/thesisEvaluation" className="sidebar-link">Hội đồng báo cáo</a>
                                 </li>
                                 <li className="sidebar-item">
                                     <a style={{ marginLeft: '10px' }} href="/managermentHead/TopicsPB" className="sidebar-link">Đề tài đã thực hiện</a>

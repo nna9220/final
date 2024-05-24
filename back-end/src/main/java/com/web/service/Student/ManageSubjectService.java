@@ -64,6 +64,7 @@ public class ManageSubjectService {
                         newFile.setUrl(fileDownloadUri);
                         var fileSave = fileMaterialService.uploadFile(newFile);
                         existedSubject.setFiftyPercent(fileSave);
+                        subjectRepository.save(existedSubject);
                     } else {
                         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                     }
@@ -92,6 +93,7 @@ public class ManageSubjectService {
                         newFile.setUrl(fileDownloadUri);
                         var fileSave = fileMaterialService.uploadFile(newFile);
                         existedSubject.setFiftyPercent(fileSave);
+                        subjectRepository.save(existedSubject);
                     } else {
                         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                     }

@@ -40,11 +40,12 @@ function TableApproveKL() {
         })
             .then(response => {
                 console.log("Topic: ", response.data);
-                const topicsWithId = response.data.listSubject.map((topic, index) => ({
+                const topicsWithId = response.data.map((topic, index) => ({
                     ...topic,
                     id: topic.subjectId,
-                    instructorName: topic.instructorId.person.firstName + ' ' + topic.instructorId.person.lastName
+                    instructorName: topic.instructorId?.person?.firstName + ' ' + topic.instructorId?.person?.lastName
                 }));
+
                 setTopics(topicsWithId);
             })
             .catch(error => {
@@ -53,7 +54,7 @@ function TableApproveKL() {
     };
 
     const loadListDelete = () => {
-        axiosInstance.get('/head/subject/delete', {
+        axiosInstance.get('/head/subjectGraduation/delete', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -61,12 +62,14 @@ function TableApproveKL() {
             .then(response => {
                 console.log("Topic deleted: ", response.data);
                 loadTopics();
-                const topicsDeletedWithId = response.data.lstSubject.map((topic, index) => ({
+                const topicsDeletedWithId = response.data.listSubject.map((topic, index) => ({
                     ...topic,
                     id: topic.subjectId,
                     instructorName: topic.instructorId.person.firstName + ' ' + topic.instructorId.person.lastName
                 }));
-                setTopicsDeleted(topicsDeletedWithId);            })
+                console.log("Subject: ",topicsDeletedWithId )
+                setTopicsDeleted(topicsDeletedWithId);            
+            })
             .catch(error => {
                 console.error(error);
             });
@@ -90,7 +93,7 @@ function TableApproveKL() {
     };
 
     const handleDelete = (id) => {
-        axiosInstance.post(`/head/subject/delete/${id}`, null, {
+        axiosInstance.post(`/head/subjectGraduation/delete/${id}`, null, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },

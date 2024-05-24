@@ -56,7 +56,7 @@ function SidebarStudent() {
           <hr style={{ color: '#fff' }}></hr>
           {!isAvatarVisible && (
             <div className="sidebar-header">
-              <FcReading size={70}/>
+              <FcReading size={70} />
               <div className="user-info">
                 <span className="user-name"><strong>{student.firstName + ' ' + student.lastName}</strong></span>
                 <span className="user-role">Sinh viên</span>
@@ -84,10 +84,19 @@ function SidebarStudent() {
               </a>
             </li>
             <li className="sidebar-item">
-              <a href="/managermentTopicStudent" className="sidebar-link">
-                <i className="lni lni-cog"><SourceOutlinedIcon /></i>
+              <a href="#" className="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth"
+                aria-expanded="false" aria-controls="auth">
+                <i className="lni lni-protection"><SourceOutlinedIcon /></i>
                 <span>Quản lý đề tài</span>
               </a>
+              <ul id="auth" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                <li className="sidebar-item">
+                  <a style={{ marginLeft: '10px' }} href="/managermentTopicStudent" className="sidebar-link">Tiểu luận chuyên ngành</a>
+                </li>
+                <li className="sidebar-item">
+                  <a style={{ marginLeft: '10px' }} href="/managermentTopicGraduationStudent" className="sidebar-link">Khóa luận tốt nghiệp</a>
+                </li>
+              </ul>
             </li>
           </ul>
         </aside>
