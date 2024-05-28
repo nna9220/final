@@ -246,7 +246,6 @@ public class StudentController {
 
     @PostMapping("/delete/{id}")
     public ResponseEntity<?> deleteStudent(@PathVariable String id, @RequestHeader("Authorization") String authorizationHeader) {
-
                 Student student = studentRepository.findById(id).orElse(null);
                 if (student!=null) {
                     studentRepository.delete(student);

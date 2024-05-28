@@ -334,7 +334,7 @@ function DataTable() {
                         Add
                     </button>
                 </div>
-                <button className='button-listDelete' onClick={() => setShowDeleteStudents(showDeletedStudents)}>
+                <button className='button-listDelete' onClick={() => setShowDeleteStudents(!showDeletedStudents)}>
                     {showDeletedStudents ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách sinh viên</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách sinh viên đã xóa</>}
                 </button>
             </div>
@@ -361,7 +361,7 @@ function DataTable() {
 
             {!showDeletedStudents && (
                 <DataGrid
-                    rows={students.filter(student => student.person?.status).map((student, index) => ({
+                    rows={students.filter(student => student).map((student, index) => ({
                         id: index + 1,
                         studentId: student.studentId,
                         fullName: `${student.person.firstName} ${student.person.lastName}`,
