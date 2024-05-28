@@ -334,7 +334,7 @@ function DataTable() {
                         Add
                     </button>
                 </div>
-                <button className='button-listDelete' onClick={() => setShowDeleteStudents(!showDeletedStudents)}>
+                <button className='button-listDelete' onClick={() => setShowDeleteStudents(showDeletedStudents)}>
                     {showDeletedStudents ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách sinh viên</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách sinh viên đã xóa</>}
                 </button>
             </div>
