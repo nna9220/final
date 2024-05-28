@@ -251,8 +251,12 @@ public class StudentController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             Person editPerson = personRepository.findById(id).orElse(null);
             if (editPerson != null) {
+                Student student = studentRepository.findById(personCurrent.getPersonId()).orElse(null);
                 editPerson.setStatus(false);
                 personRepository.delete(editPerson);
+                if (student!=null) {
+                    studentRepository.delete(student);
+                }
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
