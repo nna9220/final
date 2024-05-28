@@ -254,9 +254,6 @@ function DataTableRegistrationPeroidSt() {
             <div className='border-container'>
                 <div className='body-table-period'>
                     <div style={{ display: 'flex' }}>
-                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddTimeApprove">
-                            Add
-                        </button>
                         <div>
 
                         </div>
@@ -350,9 +347,7 @@ function DataTableRegistrationPeroidSt() {
             <div className='border-container-2'>
                 <div className='body-table-period'>
                     <div style={{ display: 'flex' }}>
-                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddTimeApprove2">
-                            Add
-                        </button>
+                    
                         <div>
 
                         </div>
