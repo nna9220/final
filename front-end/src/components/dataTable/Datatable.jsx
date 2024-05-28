@@ -361,7 +361,7 @@ function DataTable() {
 
             {!showDeletedStudents && (
                 <DataGrid
-                    rows={students.filter(student => student.person.status).map((student, index) => ({
+                    rows={students.filter(student => student.person?.status).map((student, index) => ({
                         id: index + 1,
                         studentId: student.studentId,
                         fullName: `${student.person.firstName} ${student.person.lastName}`,
