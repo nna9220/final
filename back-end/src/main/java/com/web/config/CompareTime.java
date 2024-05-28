@@ -1,9 +1,6 @@
 package com.web.config;
 
-import com.web.entity.RegistrationPeriod;
-import com.web.entity.RegistrationPeriodLectuer;
-import com.web.entity.TimeAddSubjectOfHead;
-import com.web.entity.TimeBrowsOfHead;
+import com.web.entity.*;
 
 import java.sql.Date;
 import java.text.ParseException;
@@ -80,16 +77,31 @@ public class CompareTime {
         return false;
     }
 
-    public static boolean isCurrentTimeInAddSubjectTimeHead(TimeAddSubjectOfHead timeAddSubjectOfHead){
+    public static boolean isCurrentTimeInAddSubjectTimeHead(List<TimeAddSubjectOfHead> timeAddSubjectOfHead){
         Date currentTime = new Date(System.currentTimeMillis());
-        if (timeAddSubjectOfHead!=null){
-            System.out.println("start 1: " + timeAddSubjectOfHead.getTimeStart());
-            System.out.println("end 1: " + timeAddSubjectOfHead.getTimeEnd());
-            System.out.println("current: " + currentTime);
-            return isCurrentTimeInIntervalStudent(timeAddSubjectOfHead.getTimeStart(), timeAddSubjectOfHead.getTimeEnd());
+        if (timeAddSubjectOfHead != null) {
+            for (TimeAddSubjectOfHead time : timeAddSubjectOfHead) {
+                System.out.println("start 1: " + time.getTimeStart());
+                System.out.println("end 1: " + time.getTimeEnd());
+                System.out.println("current: " + currentTime);
+                if (isCurrentTimeInIntervalStudent(time.getTimeStart(), time.getTimeEnd())) {
+                    return true;
+                }
+            }
         }
         return false;
     }
+
+    public static boolean isCurrentTimeInCouncilTime(Council council) {
+        if (council != null) {
+            LocalDateTime currentTime = LocalDateTime.now(); // Lấy thời gian hiện tại
+
+            // So sánh thời gian hiện tại với thời gian trong Council
+            return currentTime.isAfter(council.getTimeReport()); // Trả về true nếu thời gian hiện tại sau thời gian trong Council
+        }
+        return false; // Trả về false nếu Council là null
+    }
+
 
 
 

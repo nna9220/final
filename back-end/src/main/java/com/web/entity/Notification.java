@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 
 @Setter
@@ -32,5 +33,5 @@ public class Notification implements Serializable {
     @Column(name = "date_Submit")
     @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date dateSubmit;
+    private LocalDateTime dateSubmit;
 }

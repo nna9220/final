@@ -10,6 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.io.Serializable;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Setter
@@ -30,12 +31,12 @@ public class Task implements Serializable {
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name="time_start")
-    private Date timeStart;
+    private LocalDateTime timeStart;
 
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name="time_end")
-    private Date timeEnd;
+    private LocalDateTime timeEnd;
 
     @ManyToOne
     @JoinColumn(name="subject_id")

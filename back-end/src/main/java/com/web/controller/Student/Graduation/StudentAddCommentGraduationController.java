@@ -74,7 +74,7 @@ public class StudentAddCommentGraduationController {
             newComment.setTaskId(existTask);
             LocalDateTime nowDate = LocalDateTime.now();
             Date dateSubmit = Date.from(nowDate.atZone(ZoneId.systemDefault()).toInstant());
-            newComment.setDateSubmit(dateSubmit);
+            newComment.setDateSubmit(nowDate);
             var comment = commentRepository.save(newComment);
             if (files != null && !files.isEmpty()) {
                 for (MultipartFile file : files) {
