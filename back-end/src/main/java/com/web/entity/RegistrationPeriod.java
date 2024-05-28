@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -24,12 +25,12 @@ public class RegistrationPeriod implements Serializable {
     @Column(name="registration_time_start")
     @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date registrationTimeStart;
+    private LocalDateTime registrationTimeStart;
 
     @Column(name="registration_time_end")
     @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date registrationTimeEnd;
+    private LocalDateTime registrationTimeEnd;
 
     @Column(name="registration_name")
     private String registrationName;

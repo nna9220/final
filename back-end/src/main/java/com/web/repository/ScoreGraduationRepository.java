@@ -11,4 +11,6 @@ import java.util.List;
 public interface ScoreGraduationRepository extends JpaRepository<ScoreGraduation, Integer> {
     @Query("select s from ScoreGraduation s where s.byLecturer=:lecturer and s.resultGraduation=:result")
     ScoreGraduation getScoreGraduationByLecturerAndReAndResultGraduation(Lecturer lecturer, ResultGraduation result);
+    @Query("select s from ScoreGraduation s where s.resultGraduation=:result")
+    List<ScoreGraduation> getScoreGraduationByResultGraduation(ResultGraduation result);
 }

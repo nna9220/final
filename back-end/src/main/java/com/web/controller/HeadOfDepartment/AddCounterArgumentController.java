@@ -50,6 +50,8 @@ public class AddCounterArgumentController {
     @Autowired
     private ResultEssayRepository resultEssayRepository;
     @Autowired
+    private TimeAddSubjectHeadRepository timeAddSubjectHeadRepository;
+    @Autowired
     private PersonRepository personRepository;
     @Autowired
     private TypeSubjectRepository typeSubjectRepository;
@@ -257,7 +259,8 @@ public class AddCounterArgumentController {
                 List<RegistrationPeriodLectuer> periodList = registrationPeriodLecturerRepository.findAllPeriodEssay(typeSubject);
                 System.out.println("Sau if check role, trước if check time");
                 System.out.println(CompareTime.isCurrentTimeInPeriodSLecturer(periodList));
-                if (CompareTime.isCurrentTimeInPeriodSLecturer(periodList)) {
+                List<TimeAddSubjectOfHead> timeAddSubjectOfHead = timeAddSubjectHeadRepository.findAllPeriodEssay(typeSubject);
+                if (CompareTime.isCurrentTimeInPeriodSLecturer(periodList) && CompareTime.isCurrentTimeInAddSubjectTimeHead(timeAddSubjectOfHead)) {
                     System.out.println("sau if check time");
                     Subject newSubject = new Subject();
                     newSubject.setSubjectName(name);

@@ -82,8 +82,7 @@ public class LecturerAddCommentController {
             Subject existSubject = subjectRepository.findById(existTask.getSubjectId().getSubjectId()).orElse(null);
             newComment.setTaskId(existTask);
             LocalDateTime nowDate = LocalDateTime.now();
-            Date dateSubmit = Date.from(nowDate.atZone(ZoneId.systemDefault()).toInstant());
-            newComment.setDateSubmit(dateSubmit);
+            newComment.setDateSubmit(nowDate);
             var comment = commentRepository.save(newComment);
             if (files != null && !files.isEmpty()) {
                 for (MultipartFile file : files) {

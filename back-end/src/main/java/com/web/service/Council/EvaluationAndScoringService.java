@@ -1,6 +1,7 @@
 package com.web.service.Council;
 
 import com.web.config.CheckRole;
+import com.web.config.CompareTime;
 import com.web.config.TokenUtils;
 import com.web.entity.*;
 import com.web.repository.*;
@@ -361,224 +362,242 @@ public class EvaluationAndScoringService {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
-            int countLecturers = existedSubject.getCouncil().getLecturers().size();
-            if (existedSubject!=null){
-                //Kiểm tra xem có tồn tại SVTH k - Student 1
-                if (existedSubject.getStudent1()!=null){
-                    //Tìm Sv
-                    Student student1 = studentRepository.findById(studentId1).orElse(null);
-                    if (student1!=null) {
-                        //Kiểm tra xem student này đã có kết quả chưa
-                        ResultGraduation existedResultGraduation = resultGraduationRepository.findResultGraduationByStudentAndSubject(student1, existedSubject);
-                        if (existedResultGraduation == null) {
-                            //nếu chưa có, tạo mới 1 result - score
-                            ResultGraduation resultGraduation = new ResultGraduation();
-                            ScoreGraduation scoreGraduation = new ScoreGraduation();
-                            //Set sinh viên và đề tài cho result này
-                            resultGraduation.setStudent(student1);
-                            resultGraduation.setSubject(existedSubject);
-                            //Set điểm, giảng viên, đánh giá và result cho score
-                            scoreGraduation.setScore(scoreStudent1);
-                            scoreGraduation.setByLecturer(existedLecturer);
-                            scoreGraduation.setReview(reviewStudent1);
-                            scoreGraduation.setResultGraduation(resultGraduation);
-                            //Tạo mới 1 list score rỗng, bỏ score mới tạo vào và set list score này cho result
-                            List<ScoreGraduation> scoreGraduationList = new ArrayList<>();
-                            scoreGraduationList.add(scoreGraduation);
-                            resultGraduation.setScoreCouncil(scoreGraduationList);
-                            resultGraduationRepository.save(resultGraduation);
-                            scoreGraduationRepository.save(scoreGraduation);
-                            //Tạo mới list result để gán cho subject
-                            List<ResultGraduation> resultGraduations = new ArrayList<>();
-                            resultGraduations.add(resultGraduation);
-                            existedSubject.setResultGraduations(resultGraduations);
-                            subjectRepository.save(existedSubject);
-                            existedLecturer.setScoreGraduationList(scoreGraduationList);
-                            lecturerRepository.save(existedLecturer);
-                            student1.setResultGraduation(resultGraduation);
-                            studentRepository.save(student1);
-                        } else {
-                            //Chỉnh sửa result có sẵn - Kiểm tra xe GV đó cho điểm chưa có rồi thì thông báo đã chấm điểm rồi, không được cấm điểm lại
-                            ScoreGraduation existedScoreGraduation = scoreGraduationRepository.getScoreGraduationByLecturerAndReAndResultGraduation(existedLecturer, existedResultGraduation);
-                            if (existedScoreGraduation == null) {
-                                //Giảng viên này chưa có score cho result này
-                                //tạo mới score
+            if (CompareTime.isCurrentTimeInCouncilTime(existedSubject.getCouncil())) {
+                //Đếm số luượng giảng viên trong hội đồng
+                int countLecturers = existedSubject.getCouncil().getLecturers().size();
+                if (existedSubject != null) {
+                    //Kiểm tra xem có tồn tại SVTH k - Student 1
+                    if (existedSubject.getStudent1() != null) {
+                        //Tìm Sv
+                        Student student1 = studentRepository.findById(studentId1).orElse(null);
+                        if (student1 != null) {
+                            //Kiểm tra xem student này đã có kết quả chưa
+                            ResultGraduation existedResultGraduation = resultGraduationRepository.findResultGraduationByStudentAndSubject(student1, existedSubject);
+                            if (existedResultGraduation == null) {
+                                //nếu chưa có, tạo mới 1 result - score
+                                ResultGraduation resultGraduation = new ResultGraduation();
                                 ScoreGraduation scoreGraduation = new ScoreGraduation();
+                                //Set sinh viên và đề tài cho result này
+                                resultGraduation.setStudent(student1);
+                                resultGraduation.setSubject(existedSubject);
                                 //Set điểm, giảng viên, đánh giá và result cho score
                                 scoreGraduation.setScore(scoreStudent1);
                                 scoreGraduation.setByLecturer(existedLecturer);
                                 scoreGraduation.setReview(reviewStudent1);
-                                scoreGraduation.setResultGraduation(existedResultGraduation);
-                                scoreGraduationRepository.save(scoreGraduation);
+                                scoreGraduation.setResultGraduation(resultGraduation);
                                 //Tạo mới 1 list score rỗng, bỏ score mới tạo vào và set list score này cho result
                                 List<ScoreGraduation> scoreGraduationList = new ArrayList<>();
                                 scoreGraduationList.add(scoreGraduation);
-                                existedResultGraduation.setScoreCouncil(scoreGraduationList);
-                                resultGraduationRepository.save(existedResultGraduation);
+                                resultGraduation.setScoreCouncil(scoreGraduationList);
+                                resultGraduationRepository.save(resultGraduation);
+                                scoreGraduationRepository.save(scoreGraduation);
                                 //Tạo mới list result để gán cho subject
                                 List<ResultGraduation> resultGraduations = new ArrayList<>();
-                                resultGraduations.add(existedResultGraduation);
+                                resultGraduations.add(resultGraduation);
                                 existedSubject.setResultGraduations(resultGraduations);
-                                //đếm số lượng score của result student 1 rồi ó sánh với countLecturers
-                                if (student1.getResultGraduation().getScoreCouncil().size() == countLecturers){
-                                    existedSubject.setActive((byte)9);
-                                }
                                 subjectRepository.save(existedSubject);
                                 existedLecturer.setScoreGraduationList(scoreGraduationList);
                                 lecturerRepository.save(existedLecturer);
-                                student1.setResultGraduation(existedResultGraduation);
+                                student1.setResultGraduation(resultGraduation);
                                 studentRepository.save(student1);
-
                             } else {
-                                //Trả về mã 302 - Thông báo đã chấm điểm
-                                return new ResponseEntity<>(HttpStatus.FOUND);
+                                //Chỉnh sửa result có sẵn - Kiểm tra xe GV đó cho điểm chưa có rồi thì thông báo đã chấm điểm rồi, không được cấm điểm lại
+                                ScoreGraduation existedScoreGraduation = scoreGraduationRepository.getScoreGraduationByLecturerAndReAndResultGraduation(existedLecturer, existedResultGraduation);
+                                if (existedScoreGraduation == null) {
+                                    //Giảng viên này chưa có score cho result này
+                                    //tạo mới score
+                                    ScoreGraduation scoreGraduation = new ScoreGraduation();
+                                    //Set điểm, giảng viên, đánh giá và result cho score
+                                    scoreGraduation.setScore(scoreStudent1);
+                                    scoreGraduation.setByLecturer(existedLecturer);
+                                    scoreGraduation.setReview(reviewStudent1);
+                                    scoreGraduation.setResultGraduation(existedResultGraduation);
+                                    scoreGraduationRepository.save(scoreGraduation);
+                                    //Tạo mới 1 list score rỗng, bỏ score mới tạo vào và set list score này cho result
+                                    List<ScoreGraduation> scoreGraduationList = new ArrayList<>();
+                                    scoreGraduationList.add(scoreGraduation);
+                                    existedResultGraduation.setScoreCouncil(scoreGraduationList);
+                                    resultGraduationRepository.save(existedResultGraduation);
+                                    //Tạo mới list result để gán cho subject
+                                    List<ResultGraduation> resultGraduations = new ArrayList<>();
+                                    resultGraduations.add(existedResultGraduation);
+                                    existedSubject.setResultGraduations(resultGraduations);
+                                    //đếm số lượng score của result student 1 rồi ó sánh với countLecturers
+                                    if (student1.getResultGraduation().getScoreCouncil().size() == countLecturers) {
+                                        existedSubject.setActive((byte) 9);
+                                    }
+
+                                    existedLecturer.setScoreGraduationList(scoreGraduationList);
+                                    lecturerRepository.save(existedLecturer);
+                                    student1.setResultGraduation(existedResultGraduation);
+                                    studentRepository.save(student1);
+                                    //Sau khi lưu kết quả, check số lượng kết quả của subject và student này
+                                    //Nếu bằng số lượng GV trong hội đồng và GVHD đã chấm điểm thì cho active = 9
+                                    //Tìm Kết quả
+                                    ResultGraduation resultGraduation = resultGraduationRepository.findResultGraduationByStudentAndSubject(student1, existedSubject);
+                                    //Tìm ds điểm của kq đó
+                                    List<ScoreGraduation> scoreGraduations = scoreGraduationRepository.getScoreGraduationByResultGraduation(resultGraduation);
+                                    int countScore = scoreGraduations.size();
+                                    if (countScore == countLecturers && resultGraduation.getScoreInstructor() != null) {
+                                        existedSubject.setActive((byte) 9);
+                                    }
+                                    subjectRepository.save(existedSubject);
+
+                                } else {
+                                    //Trả về mã 302 - Thông báo đã chấm điểm
+                                    return new ResponseEntity<>(HttpStatus.FOUND);
+                                }
                             }
                         }
                     }
-                }
 
-                //Kiểm tra xem có tồn tại SVTH k - Student 2
-                if (existedSubject.getStudent2()!=null){
-                    //Tìm Sv
-                    Student student2 = studentRepository.findById(studentId2).orElse(null);
-                    if (student2!=null) {
-                        //Kiểm tra xem student này đã có kết quả chưa
-                        ResultGraduation existedResultGraduation = resultGraduationRepository.findResultGraduationByStudentAndSubject(student2, existedSubject);
-                        if (existedResultGraduation == null) {
-                            //nếu chưa có, tạo mới 1 result - score
-                            ResultGraduation resultGraduation = new ResultGraduation();
-                            ScoreGraduation scoreGraduation = new ScoreGraduation();
-                            //Set sinh viên và đề tài cho result này
-                            resultGraduation.setStudent(student2);
-                            resultGraduation.setSubject(existedSubject);
-                            //Set điểm, giảng viên, đánh giá và result cho score
-                            scoreGraduation.setScore(scoreStudent2);
-                            scoreGraduation.setByLecturer(existedLecturer);
-                            scoreGraduation.setReview(reviewStudent2);
-                            scoreGraduation.setResultGraduation(resultGraduation);
-                            //Tạo mới 1 list score rỗng, bỏ score mới tạo vào và set list score này cho result
-                            List<ScoreGraduation> scoreGraduationList = new ArrayList<>();
-                            scoreGraduationList.add(scoreGraduation);
-                            resultGraduation.setScoreCouncil(scoreGraduationList);
-                            resultGraduationRepository.save(resultGraduation);
-                            //Tạo mới list result để gán cho subject
-                            List<ResultGraduation> resultGraduations = new ArrayList<>();
-                            resultGraduations.add(resultGraduation);
-                            existedSubject.setResultGraduations(resultGraduations);
-                            subjectRepository.save(existedSubject);
-                            existedLecturer.setScoreGraduationList(scoreGraduationList);
-                            lecturerRepository.save(existedLecturer);
-                            student2.setResultGraduation(resultGraduation);
-                            studentRepository.save(student2);
-                        } else {
-                            //Chỉnh sửa result có sẵn - Kiểm tra xe GV đó cho điểm chưa có rồi thì thông báo đã chấm điểm rồi, không được cấm điểm lại
-                            ScoreGraduation existedScoreGraduation = scoreGraduationRepository.getScoreGraduationByLecturerAndReAndResultGraduation(existedLecturer, existedResultGraduation);
-                            if (existedScoreGraduation == null) {
-                                //Giảng viên này chưa có score cho result này
-                                //tạo mới score
+                    //Kiểm tra xem có tồn tại SVTH k - Student 2
+                    if (existedSubject.getStudent2() != null) {
+                        //Tìm Sv
+                        Student student2 = studentRepository.findById(studentId2).orElse(null);
+                        if (student2 != null) {
+                            //Kiểm tra xem student này đã có kết quả chưa
+                            ResultGraduation existedResultGraduation = resultGraduationRepository.findResultGraduationByStudentAndSubject(student2, existedSubject);
+                            if (existedResultGraduation == null) {
+                                //nếu chưa có, tạo mới 1 result - score
+                                ResultGraduation resultGraduation = new ResultGraduation();
                                 ScoreGraduation scoreGraduation = new ScoreGraduation();
+                                //Set sinh viên và đề tài cho result này
+                                resultGraduation.setStudent(student2);
+                                resultGraduation.setSubject(existedSubject);
                                 //Set điểm, giảng viên, đánh giá và result cho score
                                 scoreGraduation.setScore(scoreStudent2);
                                 scoreGraduation.setByLecturer(existedLecturer);
                                 scoreGraduation.setReview(reviewStudent2);
-                                scoreGraduation.setResultGraduation(existedResultGraduation);
+                                scoreGraduation.setResultGraduation(resultGraduation);
                                 scoreGraduationRepository.save(scoreGraduation);
                                 //Tạo mới 1 list score rỗng, bỏ score mới tạo vào và set list score này cho result
                                 List<ScoreGraduation> scoreGraduationList = new ArrayList<>();
                                 scoreGraduationList.add(scoreGraduation);
-                                existedResultGraduation.setScoreCouncil(scoreGraduationList);
-                                resultGraduationRepository.save(existedResultGraduation);
+                                resultGraduation.setScoreCouncil(scoreGraduationList);
+                                resultGraduationRepository.save(resultGraduation);
                                 //Tạo mới list result để gán cho subject
                                 List<ResultGraduation> resultGraduations = new ArrayList<>();
-                                resultGraduations.add(existedResultGraduation);
+                                resultGraduations.add(resultGraduation);
                                 existedSubject.setResultGraduations(resultGraduations);
                                 subjectRepository.save(existedSubject);
                                 existedLecturer.setScoreGraduationList(scoreGraduationList);
                                 lecturerRepository.save(existedLecturer);
-                                student2.setResultGraduation(existedResultGraduation);
+                                student2.setResultGraduation(resultGraduation);
                                 studentRepository.save(student2);
                             } else {
-                                //Trả về mã 302 - Thông báo đã chấm điểm
-                                return new ResponseEntity<>(HttpStatus.FOUND);
+                                //Chỉnh sửa result có sẵn - Kiểm tra xe GV đó cho điểm chưa có rồi thì thông báo đã chấm điểm rồi, không được cấm điểm lại
+                                ScoreGraduation existedScoreGraduation = scoreGraduationRepository.getScoreGraduationByLecturerAndReAndResultGraduation(existedLecturer, existedResultGraduation);
+                                if (existedScoreGraduation == null) {
+                                    //Giảng viên này chưa có score cho result này
+                                    //tạo mới score
+                                    ScoreGraduation scoreGraduation = new ScoreGraduation();
+                                    //Set điểm, giảng viên, đánh giá và result cho score
+                                    scoreGraduation.setScore(scoreStudent2);
+                                    scoreGraduation.setByLecturer(existedLecturer);
+                                    scoreGraduation.setReview(reviewStudent2);
+                                    scoreGraduation.setResultGraduation(existedResultGraduation);
+                                    scoreGraduationRepository.save(scoreGraduation);
+                                    //Tạo mới 1 list score rỗng, bỏ score mới tạo vào và set list score này cho result
+                                    List<ScoreGraduation> scoreGraduationList = new ArrayList<>();
+                                    scoreGraduationList.add(scoreGraduation);
+                                    existedResultGraduation.setScoreCouncil(scoreGraduationList);
+                                    resultGraduationRepository.save(existedResultGraduation);
+                                    //Tạo mới list result để gán cho subject
+                                    List<ResultGraduation> resultGraduations = new ArrayList<>();
+                                    resultGraduations.add(existedResultGraduation);
+                                    existedSubject.setResultGraduations(resultGraduations);
+                                    subjectRepository.save(existedSubject);
+                                    existedLecturer.setScoreGraduationList(scoreGraduationList);
+                                    lecturerRepository.save(existedLecturer);
+                                    student2.setResultGraduation(existedResultGraduation);
+                                    studentRepository.save(student2);
+                                } else {
+                                    //Trả về mã 302 - Thông báo đã chấm điểm
+                                    return new ResponseEntity<>(HttpStatus.FOUND);
+                                }
                             }
                         }
                     }
-                }
 
-                //Kiểm tra xem có tồn tại SVTH k - Student 1
-                if (existedSubject.getStudent3()!=null){
-                    //Tìm Sv
-                    Student student3 = studentRepository.findById(studentId3).orElse(null);
-                    if (student3!=null) {
-                        //Kiểm tra xem student này đã có kết quả chưa
-                        ResultGraduation existedResultGraduation = resultGraduationRepository.findResultGraduationByStudentAndSubject(student3, existedSubject);
-                        if (existedResultGraduation == null) {
-                            //nếu chưa có, tạo mới 1 result - score
-                            ResultGraduation resultGraduation = new ResultGraduation();
-                            ScoreGraduation scoreGraduation = new ScoreGraduation();
-                            //Set sinh viên và đề tài cho result này
-                            resultGraduation.setStudent(student3);
-                            resultGraduation.setSubject(existedSubject);
-                            //Set điểm, giảng viên, đánh giá và result cho score
-                            scoreGraduation.setScore(scoreStudent3);
-                            scoreGraduation.setByLecturer(existedLecturer);
-                            scoreGraduation.setReview(reviewStudent3);
-                            scoreGraduation.setResultGraduation(resultGraduation);
-                            scoreGraduationRepository.save(scoreGraduation);
-                            //Tạo mới 1 list score rỗng, bỏ score mới tạo vào và set list score này cho result
-                            List<ScoreGraduation> scoreGraduationList = new ArrayList<>();
-                            scoreGraduationList.add(scoreGraduation);
-                            resultGraduation.setScoreCouncil(scoreGraduationList);
-                            resultGraduationRepository.save(resultGraduation);
-                            //Tạo mới list result để gán cho subject
-                            List<ResultGraduation> resultGraduations = new ArrayList<>();
-                            resultGraduations.add(resultGraduation);
-                            existedSubject.setResultGraduations(resultGraduations);
-                            subjectRepository.save(existedSubject);
-                            existedLecturer.setScoreGraduationList(scoreGraduationList);
-                            lecturerRepository.save(existedLecturer);
-                            student3.setResultGraduation(resultGraduation);
-                            studentRepository.save(student3);
-                        } else {
-                            //Chỉnh sửa result có sẵn - Kiểm tra xe GV đó cho điểm chưa có rồi thì thông báo đã chấm điểm rồi, không được cấm điểm lại
-                            ScoreGraduation existedScoreGraduation = scoreGraduationRepository.getScoreGraduationByLecturerAndReAndResultGraduation(existedLecturer, existedResultGraduation);
-                            if (existedScoreGraduation == null) {
-                                //Giảng viên này chưa có score cho result này
-                                //tạo mới score
+                    //Kiểm tra xem có tồn tại SVTH k - Student 1
+                    if (existedSubject.getStudent3() != null) {
+                        //Tìm Sv
+                        Student student3 = studentRepository.findById(studentId3).orElse(null);
+                        if (student3 != null) {
+                            //Kiểm tra xem student này đã có kết quả chưa
+                            ResultGraduation existedResultGraduation = resultGraduationRepository.findResultGraduationByStudentAndSubject(student3, existedSubject);
+                            if (existedResultGraduation == null) {
+                                //nếu chưa có, tạo mới 1 result - score
+                                ResultGraduation resultGraduation = new ResultGraduation();
                                 ScoreGraduation scoreGraduation = new ScoreGraduation();
+                                //Set sinh viên và đề tài cho result này
+                                resultGraduation.setStudent(student3);
+                                resultGraduation.setSubject(existedSubject);
                                 //Set điểm, giảng viên, đánh giá và result cho score
                                 scoreGraduation.setScore(scoreStudent3);
                                 scoreGraduation.setByLecturer(existedLecturer);
                                 scoreGraduation.setReview(reviewStudent3);
-                                scoreGraduation.setResultGraduation(existedResultGraduation);
+                                scoreGraduation.setResultGraduation(resultGraduation);
                                 scoreGraduationRepository.save(scoreGraduation);
                                 //Tạo mới 1 list score rỗng, bỏ score mới tạo vào và set list score này cho result
                                 List<ScoreGraduation> scoreGraduationList = new ArrayList<>();
                                 scoreGraduationList.add(scoreGraduation);
-                                existedResultGraduation.setScoreCouncil(scoreGraduationList);
-                                resultGraduationRepository.save(existedResultGraduation);
+                                resultGraduation.setScoreCouncil(scoreGraduationList);
+                                resultGraduationRepository.save(resultGraduation);
                                 //Tạo mới list result để gán cho subject
                                 List<ResultGraduation> resultGraduations = new ArrayList<>();
-                                resultGraduations.add(existedResultGraduation);
+                                resultGraduations.add(resultGraduation);
                                 existedSubject.setResultGraduations(resultGraduations);
                                 subjectRepository.save(existedSubject);
                                 existedLecturer.setScoreGraduationList(scoreGraduationList);
                                 lecturerRepository.save(existedLecturer);
-                                student3.setResultGraduation(existedResultGraduation);
+                                student3.setResultGraduation(resultGraduation);
                                 studentRepository.save(student3);
                             } else {
-                                //Trả về mã 302 - Thông báo đã chấm điểm
-                                return new ResponseEntity<>(HttpStatus.FOUND);
+                                //Chỉnh sửa result có sẵn - Kiểm tra xe GV đó cho điểm chưa có rồi thì thông báo đã chấm điểm rồi, không được cấm điểm lại
+                                ScoreGraduation existedScoreGraduation = scoreGraduationRepository.getScoreGraduationByLecturerAndReAndResultGraduation(existedLecturer, existedResultGraduation);
+                                if (existedScoreGraduation == null) {
+                                    //Giảng viên này chưa có score cho result này
+                                    //tạo mới score
+                                    ScoreGraduation scoreGraduation = new ScoreGraduation();
+                                    //Set điểm, giảng viên, đánh giá và result cho score
+                                    scoreGraduation.setScore(scoreStudent3);
+                                    scoreGraduation.setByLecturer(existedLecturer);
+                                    scoreGraduation.setReview(reviewStudent3);
+                                    scoreGraduation.setResultGraduation(existedResultGraduation);
+                                    scoreGraduationRepository.save(scoreGraduation);
+                                    //Tạo mới 1 list score rỗng, bỏ score mới tạo vào và set list score này cho result
+                                    List<ScoreGraduation> scoreGraduationList = new ArrayList<>();
+                                    scoreGraduationList.add(scoreGraduation);
+                                    existedResultGraduation.setScoreCouncil(scoreGraduationList);
+                                    resultGraduationRepository.save(existedResultGraduation);
+                                    //Tạo mới list result để gán cho subject
+                                    List<ResultGraduation> resultGraduations = new ArrayList<>();
+                                    resultGraduations.add(existedResultGraduation);
+                                    existedSubject.setResultGraduations(resultGraduations);
+                                    subjectRepository.save(existedSubject);
+                                    existedLecturer.setScoreGraduationList(scoreGraduationList);
+                                    lecturerRepository.save(existedLecturer);
+                                    student3.setResultGraduation(existedResultGraduation);
+                                    studentRepository.save(student3);
+                                } else {
+                                    //Trả về mã 302 - Thông báo đã chấm điểm
+                                    return new ResponseEntity<>(HttpStatus.FOUND);
+                                }
                             }
                         }
                     }
-                }
 
-                return new ResponseEntity<>(existedSubject,HttpStatus.OK);
+                    return new ResponseEntity<>(existedSubject, HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
             }else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -612,7 +631,6 @@ public class EvaluationAndScoringService {
             existedSubject.getResultGraduations().add(resultGraduation);
             subjectRepository.save(existedSubject);
         }
-
         return null; // Indicate success
     }
 
@@ -633,7 +651,16 @@ public class EvaluationAndScoringService {
 
         // Cập nhật điểm cho Student 1
         if (existedSubject.getStudent1() != null && studentId1.equals(existedSubject.getStudent1())) {
+            Student student = studentRepository.findById(studentId1).orElse(null);
             ResponseEntity<?> response = updateStudentScore(existedSubject, studentId1, scoreStudent1);
+            ResultGraduation resultGraduation = resultGraduationRepository.findResultGraduationByStudentAndSubject(student,existedSubject);
+            //Tìm ds điểm của kq đó
+            List<ScoreGraduation> scoreGraduations = scoreGraduationRepository.getScoreGraduationByResultGraduation(resultGraduation);
+            int countScore = scoreGraduations.size();
+            int countLecturers = existedSubject.getCouncil().getLecturers().size();
+            if (countScore==countLecturers && resultGraduation.getScoreInstructor()!=null){
+                existedSubject.setActive((byte)9);
+            }
             if (response != null) return response;
         }
 

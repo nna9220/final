@@ -11,6 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -26,11 +27,11 @@ public class RegistrationPeriodLectuer implements Serializable {
 
     @Column(name="registration_time_start")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
-    private Date registrationTimeStart;
+    private LocalDateTime registrationTimeStart;
 
     @Column(name="registration_time_end")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
-    private Date registrationTimeEnd;
+    private LocalDateTime registrationTimeEnd;
 
     @Column(name="registration_name")
     private String registrationName;

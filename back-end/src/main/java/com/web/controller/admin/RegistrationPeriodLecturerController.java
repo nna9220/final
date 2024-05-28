@@ -20,6 +20,9 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +49,8 @@ public class RegistrationPeriodLecturerController {
     private TypeSubjectRepository typeSubjectRepository;
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private NotificationRepository notificationRepository;
     private final TokenUtils tokenUtils;
 
     @Autowired
@@ -83,8 +88,8 @@ public class RegistrationPeriodLecturerController {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
             registrationPeriod.setTypeSubjectId(typeSubject);
             registrationPeriod.setRegistrationName(periodName);
-            registrationPeriod.setRegistrationTimeStart(convertToSqlDate(timeStart));
-            registrationPeriod.setRegistrationTimeEnd(convertToSqlDate(timeEnd));
+            registrationPeriod.setRegistrationTimeStart(convertToLocalDateTime(timeStart));
+            registrationPeriod.setRegistrationTimeEnd(convertToLocalDateTime(timeEnd));
             registrationPeriodRepository.save(registrationPeriod);
             return new ResponseEntity<>(registrationPeriod,HttpStatus.CREATED);
         }else {
@@ -115,16 +120,18 @@ public class RegistrationPeriodLecturerController {
         }
     }
 
-    private java.sql.Date convertToSqlDate(String dateString) {
+    private static LocalDateTime convertToLocalDateTime(String dateString) {
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            java.util.Date parsedDate = dateFormat.parse(dateString);
-            return new java.sql.Date(parsedDate.getTime());
-        } catch (ParseException e) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            return LocalDateTime.parse(dateString, formatter);
+        } catch (DateTimeParseException e) {
+            // Xử lý ngoại lệ khi có lỗi trong quá trình chuyển đổi
+            System.out.println("Lỗi: " + e);
             e.printStackTrace();
             return null; // hoặc throw một Exception phù hợp
         }
     }
+
     @PostMapping("/edit/{periodId}")
     public ResponseEntity<?> updatePeriod(@PathVariable int periodId,
                                           @RequestParam("start") String start,
@@ -136,12 +143,12 @@ public class RegistrationPeriodLecturerController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             RegistrationPeriodLectuer existRegistrationPeriod = registrationPeriodRepository.findById(periodId).orElse(null);
             if (existRegistrationPeriod != null) {
-                if (convertToSqlDate(end).before(convertToSqlDate(start))) {
+                if (convertToLocalDateTime(end).isBefore(convertToLocalDateTime(start))) {
                     return new ResponseEntity<>("Ngày kết thúc phải lớn hơn ngày bắt đầu", HttpStatus.BAD_REQUEST);
                 }
                 System.out.println("data nhận về:" + start + " end : " + end);
-                existRegistrationPeriod.setRegistrationTimeStart(convertToSqlDate(start));
-                existRegistrationPeriod.setRegistrationTimeEnd(convertToSqlDate(end));
+                existRegistrationPeriod.setRegistrationTimeStart(convertToLocalDateTime(start));
+                existRegistrationPeriod.setRegistrationTimeEnd(convertToLocalDateTime(end));
                 var update = registrationPeriodRepository.save(existRegistrationPeriod);
                 //GỬI MAIL
                 //Dnah sách giảng viên
@@ -159,6 +166,15 @@ public class RegistrationPeriodLecturerController {
                 if (!lecturers.isEmpty()){
                     mailService.sendMailToLecturers(emailLecturer,subject,messenger);
                 }
+                String title = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI TIỂU LUẬN CHUYÊN NGÀNH CHO GIẢNG VIÊN";
+                String content = "Thời gian bắt đầu: " + update.getRegistrationTimeStart()+"\n" +
+                        "Thời gian kết thúc: " + update.getRegistrationTimeEnd() + "\n";
+                Notification notification = new Notification();
+                notification.setContent(content);
+                notification.setTitle(title);
+                LocalDateTime now = LocalDateTime.now();
+                notification.setDateSubmit(now);
+                notificationRepository.save(notification);
                 return new ResponseEntity<>(existRegistrationPeriod,HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
