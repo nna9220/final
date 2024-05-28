@@ -225,7 +225,7 @@ public class StudentController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
-/*    @PostMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public ResponseEntity<?> deleteStudent(@PathVariable String id, @RequestHeader("Authorization") String authorizationHeader) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -242,16 +242,16 @@ public class StudentController {
         } else {
            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-    }*/
+    }
 
-    @PostMapping("/delete/{id}")
+/*    @PostMapping("/delete/{id}")
     public ResponseEntity<?> deleteStudent(@PathVariable String id, @RequestHeader("Authorization") String authorizationHeader) {
                 Student student = studentRepository.findById(id).orElse(null);
                 if (student!=null) {
                     studentRepository.delete(student);
                 }
                 return new ResponseEntity<>(HttpStatus.OK);
-    }
+    }*/
 
 
 
