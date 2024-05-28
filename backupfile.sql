@@ -18,9 +18,9 @@
 --
 -- Dumping data for table `authority`
 --
-drop database registerhcmute;
-create database registerhcmute;
-use registerhcmute;
+drop database managementtopic;
+create database managementtopic;
+use managementtopic;
 LOCK TABLES `authority` WRITE;
 /*!40000 ALTER TABLE `authority` DISABLE KEYS */;
 INSERT INTO `authority` VALUES ('ROLE_ADMIN'),('ROLE_GUEST'),('ROLE_HEAD'),('ROLE_LECTURER'),('ROLE_STUDENT');
