@@ -5,6 +5,8 @@ import EditCalendarOutlinedIcon from '@mui/icons-material/EditCalendarOutlined';
 import { NavLink } from 'react-router-dom';
 import axiosInstance from '../../API/axios';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function RegisTopicTable() {
     const [topics, setTopics] = useState([]);
@@ -72,20 +74,23 @@ function RegisTopicTable() {
                 .then(response => {
                     if (response.status === 200) {
                         setRegisteredSuccess(true);
-                        alert("Đăng ký thành công!");
+                        toast.success("Đăng ký đề tài thành công!")
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 3000);
                     } else {
-                        alert("Đăng ký thất bại! Vui lòng thử lại sau.");
+                        toast.error("Đăng ký đề tài thất bại! Vui lòng thử lại.");
                     }
                 })
                 .catch(error => {
-                    console.error("Đăng ký thất bại", error);
-                    alert("Đăng ký thất bại! Vui lòng thử lại sau nhe.");
+                    toast.error("Đăng ký đề tài thất bại!");
                 });
         }
     };
 
     return (
         <div className='home-table'>
+            <ToastContainer />
             {topics.length > 0 ? (
                 <table className="table table-hover">
                     <thead>
@@ -143,15 +148,9 @@ function RegisTopicTable() {
                                         <form class="form-card">
                                             <h5 class="text-center mb-4 tille-name-topic">THÔNG TIN ĐỀ TÀI</h5>
                                             <div className='items-content-topic'>
-                                                <label>Tên đề tài: <label className='content-name'>{topic.subjectName}</label></label>
-                                            </div>
-                                            <div className='items-content-topic'>
-                                                <label>Loại đề tài: <label className='content-name'>{topic.typeSubject?.typeName}</label></label>
-                                            </div>
-                                            <div className='items-content-topic' >
-                                                <label>Giảng viên hướng dẫn: <label className='content-name'>{topic.instructorId?.person?.firstName + ' ' + topic.instructorId?.person?.lastName}</label></label>
-                                            </div>
-                                            <div className='items-content-topic'>
+                                                <label>Tên đề tài: <label className='content-name'>{topic.subjectName}</label></label><br/>
+                                                <label>Loại đề tài: <label className='content-name'>{topic.typeSubject?.typeName}</label></label><br/>
+                                                <label>Giảng viên hướng dẫn: <label className='content-name'>{topic.instructorId?.person?.firstName + ' ' + topic.instructorId?.person?.lastName}</label></label><br/>
                                                 <label>
                                                     Giảng viên phản biện:
                                                     <label className='content-name'>
@@ -159,19 +158,15 @@ function RegisTopicTable() {
                                                             ? topic.thesisAdvisorId.person.firstName + ' ' + topic.thesisAdvisorId.person.lastName
                                                             : 'Chưa có'}
                                                     </label>
-                                                </label>
-                                            </div>
-                                            <div className='items-content-topic'>
+                                                </label><br/>
                                                 <a>Nhóm sinh viên thực hiện</a><br />
                                                 <label>Sinh viên 1: <label className='content-name'>{topic.student1}</label></label><br />
                                                 <label>Sinh viên 2: <label className='content-name'>{topic.student2}</label></label><br />
-                                                <label>Sinh viên 3: <label className='content-name'>{topic.student3}</label></label>
-                                            </div>
-                                            <div className='items-content-topic'>
+                                                <label>Sinh viên 3: <label className='content-name'>{topic.student3}</label></label><br/>
                                                 <label>Yêu cầu: <label className='content-name'>{topic.requirement}</label></label>
                                             </div>
-                                            <div class="row justify-content-end">
-                                                <div class="form-group col-sm-2"><NavLink to="/managermentTopicStudent"><button type="submit" class="btn-block btn-primary">Quản lý đề tài</button> </NavLink></div>
+                                            <div style={{float:'right'}}>
+                                                <NavLink to="/managermentTopicStudent"><button type="button" class="btn btn-mana btn-success" style={{backgroundColor:'#4eb09b', fontSize:'medium', border:'none'}}>Quản lý đề tài</button></NavLink>
                                             </div>
                                         </form>
                                     </div>
@@ -179,7 +174,6 @@ function RegisTopicTable() {
                             </div>
                         </div>
                     </div>
-
                 ))
             ) : (
                 <div>

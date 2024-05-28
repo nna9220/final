@@ -123,7 +123,6 @@ public class AddCounterArgumentGraduationController {
                 List<Subject> addSub = new ArrayList<>();
                 addSub.add(existedSubject);
                 if (currentLecturer != null) {
-                    currentLecturer.setListSubCounterArgument(addSub);
                     existedSubject.setThesisAdvisorId(currentLecturer);
                     //Thêm GVPB vào hội đồng
                     Council council = new Council();
@@ -141,7 +140,6 @@ public class AddCounterArgumentGraduationController {
                         currentLecturer.setCouncils(councils);
                     }
                     //set GVPB
-                    currentLecturer.setListSubCounterArgument(addSub);
                     existedSubject.setThesisAdvisorId(currentLecturer);
                     existedSubject.setCouncil(council);
                     lecturerRepository.save(currentLecturer);

@@ -1,55 +1,89 @@
 .body-table {
-    display: grid;
-
     .button-listDelete-approve {
-        width: fit-content;
-        justify-content: end;
-        background-color: white;
+        display: flex;
+        align-items: center;
+        background-color: #fff;
         margin-bottom: 10px;
-        border: none;
-        padding: 5px;
+        border: 1px solid rgb(34, 126, 95);
+        padding: 10px 15px;
         font-weight: 500;
         color: rgb(34, 126, 95);
+        border-radius: 5px;
+        transition: all 0.3s ease;
 
         &:hover {
             font-weight: bold;
+            background-color: rgb(34, 126, 95);
+            color: white;
         }
     }
 
     .table-approve {
-        margin-top: 10px;
-        padding: 10px;
-        margin: 10px;
+        width: 100%;
+        margin: 20px 0;
+        border-collapse: collapse;
+        font-size: 16px;
+
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: rgb(34, 126, 95);
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+    }
+}
+
+.button-res, .button-res-de {
+    border: 1px solid transparent;
+    background-color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    .text {
+        padding: 5px;
+        text-align: center;
+        font-weight: bold;
+        transition: font-size 0.3s ease;
+    }
+
+    &:hover .text {
+        font-size: larger;
     }
 }
 
 .button-res {
-    border: none;
-    background-color: white;
-
     .text {
-        padding: 5px;
-        text-align: center;
         color: rgb(35, 113, 87);
-        font-weight: bold;
     }
 
-    &:hover{
-        font-size: larger;
+    &:hover {
+        .text{
+            font-size: large;
+        }
     }
 }
 
 .button-res-de {
-    border: none;
-    background-color: white;
-
     .text {
-        padding: 5px;
-        text-align: center;
         color: rgb(212, 97, 55);
-        font-weight: bold;
     }
-    &:hover{
-        font-size: larger;
+
+    &:hover {
+        background-color: rgb(212, 97, 55);
+        color: white;
     }
 }

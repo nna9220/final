@@ -458,7 +458,6 @@ public class EvaluationAndScoringService {
                             scoreGraduation.setByLecturer(existedLecturer);
                             scoreGraduation.setReview(reviewStudent2);
                             scoreGraduation.setResultGraduation(resultGraduation);
-                            scoreGraduationRepository.save(scoreGraduation);
                             //Tạo mới 1 list score rỗng, bỏ score mới tạo vào và set list score này cho result
                             List<ScoreGraduation> scoreGraduationList = new ArrayList<>();
                             scoreGraduationList.add(scoreGraduation);
