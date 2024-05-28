@@ -172,7 +172,7 @@ public class RegistrationPeriodLecturerController {
                 Notification notification = new Notification();
                 notification.setContent(content);
                 notification.setTitle(title);
-                Date now = new Date(System.currentTimeMillis());
+                LocalDateTime now = LocalDateTime.now();
                 notification.setDateSubmit(now);
                 notificationRepository.save(notification);
                 return new ResponseEntity<>(existRegistrationPeriod,HttpStatus.OK);
