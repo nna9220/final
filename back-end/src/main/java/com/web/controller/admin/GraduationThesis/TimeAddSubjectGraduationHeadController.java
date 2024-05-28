@@ -20,6 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,8 +73,8 @@ public class TimeAddSubjectGraduationHeadController {
             TimeAddSubjectOfHead timeAddSubjectOfHead = new TimeAddSubjectOfHead();
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận chuyên ngành");
             timeAddSubjectOfHead.setTypeSubjectId(typeSubject);
-            timeAddSubjectOfHead.setTimeStart(convertToSqlDate(timeStart));
-            timeAddSubjectOfHead.setTimeEnd(convertToSqlDate(timeEnd));
+            timeAddSubjectOfHead.setTimeStart(convertToLocalDateTime(timeStart));
+            timeAddSubjectOfHead.setTimeEnd(convertToLocalDateTime(timeEnd));
             timeAddSubjectHeadRepository.save(timeAddSubjectOfHead);
             return new ResponseEntity<>(timeAddSubjectOfHead,HttpStatus.CREATED);
         }else {
@@ -100,17 +103,18 @@ public class TimeAddSubjectGraduationHeadController {
         }
     }
 
-    private Date convertToSqlDate(String dateString) {
+    private static LocalDateTime convertToLocalDateTime(String dateString) {
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            java.util.Date parsedDate = dateFormat.parse(dateString);
-            return new Date(parsedDate.getTime());
-        } catch (ParseException e) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            return LocalDateTime.parse(dateString, formatter);
+        } catch (DateTimeParseException e) {
             // Xử lý ngoại lệ khi có lỗi trong quá trình chuyển đổi
+            System.out.println("Lỗi: " + e);
             e.printStackTrace();
             return null; // hoặc throw một Exception phù hợp
         }
     }
+
     @PostMapping("/edit/{periodId}")
     public ResponseEntity<?> updateTime(@PathVariable int periodId,
                                           @RequestParam("start") String start,
@@ -122,12 +126,12 @@ public class TimeAddSubjectGraduationHeadController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             TimeAddSubjectOfHead existTimeAdd = timeAddSubjectHeadRepository.findById(periodId).orElse(null);
             if (existTimeAdd != null) {
-                if (convertToSqlDate(end).before(convertToSqlDate(start))) {
+                if (convertToLocalDateTime(end).isBefore(convertToLocalDateTime(start))) {
                     return new ResponseEntity<>("Ngày kết thúc phải lớn hơn ngày bắt đầu", HttpStatus.BAD_REQUEST);
                 }
                 System.out.println("data nhận về:" + start + " end : " + end);
-                existTimeAdd.setTimeStart(convertToSqlDate(start));
-                existTimeAdd.setTimeEnd(convertToSqlDate(end));
+                existTimeAdd.setTimeStart(convertToLocalDateTime(start));
+                existTimeAdd.setTimeEnd(convertToLocalDateTime(end));
                 timeAddSubjectHeadRepository.save(existTimeAdd);
                 return new ResponseEntity<>(existTimeAdd,HttpStatus.OK);
             } else {

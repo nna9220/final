@@ -7,7 +7,8 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Date;
+
 
 @Setter
 @Getter

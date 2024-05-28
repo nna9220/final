@@ -20,6 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +45,8 @@ public class TimeBrowseHeadController {
     private LecturerRepository lecturerRepository;
     @Autowired
     private MailServiceImpl mailService;
+    @Autowired
+    private NotificationRepository notificationRepository;
     private final TokenUtils tokenUtils;
     @Autowired
     public TimeBrowseHeadController(TokenUtils tokenUtils){
@@ -77,8 +82,8 @@ public class TimeBrowseHeadController {
             TimeBrowsOfHead timeBrowsOfHead = new TimeBrowsOfHead();
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
             timeBrowsOfHead.setTypeSubjectId(typeSubject);
-            timeBrowsOfHead.setTimeStart(convertToSqlDate(timeStart));
-            timeBrowsOfHead.setTimeEnd(convertToSqlDate(timeEnd));
+            timeBrowsOfHead.setTimeStart(convertToLocalDateTime(timeStart));
+            timeBrowsOfHead.setTimeEnd(convertToLocalDateTime(timeEnd));
             timeBrowseHeadRepository.save(timeBrowsOfHead);
             return new ResponseEntity<>(timeBrowsOfHead,HttpStatus.CREATED);
         }else {
@@ -108,16 +113,18 @@ public class TimeBrowseHeadController {
         }
     }
 
-    private Date convertToSqlDate(String dateString) {
+    private static LocalDateTime convertToLocalDateTime(String dateString) {
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            java.util.Date parsedDate = dateFormat.parse(dateString);
-            return new Date(parsedDate.getTime());
-        } catch (ParseException e) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            return LocalDateTime.parse(dateString, formatter);
+        } catch (DateTimeParseException e) {
+            // Xử lý ngoại lệ khi có lỗi trong quá trình chuyển đổi
+            System.out.println("Lỗi: " + e);
             e.printStackTrace();
-            return null;
+            return null; // hoặc throw một Exception phù hợp
         }
     }
+
     @PostMapping("/edit/{periodId}")
     public ResponseEntity<?> updateTime(@PathVariable int periodId,
                                           @RequestParam("start") String start,
@@ -129,12 +136,12 @@ public class TimeBrowseHeadController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             TimeBrowsOfHead existTimeBrowsOfHead = timeBrowseHeadRepository.findById(periodId).orElse(null);
             if (existTimeBrowsOfHead != null) {
-                if (convertToSqlDate(end).before(convertToSqlDate(start))) {
+                if (convertToLocalDateTime(end).isBefore(convertToLocalDateTime(start))) {
                     return new ResponseEntity<>("Ngày kết thúc phải lớn hơn ngày bắt đầu", HttpStatus.BAD_REQUEST);
                 }
                 System.out.println("data nhận về:" + start + " end : " + end);
-                existTimeBrowsOfHead.setTimeStart(convertToSqlDate(start));
-                existTimeBrowsOfHead.setTimeEnd(convertToSqlDate(end));
+                existTimeBrowsOfHead.setTimeStart(convertToLocalDateTime(start));
+                existTimeBrowsOfHead.setTimeEnd(convertToLocalDateTime(end));
                 var update = timeBrowseHeadRepository.save(existTimeBrowsOfHead);
                 //GỬI MAIL
                 //TBM
@@ -153,6 +160,16 @@ public class TimeBrowseHeadController {
                 if (!lecturers.isEmpty()){
                     mailService.sendMailToStudents(emailLecturer,subject,messenger);
                 }
+
+                String title = "THÔNG BÁO THỜI GIAN DUYỆT ĐỀ TÀI TIỂU LUẬN CHUYÊN NGÀNH CHO TBM";
+                String content = "Thời gian bắt đầu: " + update.getTimeStart()+"\n" +
+                        "Thời gian kết thúc: " + update.getTimeEnd() + "\n";
+                Notification notification = new Notification();
+                notification.setContent(content);
+                notification.setTitle(title);
+                Date now = new Date(System.currentTimeMillis());
+                notification.setDateSubmit(now);
+                notificationRepository.save(notification);
                 return new ResponseEntity<>(existTimeBrowsOfHead,HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
