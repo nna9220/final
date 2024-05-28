@@ -18,7 +18,6 @@
 --
 -- Dumping data for table `authority`
 --
-drop database managementtopic;
 create database managementtopic;
 use managementtopic;
 LOCK TABLES `authority` WRITE;
