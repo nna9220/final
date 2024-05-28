@@ -10,6 +10,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -25,11 +26,11 @@ public class TimeBrowsOfHead implements Serializable {
 
     @Column(name="time_start")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
-    private Date timeStart;
+    private LocalDateTime timeStart;
 
     @Column(name="time_end")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
-    private Date timeEnd;
+    private LocalDateTime timeEnd;
 
     @ManyToOne
     @JoinColumn(name="type_subject_id")

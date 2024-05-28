@@ -6,10 +6,7 @@ import com.web.config.TokenUtils;
 import com.web.entity.*;
 import com.web.mapper.RegistrationPeriodMapper;
 import com.web.dto.request.RegistrationPeriodRequest;
-import com.web.repository.PersonRepository;
-import com.web.repository.RegistrationPeriodRepository;
-import com.web.repository.StudentRepository;
-import com.web.repository.TypeSubjectRepository;
+import com.web.repository.*;
 import com.web.service.Admin.RegistrationPeriodService;
 import com.web.service.MailServiceImpl;
 import com.web.utils.Contains;
@@ -25,6 +22,9 @@ import javax.servlet.http.HttpSession;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +35,8 @@ import java.util.Map;
 public class RegistrationPeriodGraduationController {
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private NotificationRepository notificationRepository;
     @Autowired
     private MailServiceImpl mailService;
     @Autowired
@@ -80,8 +82,8 @@ public class RegistrationPeriodGraduationController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             RegistrationPeriod registrationPeriod = new RegistrationPeriod();
             registrationPeriod.setRegistrationName(periodName);
-            registrationPeriod.setRegistrationTimeStart(convertToSqlDate(timeStart));
-            registrationPeriod.setRegistrationTimeEnd(convertToSqlDate(timeEnd));
+            registrationPeriod.setRegistrationTimeStart(convertToLocalDateTime(timeStart));
+            registrationPeriod.setRegistrationTimeEnd(convertToLocalDateTime(timeEnd));
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
             registrationPeriod.setTypeSubjectId(typeSubject);
             registrationPeriodRepository.save(registrationPeriod);
@@ -117,13 +119,13 @@ public class RegistrationPeriodGraduationController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
-    private java.sql.Date convertToSqlDate(String dateString) {
+    private static LocalDateTime convertToLocalDateTime(String dateString) {
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            java.util.Date parsedDate = dateFormat.parse(dateString);
-            return new java.sql.Date(parsedDate.getTime());
-        } catch (ParseException e) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            return LocalDateTime.parse(dateString, formatter);
+        } catch (DateTimeParseException e) {
             // Xử lý ngoại lệ khi có lỗi trong quá trình chuyển đổi
+            System.out.println("Lỗi: " + e);
             e.printStackTrace();
             return null; // hoặc throw một Exception phù hợp
         }
@@ -141,11 +143,11 @@ public class RegistrationPeriodGraduationController {
             RegistrationPeriod existRegistrationPeriod = registrationPeriodRepository.findById(periodId).orElse(null);
             if (existRegistrationPeriod != null) {
                 System.out.println("data nhận về:" + start + " end : " + end);
-                if (convertToSqlDate(end).before(convertToSqlDate(start))) {
+                if (convertToLocalDateTime(end).isBefore(convertToLocalDateTime(start))) {
                     return new ResponseEntity<>("Ngày kết thúc phải lớn hơn ngày bắt đầu", HttpStatus.BAD_REQUEST);
                 }
-                existRegistrationPeriod.setRegistrationTimeStart(convertToSqlDate(start));
-                existRegistrationPeriod.setRegistrationTimeEnd(convertToSqlDate(end));
+                existRegistrationPeriod.setRegistrationTimeStart(convertToLocalDateTime(start));
+                existRegistrationPeriod.setRegistrationTimeEnd(convertToLocalDateTime(end));
                 var update = registrationPeriodRepository.save(existRegistrationPeriod);
                 //GỬI MAIL
                 //Dnah sách SV
@@ -163,6 +165,15 @@ public class RegistrationPeriodGraduationController {
                 if (!studentList.isEmpty()){
                     mailService.sendMailToStudents(emailLecturer,subject,messenger);
                 }
+                String title = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI KHÓA LUẬN TỐT NGHIỆP CHO SINH VIÊN";
+                String content = "Thời gian bắt đầu: " + update.getRegistrationTimeStart()+"\n" +
+                        "Thời gian kết thúc: " + update.getRegistrationTimeEnd() + "\n";
+                Notification notification = new Notification();
+                notification.setContent(content);
+                notification.setTitle(title);
+                Date now = new Date(System.currentTimeMillis());
+                notification.setDateSubmit(now);
+                notificationRepository.save(notification);
                 return new ResponseEntity<>(existRegistrationPeriod,HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
