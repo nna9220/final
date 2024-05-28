@@ -246,23 +246,15 @@ public class StudentController {
 
     @PostMapping("/delete/{id}")
     public ResponseEntity<?> deleteStudent(@PathVariable String id, @RequestHeader("Authorization") String authorizationHeader) {
-        String token = tokenUtils.extractToken(authorizationHeader);
-        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-        if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
-            Person editPerson = personRepository.findById(id).orElse(null);
-            if (editPerson != null) {
-                Student student = studentRepository.findById(personCurrent.getPersonId()).orElse(null);
-                editPerson.setStatus(false);
-                personRepository.delete(editPerson);
+
+                Student student = studentRepository.findById(id).orElse(null);
                 if (student!=null) {
                     studentRepository.delete(student);
                 }
                 return new ResponseEntity<>(HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
     }
+
+
+
+
 }
