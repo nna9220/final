@@ -147,9 +147,6 @@ function DataTableTimeRegister() {
     }
     return (
         <div>
-            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddTimeApprove">
-                Add
-            </button>
 
             <div className="modal fade" id="AddTimeApprove" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
