@@ -364,9 +364,9 @@ function DataTable() {
                     rows={students.filter(student => student).map((student, index) => ({
                         id: index + 1,
                         studentId: student.studentId,
-                        fullName: `${student.person.firstName} ${student.person.lastName}`,
-                        gender: student.person.gender ? 'Nữ' : 'Nam',
-                        phone: student.person.phone,
+                        fullName: `${student.person?.firstName} ${student.person?.lastName}`,
+                        gender: student.person?.gender ? 'Nữ' : 'Nam',
+                        phone: student.person?.phone,
                         classes: student.studentClass.classname,
                         schoolYear: student.schoolYear.year,
                     }))}
