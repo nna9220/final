@@ -16,6 +16,9 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.crypto.Data;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.sql.Date;
 
@@ -85,21 +88,32 @@ public class StudentAddTaskController {
             response.put("subject", currentSubject);
             response.put("listTask", taskList);
             response.put("peson", personCurrent);
+            response.put("subject", currentSubject);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
+    private static LocalDateTime convertToLocalDateTime(String dateString) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            return LocalDateTime.parse(dateString, formatter);
+        } catch (DateTimeParseException e) {
+            // Xử lý ngoại lệ khi có lỗi trong quá trình chuyển đổi
+            System.out.println("Lỗi: " + e);
+            e.printStackTrace();
+            return null; // hoặc throw một Exception phù hợp
+        }
+    }
+
 
 
     @PostMapping("/create")
     public ResponseEntity<?> createTask(@RequestHeader("Authorization") String authorizationHeader,
                                    @RequestParam("requirement") String requirement,
-                                   @RequestParam("timeStart") Date timeStart,
-                                   @RequestParam("timeEnd") Date timeEnd,
+                                   @RequestParam("timeStart") String timeStart,
+                                   @RequestParam("timeEnd") String timeEnd,
                                    @RequestParam("assignTo") String assignTo) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -113,8 +127,8 @@ public class StudentAddTaskController {
             newTask.setInstructorId(currentStudent.getSubjectId().getInstructorId());
             newTask.setRequirement(requirement);
             newTask.setSubjectId(currentStudent.getSubjectId());
-            newTask.setTimeStart(timeStart);
-            newTask.setTimeEnd(timeEnd);
+            newTask.setTimeStart(convertToLocalDateTime(timeStart));
+            newTask.setTimeEnd(convertToLocalDateTime(timeEnd));
 
             // Lấy thông tin sinh viên được chọn từ danh sách sinh viên
             Student existStudent = studentRepository.findById(assignTo).orElse(null);

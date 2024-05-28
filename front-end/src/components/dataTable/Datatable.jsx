@@ -340,7 +340,7 @@ function DataTable() {
             </div>
             {showDeletedStudents && (
                 <DataGrid
-                    rows={students.filter(student => !student.person.status).map((student, index) => ({
+                    rows={students.filter(student => !student.person?.status).map((student, index) => ({
                         id: index + 1,
                         studentId: student.studentId,
                         fullName: `${student.person.firstName} ${student.person.lastName}`,
@@ -361,12 +361,12 @@ function DataTable() {
 
             {!showDeletedStudents && (
                 <DataGrid
-                    rows={students.filter(student => student.person.status).map((student, index) => ({
+                    rows={students.filter(student => student).map((student, index) => ({
                         id: index + 1,
                         studentId: student.studentId,
-                        fullName: `${student.person.firstName} ${student.person.lastName}`,
-                        gender: student.person.gender ? 'Nữ' : 'Nam',
-                        phone: student.person.phone,
+                        fullName: `${student.person?.firstName} ${student.person?.lastName}`,
+                        gender: student.person?.gender ? 'Nữ' : 'Nam',
+                        phone: student.person?.phone,
                         classes: student.studentClass.classname,
                         schoolYear: student.schoolYear.year,
                     }))}

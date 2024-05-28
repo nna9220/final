@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,13 +50,13 @@ public class ManageCouncilService {
         }
     }
 
-    private java.sql.Date convertToSqlDate(String dateString) {
+    private static LocalDateTime convertToLocalDateTime(String dateString) {
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            java.util.Date parsedDate = dateFormat.parse(dateString);
-            return new java.sql.Date(parsedDate.getTime());
-        } catch (ParseException e) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            return LocalDateTime.parse(dateString, formatter);
+        } catch (DateTimeParseException e) {
             // Xử lý ngoại lệ khi có lỗi trong quá trình chuyển đổi
+            System.out.println("Lỗi: " + e);
             e.printStackTrace();
             return null; // hoặc throw một Exception phù hợp
         }
@@ -69,7 +72,7 @@ public class ManageCouncilService {
                 if (subject.getCouncil()!=null) {
                     Council council = subject.getCouncil();
                     council.setAddress(addressReport);
-                    council.setTimeReport(convertToSqlDate(timeReport));
+                    council.setTimeReport(convertToLocalDateTime(timeReport));
                     List<Lecturer> lecturers = new ArrayList<>();
                     for (String lecturerId:lecturer) {
                         Lecturer existedLecturer = lecturerRepository.findById(lecturerId).orElse(null);
@@ -116,7 +119,7 @@ public class ManageCouncilService {
                 if (subject.getCouncil()!=null) {
                     Council council = subject.getCouncil();
                     council.setAddress(addressReport);
-                    council.setTimeReport(convertToSqlDate(timeReport));
+                    council.setTimeReport(convertToLocalDateTime(timeReport));
                     List<Lecturer> lecturers = new ArrayList<>();
                     if (lecturer2!=null){
                         Lecturer existedLecturer2 = lecturerRepository.findById(lecturer2).orElse(null);

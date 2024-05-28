@@ -8,7 +8,6 @@ services:
       - ./backupfile.sql:/docker-entrypoint-initdb.d/backup.sql
     command: --init-file /docker-entrypoint-initdb.d/backup.sql
 
-  
   front-end:
     build:
       context: front-end
@@ -25,13 +24,14 @@ services:
     expose:
       - "5000"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-container/registersubject
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-container/managementtopic
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=Nanguyen1206@
     depends_on:
       - mysql-container
     volumes:
       - /app/uploads:/app/uploads
+      - ./sql:/docker-entrypoint-initdb.d
 
   web-server:
     image: nginx:1.25.4-alpine

@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -22,7 +23,7 @@ public class Council {
     private String address;
 
     @Column(name = "date_time")
-    private Date timeReport;
+    private LocalDateTime timeReport;
 
     @OneToOne
     @JoinColumn(name = "subject", unique = true)

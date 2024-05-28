@@ -18,7 +18,7 @@
 --
 -- Dumping data for table `authority`
 --
-use registersubject;
+use managementtopic;
 LOCK TABLES `authority` WRITE;
 /*!40000 ALTER TABLE `authority` DISABLE KEYS */;
 INSERT INTO `authority` VALUES ('ROLE_ADMIN'),('ROLE_GUEST'),('ROLE_HEAD'),('ROLE_LECTURER'),('ROLE_STUDENT');
@@ -95,6 +95,9 @@ UNLOCK TABLES;
 LOCK TABLES `person` WRITE;
 /*!40000 ALTER TABLE `person` DISABLE KEYS */;
 INSERT INTO `person` VALUES ('nna9920',_binary '','01 VVN','12/12/2002','Nguyen Thi',_binary '\0',NULL,'Na',NULL,'0987654321',NULL,_binary '','nna9220@gmail.com','ROLE_ADMIN');
+INSERT INTO `person` VALUES ('thuytrang',_binary '','01 VVN','12/12/2002','Nguyen Thi Thuy',_binary '\0',NULL,'Trang',NULL,'0987654321',NULL,_binary '','minhanhit0304@gmail.com','ROLE_ADMIN');
+INSERT INTO `person` VALUES ('phunghuynh',_binary '','01 VVN','12/12/2002','Huỳnh Xuân',_binary '\1',NULL,'Phụng',NULL,'0987654321',NULL,_binary '','phunghx@gmail.com','ROLE_ADMIN');
+
 /*!40000 ALTER TABLE `person` ENABLE KEYS */;
 UNLOCK TABLES;
 

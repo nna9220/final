@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.File;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class Comment implements Serializable {
     @Column(name="date_submit")
     @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date dateSubmit;
+    private LocalDateTime dateSubmit;
 
     @Column(name="content")
     private String content;

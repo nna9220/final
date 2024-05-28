@@ -105,7 +105,6 @@ public class HomeLecturerController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
-
     @GetMapping("/counterArgumentSubject/detail/{id}")
     public ResponseEntity<Map<String,Object>> getDetailCounterArgument(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
