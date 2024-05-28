@@ -363,6 +363,7 @@ public class EvaluationAndScoringService {
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
+            //Đếm số luượng giảng viên trong hội đồng
             int countLecturers = existedSubject.getCouncil().getLecturers().size();
             if (existedSubject!=null){
                 //Kiểm tra xem có tồn tại SVTH k - Student 1
@@ -425,11 +426,22 @@ public class EvaluationAndScoringService {
                                 if (student1.getResultGraduation().getScoreCouncil().size() == countLecturers){
                                     existedSubject.setActive((byte)9);
                                 }
-                                subjectRepository.save(existedSubject);
+
                                 existedLecturer.setScoreGraduationList(scoreGraduationList);
                                 lecturerRepository.save(existedLecturer);
                                 student1.setResultGraduation(existedResultGraduation);
                                 studentRepository.save(student1);
+                                //Sau khi lưu kết quả, check số lượng kết quả của subject và student này
+                                //Nếu bằng số lượng GV trong hội đồng và GVHD đã chấm điểm thì cho active = 9
+                                //Tìm Kết quả
+                                ResultGraduation resultGraduation = resultGraduationRepository.findResultGraduationByStudentAndSubject(student1,existedSubject);
+                                //Tìm ds điểm của kq đó
+                                List<ScoreGraduation> scoreGraduations = scoreGraduationRepository.getScoreGraduationByResultGraduation(resultGraduation);
+                                int countScore = scoreGraduations.size();
+                                if (countScore==countLecturers && resultGraduation.getScoreInstructor()!=null){
+                                    existedSubject.setActive((byte)9);
+                                }
+                                subjectRepository.save(existedSubject);
 
                             } else {
                                 //Trả về mã 302 - Thông báo đã chấm điểm
@@ -613,7 +625,6 @@ public class EvaluationAndScoringService {
             existedSubject.getResultGraduations().add(resultGraduation);
             subjectRepository.save(existedSubject);
         }
-
         return null; // Indicate success
     }
 
@@ -634,7 +645,16 @@ public class EvaluationAndScoringService {
 
         // Cập nhật điểm cho Student 1
         if (existedSubject.getStudent1() != null && studentId1.equals(existedSubject.getStudent1())) {
+            Student student = studentRepository.findById(studentId1).orElse(null);
             ResponseEntity<?> response = updateStudentScore(existedSubject, studentId1, scoreStudent1);
+            ResultGraduation resultGraduation = resultGraduationRepository.findResultGraduationByStudentAndSubject(student,existedSubject);
+            //Tìm ds điểm của kq đó
+            List<ScoreGraduation> scoreGraduations = scoreGraduationRepository.getScoreGraduationByResultGraduation(resultGraduation);
+            int countScore = scoreGraduations.size();
+            int countLecturers = existedSubject.getCouncil().getLecturers().size();
+            if (countScore==countLecturers && resultGraduation.getScoreInstructor()!=null){
+                existedSubject.setActive((byte)9);
+            }
             if (response != null) return response;
         }
 
