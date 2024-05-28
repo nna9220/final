@@ -97,7 +97,7 @@ function CommitteeKLTable() {
 
     const submitEvaluation = async () => {
         try {
-            console.log("student1: "+ detail.subject.student1);
+            console.log("student1: " + detail.subject.student1);
             const evaluationData = {
                 studentId1: detail.subject.student1,
                 studentId2: detail.subject.student2,
@@ -230,7 +230,7 @@ function CommitteeKLTable() {
                                                             step='0.25'
                                                             className='score'
                                                             readOnly
-                                                            value={(parseFloat(scores[detail.subject[student]]) || 0).toFixed(2)}
+                                                            value={(parseFloat(calculateTotalScore(detail.subject[student])) || 0).toFixed(2)}
                                                         />
                                                     </td>
                                                 ))}
@@ -255,6 +255,7 @@ function CommitteeKLTable() {
                                 <p>Loading...</p>
                             )}
                         </div>
+
                         <div className="modal-footer">
                             <button
                                 type="button"

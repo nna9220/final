@@ -26,6 +26,7 @@ public class Subject implements Serializable {
 
     @OneToOne
     @JoinColumn(name = "council", unique = true)
+    @JsonIgnore
     private Council council;
 
     @Column(name="subject_name")

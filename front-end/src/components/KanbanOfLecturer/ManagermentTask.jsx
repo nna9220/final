@@ -103,7 +103,7 @@ function ManagermentTask() {
   const handleSubmit100 = () => {
     console.log(subjectIdForSubmit100);
     if (subjectIdForSubmit100) {
-      axiosInstance.post(`/lecturer/manageTutorial/fiftyRecent/${subjectIdForSubmit100}`, {}, {
+      axiosInstance.post(`/lecturer/manageTutorial/OneHundredRecent/${subjectIdForSubmit100}`, {}, {
         headers: {
           'Authorization': `Bearer ${userToken}`,
         }
@@ -186,7 +186,7 @@ function ManagermentTask() {
                 <li className="breadcrumb-item active" aria-current="page">{selectedSubjectName}</li>
               </ol>
             </nav>
-            <button data-bs-toggle="modal" data-bs-target="#confirmSuccess">Hoàn thành đề tài</button>
+            <button data-bs-toggle="modal" data-bs-target="#confirmSuccess" >Hoàn thành đề tài</button>
           </div>
         </>
       )}
@@ -243,6 +243,24 @@ function ManagermentTask() {
             </div>
             <div class="modal-body">
               Bạn chắc chắn muốn hoàn thành đề tài này không?
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Confirm</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="confirmSuccess" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">XÁC NHẬN HOÀN THÀNH ĐỀ TÀI</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Xác nhận hoàn thành đề tài và chuyển qua phản biện
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

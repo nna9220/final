@@ -85,7 +85,6 @@ public class SubjectController {
                 List<Subject> addSub = new ArrayList<>();
                 addSub.add(existedSubject);
                 if (currentLecturer != null) {
-                    currentLecturer.setListSubCounterArgument(addSub);
                     existedSubject.setThesisAdvisorId(currentLecturer);
                     lecturerRepository.save(currentLecturer);
                     subjectRepository.save(existedSubject);
@@ -109,7 +108,6 @@ public class SubjectController {
                 List<Subject> addSub = new ArrayList<>();
                 addSub.add(existedSubject);
                 if (currentLecturer != null) {
-                    currentLecturer.setListSubInstruct(addSub);
                     existedSubject.setInstructorId(currentLecturer);
                     lecturerRepository.save(currentLecturer);
                     subjectRepository.save(existedSubject);

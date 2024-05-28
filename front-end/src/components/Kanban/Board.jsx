@@ -19,12 +19,14 @@ const KanbanBoard = () => {
   const [showTimeLine, setShowTimeLine] = useState(false);
   const [showListTask, setShowListTask] = useState(true);
   const [file, setFile] = useState(null);
+  const [subject, setSubject] = useState();
   const [formNewTask, setFormNewTask] = useState({
     requirement: '',
     timeStart: '',
     timeEnd: '',
     assignTo: '',
   });
+  const [statusActive, SetStatusActive] = useState(null);
   const [error, setError] = useState(null);
   const [currentDroppableId, setCurrentDroppableId] = useState('MustDo'); // State lưu trữ droppableId hiện tại
 
@@ -47,7 +49,7 @@ const KanbanBoard = () => {
   }
 
   useEffect(() => {
-    loadList();  
+    loadList();
   }, []);
 
   const loadList = () => {
@@ -61,8 +63,10 @@ const KanbanBoard = () => {
           },
         })
           .then(response => {
-            console.log("detailTaskSt: ", response.data.listTask);
+            console.log("list: ", response.data);
+            setSubject(response.data.subject.subjectName)
             setData(response.data.listTask);
+            SetStatusActive(response.data.subject.active);
           })
           .catch(error => {
             console.error("Error fetching task list:", error);
@@ -82,7 +86,7 @@ const KanbanBoard = () => {
       .then(response => {
         console.log("newTask: ", response.data.listStudentGroup);
         setNewTask(response.data.listStudentGroup);
-        
+
         console.log("newTask2: ", newTask);//gán có dô đâu
       })
       .catch(error => {
@@ -114,7 +118,7 @@ const KanbanBoard = () => {
       return;
     }
 
-    const movedTaskIndex = data.findIndex(task => task.id === draggableId);
+    const movedTaskIndex = data.findIndex(task => task.taskId === draggableId);
     const movedTask = { ...data[movedTaskIndex] };
     const updatedData = [...data];
 
@@ -141,13 +145,13 @@ const KanbanBoard = () => {
     setData(updatedData);
 
     updateTaskStatus(draggableId, movedTask.status);
-    setCurrentDroppableId(destination.droppableId); 
+    setCurrentDroppableId(destination.droppableId);
   };
 
   const updateTaskStatus = (taskId, status) => {
     const userToken = getTokenFromUrlAndSaveToStorage();
 
-    axiosInstance.post(`/student/task/updateStatus/${taskId}`, {status}, {
+    axiosInstance.post(`/student/task/updateStatus/${taskId}`, { status }, {
       headers: {
         'Authorization': `Bearer ${userToken}`,
       },
@@ -216,18 +220,31 @@ const KanbanBoard = () => {
 
   return (
     <div>
-      <ToastContainer/>
+      <ToastContainer />
       {error && <h4 className='elter-error-no-topic'><ReportProblemOutlinedIcon /> {error}</h4>}
       {!error &&
         <div>
-          <div className='button-submitTopic'>
-            <button className='submit-1' data-bs-toggle="modal" data-bs-target="#submit50">
-              Nộp báo cáo lần 1
-            </button>
+          <div className='group-button' style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <h6>Đề tài: {subject}</h6>
+            <div className='button-submitTopic'>
+              {statusActive === 2 ? (
+                <button className='submit-1' data-bs-toggle="modal" data-bs-target="#submit50">
+                  Nộp báo cáo lần 1
+                </button>) : (
+                <button className='submit-1' data-bs-toggle="modal" data-bs-target="#submit50" disabled>
+                  Nộp báo cáo lần 1
+                </button>)
+              }
 
-            <button className='submit-2' data-bs-toggle="modal" data-bs-target="#submit100">
-              Nộp báo cáo lần 2
-            </button>
+              {statusActive === 4 ? (
+                <button className='submit-2' data-bs-toggle="modal" data-bs-target="#submit100">
+                  Nộp báo cáo lần 2
+                </button>) : (
+                <button  style = {{backgroundColor:''}} className='submit-2' data-bs-toggle="modal" data-bs-target="#submit100" disabled>
+                  Nộp báo cáo lần 2
+                </button>)
+              }
+            </div>
 
             <div class="modal fade" id="submit50" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
               <div class="modal-dialog">
@@ -239,7 +256,7 @@ const KanbanBoard = () => {
                   <div class="modal-body">
                     <div class="mb-3">
                       <label for="formFile" class="form-label">Chọn file báo cáo : </label>
-                      <input class="form-control" type="file" id="formFile" onChange={handleFileChange}/>
+                      <input class="form-control" type="file" id="formFile" onChange={handleFileChange} />
                     </div>
                   </div>
                   <div class="modal-footer">
@@ -260,7 +277,7 @@ const KanbanBoard = () => {
                   <div class="modal-body">
                     <div class="mb-3">
                       <label for="formFile" class="form-label">Chọn file báo cáo : </label>
-                      <input class="form-control" type="file" id="formFile" onChange={handleFileChange}/>
+                      <input class="form-control" type="file" id="formFile" onChange={handleFileChange} />
                     </div>
                   </div>
                   <div class="modal-footer">

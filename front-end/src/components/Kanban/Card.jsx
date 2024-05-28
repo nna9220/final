@@ -30,36 +30,39 @@ const Card = ({ task, index }) => {
   }, [task.taskId]);
 
   const handleSubmitComment = async (e) => {
-    const userToken = getTokenFromUrlAndSaveToStorage();
     e.preventDefault();
-    console.log("taskID-post: ", task.taskId);
+    const userToken = getTokenFromUrlAndSaveToStorage();
     try {
       const formData = new FormData();
       formData.append('content', commentContent);
       for (const file of commentFiles) {
         formData.append('fileInput', file);
       }
-
-      console.log("Comment-post: ", formData);
+  
       const response = await axiosInstance.post(`/student/comment/create/${task.taskId}`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${userToken}`,
         },
       });
-      console.log('Comment created successfully:', response.data);
+  
       const newComment = response.data;
-      setDetail((prevDetail) => ({
-        ...prevDetail,
-        listComment: [...prevDetail.listComment, newComment],
-      }));
+  
+      // Cập nhật trạng thái của detail.listComment để hiển thị comment mới
+      setDetail(prevDetail => {
+        return {
+          ...prevDetail,
+          listComment: [...prevDetail.listComment, newComment]
+        };
+      });
+  
+      // Xóa nội dung và file đã chọn sau khi đăng comment thành công
       setCommentContent('');
       setCommentFiles([]);
     } catch (error) {
       console.error('Error creating comment:', error);
     }
   };
-
+  
   const handleViewTask = (taskId) => {
     setSelectedTask(taskId);
     const userToken = getTokenFromUrlAndSaveToStorage();

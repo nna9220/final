@@ -103,7 +103,7 @@ export default function TopicTable() {
     const handleSubmit100 = () => {
         console.log(subjectIdForSubmit100);
         if (subjectIdForSubmit100) {
-            axiosInstance.post(`/lecturer/manageTutorial/fiftyRecent/${subjectIdForSubmit100}`, {}, {
+            axiosInstance.post(`/lecturer/manageTutorial/OneHundredRecent/${subjectIdForSubmit100}`, {}, {
                 headers: {
                     'Authorization': `Bearer ${userToken}`,
                 }
@@ -217,7 +217,7 @@ export default function TopicTable() {
                                 <li className="breadcrumb-item active" aria-current="page">{selectedSubjectName}</li>
                             </ol>
                         </nav>
-                        <button data-bs-toggle="modal" data-bs-target="#confirmSuccess">Hoàn thành đề tài</button>
+                        <button data-bs-toggle="modal" data-bs-target="#modalApproval2">Hoàn thành đề tài</button>
                     </div>
                 </>
             )}
@@ -242,7 +242,7 @@ export default function TopicTable() {
                             <tr key={index}>
                                 <th scope='row'>{index + 1}</th>
                                 <td>{item.subjectName}</td>
-                                <td>{item.thesisAdvisorId?.person?.firstName + ' ' + item.thesisAdvisorId?.person?.lastName}</td>
+                                <td>{item.thesisAdvisorId?.person?.firstName ? `${item.thesisAdvisorId?.person?.firstName} ${item.thesisAdvisorId?.person?.lastName}` : 'Chưa có'}</td>
                                 <td>{item.student1 || ''}</td>
                                 <td>{item.student2 || ''}</td>
                                 <td>{item.student3 || ''}</td>
@@ -346,11 +346,29 @@ export default function TopicTable() {
                     <div className="modal-dialog">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h1 className="modal-title fs-5" id="exampleModalApproval">Duyệt đề tài</h1>
+                                <h1 className="modal-title fs-5" id="exampleModalApproval">Hoàn thành đề tài</h1>
                                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div className="modal-body">
                                 Xác nhận duyệt đề tài {subjectName} qua phản biện
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitApproval}>Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="modal fade" id="modalApproval2" tabIndex="-1" aria-labelledby="exampleModalApproval" aria-hidden="true">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h1 className="modal-title fs-5" id="exampleModalApproval">Hoàn thành đề tài</h1>
+                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div className="modal-body">
+                                Xác nhận hoàn thành đề tài {subjectName}  và chuyển qua phản biện.
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>

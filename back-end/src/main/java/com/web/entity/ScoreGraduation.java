@@ -26,7 +26,7 @@ public class ScoreGraduation {
     @JoinColumn(name = "leturer_id")
     private Lecturer byLecturer;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "result_graduation_id")
     private ResultGraduation resultGraduation;
 

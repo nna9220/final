@@ -46,7 +46,7 @@ function CommitteeKLTable() {
             }
         })
             .then(response => {
-                console.log("Danh sách đề tài: ", response.data.body.subjects);
+                console.log("Danh sách đề tài: ", response.data.body);
                 setTopics(response.data.body.subjects);
             })
             .catch(error => {
@@ -97,7 +97,7 @@ function CommitteeKLTable() {
 
     const submitEvaluation = async () => {
         try {
-            console.log("student1: "+ detail.subject.student1);
+            console.log("student1: " + detail.subject.student1);
             const evaluationData = {
                 studentId1: detail.subject.student1,
                 studentId2: detail.subject.student2,
@@ -156,7 +156,7 @@ function CommitteeKLTable() {
                                     <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
                                         onClick={() => {
                                             setDetail(item.subjectId);
-                                            setSubjectIdDetail(item.council.councilId);
+                                            setSubjectIdDetail(item.subjectId);
                                             setSubjectId(item.subjectId);
                                         }}>
                                         Đánh giá
