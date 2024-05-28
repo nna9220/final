@@ -1,4 +1,4 @@
-use registertopic;
+use registersubject;
 ALTER TABLE register_period MODIFY registration_time_start datetime;
 ALTER TABLE register_period MODIFY registration_time_end datetime;
 
