@@ -24,7 +24,7 @@ services:
     expose:
       - "5000"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-container/registerhcmute
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-container/managementtopic
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=Nanguyen1206@
     depends_on:
