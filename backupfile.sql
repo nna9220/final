@@ -18,7 +18,6 @@
 --
 -- Dumping data for table `authority`
 --
-create database registerhcmute;
 use registerhcmute;
 LOCK TABLES `authority` WRITE;
 /*!40000 ALTER TABLE `authority` DISABLE KEYS */;
