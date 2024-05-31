@@ -14,6 +14,10 @@ import com.web.service.Admin.StudentClassService;
 import com.web.utils.Contains;
 import com.web.utils.UserUtils;
 import io.jsonwebtoken.Claims;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +26,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,11 +83,6 @@ public class StudentClassController {
         studentClass.setClassname(className);
         studentClassService.createStudentClass(studentClass);
 
-        // Lấy URL trước đó từ request
-        /*String referer = request.getHeader("Referer");
-
-        // Thực hiện redirect trở lại trang trước đó
-        return new ModelAndView("redirect:" + referer);*/
         return new ResponseEntity<>(studentClass,HttpStatus.CREATED);
     }
 
@@ -131,6 +134,37 @@ public class StudentClassController {
        }*/
     }
 
+    @GetMapping("/export")
+    public void exportStudentClasses(HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment;filename=student_classes.xls");
 
+        List<StudentClass> studentClasses = studentClassService.findAll();
 
+        Workbook workbook = new HSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Student Classes");
+
+        // Tạo header row
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("ID");
+        headerRow.createCell(1).setCellValue("Class Name");
+        headerRow.createCell(2).setCellValue("Status");
+
+        // Fill data rows
+        int rowNum = 1;
+        for (StudentClass studentClass : studentClasses) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(studentClass.getId());
+            row.createCell(1).setCellValue(studentClass.getClassname());
+            row.createCell(2).setCellValue(studentClass.isStatus());
+        }
+
+        // Write the output to the response output stream
+        try (OutputStream out = response.getOutputStream()) {
+            workbook.write(out);
+        }
+
+        // Close the workbook
+        workbook.close();
+    }
 }

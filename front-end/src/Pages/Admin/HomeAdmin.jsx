@@ -3,6 +3,7 @@ import Navbar from '../../components/Navbar/Navbar';
 import Sidebar from '../../components/Sidebar/SidebarAdmin';
 import Context from '../../components/Context/Context';
 import './HomeAdmin.scss';
+import Chatbot from '../../components/ChatBot/Chatbot';
 
 function HomeAdmin() {
     const [isSidebarClosed, setSidebarClosed] = useState(false);
@@ -15,6 +16,7 @@ function HomeAdmin() {
             <div className='homeContainer'>
                 <Navbar />
                 <hr />
+                <Chatbot/>
                 <div className='widgets'>
                     <Context />
                 </div>

@@ -16,6 +16,10 @@ import com.web.service.Admin.SchoolYearService;
 import com.web.utils.Contains;
 import com.web.utils.UserUtils;
 import io.jsonwebtoken.Claims;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +29,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,6 +129,37 @@ public class SchoolYearController {
         }else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/export")
+    public void exportSchoolYear(HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment;filename=student_classes.xls");
+
+        List<SchoolYear> schoolYears = schoolYearService.findAll();
+
+        Workbook workbook = new HSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Student Classes");
+
+        // Tạo header row
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("ID");
+        headerRow.createCell(1).setCellValue("SchoolYear");
+        // Fill data rows
+        int rowNum = 1;
+        for (SchoolYear schoolYear : schoolYears) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(schoolYear.getYearId());
+            row.createCell(1).setCellValue(schoolYear.getYear());
+        }
+
+        // Write the output to the response output stream
+        try (OutputStream out = response.getOutputStream()) {
+            workbook.write(out);
+        }
+
+        // Close the workbook
+        workbook.close();
     }
 
 }

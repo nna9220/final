@@ -2,6 +2,8 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import './DataTableRegistrationPeroidSt.scss'
 import axiosInstance from '../../API/axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function DataTableRegistrationPeroidSt() {
     const [timeApprove, setTimeApprove] = useState([]);
@@ -99,10 +101,12 @@ function DataTableRegistrationPeroidSt() {
                         return item;
                     });
                     setTimeApprove(updatedTimeApprove);
+                    toast.success("Chỉnh sửa thành công!")
                     loadData();
                 })
                 .catch(error => {
                     console.error("Error: ", error);
+                    toast.error("Chỉnh sửa thất bại!")
                 });
         } else {
             console.log("Error: No token found or no selected period ID");
@@ -134,10 +138,12 @@ function DataTableRegistrationPeroidSt() {
                         return item;
                     });
                     setTimeApprove2(updatedTimeApprove);
+                    toast.success("Chỉnh sửa thành công!")
                     loadData2();
                 })
                 .catch(error => {
                     console.error("Error: ", error);
+                    toast.error("Chỉnh sửa thất bại!");
                 });
         } else {
             console.log("Error: No token found or no selected period ID");
@@ -170,6 +176,7 @@ function DataTableRegistrationPeroidSt() {
             })
                 .then(response => {
                     setNewTimeApprove('');
+                    toast.success("Thêm thành công!")
                     loadData();
                 })
                 .catch(error => {
@@ -251,6 +258,7 @@ function DataTableRegistrationPeroidSt() {
     
     return (
         <div>
+            <ToastContainer/>
             <div className='border-container'>
                 <div className='body-table-period'>
                     <div style={{ display: 'flex' }}>

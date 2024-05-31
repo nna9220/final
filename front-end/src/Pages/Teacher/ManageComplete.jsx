@@ -1,13 +1,13 @@
 import React from 'react'
+import { useState, useEffect } from 'react';
+import SidebarLec from '../../components/Sidebar/SidebarLec';
 import Navbar from '../../components/Navbar/Navbar'
-import { useEffect, useState } from 'react'
-import CommitteTable from '../../components/TableOfHead/Committe/CommitteTable';
-import CommitteKLTable from '../../components/TableOfHead/Committe/CommitteKLTable';
-import SidebarHead from '../../components/Sidebar/SidebarHead';
+import CompleteTopic from '../../components/TableOfLecturer/CompleteTopic/CompleteTopic';
+import CompleteTopicKL from '../../components/TableOfLecturer/CompleteTopic/CompleteTopicKL';
 
-function ManagementCommitteOfHead() {
+function ManageComplete() {
     useEffect(() => {
-        document.title = "Hội đồng báo cáo";
+        document.title = "Đề tài đã thực hiện";
     }, []);
     const [selectedTitle, setSelectedTitle] = useState("Tiểu luận chuyên ngành");
 
@@ -16,14 +16,14 @@ function ManagementCommitteOfHead() {
     };
     return (
         <div className='homeHead'>
-            <SidebarHead />
+            <SidebarLec />
             <div className='context'>
                 <Navbar></Navbar>
                 <hr></hr>
                 <div className='context-menu'>
                     <div className='context-title'>
                         <div className='title-re'>
-                            <h3>LẬP HỘI ĐỒNG</h3>
+                            <h3>ĐỀ TÀI ĐÃ THỰC HIỆN</h3>
                         </div>
                     </div>
                     <div className='context-nd'>
@@ -45,7 +45,7 @@ function ManagementCommitteOfHead() {
                         </div>
                         <div className='card-nd-topicPB' style={{ display: 'block' }}>
                             <div className='table-items-topicPB'>
-                                {selectedTitle === "Tiểu luận chuyên ngành" ? <CommitteTable /> : <CommitteKLTable />}
+                                {selectedTitle === "Tiểu luận chuyên ngành" ? <CompleteTopic /> : <CompleteTopicKL />}
                             </div>
                         </div>
                     </div>
@@ -55,4 +55,4 @@ function ManagementCommitteOfHead() {
     )
 }
 
-export default ManagementCommitteOfHead
+export default ManageComplete

@@ -158,9 +158,9 @@ public class LecturerController {
                                         @RequestParam("birthDay") String birthDay, // Thay đổi kiểu dữ liệu thành String
                                         @RequestParam("phone") String phone,
                                         @RequestParam("gender") boolean gender,
-                                        @RequestParam("authority") Authority authority,
+                                        @RequestParam("authority") String authority,
                                         @RequestParam("username") String username,
-                                        @RequestParam("major") Major major,
+                                        @RequestParam("major") String major,
                                         @RequestParam("address") String address,
                                         @RequestParam(value = "status", required = false, defaultValue = "true") boolean status,
                                         @RequestHeader("Authorization") String authorizationHeader) {
@@ -177,13 +177,16 @@ public class LecturerController {
 
                 existLecturer.getPerson().setPhone(phone);
                 existLecturer.getPerson().setGender(gender);
-                existLecturer.setAuthority(authority);
-                existLecturer.getPerson().setAuthorities(authority);
-                existLecturer.setMajor(major);
+                Authority existedAutho = authorityRepository.findByName(authority);
+                existLecturer.setAuthority(existedAutho);
+                existLecturer.getPerson().setAuthorities(existedAutho);
+                System.out.println("Major nhận về:" + major);
+                existLecturer.setMajor(Major.valueOf(major));
                 existLecturer.getPerson().setUsername(username);
                 existLecturer.getPerson().setAddress(address);
                 Person lecturerPerson = personRepository.findById(existLecturer.getLecturerId()).orElse(null);
-                lecturerPerson.setAuthorities(authority);
+                assert lecturerPerson != null;
+                lecturerPerson.setAuthorities(existedAutho);
                 existLecturer.getPerson().setStatus(status);
                 lecturerRepository.save(existLecturer);
                 personRepository.save(lecturerPerson);

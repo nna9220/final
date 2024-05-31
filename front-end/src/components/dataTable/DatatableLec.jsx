@@ -32,7 +32,8 @@ function DatatableLec() {
         authority: '',
         username: '',
         major: '',
-        address: ''
+        address: '',
+        status: '',
     });
     const [showModal, setShowModal] = useState(false);
     const [showModalAdd, setShowModalAdd] = useState(false);
@@ -70,7 +71,36 @@ function DatatableLec() {
         }
     };
 
-    const handleSubmitAdd = () => {
+
+    const handleMajorChange = (e) => {
+        const value = e.target.value;
+        console.log("Selected major:", value); // Kiểm tra giá trị được chọn
+        setUserEdit(prevState => ({
+            ...prevState,
+            major: value
+        }));
+    };
+
+    const handleAuthorityChange = (e) => {
+        const value = e.target.value;
+        console.log("Selected authority:", value); // Kiểm tra giá trị được chọn
+        setUserEdit(prevState => ({
+            ...prevState,
+            authority: value
+        }));
+    };
+
+    useEffect(() => {
+        console.log("Selected major:", userEdit.major);
+    }, [userEdit.major]);
+
+    useEffect(() => {
+        console.log("Selected authority:", userEdit.authority);
+    }, [userEdit.authority]);
+
+
+    const handleSubmitAdd = (event) => {
+        event.preventDefault();
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log(formData)
         axiosInstance.post('/admin/lecturer/create',
@@ -115,7 +145,7 @@ function DatatableLec() {
                     setShowConfirmation(false);
                     setShowDeleteToast(true);
                     loadData();
-                    console.log('Xóa thành công');
+                    toast.success("Xóa thành công!")
                 } else if (response.status === 404) {
                     console.log('Sinh viên không tồn tại.');
                 } else if (response.status === 403) {
@@ -124,6 +154,7 @@ function DatatableLec() {
             })
             .catch(error => {
                 console.error("Lỗi khi xóa sinh viên:", error);
+                toast.error("Xóa thất bại!")
             });
     };
 
@@ -133,29 +164,34 @@ function DatatableLec() {
 
     useEffect(() => {
         loadData();
-    },[]);
+    }, []);
+
+    useEffect(() => {
+        console.log("userEdit:", userEdit);
+    }, [userEdit]);
 
     const loadData = () => {
         const tokenSt = sessionStorage.getItem('userToken');
-            if (tokenSt) {
-                axiosInstance.get('/admin/lecturer', {
-                    headers: {
-                        'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
-                    },
+        if (tokenSt) {
+            axiosInstance.get('/admin/lecturer', {
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
+                },
+            })
+                .then(response => {
+                    const lecturerArray = response.data.listLecturer || [];
+                    setLectures(lecturerArray);
+                    const majorArray = response.data.major || [];
+                    setMajor(majorArray);
+                    const authorArray = response.data.authors || [];
+                    setAuthors(authorArray);
+                    console.log("Authority: ", response.data.authors)
+                    console.log("Data: ", response.data);
                 })
-                    .then(response => {
-                        const lecturerArray = response.data.listLecturer || [];
-                        setLectures(lecturerArray);
-                        const majorArray = response.data.major || [];
-                        setMajor(majorArray);
-                        const authorArray = response.data.authors || [];
-                        setAuthors(authorArray);
-                        console.log("Data: ", response.data);
-                    })
-                    .catch(error => {
-                        console.error("error: ", error);
-                    });
-            }
+                .catch(error => {
+                    console.error("error: ", error);
+                });
+        }
     }
 
     const handleEdit = (id) => {
@@ -168,22 +204,38 @@ function DatatableLec() {
             .then(response => {
                 const data = response.data;
                 if (data.lecturer && data.lecturer.person) {
-                    // Convert birthDay to YYYY-MM-DD format
-                    const formattedDate = moment(data.lecturer.person.birthDay, "DD/MM/YYYY").format("YYYY-MM-DD");
+                    const formattedDate = moment(data.lecturer.person.birthDay, "YYYY-MM-DD").format("YYYY-MM-DD");
                     data.lecturer.person.birthDay = formattedDate;
-                    setUserEdit(data.lecturer.person);
-                    setGender(data.lecturer.person.gender);
-                    setShowModal(true);
+                    setUserEdit(prevState => ({
+                        ...prevState,
+                        personId: data.lecturer.person.personId,
+                        firstName: data.lecturer.person.firstName,
+                        lastName: data.lecturer.person.lastName,
+                        birthDay: data.lecturer.person.birthDay,
+                        phone: data.lecturer.person.phone,
+                        gender: data.lecturer.person.gender,
+                        authority: data.lecturer?.authors?.name,
+                        username: data.lecturer.person.username,
+                        major: data.lecturer.major,
+                        address: data.lecturer.person.address,
+                        status: data.lecturer.person.status,
+                    }), () => {
+                        setGender(data.lecturer.person.gender);
+                        setShowModal(true);
+                        setAuthors(data.lecturer.authors.name);
+                        console.log("userEdit:", userEdit);
+                    });
                 } else {
-                    console.log("Sinh viên không tồn tại.");
+                    console.log("Giảng viên không tồn tại.");
                 }
             })
             .catch(error => {
-                console.error("Lỗi khi lấy thông tin sinh viên:", error);
+                console.error("Lỗi khi lấy thông tin giảng viên:", error);
             });
     };
 
-    const handleSubmitEdit = () => {
+    const handleSubmitEdit = (event) => {
+        event.preventDefault();
         const id = userEdit.personId; // Sử dụng thông tin từ state userEdit
         const formDataEdit = new FormData();
         formDataEdit.append('personId', userEdit.personId);
@@ -199,6 +251,7 @@ function DatatableLec() {
         formDataEdit.append('address', userEdit.address);
 
         console.log(userEdit.birthDay);
+        console.log("Major: ", formDataEdit);
         axiosInstance.post(`/admin/lecturer/edit/${id}`, formDataEdit, {
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
@@ -219,7 +272,6 @@ function DatatableLec() {
                                 phone: userEdit.phone,
                                 address: userEdit.address,
                                 gender: gender,
-                                authority: userEdit.authority,
                                 address: userEdit.address,
                                 username: userEdit.username
                             },
@@ -232,12 +284,12 @@ function DatatableLec() {
                     return lecture;
                 });
                 setLectures(updatedLecturer);
-                setShowSuccessToast(true);
                 setShowModal(false);
+                toast.success("Chỉnh sửa thành công!")
             })
             .catch(error => {
                 console.error(error);
-                setShowErrorToast(true);
+                toast.error("Chỉnh sửa thất bại!")
             })
     };
 
@@ -250,11 +302,11 @@ function DatatableLec() {
     };
 
 
-
     const handleGenderChange = (e) => {
         const value = e.target.value === 'Nữ' ? true : false;
         setGender(value);
     };
+
 
     const columns = [
         { field: 'lecturerId', headerName: 'MSGV', width: 100 },
@@ -286,243 +338,246 @@ function DatatableLec() {
         },
     ];
 
-
     return (
-        <div>
-            <div className='header-table'>
-                <div className='btn-add'>
-                    <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddLecturere" style={{ marginBottom: '20px' }}>
-                        Add
+        <div className='table-lecturer'>
+            <div className='content-table'>
+                <ToastContainer />
+                <div className='header-table'>
+                    <div className='btn-add'>
+                        <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddLecturere" style={{ marginBottom: '20px' }}>
+                            Add
+                        </button>
+                    </div>
+                    <button className='button-listDelete' onClick={() => setShowDeleteLecturers(!showDeletedLecturers)}>
+                        {showDeletedLecturers ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách giảng viên</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách giảng viên đã xóa</>}
                     </button>
                 </div>
-                <button className='button-listDelete' onClick={() => setShowDeleteLecturers(!showDeletedLecturers)}>
-                    {showDeletedLecturers ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách giảng viên</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách giảng viên đã xóa</>}
-                </button>
-            </div>
-            {showDeletedLecturers && (
-                <DataGrid
-                    rows={lectures.filter(lecture => lecture.person.status === false).map((lecture, index) => ({
-                        id: index + 1,
-                        lecturerId: lecture.lecturerId,
-                        fullName: lecture.person.firstName + ' ' + lecture.person.lastName,
-                        gender: lecture.person.gender ? 'Nữ' : 'Nam',
-                        phone: lecture.person.phone,
-                        major: lecture.major,
-                        authority: lecture.authority.name,
-                    }
-                    ))}
-                    columns={columns}
-                    initialState={{
-                        ...lectures.initialState,
-                        pagination: { paginationModel: { pageSize: 10 } },
-                    }}
-                    pageSizeOptions={[10, 25, 50]}
-                />
-            )}
+                {showDeletedLecturers && (
+                    <DataGrid
+                        rows={lectures.filter(lecture => lecture.person.status === false).map((lecture, index) => ({
+                            id: index + 1,
+                            lecturerId: lecture.lecturerId,
+                            fullName: lecture.person.firstName + ' ' + lecture.person.lastName,
+                            gender: lecture.person.gender ? 'Nữ' : 'Nam',
+                            phone: lecture.person.phone,
+                            major: lecture.major,
+                            authority: lecture.authority.name,
+                        }
+                        ))}
+                        columns={columns}
+                        initialState={{
+                            ...lectures.initialState,
+                            pagination: { paginationModel: { pageSize: 10 } },
+                        }}
+                        pageSizeOptions={[10, 25, 50]}
+                    />
+                )}
 
-            {!showDeletedLecturers && (
-                <DataGrid
-                    rows={lectures.filter(lecture => lecture.person.status === true).map((lecture, index) => ({
-                        id: index + 1,
-                        lecturerId: lecture.lecturerId,
-                        fullName: lecture.person.firstName + ' ' + lecture.person.lastName,
-                        gender: lecture.person.gender ? 'Nữ' : 'Nam',
-                        phone: lecture.person.phone,
-                        major: lecture.major,
-                        authority: lecture.authority.name,
-                    }
-                    ))}
-                    columns={columns}
-                    initialState={{
-                        ...lectures.initialState,
-                        pagination: { paginationModel: { pageSize: 10 } },
-                    }}
-                    pageSizeOptions={[10, 25, 50]}
-                />
-            )}
+                {!showDeletedLecturers && (
+                    <DataGrid
+                        rows={lectures.filter(lecture => lecture.person.status === true).map((lecture, index) => ({
+                            id: index + 1,
+                            lecturerId: lecture.lecturerId,
+                            fullName: lecture.person.firstName + ' ' + lecture.person.lastName,
+                            gender: lecture.person.gender ? 'Nữ' : 'Nam',
+                            phone: lecture.person.phone,
+                            major: lecture.major,
+                            authority: lecture.authority.name,
+                        }
+                        ))}
+                        columns={columns}
+                        initialState={{
+                            ...lectures.initialState,
+                            pagination: { paginationModel: { pageSize: 10 } },
+                        }}
+                        pageSizeOptions={[10, 25, 50]}
+                    />
+                )}
 
-            <Modal show={showConfirmation} onHide={cancelDelete}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Xác nhận xóa giảng viên</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    Bạn có chắc chắn muốn xóa giảng viên này không?
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={cancelDelete}>
-                        Hủy
-                    </Button>
-                    <Button variant="primary" onClick={confirmDelete}>
-                        Xác nhận
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+                <Modal show={showConfirmation} onHide={cancelDelete}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Xác nhận xóa giảng viên</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        Bạn có chắc chắn muốn xóa giảng viên này không?
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={cancelDelete}>
+                            Hủy
+                        </Button>
+                        <Button variant="primary" onClick={confirmDelete}>
+                            Xác nhận
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
 
-            <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true" style={{ display: showModal ? 'block' : 'none' }}>
-                <div className="modal-dialog modal-lg modal-dialog-scrollable" onSubmit={handleSubmitEdit}>
-                    <form className="modal-content">
-                        <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="exampleModalLabel1">CẬP NHẬT THÔNG TIN GIẢNG VIÊN</h1>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                            <div className="mb-3">
-                                <label htmlFor='id' className="form-label">MSGV</label>
-                                <input disabled type="text" className="form-control" id="personId" name="personId" value={userEdit.personId} onChange={handleChange} />
+                <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true" style={{ display: showModal ? 'block' : 'none' }}>
+                    <div className="modal-dialog modal-lg modal-dialog-scrollable" onSubmit={handleSubmitEdit}>
+                        <form className="modal-content">
+                            <div className="modal-header">
+                                <h1 className="modal-title fs-5" id="exampleModalLabel1">CẬP NHẬT THÔNG TIN GIẢNG VIÊN</h1>
+                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div className='row mb-3'>
-                                <div className="col">
-                                    <label htmlFor="firstName" className="form-label">Họ</label>
-                                    <input required type="text" className="form-control" id="firstName" name="firstName" value={userEdit.firstName} onChange={handleChange} />
+                            <div className="modal-body">
+                                <div className="mb-3">
+                                    <label htmlFor='id' className="form-label">MSGV</label>
+                                    <input disabled type="text" className="form-control" id="personId" name="personId" value={userEdit.personId} onChange={handleChange} />
                                 </div>
-                                <div className="col">
-                                    <label htmlFor='lastName' className="form-label">Tên</label>
-                                    <input required type="text" className="form-control" id="lastName" name="lastName" value={userEdit.lastName} onChange={handleChange} />
+                                <div className='row mb-3'>
+                                    <div className="col">
+                                        <label htmlFor="firstName" className="form-label">Họ</label>
+                                        <input required type="text" className="form-control" id="firstName" name="firstName" value={userEdit.firstName} onChange={handleChange} />
+                                    </div>
+                                    <div className="col">
+                                        <label htmlFor='lastName' className="form-label">Tên</label>
+                                        <input required type="text" className="form-control" id="lastName" name="lastName" value={userEdit.lastName} onChange={handleChange} />
+                                    </div>
                                 </div>
-                            </div>
-                            <div className='row mb-3'>
-                                <div className="col">
-                                    <label htmlFor='birthDay' className="form-label">Ngày sinh</label>
-                                    <input required type="date" className="form-control" id="birthDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} />
-                                </div>
-                                <div className="col">
-                                    <label htmlFor='phone' className="form-label">Số điện thoại</label>
-                                    <input required pattern='\d{10}' type="text" className="form-control" id="phone" name="phone" value={userEdit.phone} onChange={handleChange} />
-                                </div>
-                                <div className="col">
-                                    <label htmlFor='gender' className="form-label">Giới tính</label>
-                                    <div style={{ display: "flex" }}>
-                                        <div>
-                                            <input required type="radio" id="nam" name="gender" value="Nam" checked={gender === false} onChange={handleGenderChange} />
-                                            <label htmlFor="nam">Nam</label>
-                                        </div>
-                                        <div>
-                                            <input required type="radio" id="nu" name="gender" value="Nữ" checked={gender === true} onChange={handleGenderChange} />
-                                            <label htmlFor="nu">Nữ</label>
+                                <div className='row mb-3'>
+                                    <div className="col">
+                                        <label htmlFor='birthDay' className="form-label">Ngày sinh</label>
+                                        <input required type="date" className="form-control" id="birthDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} />
+                                    </div>
+                                    <div className="col">
+                                        <label htmlFor='phone' className="form-label">Số điện thoại</label>
+                                        <input required pattern='\d{10}' type="text" className="form-control" id="phone" name="phone" value={userEdit.phone} onChange={handleChange} />
+                                    </div>
+                                    <div className="col">
+                                        <label htmlFor='gender' className="form-label">Giới tính</label>
+                                        <div style={{ display: "flex" }}>
+                                            <div>
+                                                <input required type="radio" id="nam" name="gender" value="Nam" checked={gender === false} onChange={handleGenderChange} />
+                                                <label htmlFor="nam">Nam</label>
+                                            </div>
+                                            <div>
+                                                <input required type="radio" id="nu" name="gender" value="Nữ" checked={gender === true} onChange={handleGenderChange} />
+                                                <label htmlFor="nu">Nữ</label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor='email' className="form-label">Email</label>
-                                <input required pattern=".*@.*" type="text" className="form-control" id="username" name="username" value={userEdit.username} onChange={handleChange} />
-                            </div>
-                            <div className='row mb-3'>
-                                <div className="col">
-                                    <label htmlFor="class" className="form-label">Chuyên ngành</label>
-                                    <select required className="form-select" id="classes" value={userEdit.major} onChange={handleChange} name="major">
-                                        {major.map((majorItem, index) => (
-                                            <option key={index} value={majorItem}>{majorItem}</option>
-                                        ))}
-                                    </select>
+                                <div className="mb-3">
+                                    <label htmlFor='email' className="form-label">Email</label>
+                                    <input required pattern=".*@.*" type="text" className="form-control" id="username" name="username" value={userEdit.username} onChange={handleChange} />
                                 </div>
-                                <div className="col">
-                                    <label htmlFor="authority" className="form-label">Role</label>
-                                    <select required className="form-select" id="authority" value={userEdit.authority} onChange={handleChange} name="authority">
-                                        {author && author.filter(Item => Item.name === 'ROLE_HEAD' || Item.name === 'ROLE_LECTURER').map((Item, index) => (
-                                            <option key={index} value={Item.name}>{Item.name}</option>
-                                        ))}
-                                    </select>
+                                <div className='row mb-3'>
+                                    <div className="col">
+                                        <label htmlFor="major" className="form-label">Chuyên ngành</label>
+                                        <select required className="form-select" id="major" value={userEdit.major} onChange={handleMajorChange} name="major">
+                                            {major.map((majorItem, index) => (
+                                                <option key={index} value={majorItem}>{majorItem}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="col">
+                                        <label htmlFor="author" className="form-label">Role</label>
+                                        <select required className="form-select" id="author" value={userEdit.authority} onChange={handleAuthorityChange} name="author">
+                                            {author.filter(Item => Item.name === "ROLE_LECTURER" || Item.name === "ROLE_HEAD").map((Item, index) => (
+                                                <option key={index} value={Item.name}>{Item.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor='address' className="form-label">Địa chỉ</label>
+                                    <input type="text" className="form-control" id="address" name="address" value={userEdit.address} onChange={handleChange} />
                                 </div>
                             </div>
-                            <div className="mb-3">
-                                <label htmlFor='address' className="form-label">Địa chỉ</label>
-                                <input type="text" className="form-control" id="address" name="address" value={userEdit.address} onChange={handleChange} />
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModal(false)}>Close</button>
+                                <button type="submit" className="btn btn-primary">
+                                    Cập nhật
+                                </button>
                             </div>
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModal(false)}>Close</button>
-                            <button type="submit" className="btn btn-primary">
-                                Cập nhật
-                            </button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
-            </div>
 
-            <div className="modal fade" id="AddLecturere" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: showModalAdd ? 'block' : 'none' }}>
-                <div className="modal-dialog modal-lg modal-dialog-scrollable" onSubmit={handleSubmitAdd}>
-                    <form className="modal-content ">
-                        <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="exampleModalLabel">THÊM GIẢNG VIÊN</h1>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                            <div className="mb-3">
-                                <label htmlFor="id" className="form-label">MSGV</label>
-                                <input required type="text" className="form-control" id="id" name="personId" value={formData.personId} onChange={handleChangeAdd} />
+                <div className="modal fade" id="AddLecturere" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: showModalAdd ? 'block' : 'none' }}>
+                    <div className="modal-dialog modal-lg modal-dialog-scrollable" onSubmit={handleSubmitAdd}>
+                        <form className="modal-content ">
+                            <div className="modal-header">
+                                <h1 className="modal-title fs-5" id="exampleModalLabel">THÊM GIẢNG VIÊN</h1>
+                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div className='row mb-3'>
-                                <div className="col">
-                                    <label htmlFor="firstName" className="form-label">Họ</label>
-                                    <input required type="text" className="form-control" id="firstName" name="firstName" value={formData.firstName} onChange={handleChangeAdd} />
+                            <div className="modal-body">
+                                <div className="mb-3">
+                                    <label htmlFor="id" className="form-label">MSGV</label>
+                                    <input required type="text" className="form-control" id="id" name="personId" value={formData.personId} onChange={handleChangeAdd} />
                                 </div>
-                                <div className="col">
-                                    <label htmlFor="lastName" className="form-label">Tên</label>
-                                    <input required type="text" className="form-control" id="lastName" name="lastName" value={formData.lastName} onChange={handleChangeAdd} />
+                                <div className='row mb-3'>
+                                    <div className="col">
+                                        <label htmlFor="firstName" className="form-label">Họ</label>
+                                        <input required type="text" className="form-control" id="firstName" name="firstName" value={formData.firstName} onChange={handleChangeAdd} />
+                                    </div>
+                                    <div className="col">
+                                        <label htmlFor="lastName" className="form-label">Tên</label>
+                                        <input required type="text" className="form-control" id="lastName" name="lastName" value={formData.lastName} onChange={handleChangeAdd} />
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="email" className="form-label">Email</label>
-                                <input required pattern=".*@.*" type="email" className="form-control" id="email" name="email" value={formData.email} onChange={handleChangeAdd} />
-                                <div class="form-text"></div>
-                            </div>
-                            <div className='row mb-3'>
-                                <div className="col">
-                                    <label htmlFor="birthDay" className="form-label">Ngày sinh</label>
-                                    <input required type="date" className="form-control" id="birthDay" name="birthDay" value={formData.birthDay} onChange={handleChangeAdd} />
+                                <div className="mb-3">
+                                    <label htmlFor="email" className="form-label">Email</label>
+                                    <input required pattern=".*@.*" type="email" className="form-control" id="email" name="email" value={formData.email} onChange={handleChangeAdd} />
+                                    <div class="form-text"></div>
                                 </div>
-                                <div className="col">
-                                    <label htmlFor="phone" className="form-label">Số điện thoại</label>
-                                    <input required pattern="\d{10}" type="text" className="form-control" id="phone" name="phone" value={formData.phone} onChange={handleChangeAdd} />
-                                    <div class="form-text">Số điện thoại gồm 10 số.</div>
-                                </div>
-                                <div className="col">
-                                    <label htmlFor='genderAdd' className="form-label">Giới tính</label>
-                                    <div style={{ display: 'flex' }}>
-                                        <div>
-                                            <input required type="radio" id="nam" name="gender" value="Nam" checked={formData.gender === false} onChange={handleChangeAdd} />
-                                            <label htmlFor="nam">Nam</label>
-                                        </div>
-                                        <div>
-                                            <input required type="radio" id="nu" name="gender" value="Nữ" checked={formData.gender === true} onChange={handleChangeAdd} />
-                                            <label htmlFor="nu">Nữ</label>
+                                <div className='row mb-3'>
+                                    <div className="col">
+                                        <label htmlFor="birthDay" className="form-label">Ngày sinh</label>
+                                        <input required type="date" className="form-control" id="birthDay" name="birthDay" value={formData.birthDay} onChange={handleChangeAdd} />
+                                    </div>
+                                    <div className="col">
+                                        <label htmlFor="phone" className="form-label">Số điện thoại</label>
+                                        <input required pattern="\d{10}" type="text" className="form-control" id="phone" name="phone" value={formData.phone} onChange={handleChangeAdd} />
+                                        <div class="form-text">Số điện thoại gồm 10 số.</div>
+                                    </div>
+                                    <div className="col">
+                                        <label htmlFor='genderAdd' className="form-label">Giới tính</label>
+                                        <div style={{ display: 'flex' }}>
+                                            <div>
+                                                <input required type="radio" id="nam" name="gender" value="Nam" checked={formData.gender === false} onChange={handleChangeAdd} />
+                                                <label htmlFor="nam">Nam</label>
+                                            </div>
+                                            <div>
+                                                <input required type="radio" id="nu" name="gender" value="Nữ" checked={formData.gender === true} onChange={handleChangeAdd} />
+                                                <label htmlFor="nu">Nữ</label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="address" className="form-label">Địa chỉ</label>
-                                <input type="address" className="form-control" id="address" name="address" value={formData.address} onChange={handleChangeAdd} />
-                            </div>
-                            <div className='row mb-3'>
-                                <div className="col">
-                                    <label htmlFor="major" className="form-label">Chuyên ngành</label>
-                                    <select required className="form-select" id="major" value={formData.major.name} onChange={handleChangeAdd} name="major">
-                                        <option value="">Chọn ...</option>
-                                        {major.map((majorItem, index) => (
-                                            <option key={index} value={majorItem}>{majorItem}</option>
-                                        ))}
-                                    </select>
+                                <div className="mb-3">
+                                    <label htmlFor="address" className="form-label">Địa chỉ</label>
+                                    <input type="address" className="form-control" id="address" name="address" value={formData.address} onChange={handleChangeAdd} />
                                 </div>
-                                <div className="col">
-                                    <label htmlFor="author" className="form-label">Role</label>
-                                    <select required className="form-select" id="author" value={formData.author} onChange={handleChangeAdd} name="author">
-                                        <option value="">Chọn ...</option>
-                                        {author.filter(Item => Item.name === "ROLE_LECTURER" || Item.name === "ROLE_HEAD").map((Item, index) => (
-                                            <option key={index} value={Item.name}>{Item.name}</option>
-                                        ))}
-                                    </select>
+                                <div className='row mb-3'>
+                                    <div className="col">
+                                        <label htmlFor="major" className="form-label">Chuyên ngành</label>
+                                        <select required className="form-select" id="major" value={formData.major.name} onChange={handleChangeAdd} name="major">
+                                            <option value="">Chọn ...</option>
+                                            {major.map((majorItem, index) => (
+                                                <option key={index} value={majorItem}>{majorItem}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="col">
+                                        <label htmlFor="author" className="form-label">Role</label>
+                                        <select required className="form-select" id="author" value={formData.author} onChange={handleChangeAdd} name="author">
+                                            <option value="">Chọn ...</option>
+                                            {author.filter(Item => Item.name === "ROLE_LECTURER" || Item.name === "ROLE_HEAD").map((Item, index) => (
+                                                <option key={index} value={Item.name}>{Item.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModalAdd(false)}>Close</button>
-                            <button type="submit" className="btn btn-primary">
-                                Add
-                            </button>
-                        </div>
-                    </form>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModalAdd(false)}>Close</button>
+                                <button type="submit" className="btn btn-primary" data-bs-dismiss="modal">
+                                    Add
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div >

@@ -11,4 +11,6 @@ import java.util.List;
 public interface StudentClassRepository extends JpaRepository<StudentClass, Integer> {
     @Query("select c from StudentClass c")
     List<StudentClass> getAllStudentClass();
+    @Query("select c from StudentClass  c where  c.classname=:name")
+    StudentClass getStudentClassByName(String name);
 }
