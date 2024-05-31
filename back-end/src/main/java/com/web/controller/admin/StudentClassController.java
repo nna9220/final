@@ -53,18 +53,11 @@ public class StudentClassController {
         Person person = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
         if (person.getAuthorities().getName().equals("ROLE_ADMIN")) {
             List<StudentClass> studentClasses = studentClassService.findAll();
-        /*ModelAndView model = new ModelAndView("QuanLyLopHoc");
-        model.addObject("listClass", studentClasses);
-        model.addObject("person", person);
-        return model;*/
             Map<String,Object> response = new HashMap<>();
             response.put("listClass", studentClasses);
             response.put("person", person);
             return new ResponseEntity<>(response,HttpStatus.OK);
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
@@ -73,13 +66,9 @@ public class StudentClassController {
 
         StudentClassRequest studentClass = new StudentClassRequest();
         studentClass.setClassname(className);
+        studentClass.setStatus(true);
         studentClassService.createStudentClass(studentClass);
 
-        // Lấy URL trước đó từ request
-        /*String referer = request.getHeader("Referer");
-
-        // Thực hiện redirect trở lại trang trước đó
-        return new ModelAndView("redirect:" + referer);*/
         return new ResponseEntity<>(studentClass,HttpStatus.CREATED);
     }
 
@@ -117,11 +106,6 @@ public class StudentClassController {
                existStudentClass.setClassname(studentClass.getClassname());
                existStudentClass.setStatus(true);
                studentClassRepository.save(existStudentClass);
-               /*String url = Contains.URL_LOCAL + "/api/admin/studentClass";
-               ModelAndView model = new ModelAndView("redirect:" + url);
-
-               model.addObject("successMessage", successMessage);
-               return model;*/
                return new ResponseEntity<>(existStudentClass,HttpStatus.OK);
            }else {
                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
