@@ -437,8 +437,8 @@ function DataTable() {
                             fullName: `${student.person?.firstName} ${student.person?.lastName}`,
                             gender: student.person?.gender ? 'Nữ' : 'Nam',
                             phone: student.person?.phone,
-                            classes: student.studentClass.classname,
-                            schoolYear: student.schoolYear.year,
+                            classes: student.studentClass?.classname,
+                            schoolYear: student.schoolYear?.year,
                         }))}
                         columns={columns}
                         initialState={{
