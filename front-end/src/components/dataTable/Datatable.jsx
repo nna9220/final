@@ -413,11 +413,11 @@ function DataTable() {
                         rows={students.filter(student => !student.person?.status).map((student, index) => ({
                             id: index + 1,
                             studentId: student.studentId,
-                            fullName: `${student.person.firstName} ${student.person.lastName}`,
-                            gender: student.person.gender ? 'Nữ' : 'Nam',
-                            phone: student.person.phone,
-                            classes: student.studentClass.classname,
-                            schoolYear: student.schoolYear.year,
+                            fullName: `${student.person?.firstName} ${student.person.lastName}`,
+                            gender: student.person?.gender ? 'Nữ' : 'Nam',
+                            phone: student.person?.phone,
+                            classes: student.studentClass?.classname,
+                            schoolYear: student.schoolYear?.year,
                         }))}
                         columns={columns}
                         initialState={{
