@@ -20,7 +20,7 @@ public class StudentClass implements Serializable {
     @Column(name="id")
     private int id;
 
-    @Column(name="classname", length = 50)
+    @Column(name="classname", length = 50, unique = true)
     private String classname;
 
     @Column(name="status", length = 50)

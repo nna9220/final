@@ -20,7 +20,7 @@ public class SchoolYear implements Serializable {
     @Column(name="year_id")
     private int yearId;
 
-    @Column(name="year", length = 50)
+    @Column(name="year", length = 50,unique = true)
     private String year;
 
     @OneToMany(mappedBy = "schoolYear", cascade = CascadeType.ALL)

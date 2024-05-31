@@ -53,6 +53,7 @@ public class Lecturer implements Serializable {
             joinColumns = @JoinColumn(name = "lecturer_id"),
             inverseJoinColumns = @JoinColumn(name = "council_id")
     )
+    @JsonIgnore
     private List<Council> councils;
 
 }
