@@ -32,6 +32,7 @@ function SidebarStudent() {
             },
           })
           .then((response) => {
+            console.log("infor:", response.data);
             setStudent(response.data);
           })
           .catch((error) => {
@@ -60,6 +61,7 @@ function SidebarStudent() {
               <div className="user-info">
                 <span className="user-name"><strong>{student.firstName + ' ' + student.lastName}</strong></span>
                 <span className="user-role">Sinh viên</span>
+                <span className="user-role">{student.personId}</span>
               </div>
             </div>
           )}

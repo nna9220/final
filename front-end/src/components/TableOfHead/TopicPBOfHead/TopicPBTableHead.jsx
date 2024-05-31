@@ -2,50 +2,34 @@ import React, { useState, useEffect } from 'react';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import CreditScoreOutlinedIcon from '@mui/icons-material/CreditScoreOutlined';
 import axiosInstance from '../../../API/axios';
-import FeedOutlinedIcon from '@mui/icons-material/FeedOutlined';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './topicPb.scss'
 
 function TopicPBTableHead() {
     const [topics, setTopics] = useState([]);
     const [detail, setDetail] = useState('');
+    const [scores, setScores] = useState({});
+    const [criterias, setCriterias] = useState([]);
     const userToken = getTokenFromUrlAndSaveToStorage();
-    const [scores, setScores] = useState({
-        criteria1: 0,
-        criteria2: 0,
-        criteria3: 0,
-        criteria4: 0,
-        criteria5: 0,
-        criteria6: 0
-    });
-
-    const handleScoreChange = (criteria, value) => {
-        setScores(prevScores => ({
-            ...prevScores,
-            [criteria]: parseFloat(value) || 0 // Update the score for the specified criteria
-        }));
-    };
-    const totalScore = Object.values(scores).reduce((total, score) => total + score, 0);
-
+    const [subjectIdForAccept, setSubjectIdForAccept] = useState(null);
     useEffect(() => {
-        console.log("TokenTopic: " + userToken);
-        if (userToken) {
-            const tokenSt = sessionStorage.getItem(userToken);
-            if (!tokenSt) {
-                axiosInstance.get('/head/counterArgumentSubject', {
-                    headers: {
-                        'Authorization': `Bearer ${userToken}`,
-                    },
-                })
-                    .then(response => {
-                        console.log("Topic: ", response.data);
-                        setTopics(response.data.listSubject);
-                    })
-                    .catch(error => {
-                        console.error(error);
-                    });
-            }
-        }
-    }, [userToken]);
+        fetchTopics();
+    }, []);
+
+    const fetchTopics = () => {
+        axiosInstance.get('/head/counterArgumentSubject', {
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+            },
+        })
+            .then(response => {
+                setTopics(response.data.listSubject);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    };
 
     const detailTopic = (id) => {
         const userToken = getTokenFromUrlAndSaveToStorage();
@@ -69,71 +53,72 @@ function TopicPBTableHead() {
         }
     }
 
-    const addScore = (id) => {
-        const userToken = getTokenFromUrlAndSaveToStorage();
-        console.log("Token: " + userToken);
-        if (userToken) {
-            const tokenSt = sessionStorage.getItem(userToken);
-            if (!tokenSt) {
-                axiosInstance.post(`/head/addScore/${id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${userToken}`,
-                    },
+    const handleAccept = () => {
+        console.log(subjectIdForAccept);
+        if (subjectIdForAccept) {
+            axiosInstance.post(`/head/manageCritical/accept-subject-to-council/${subjectIdForAccept}`, {}, {
+                headers: {
+                    'Authorization': `Bearer ${userToken}`,
+                }
+            })
+                .then(response => {
+                    console.log('Đề tài đã được duyệt qua hội đồng', response.data);
+                    toast.success("Đề tài đã được duyệt qua hội đồng!")
                 })
-                    .then(response => {
-                        console.log("DetailTopic: ", response.data);
-                    })
-                    .catch(error => {
-                        console.error(error);
-                    });
-            }
+                .catch(error => {
+                    console.error('Lỗi duyệt đề tài qua hội đồng:', error);
+                    toast.error("Lỗi duyệt đề tài qua hội đồng")
+                });
         }
     }
 
     return (
-        <div className='table-assign'>
-            <div className='home-table-assign'>
-                <table className="table table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Tên đề tài</th>
-                            <th scope="col">Giảng viên hướng dẫn</th>
-                            <th scope="col">Sinh viên 1</th>
-                            <th scope="col">Sinh viên 2</th>
-                            <th scope="col">Sinh viên 3</th>
-                            <th scope="col">Yêu cầu</th>
-                            <th scope='col'>Chấm điểm</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {topics.map((item, index) => (
-                            <tr key={index}>
-                                <th scope="row">{index + 1}</th>
-                                <td>{item.subjectName}</td>
-                                <td>{item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName}</td>
-                                <td>{item.student1}</td>
-                                <td>{item.student2}</td>
-                                <td>{item.student3}</td>
-                                <td>{item.requirement}</td>
-                                <td>
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => detailTopic(item.subjectId)}>
-                                        <CreditScoreOutlinedIcon />
-                                    </button>
-                                </td>
+        <div style={{ display: 'grid' }}>
+            <ToastContainer />
+            <div>
+                <div className='home-table-topicPB'>
+                    <table className="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Tên đề tài</th>
+                                <th scope="col">Giảng viên hướng dẫn</th>
+                                <th scope="col">Sinh viên 1</th>
+                                <th scope="col">Sinh viên 2</th>
+                                <th scope="col">Sinh viên 3</th>
+                                <th scope="col">Yêu cầu</th>
+                                <th scope='col'>Đánh giá</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {topics.map((item, index) => (
+                                <tr key={index}>
+                                    <th scope="row">{index + 1}</th>
+                                    <td>{item.subjectName}</td>
+                                    <td>{item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName}</td>
+                                    <td>{item.student1}</td>
+                                    <td>{item.student2}</td>
+                                    <td>{item.student3}</td>
+                                    <td>{item.requirement}</td>
+                                    <td>
+                                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => { detailTopic(item.subjectId); setSubjectIdForAccept(item.subjectId) }} disabled={item.active != 6}>
+                                            <CreditScoreOutlinedIcon />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-xl modal-dialog-scrollable">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Đánh giá</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div className="modal-dialog modal-xl modal-dialog-scrollable">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h1 className="modal-title fs-5" id="exampleModalLabel">Đánh giá</h1>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body">
+                        <div className="modal-body">
                             <h5>Thông tin đề tài</h5>
                             <div>
                                 <p>1. Tên đề tài: {detail.subject?.subjectName}</p>
@@ -146,86 +131,33 @@ function TopicPBTableHead() {
                                 <p>Sinh viên 2: {detail.subject?.student2}</p>
                                 <p>Sinh viên 3: {detail.subject?.student3}</p>
                             </div>
-                            <hr></hr>
-                            <h5>Tiêu chí đánh giá</h5>
-                            <table className='table-bordered table'>
-                                <thead>
-                                    <tr>
-                                        <th>Tiêu Chí Đánh Giá</th>
-                                        <th>Sinh viên 1</th>
-                                        <th>Sinh viên 2</th>
-                                        <th>Sinh viên 3</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {Object.keys(scores).map(criteria => (
-                                        <tr key={criteria}>
-                                            <td className='criteria'>{criteria}</td>
-                                            <td>
-                                                <input type='number' step='0.25' max={1} min={0} value={scores[criteria]}
-                                                    onChange={(e) => {
-                                                        const value = parseFloat(e.target.value);
-                                                        if (value > 1) {
-                                                            handleScoreChange(criteria, 1);
-                                                        } else {
-                                                            handleScoreChange(criteria, value);
-                                                        }
-                                                    }}
-                                                />
-
-                                            </td>
-                                            <td>
-                                                <input type='number' step='0.25' max={1} min={0} value={scores[criteria]}
-                                                    onChange={(e) => {
-                                                        const value = parseFloat(e.target.value);
-                                                        if (value > 1) {
-                                                            handleScoreChange(criteria, 1);
-                                                        } else {
-                                                            handleScoreChange(criteria, value);
-                                                        }
-                                                    }}
-                                                />
-
-                                            </td>
-                                            <td>
-                                                <input type='number' step='0.25' max={1} min={0} value={scores[criteria]}
-                                                    onChange={(e) => {
-                                                        const value = parseFloat(e.target.value);
-                                                        if (value > 1) {
-                                                            handleScoreChange(criteria, 1);
-                                                        } else {
-                                                            handleScoreChange(criteria, value);
-                                                        }
-                                                    }}
-                                                />
-
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    <tr>
-                                        <td className='criteria-sum'>Tổng</td>
-                                        <td><input type='number' step='0.25' max={1} min={0} className='score' readOnly value={totalScore.toFixed(2)}></input></td>
-                                        <td><input type='number' step='0.25' max={1} min={0} className='score' readOnly value={totalScore.toFixed(2)}></input></td>
-                                        <td><input type='number' step='0.25' max={1} min={0} className='score' readOnly value={totalScore.toFixed(2)}></input></td>
-
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <hr></hr>
-                            <h5>Nhận xét, đánh giá</h5>
-                            <div class="form-floating">
-                                <textarea class="form-control" id="comment" name="text" placeholder="Comment goes here"></textarea>
-                                <label for="comment">Nhận xét</label>
+                            <hr />
+                            <h5>File báo cáo</h5>
+                            <div>
+                                <label> Báo cáo 50%:
+                                    <a href={detail.subject?.fiftyPercent?.url} target="_blank" rel="noopener noreferrer" download="" className='content-name'>
+                                        {detail.subject?.fiftyPercent?.name}
+                                    </a>
+                                </label>
+                                <label> Báo cáo 100%:
+                                    <a href={detail.subject?.oneHundredPercent?.url} target="_blank" rel="noopener noreferrer" download="" className='content-name'>
+                                        {detail.subject?.oneHundredPercent?.name}
+                                    </a>
+                                </label>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={addScore}>Confirm</button>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
+                                Close
+                            </button>
+                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleAccept}>
+                                Confirm
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     )
 }

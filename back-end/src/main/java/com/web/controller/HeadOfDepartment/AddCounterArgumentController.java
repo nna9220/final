@@ -155,7 +155,6 @@ public class AddCounterArgumentController {
                     Lecturer instructor = existedSubject.getInstructorId();
                     instructor.setCouncils(councils);
                     currentLecturer.setCouncils(councils);
-                    currentLecturer.setListSubCounterArgument(addSub);
                     existedSubject.setThesisAdvisorId(currentLecturer);
                     existedSubject.setCouncil(council);
                     lecturerRepository.save(currentLecturer);

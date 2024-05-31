@@ -145,7 +145,6 @@ public class LecturerManageTutorialSubjectController {
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);
         }
-
     }
 
 }

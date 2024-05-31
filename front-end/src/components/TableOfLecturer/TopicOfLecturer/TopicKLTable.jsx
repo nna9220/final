@@ -214,7 +214,6 @@ function TopicKLTable() {
                             <th scope="col">Sinh viên 1</th>
                             <th scope="col">Sinh viên 2</th>
                             <th scope="col">Sinh viên 3</th>
-                            <th scope='col'>Loại đề tài</th>
                             <th scope="col">Action</th>
                         </tr>
                     </thead>
@@ -227,7 +226,6 @@ function TopicKLTable() {
                                 <td>{item.student1 || ''}</td>
                                 <td>{item.student2 || ''}</td>
                                 <td>{item.student3 || ''}</td>
-                                <td>{item.typeSubject.typeName || ''}</td>
                                 <td>
                                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <button className="management" type="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Đi đến chi tiết để quản lý đề tài" onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}><ViewComfyAltOutlinedIcon /></button>

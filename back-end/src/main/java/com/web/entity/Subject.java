@@ -17,7 +17,6 @@ import java.util.Set;
 @Getter
 @Entity
 @Table(name = "subject")
-@AllArgsConstructor
 public class Subject implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +25,7 @@ public class Subject implements Serializable {
 
     @OneToOne
     @JoinColumn(name = "council", unique = true)
+    @JsonIgnore
     private Council council;
 
     @Column(name="subject_name")
@@ -46,7 +46,6 @@ public class Subject implements Serializable {
 
     @ManyToOne
     @JoinColumn(name="type_id_subject")
-    @JsonBackReference
     private TypeSubject typeSubject;
 
     @Column(name="status")
@@ -86,14 +85,12 @@ public class Subject implements Serializable {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "reportOneHundredPercent", referencedColumnName = "file_id")
     private FileComment oneHundredPercent;
-    public Subject() {
-        this.checkStudent = false;
-    }
-
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<ResultEssay> resultEssays;
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<ResultGraduation> resultGraduations;
 
     @ManyToMany
@@ -102,6 +99,6 @@ public class Subject implements Serializable {
             joinColumns = @JoinColumn(name = "subject_id"),
             inverseJoinColumns = @JoinColumn(name = "criteria_id")
     )
-    @JsonManagedReference
+    @JsonIgnore
     private Set<EvaluationCriteria> criteria = new HashSet<>();
 }

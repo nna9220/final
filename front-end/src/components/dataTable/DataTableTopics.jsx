@@ -9,6 +9,8 @@ import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import axiosInstance from '../../API/axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function DataTableTopics() {
     const [topics, setTopics] = useState([]);
@@ -196,25 +198,7 @@ function DataTableTopics() {
     };
 
     return (
-        <div >
-            <Toast show={showAddToast} onClose={() => setShowAddToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
-                <Toast.Header>
-                    <strong className="me-auto">Thông báo</strong>
-                </Toast.Header>
-                <Toast.Body>
-                    <DoneOutlinedIcon /> Thêm sinh viên thành công!
-                </Toast.Body>
-            </Toast>
-
-            <Toast show={showErrorToastAdd} onClose={() => setShowErrorToastAdd(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
-                <Toast.Header>
-                    <strong className="me-auto" style={{ color: 'red' }}><ErrorOutlineOutlinedIcon /> Lỗi</strong>
-                </Toast.Header>
-                <Toast.Body>
-                    Thêm sinh viên không thành công!
-                </Toast.Body>
-            </Toast>
-
+        <div className='table-subject'>
             <div className='header-tableTopic'>
                 <div className='button-add'>
                     <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddTopic">

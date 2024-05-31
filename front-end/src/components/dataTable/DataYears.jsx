@@ -1,155 +1,202 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
+import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { DataGrid } from '@mui/x-data-grid';
+import Button from '@mui/material/Button';
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import { Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import './DataYears.scss';
 
 function DataYears() {
     const [years, setYears] = useState([]);
     const [newYear, setNewYear] = useState('');
     const [showForm, setShowForm] = useState(false);
-    const [selectedYear, setSelectedYear] = useState(null); // State lưu thông tin năm được chọn để chỉnh sửa
+    const [selectedYear, setSelectedYear] = useState(null);
 
     useEffect(() => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         if (userToken) {
-            const tokenSt = sessionStorage.getItem(userToken);
-            if (!tokenSt) {
-                axiosInstance.get('/admin/schoolYear', {
-                    headers: {
-                        'Authorization': `Bearer ${userToken}`,
-                    },
-                })
-                .then(response => {
-                    setYears(response.data.listYear);
-                    console.log("dataYear: ", response.data)
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-            }
+            axiosInstance.get('/admin/schoolYear', {
+                headers: {
+                    'Authorization': `Bearer ${userToken}`,
+                },
+            })
+            .then(response => {
+                setYears(response.data.listYear);
+            })
+            .catch(error => {
+                console.error(error);
+            });
         }
     }, []);
 
     const handleAddYear = () => {
+        if (!newYear.trim()) {
+            toast.error('Tên niên khóa không được để trống!');
+            return;
+        }
+
         const userToken = getTokenFromUrlAndSaveToStorage();
-        const newYearValue = document.getElementById('exampleFormControlInput1').value;
-    
         axiosInstance.post('/admin/schoolYear/create', null, {
-            params: {
-                year: newYearValue
-            },
-            headers: {
-                'Authorization': `Bearer ${userToken}`,
-            },
+            params: { year: newYear },
+            headers: { 'Authorization': `Bearer ${userToken}` },
         })
         .then(response => {
             setYears([...years, response.data]);
             setNewYear('');
             setShowForm(false);
-            console.log("Thêm Niên khóa thành công");
-            
+            toast.success('Thêm niên khóa thành công!');
         })
         .catch(error => {
             console.error(error);
-            console.log("Lỗi");
+            toast.error('Thêm niên khóa thất bại!');
         });
     };
 
     const handleEditYear = () => {
+        if (!newYear.trim()) {
+            toast.error('Tên niên khóa không được để trống!');
+            return;
+        }
+
         const userToken = getTokenFromUrlAndSaveToStorage();
-        const updatedYearValue = document.getElementById('exampleFormControlInput1').value;
-    
         axiosInstance.post(`/admin/schoolYear/edit/${selectedYear.yearId}`, null, {
             params: {
                 yearId: selectedYear.yearId,
-                year: updatedYearValue
+                year: newYear
             },
-            headers: {
-                'Authorization': `Bearer ${userToken}`,
-            },
+            headers: { 'Authorization': `Bearer ${userToken}` },
         })
         .then(response => {
             const updatedYears = years.map(item => {
                 if (item.yearId === selectedYear.yearId) {
-                    return { ...item, year: updatedYearValue };
+                    return { ...item, year: newYear };
                 }
                 return item;
             });
             setYears(updatedYears);
             setNewYear('');
             setShowForm(false);
-            console.log("Chỉnh sửa Niên khóa thành công");
-            
+            toast.success('Chỉnh sửa niên khóa thành công!');
         })
         .catch(error => {
             console.error(error);
-            console.log("Lỗi");
+            toast.error('Chỉnh sửa niên khóa thất bại!');
         });
     };
 
     const handleViewYear = (year) => {
-        setSelectedYear(year); 
-        setNewYear(year.year); 
+        setSelectedYear(year);
+        setNewYear(year.year);
         setShowForm(true);
     };
 
+    const handleExport = () => {
+        const userToken = getTokenFromUrlAndSaveToStorage();
+        axiosInstance.get('/admin/schoolYear/export', {
+            responseType: 'blob',
+            headers: { 'Authorization': `Bearer ${userToken}` },
+        })
+        .then(response => {
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'school_years_report.xls');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            toast.success('Xuất báo cáo thành công!');
+        })
+        .catch(error => {
+            console.error("Export error: ", error);
+            toast.error('Xuất báo cáo thất bại!');
+        });
+    };
+
+    const columns = [
+        { field: 'yearId', headerName: 'ID', width: 100 },
+        { field: 'year', headerName: 'Tên niên khóa', width: 200 },
+        {
+            field: 'action',
+            headerName: 'Action',
+            width: 150,
+            renderCell: (params) => (
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleViewYear(params.row)}
+                >
+                    Edit
+                </Button>
+            ),
+        },
+    ];
+
     return (
-        <div>
-            <button type="button" className="btn btn-success" onClick={() => setShowForm(true)}>
-                Add
-            </button>
-            {showForm && (
-                <div className="modal fade show" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{display: 'block'}}>
-                    <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h1 className="modal-title fs-5" id="exampleModalLabel">{selectedYear ? 'CHỈNH SỬA NIÊN KHÓA' : 'THÊM NIÊN KHÓA'}</h1>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={() => setShowForm(false)}></button>
-                            </div>
-                            <div className="modal-body">
-                                <div className="mb-3">
-                                    <label htmlFor="exampleFormControlInput1" className="form-label">Tên niên khóa</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        id="exampleFormControlInput1" 
-                                        value={newYear} // Sử dụng giá trị của newYear cho input
-                                        onChange={(e) => setNewYear(e.target.value)} 
-                                    />
-                                </div>
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowForm(false)}>Close</button>
-                                {selectedYear ? (
-                                    <button type="button" className="btn btn-primary" onClick={handleEditYear}>Update</button>
-                                ) : (
-                                    <button type="button" className="btn btn-success" onClick={handleAddYear}>Add</button>
-                                )}
-                            </div>
-                        </div>
-                    </div>
+        <div className='table-years'>
+            <ToastContainer />
+            <div className='content-table'>
+                <Button
+                    variant="contained"
+                    color="success"
+                    onClick={() => {
+                        setSelectedYear(null);
+                        setNewYear('');
+                        setShowForm(true);
+                    }}
+                >
+                    Add
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<SaveAltIcon />}
+                    onClick={handleExport}
+                    style={{ marginLeft: '10px' }}
+                >
+                    Export
+                </Button>
+                {showForm && (
+                    <Dialog open={showForm} onClose={() => setShowForm(false)}>
+                        <DialogTitle>{selectedYear ? 'CHỈNH SỬA NIÊN KHÓA' : 'THÊM NIÊN KHÓA'}</DialogTitle>
+                        <DialogContent>
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                label="Tên niên khóa"
+                                type="text"
+                                fullWidth
+                                variant="standard"
+                                required
+                                value={newYear}
+                                onChange={(e) => setNewYear(e.target.value)}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => setShowForm(false)}>Cancel</Button>
+                            {selectedYear ? (
+                                <Button onClick={handleEditYear}>Update</Button>
+                            ) : (
+                                <Button onClick={handleAddYear}>Add</Button>
+                            )}
+                        </DialogActions>
+                    </Dialog>
+                )}
+                <div>
+                    <DataGrid
+                        rows={years.map((item, index) => ({ ...item, id: index + 1 }))}
+                        columns={columns}
+                        pageSize={5}
+                        initialState={{
+                            ...years.initialState,
+                            pagination: { paginationModel: { pageSize: 10 } },
+                        }}
+                        pageSizeOptions={[10, 25, 50]}   
+                    />
                 </div>
-            )}
-            <table className="table table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Tên niên khóa</th>
-                        <th scope='col'> Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {years.map((item, index) => (
-                        <tr key={index}>
-                            <th scope="row">{index + 1}</th>
-                            <td>{item.year}</td>
-                            <td>
-                                <button className='btnView' onClick={() => handleViewYear(item)}>View</button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            </div>
         </div>
     );
 }
