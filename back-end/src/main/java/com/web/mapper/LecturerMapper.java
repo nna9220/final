@@ -16,8 +16,6 @@ public interface LecturerMapper {
     @Mapping(source = "lecturer.authority", target = "authority")
     @Mapping(source = "lecturer.major", target = "major")
     @Mapping(source = "lecturer.person", target = "person")
-    @Mapping(source = "lecturer.listSubInstruct", target = "listSubInstruct")
-    @Mapping(source = "lecturer.listSubCounterArgument", target = "listSubCounterArgument")
     @Mapping(source = "lecturer.tasks", target = "tasks")
     LecturerResponse toResponse(Lecturer lecturer);
 
