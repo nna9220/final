@@ -11,4 +11,6 @@ import java.util.List;
 public interface SchoolYearRepository extends JpaRepository<SchoolYear, Integer> {
     @Query("select y from SchoolYear y")
     List<SchoolYear> getAllSchoolYear();
+    @Query("select y from SchoolYear  y where y.year=:year")
+    SchoolYear getSchoolYearByYear(String year);
 }

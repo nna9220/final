@@ -9,10 +9,7 @@ import com.web.mapper.StudentMapper;
 import com.web.dto.request.PersonRequest;
 import com.web.dto.request.StudentRequest;
 import com.web.repository.*;
-import com.web.service.Admin.PersonService;
-import com.web.service.Admin.SchoolYearService;
-import com.web.service.Admin.StudentClassService;
-import com.web.service.Admin.StudentService;
+import com.web.service.Admin.*;
 import com.web.utils.Contains;
 import com.web.utils.UserUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -31,6 +28,7 @@ import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.persistence.EntityManager;
@@ -55,6 +53,8 @@ public class StudentController {
     private SchoolYearRepository schoolYearRepository;
     @Autowired
     private PersonService personService;
+    @Autowired
+    private ImportStudent importStudent;
     @Autowired
     private UserUtils userUtils;
     @Autowired
@@ -221,7 +221,7 @@ public class StudentController {
                 existPerson.setPhone(phone);
                 existPerson.setGender(gender);
                 existPerson.setStatus(status);
-                StudentClass studentClass = studentClassRepository.getStudentClassByName(classes);
+                StudentClass studentClass = studentClassRepository.getStudentClassByClassname(classes);
                 existStudent.setStudentClass(studentClass);
                 personRepository.save(existPerson);
                 studentRepository.save(existStudent);
@@ -260,6 +260,11 @@ public class StudentController {
                 }
                 return new ResponseEntity<>(HttpStatus.OK);
     }*/
+
+    @PostMapping("/importSV")
+    public ResponseEntity<?> importStudent(@RequestParam("file") MultipartFile file) throws IOException {
+        return new ResponseEntity<>(importStudent.importStudent(file),HttpStatus.OK);
+    }
 
 
     @GetMapping("/export")

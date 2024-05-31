@@ -105,62 +105,6 @@ public class SubjectImportKLTN {
                     System.out.println("Luu KLTN Thanh Cong");
                 });
 
-                //KLTN
-
-               /* kltn.forEach(subject -> {
-                    Subject newSubject = new Subject();
-                    newSubject.setSubjectName(subject.getSubjectName());
-                    newSubject.setYear(String.valueOf(nowYear));
-                    newSubject.setTypeSubject(typeSubject2);
-                    newSubject.setActive((byte) 1);
-                    newSubject.setStatus(true);
-                    if (subject.getStudent1()!=null) {
-                        Student student1 = studentRepository.findById(subject.getStudent1()).orElse(null);
-                        if (student1 != null) {
-                            if (student1.getSubjectGraduationId() == null) {
-                                newSubject.setStudent1(subject.getStudent1());
-                                student1.setSubjectGraduationId(newSubject);
-                                newSubject.setMajor(student1.getMajor());
-                                saveStudent.add(student1);
-                            }
-                        }
-                    }else {
-                        newSubject.setStudent1(null);
-                    }
-                    if (subject.getStudent2()!=null) {
-                        Student student2 = studentRepository.findById(subject.getStudent2()).orElse(null);
-                        if (student2 != null) {
-                            if (student2.getSubjectGraduationId() == null) {
-                                newSubject.setStudent2(subject.getStudent2());
-                                student2.setSubjectGraduationId(newSubject);
-                                saveStudent.add(student2);
-                            }
-                        }
-                    }else {
-                        newSubject.setStudent2(null);
-                    }
-                    if (subject.getStudent3()!=null) {
-                        Student student3 = studentRepository.findById(subject.getStudent3()).orElse(null);
-                        if (student3 != null) {
-                            if (student3.getSubjectGraduationId() == null) {
-                                newSubject.setStudent2(subject.getStudent2());
-                                student3.setSubjectGraduationId(newSubject);
-                                saveStudent.add(student3);
-                            }
-                        }
-                    }else {
-                        newSubject.setStudent3(null);
-                    }
-                    if (subject.getInstructorId()!=null) {
-                        newSubject.setInstructorId(subject.getInstructorId());
-                    }
-                    if (subject.getThesisAdvisorId()!=null) {
-                        newSubject.setThesisAdvisorId(subject.getThesisAdvisorId());
-                    }
-                    saveSub.add(newSubject);
-                    System.out.println("Luu KLTN Thanh Cong");
-                });
-                */
                 subjectRepository.saveAll(saveSub);
                 studentRepository.saveAll(saveStudent);
                 return ResponseEntity.ok("Imported file to list subject successful!");

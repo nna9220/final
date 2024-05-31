@@ -27,7 +27,6 @@ public class ResultGraduation {
 
     @ManyToOne
     @JoinColumn(name = "subject_id")
-    @JsonBackReference
     private Subject subject;
 
     @OneToOne
@@ -40,5 +39,6 @@ public class ResultGraduation {
             joinColumns = @JoinColumn(name = "result_id"),
             inverseJoinColumns = @JoinColumn(name = "criteria_id")
     )
+    @JsonIgnore
     private List<EvaluationCriteria> criterias;
 }
