@@ -13,7 +13,6 @@ const Card = ({ task, index }) => {
   const [selectedTask, setSelectedTask] = useState(null);
   const [detail, setDetail] = useState([]);
   const [file, setFile] = useState([]);
-
   const [commentContent, setCommentContent] = useState('');
   const [commentFiles, setCommentFiles] = useState([]);
 
@@ -25,9 +24,25 @@ const Card = ({ task, index }) => {
     setCommentFiles(e.target.files);
   };
 
-  useEffect(() => {
-    handleViewTask(task.taskId);
-  }, [task.taskId]);
+  const handleViewTask = async (taskId) => {
+    setSelectedTask(taskId);
+    console.log("id:", taskId);
+    const userToken = getTokenFromUrlAndSaveToStorage();
+    if (userToken) {
+      try {
+        const response = await axiosInstance.get(`/student/task/detail/${taskId}`, {
+          headers: {
+            'Authorization': `Bearer ${userToken}`,
+          },
+        });
+        console.log("detailTask: ", response.data);
+        setDetail(response.data);
+        setFile(response.data.listFile);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
 
   const handleSubmitComment = async (e) => {
     e.preventDefault();
@@ -47,42 +62,15 @@ const Card = ({ task, index }) => {
   
       const newComment = response.data;
   
-      // Cập nhật trạng thái của detail.listComment để hiển thị comment mới
-      setDetail(prevDetail => {
-        return {
-          ...prevDetail,
-          listComment: [...prevDetail.listComment, newComment]
-        };
-      });
+      setDetail(prevDetail => ({
+        ...prevDetail,
+        listComment: [...prevDetail.listComment, newComment]
+      }));
   
-      // Xóa nội dung và file đã chọn sau khi đăng comment thành công
       setCommentContent('');
       setCommentFiles([]);
     } catch (error) {
       console.error('Error creating comment:', error);
-    }
-  };
-  
-  const handleViewTask = (taskId) => {
-    setSelectedTask(taskId);
-    const userToken = getTokenFromUrlAndSaveToStorage();
-    if (userToken) {
-      const tokenSt = sessionStorage.getItem(userToken);
-      if (!tokenSt) {
-        axiosInstance.get(`/student/task/detail/${taskId}`, {
-          headers: {
-            'Authorization': `Bearer ${userToken}`,
-          },
-        })
-          .then(response => {
-            console.log("detailTask: ", response.data);
-            setDetail(response.data);
-            setFile(response.data.listFile);
-          })
-          .catch(error => {
-            console.error(error);
-          });
-      }
     }
   };
 
@@ -91,25 +79,25 @@ const Card = ({ task, index }) => {
   return (
     <Draggable draggableId={task?.taskId?.toString()} index={index}>
       {(provided) => (
-        <div className="card-items" ref={provided.innerRef}{...provided.draggableProps}{...provided.dragHandleProps}>
-          <div class="dropdown">
+        <div className="card-items" ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+          <div className="dropdown">
             <label className='title-task-st'>{task.requirement}</label>
-            <button class="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{ border: 'none', backgroundColor: 'white' }} >
+            <button className="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{ border: 'none', backgroundColor: 'white' }}>
               <MoreHorizTwoToneIcon />
             </button>
-            <ul class="dropdown-menu">
+            <ul className="dropdown-menu">
               <li><a className="dropdown-item" data-bs-toggle="modal" data-bs-target={`#${modalId}`} href="#" onClick={() => handleViewTask(task.taskId)}>View</a></li>
-              <li><a class="dropdown-item" href="#">Delete</a></li>
+              <li><a className="dropdown-item" href="#">Delete</a></li>
             </ul>
           </div>
-          <div class="modal fade" id={modalId} tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-scrollable modal-xl">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="exampleModalLabel">{task.requirement}</h1>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <div className="modal fade" id={modalId} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div className="modal-dialog modal-dialog-scrollable modal-xl">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h1 className="modal-title fs-5" id="exampleModalLabel">{task.requirement}</h1>
+                  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div className="modal-body">
                   <div className='info-modal'>
                     <div>
                       <div className='lable-items'>
@@ -136,14 +124,14 @@ const Card = ({ task, index }) => {
                   </div>
                   <div>
                     <form onSubmit={handleSubmitComment}>
-                      <div class="mb-3">
-                        <label for="commentContent" class="form-label">Comment</label>
-                        <textarea class="form-control" id="commentContent" rows="3" value={commentContent} onChange={handleCommentChange}></textarea>
+                      <div className="mb-3">
+                        <label htmlFor="commentContent" className="form-label">Comment</label>
+                        <textarea className="form-control" id="commentContent" rows="3" value={commentContent} onChange={handleCommentChange}></textarea>
                       </div>
-                      <div class="mb-3">
-                        <input type="file" class="form-control" id="commentFile" onChange={handleFileChange} multiple />
+                      <div className="mb-3">
+                        <input type="file" className="form-control" id="commentFile" onChange={handleFileChange} multiple />
                       </div>
-                      <button type="submit" class="btn btn-primary">Post Comment</button>
+                      <button type="submit" className="btn btn-primary">Post Comment</button>
                     </form>
                   </div>
                   <div className='comment-items'>
@@ -173,9 +161,9 @@ const Card = ({ task, index }) => {
                     ))}
                   </div>
                 </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="button" class="btn btn-primary">Save changes</button>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" className="btn btn-primary">Save changes</button>
                 </div>
               </div>
             </div>
