@@ -195,7 +195,7 @@ public class StudentController {
                                         @RequestParam(value = "status", required = false, defaultValue = "true") boolean status,
                                         @RequestParam("username") String username,
                                         @RequestParam("address") String address,
-                                        @RequestParam("classes") StudentClass classes,
+                                        @RequestParam("classes") String classes,
                                         @RequestHeader("Authorization") String authorizationHeader) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -215,7 +215,8 @@ public class StudentController {
                 existPerson.setPhone(phone);
                 existPerson.setGender(gender);
                 existPerson.setStatus(status);
-                existStudent.setStudentClass(classes);
+                StudentClass studentClass = studentClassRepository.getStudentClassByClassname(classes);
+                existStudent.setStudentClass(studentClass);
                 personRepository.save(existPerson);
                 studentRepository.save(existStudent);
                 return new ResponseEntity<>(existPerson, HttpStatus.OK);
