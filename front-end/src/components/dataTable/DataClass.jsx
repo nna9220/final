@@ -124,6 +124,8 @@ function DataClass() {
     const columns = [
         { field: 'id', headerName: 'ID', width: 100 },
         { field: 'classname', headerName: 'Tên lớp học', width: 200 },
+        { field: 'status', headerName: 'Trạng thái', width: 200 },
+
         {
             field: 'action',
             headerName: 'Action',
@@ -189,7 +191,7 @@ function DataClass() {
                         </DialogActions>
                     </Dialog>
                 )}
-                <div style={{ height: 400, width: '100%' }}>
+                <div>
                     <DataGrid
                         rows={classes.map((item, index) => ({ ...item, id: index + 1 }))}
                         columns={columns}

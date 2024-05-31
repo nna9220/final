@@ -81,6 +81,7 @@ public class StudentClassController {
 
         StudentClassRequest studentClass = new StudentClassRequest();
         studentClass.setClassname(className);
+        studentClass.setStatus(true);
         studentClassService.createStudentClass(studentClass);
 
         return new ResponseEntity<>(studentClass,HttpStatus.CREATED);

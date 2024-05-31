@@ -1,28 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
-import axiosInstance from '../../API/axios';
+import React from 'react';
 
-function NotificationOfLecturer() {
-    const [notification, setNotification] = useState([]);
-    const userToken = getTokenFromUrlAndSaveToStorage();
-
-    useEffect(() => {
-        if (userToken) {
-            axiosInstance.get('/lecturer/notification', {
-                headers: {
-                    'Authorization': `Bearer ${userToken}`,
-                }
-            })
-                .then(response => {
-                    console.log("Danh sách thông báo: ", response.data);
-                    setNotification(response.data);
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-        }
-    }, [userToken]);
-
+function NotificationOfLecturer({ notifications }) {
     const formatContent = (content) => {
         return content.split('\n').map((line, index) => (
             <React.Fragment key={index}>
@@ -35,7 +13,7 @@ function NotificationOfLecturer() {
     return (
         <div className='widget'>
             <div className="accordion" id="accordionFlushExample">
-                {notification.map((item, index) => (
+                {notifications.map((item, index) => (
                     <div className="accordion-item" key={item.notificationId}>
                         <h2 className="accordion-header">
                             <button 
@@ -66,4 +44,4 @@ function NotificationOfLecturer() {
     );
 }
 
-export default NotificationOfLecturer
+export default NotificationOfLecturer;

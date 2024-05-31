@@ -44,6 +44,7 @@ import ManagementCommitteOfHead from './Pages/Head/ManagementCommitteOfHead';
 import ManagementTopicGraduation from './Pages/Student/ManagementTopicGraduation';
 import ManageComplete from './Pages/Teacher/ManageComplete';
 import ManagementComplete from './Pages/Head/ManagementComplete';
+import ManagementGuest from './Pages/Admin/ManagementGuest';
 
 function App() {
   return (
@@ -78,8 +79,7 @@ function App() {
         <Route path="/managermentYears" element={<ManagementYears />} />
         <Route path='/managermentTopics' element={<ManagementTopics/>}/>
         <Route path='/managermentType' element={<ManagementType/>}/>
-
-
+        <Route path='/managermentGuest' element={<ManagementGuest/>}/>
 
         <Route path="/homeStudent" element={<HomeStudent />} />
         <Route path="/managermentTopicStudent" element={<ManagementTopic />} />

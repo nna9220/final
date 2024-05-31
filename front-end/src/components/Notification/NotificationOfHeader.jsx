@@ -1,28 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
-import axiosInstance from '../../API/axios';
 
-function NotificationOfHeader() {
-    const [notification, setNotification] = useState([]);
+function NotificationOfHeader({ notifications }) {
     const [readNotifications, setReadNotifications] = useState(new Set(JSON.parse(localStorage.getItem('readNotifications')) || []));
-    const userToken = getTokenFromUrlAndSaveToStorage();
 
     useEffect(() => {
-        if (userToken) {
-            axiosInstance.get('/head/notification', {
-                headers: {
-                    'Authorization': `Bearer ${userToken}`,
-                }
-            })
-                .then(response => {
-                    console.log("Danh sách thông báo: ", response.data);
-                    setNotification(response.data);
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-        }
-    }, [userToken]);
+        const storedReadNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+        setReadNotifications(new Set(storedReadNotifications));
+    }, []);
 
     const handleReadNotification = (id) => {
         setReadNotifications(prevState => {
@@ -44,7 +28,7 @@ function NotificationOfHeader() {
     return (
         <div className='widget'>
             <div className="accordion" id="accordionFlushExample">
-                {notification.map((item, index) => (
+                {notifications.map((item, index) => (
                     <div className="accordion-item" key={item.notificationId}>
                         <h2 className="accordion-header">
                             <button 
