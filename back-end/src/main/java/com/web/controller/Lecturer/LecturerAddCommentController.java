@@ -69,9 +69,9 @@ public class LecturerAddCommentController {
     private FileRepository fileRepository;
     @PostMapping("/create/{taskId}")
     public ResponseEntity<?> createComment(@PathVariable int taskId,
-                                      @RequestParam("content") String content,
-                                      @RequestParam("fileInput") List<MultipartFile> files,
-                                      @RequestHeader("Authorization") String authorizationHeader){
+                                            @RequestParam("content") String content,
+                                            @RequestParam(value = "fileInput", required = false) List<MultipartFile> files,
+                                            @RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER")) {
@@ -79,6 +79,7 @@ public class LecturerAddCommentController {
             newComment.setContent(content);
             newComment.setPoster(personCurrent);
             Task existTask = taskRepository.findById(taskId).orElse(null);
+            Subject existSubject = subjectRepository.findById(existTask.getSubjectId().getSubjectId()).orElse(null);
             newComment.setTaskId(existTask);
             LocalDateTime nowDate = LocalDateTime.now();
             newComment.setDateSubmit(nowDate);
@@ -108,14 +109,14 @@ public class LecturerAddCommentController {
                     }
                 }
             }
-            Subject existSubject = subjectRepository.findById(existTask.getSubjectId().getSubjectId()).orElse(null);
-
-            String subject = "Change task " + existTask.getRequirement() ;
+            MailStructure newMail = new MailStructure();
+            String subject = "Update comment " + existTask.getRequirement() ;
             String messenger = "Topic: " + existSubject.getSubjectName()+"\n" +
                     "Change by: " + personCurrent.getUsername() + "\n"
                     + "Change task: " + existTask.getRequirement()+"\n"
                     + "Content: " + comment.getContent();
-
+            newMail.setSubject(subject);
+            newMail.setSubject(messenger);
             List<String> emailPerson = new ArrayList<>();
             if (existSubject.getStudent1()!=null) {
                 Student student1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
@@ -135,14 +136,8 @@ public class LecturerAddCommentController {
                     emailPerson.add(student3.getPerson().getUsername());
                 }
             }
-            if (!emailPerson.isEmpty()){
-                mailService.sendMailToPerson(emailPerson,subject,messenger);
-            }
             return new ResponseEntity<>(comment, HttpStatus.CREATED);
         }else{
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }

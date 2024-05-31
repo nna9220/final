@@ -1,47 +1,52 @@
-.header-tableTopic {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-
-    .btn-type {
+.table-subject{
+    border-radius: 5px;
+    border: 1px solid rgb(129, 127, 127);
+    .header-tableTopic {
         display: flex;
-
-        .button-listDelete {
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
+        padding: 16px;
+        justify-content: space-between;
+        width: 100%;
+    
+        .btn-type {
             display: flex;
-            align-items: center;
-            padding: 5px;
-
-            &:hover {
-                color: darkgreen;
-                font-weight: bold;
-            }
-
-            &.active {
-                color: darkgreen;
-                font-weight: bold;
+    
+            .button-listDelete {
+                background-color: transparent;
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                padding: 5px;
+    
+                &:hover {
+                    color: darkgreen;
+                    font-weight: bold;
+                }
+    
+                &.active {
+                    color: darkgreen;
+                    font-weight: bold;
+                }
             }
         }
     }
-}
-
-.btn-importFile {
-    display: flex;
-    justify-content: flex-end;
-    margin: 5px;
-
-    .input-file {
-        border: none;
-    }
-
-    button {
-        border: none;
-        background-color: white;
-
-        &:hover {
-            color: darkgreen;
+    
+    .btn-importFile {
+        display: flex;
+        justify-content: flex-end;
+        margin: 5px;
+    
+        .input-file {
+            border: none;
+        }
+    
+        button {
+            border: none;
+            background-color: white;
+    
+            &:hover {
+                color: darkgreen;
+            }
         }
     }
 }

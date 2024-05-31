@@ -132,6 +132,12 @@ const SidebarAdmin = () => {
                 <span>Quản lý niên khóa</span>
               </a>
             </li>
+            <li className="sidebar-item">
+              <a href="/managermentGuest" className="sidebar-link">
+                <i className="lni lni-cog"><ViewListOutlinedIcon /></i>
+                <span>Quản lý khách</span>
+              </a>
+            </li>
           </ul>
         </aside>
       </div>

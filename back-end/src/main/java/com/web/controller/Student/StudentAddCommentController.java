@@ -105,7 +105,7 @@ public class StudentAddCommentController {
                 }
             }
             MailStructure newMail = new MailStructure();
-            String subject = "Change task " + existTask.getRequirement() ;
+            String subject = "Update comment " + existTask.getRequirement() ;
             String messenger = "Topic: " + existSubject.getSubjectName()+"\n" +
                     "Change by: " + personCurrent.getUsername() + "\n"
                     + "Change task: " + existTask.getRequirement()+"\n"

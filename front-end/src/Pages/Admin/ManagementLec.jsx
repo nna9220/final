@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 function ManagementLec() {
     useEffect(() => {
         document.title = "Quản lý giảng viên";
-      }, []);
+    }, []);
     return (
         <div>
             <div className='manaStudentOfAdmin'>
@@ -16,11 +16,13 @@ function ManagementLec() {
                     <Navbar />
                     <hr />
                     <div className="widgets">
-                        <div className='titleMana'>
-                            <h3>Quản lý giảng viên</h3>
-                        </div>
-                        <div className='homeMana'>
-                            <DatatableLec />
+                        <div className='headMana'>
+                            < div className='titleMana' >
+                                <h3>Quản lý giảng viên</h3>
+                            </div >
+                            <div className='homeMana'>
+                                <DatatableLec />
+                            </div>
                         </div>
                     </div>
                 </div>

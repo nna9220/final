@@ -25,6 +25,7 @@ function KanbanBoardKL() {
       timeEnd: '',
       assignTo: '',
     });
+    const [statusActive, setStatusActive] = useState(null);
     const [error, setError] = useState(null);
     const [currentDroppableId, setCurrentDroppableId] = useState('MustDo'); // State lưu trữ droppableId hiện tại
   
@@ -61,8 +62,9 @@ function KanbanBoardKL() {
             },
           })
             .then(response => {
-              console.log("detailTaskSt: ", response.data.listTask);
+              console.log("detailTaskSt-KL: ", response.data.listTask);
               setData(response.data.listTask);
+
             })
             .catch(error => {
               console.error("Error fetching task list:", error);

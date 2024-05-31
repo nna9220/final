@@ -81,11 +81,11 @@ public class StudentAddTaskController {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_STUDENT")) {
-            //ModelAndView modelAndView = new ModelAndView("QuanLyDeTai");
             Student currentStudent = studentRepository.findById(personCurrent.getPersonId()).orElse(null);
             Subject currentSubject = subjectRepository.findById(currentStudent.getSubjectId().getSubjectId()).orElse(null);
             List<Task> taskList = currentSubject.getTasks();
             Map<String,Object> response = new HashMap<>();
+            response.put("subject", currentSubject);
             response.put("listTask", taskList);
             response.put("peson", personCurrent);
             response.put("subject", currentSubject);

@@ -31,13 +31,6 @@ public class Lecturer implements Serializable {
     @Enumerated(EnumType.STRING)
     private Major major;
 
-    @OneToMany(mappedBy = "instructorId", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Subject> listSubInstruct;
-
-    @OneToMany(mappedBy = "thesisAdvisorId", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Subject> listSubCounterArgument;
 
     @OneToMany(mappedBy = "instructorId", cascade = CascadeType.ALL)
     @JsonIgnore

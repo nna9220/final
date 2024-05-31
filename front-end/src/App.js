@@ -42,6 +42,9 @@ import ManagementCriteria from './Pages/Head/ManagementCriteria';
 import ManageCommittee from './Pages/Teacher/ManageCommittee';
 import ManagementCommitteOfHead from './Pages/Head/ManagementCommitteOfHead';
 import ManagementTopicGraduation from './Pages/Student/ManagementTopicGraduation';
+import ManageComplete from './Pages/Teacher/ManageComplete';
+import ManagementComplete from './Pages/Head/ManagementComplete';
+import ManagementGuest from './Pages/Admin/ManagementGuest';
 
 function App() {
   return (
@@ -76,8 +79,7 @@ function App() {
         <Route path="/managermentYears" element={<ManagementYears />} />
         <Route path='/managermentTopics' element={<ManagementTopics/>}/>
         <Route path='/managermentType' element={<ManagementType/>}/>
-
-
+        <Route path='/managermentGuest' element={<ManagementGuest/>}/>
 
         <Route path="/homeStudent" element={<HomeStudent />} />
         <Route path="/managermentTopicStudent" element={<ManagementTopic />} />
@@ -96,6 +98,7 @@ function App() {
         <Route path="/managermentTopicHead" element={<TopicOfHead />} />
         <Route path="/managermentHead/TopicsPB" element={<ManageTopicPBOfHead />} />
         <Route path="/managermentHead/thesisEvaluation" element={<ManagementCommitteOfHead />} />
+        <Route path="/managermentHead/completedTopic" element={<ManagementComplete />} />
         <Route path="/defensepanel" element={<DefensePanel />} />
 
 
@@ -105,7 +108,7 @@ function App() {
         <Route path='/managermentTopicLec' element={<ManageLec/>}/>
         <Route path='/managermentTopicPBLec' element={<ManageTopicPB/>}/>
         <Route path='/thesisCommittee' element={<ManageCommittee/>}/>
-
+        <Route path='/completedTopic' element={<ManageComplete/>}/>
       </Routes>
     </>
   );

@@ -34,7 +34,7 @@ const Card = ({ task, index }) => {
             for (const file of commentFiles) {
                 formData.append('fileInput', file);
             }
-
+    
             console.log("Comment-post: ", formData);
             const response = await axiosInstance.post(`/lecturer/comment/create/${task.taskId}`, formData, {
                 headers: {
@@ -43,6 +43,24 @@ const Card = ({ task, index }) => {
                 },
             });
             console.log('Comment created successfully:', response.data);
+            const newComment = response.data;
+            setDetail((prevDetail) => ({
+                ...prevDetail,
+                listComment: [...prevDetail.listComment, newComment],
+            }));
+    
+            // Check if response.data.files exists and is iterable before updating files state
+            if (Array.isArray(response.data.files)) {
+                setFiles((prevFiles) => [
+                    ...prevFiles,
+                    ...response.data.files, // Assuming the server responds with files attached to the new comment
+                ]);
+            } else {
+                console.error('Files in response data is not an array:', response.data.files);
+            }
+    
+            setCommentContent('');
+            setCommentFiles([]);
         } catch (error) {
             console.error('Error creating comment:', error);
         }
@@ -50,7 +68,6 @@ const Card = ({ task, index }) => {
     
     const handleViewTask = (taskId) => {
         setSelectedTask(taskId);
-        // Gửi yêu cầu API với taskId đã chọn
         const userToken = getTokenFromUrlAndSaveToStorage();
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
@@ -63,6 +80,7 @@ const Card = ({ task, index }) => {
                     .then(response => {
                         console.log("detailTask: ", response.data);
                         setDetail(response.data);
+                        setFiles(response.data.listFile);
                     })
                     .catch(error => {
                         console.error(error);
@@ -133,21 +151,20 @@ const Card = ({ task, index }) => {
                                         </form>
                                     </div>
                                     <div className='comment-items'>
-                                        {detail.listComment && detail.listComment.map((comment, index) => (
-                                            <div key={index}>
+                                        {detail.listComment && detail.listComment.map((comment, commentIndex) => (
+                                            <div key={commentIndex}>
                                                 <div className='comment-item'>
                                                     <div className='header-comment'>
-                                                        <label className='name-post'>{comment.poster.firstName + ' ' + comment.poster.lastName}</label>
+                                                        <label className='name-post'>{comment.poster?.firstName + ' ' + comment.poster?.lastName}</label>
                                                         <label className='time-post'>{comment.dateSubmit}</label>
                                                     </div>
                                                     <div className='body-comment'>
                                                         <label className='content'>{comment.content}</label><br />
                                                         {files && files.map((file, fileIndex) => {
-                                                            // Kiểm tra xem tệp có thuộc về comment hiện tại không
-                                                            if (file.commentId.commentId === comment.commentId) {
+                                                            if (file.commentId?.commentId === comment.commentId) {
                                                                 return (
                                                                     <div key={fileIndex}>
-                                                                        <a href={file.url}><p>{file.name}</p></a>
+                                                                        <a href={file.url}><p>{file.url}</p></a>
                                                                     </div>
                                                                 );
                                                             } else {
@@ -162,7 +179,6 @@ const Card = ({ task, index }) => {
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary">Save changes</button>
                                 </div>
                             </div>
                         </div>

@@ -25,7 +25,7 @@ public class TypeSubject implements Serializable {
     private String typeName;
 
     @OneToMany(mappedBy = "typeSubject", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonIgnore
     private List<Subject> subjectsList;
 
     @OneToMany(mappedBy = "typeSubjectId",orphanRemoval = true)

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './DataTableRegistrationPeroidLec.scss';
 import axiosInstance from '../../API/axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './DataTableTimeRegister.scss'
 
 function DataTableTimeRegisterKL() {
     const [timeApprove, setTimeApprove] = useState([]);
@@ -71,9 +74,10 @@ function DataTableTimeRegisterKL() {
                 });
                 // Cập nhật state với dữ liệu mới
                 setTimeApprove(updatedTimeApprove);
+                toast.success("Chỉnh sửa thành công!")
             })
             .catch(error => {
-                console.error("Error: ", error);
+                toast.error("Chỉnh sửa thất bại!")
             });
         } else {
             console.log("Error: No token found or no selected period ID");
@@ -147,85 +151,87 @@ function DataTableTimeRegisterKL() {
         return formattedDateTime;
     }
     return (
-        <div>
-
-            <div className="modal fade" id="AddTimeApprove" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="exampleModalLabel">Thêm thời gian duyệt đề tài</h1>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                            <div className="form-floating mb-3 mt-3">
-                                <input type="datetime-local" className="form-control" id="timeStart" placeholder="Enter email" name="timeStart" onChange={handleChange} />
-                                <label for="timeStart">Thời gian bắt đầu</label>
+        <div className='table-timeRegister'>
+            <ToastContainer />
+            <div className='content-table'>
+                <div className="modal fade" id="AddTimeApprove" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h1 className="modal-title fs-5" id="exampleModalLabel">Thêm thời gian duyệt đề tài</h1>
+                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div className="form-floating mb-3 mt-3">
-                                <input type="datetime-local" className="form-control" id="timeEnd" placeholder="Enter email" name="timeEnd" onChange={handleChange} />
-                                <label for="timeStart">Thời gian kết thúc</label>
+                            <div className="modal-body">
+                                <div className="form-floating mb-3 mt-3">
+                                    <input type="datetime-local" className="form-control" id="timeStart" placeholder="Enter email" name="timeStart" onChange={handleChange} />
+                                    <label for="timeStart">Thời gian bắt đầu</label>
+                                </div>
+                                <div className="form-floating mb-3 mt-3">
+                                    <input type="datetime-local" className="form-control" id="timeEnd" placeholder="Enter email" name="timeEnd" onChange={handleChange} />
+                                    <label for="timeStart">Thời gian kết thúc</label>
+                                </div>
                             </div>
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleAddType}>Add</button>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleAddType}>Add</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="exampleModalLabel">CHỈNH SỬA THỜI GIAN</h1>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                            <div className="mb-3">
-                                <label htmlFor="start" className="form-label">Thời gian bắt đầu: </label>
-                                <input type="datetime-local" className="form-control" id="start" value={editedStartTime} onChange={(e) => setEditedStartTime(e.target.value)} />
+                <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h1 className="modal-title fs-5" id="exampleModalLabel">CHỈNH SỬA THỜI GIAN</h1>
+                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div className="mb-3">
-                                <label htmlFor="end" className="form-label">Thời gian kết thúc: </label>
-                                <input type="datetime-local" className="form-control" id="end" value={editedEndTime} onChange={(e) => setEditedEndTime(e.target.value)} />
-                            </div>
+                            <div className="modal-body">
+                                <div className="mb-3">
+                                    <label htmlFor="start" className="form-label">Thời gian bắt đầu: </label>
+                                    <input type="datetime-local" className="form-control" id="start" value={editedStartTime} onChange={(e) => setEditedStartTime(e.target.value)} />
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="end" className="form-label">Thời gian kết thúc: </label>
+                                    <input type="datetime-local" className="form-control" id="end" value={editedEndTime} onChange={(e) => setEditedEndTime(e.target.value)} />
+                                </div>
 
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" className="btn btn-primary" onClick={handleEditTimeApprove}>Save</button>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-primary" onClick={handleEditTimeApprove}>Save</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Đợt duyệt đề tài</th>
-                        <th scope="col">Thời gian bắt đầu</th>
-                        <th scope="col">Thời gian kết thúc</th>
-                        <th scope="col">Loại đề tài</th>
-                        <th scope='col'> Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {timeApprove.map((item, index) => (
-                        <tr key={index}>
-                            <th scope="row">{index + 1}</th>
-                            <td>{item.registrationName}</td>
-                            <td>{item.timeStart}</td>
-                            <td>{item.timeEnd}</td>
-                            <td>{item.typeSubjectId.typeName}</td>
-                            <td>
-                                <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(item)}>
-                                    Edit
-                                </button>
-                            </td>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Đợt duyệt đề tài</th>
+                            <th scope="col">Thời gian bắt đầu</th>
+                            <th scope="col">Thời gian kết thúc</th>
+                            <th scope="col">Loại đề tài</th>
+                            <th scope='col'> Action</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {timeApprove.map((item, index) => (
+                            <tr key={index}>
+                                <th scope="row">{index + 1}</th>
+                                <td>{item.registrationName}</td>
+                                <td>{item.timeStart}</td>
+                                <td>{item.timeEnd}</td>
+                                <td>{item.typeSubjectId.typeName}</td>
+                                <td>
+                                    <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(item)}>
+                                        Edit
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     )
 }

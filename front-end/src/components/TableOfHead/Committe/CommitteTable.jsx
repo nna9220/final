@@ -124,8 +124,6 @@ function CommitteTable() {
                 reviewStudent3: detail.subject.student3 ? (reviews[detail.subject.student3] || null) : null,
             };
 
-
-
             console.log("Data to Submit: ", subjectId);
             const response = await axiosInstance.post(`/head/council/evaluation-scoring/${subjectId}`, evaluationData, {
                 headers: {

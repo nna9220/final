@@ -34,7 +34,7 @@ public class LogoutController {
         this.tokenUtils = tokenUtils;
     }
 
-    @PostMapping("/logout")
+    @PostMapping("/api/logout")
     public ResponseEntity<Void> logout(@RequestHeader("Authorization") String authorizationHeader) {
         // Trích xuất token từ tiêu đề Authorization
         String token = extractToken(authorizationHeader);
