@@ -68,10 +68,6 @@ public class LecturerController {
             ModelAndView modelAndView = new ModelAndView("QuanLyGV");
             List<Lecturer> lecturerList = lecturerService.getAllLec();
             Map<String, Object> response = new HashMap<>();
-            /*modelAndView.addObject("listLecturer", lecturerList);
-            modelAndView.addObject("major", Major.values());
-            modelAndView.addObject("authors", listAutho);
-            modelAndView.addObject("person", personCurrent);*/
             response.put("listLecturer",lecturerList);
             response.put("major",Major.values());
             response.put("authors",listAutho);
@@ -158,9 +154,9 @@ public class LecturerController {
                                         @RequestParam("birthDay") String birthDay, // Thay đổi kiểu dữ liệu thành String
                                         @RequestParam("phone") String phone,
                                         @RequestParam("gender") boolean gender,
-                                        @RequestParam("authority") String authority,
+                                        @RequestParam("authority") Authority authority,
                                         @RequestParam("username") String username,
-                                        @RequestParam("major") String major,
+                                        @RequestParam("major") Major major,
                                         @RequestParam("address") String address,
                                         @RequestParam(value = "status", required = false, defaultValue = "true") boolean status,
                                         @RequestHeader("Authorization") String authorizationHeader) {
@@ -177,16 +173,15 @@ public class LecturerController {
 
                 existLecturer.getPerson().setPhone(phone);
                 existLecturer.getPerson().setGender(gender);
-                Authority existedAutho = authorityRepository.findByName(authority);
-                existLecturer.setAuthority(existedAutho);
-                existLecturer.getPerson().setAuthorities(existedAutho);
-                System.out.println("Major nhận về:" + major);
+                Authority authority1 = authorityRepository.findByName(authority);
+                existLecturer.setAuthority(authority1);
+                existLecturer.getPerson().setAuthorities(authority1);
                 existLecturer.setMajor(Major.valueOf(major));
                 existLecturer.getPerson().setUsername(username);
                 existLecturer.getPerson().setAddress(address);
                 Person lecturerPerson = personRepository.findById(existLecturer.getLecturerId()).orElse(null);
                 assert lecturerPerson != null;
-                lecturerPerson.setAuthorities(existedAutho);
+                lecturerPerson.setAuthorities(authority1);
                 existLecturer.getPerson().setStatus(status);
                 lecturerRepository.save(existLecturer);
                 personRepository.save(lecturerPerson);

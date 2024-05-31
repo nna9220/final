@@ -1,6 +1,7 @@
 package com.web.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,7 +32,6 @@ public class ResultEssay {
 
     @ManyToOne
     @JoinColumn(name = "subject_id")
-    @JsonBackReference
     private Subject subject;
 
     @OneToOne
@@ -44,5 +44,6 @@ public class ResultEssay {
             joinColumns = @JoinColumn(name = "result_id"),
             inverseJoinColumns = @JoinColumn(name = "criteria_id")
     )
+    @JsonIgnore
     private List<EvaluationCriteria> criterias;
 }

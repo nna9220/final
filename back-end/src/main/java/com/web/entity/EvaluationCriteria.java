@@ -28,7 +28,6 @@ public class EvaluationCriteria {
 
     @ManyToOne
     @JoinColumn(name="type_id_subject")
-    @JsonIgnore
     private TypeSubject typeSubject;
 
     @Column(name="major", length = 50)
