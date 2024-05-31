@@ -17,6 +17,7 @@ public class StudentClassService {
     private StudentClassMapper studentClassMapper;
     public StudentClass createStudentClass(StudentClassRequest studentClassRequest){
         var studentClass = studentClassMapper.toEntity(studentClassRequest);
+        studentClass.setStatus(true);
         return studentClassRepository.save(studentClass);
     }
     public List<StudentClass> findAll(){
