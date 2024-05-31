@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './DataTableRegistrationPeroidLec.scss';
 import axiosInstance from '../../API/axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function DataTableRegistrationPeroidLec() {
     const [timeApprove, setTimeApprove] = useState([]);
@@ -98,10 +100,11 @@ function DataTableRegistrationPeroidLec() {
                         return item;
                     });
                     setTimeApprove(updatedTimeApprove);
+                    toast.success("Chỉnh sửa thành công!")
                     loadData();
                 })
                 .catch(error => {
-                    console.error("Error: ", error);
+                    toast.error("Chỉnh sửa thất bại!")                    
                 });
         } else {
             console.log("Error: No token found or no selected period ID");
@@ -133,10 +136,11 @@ function DataTableRegistrationPeroidLec() {
                         return item;
                     });
                     setTimeApprove2(updatedTimeApprove);
+                    toast.success("Chỉnh sửa thành công!")
                     loadData2();
                 })
                 .catch(error => {
-                    console.error("Error: ", error);
+                    toast.error("Chỉnh sửa thất bại!")                    
                 });
         } else {
             console.log("Error: No token found or no selected period ID");
@@ -254,6 +258,7 @@ function DataTableRegistrationPeroidLec() {
 
     return (
         <div>
+            <ToastContainer/>
             <div className='border-container'>
                 <div className='body-table-period'>
 

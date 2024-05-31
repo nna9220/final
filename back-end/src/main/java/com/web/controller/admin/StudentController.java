@@ -15,12 +15,18 @@ import com.web.service.Admin.StudentClassService;
 import com.web.service.Admin.StudentService;
 import com.web.utils.Contains;
 import com.web.utils.UserUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.*;
 
 import org.slf4j.Logger;
@@ -29,6 +35,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.crypto.Data;
 
@@ -194,7 +201,7 @@ public class StudentController {
                                         @RequestParam(value = "status", required = false, defaultValue = "true") boolean status,
                                         @RequestParam("username") String username,
                                         @RequestParam("address") String address,
-                                        @RequestParam("classes") StudentClass classes,
+                                        @RequestParam("classes") String classes,
                                         @RequestHeader("Authorization") String authorizationHeader) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -214,7 +221,8 @@ public class StudentController {
                 existPerson.setPhone(phone);
                 existPerson.setGender(gender);
                 existPerson.setStatus(status);
-                existStudent.setStudentClass(classes);
+                StudentClass studentClass = studentClassRepository.getStudentClassByName(classes);
+                existStudent.setStudentClass(studentClass);
                 personRepository.save(existPerson);
                 studentRepository.save(existStudent);
                 return new ResponseEntity<>(existPerson, HttpStatus.OK);
@@ -254,6 +262,39 @@ public class StudentController {
     }*/
 
 
+    @GetMapping("/export")
+    public void exportStudent(HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment;filename=student_classes.xls");
+
+        List<Student> student = studentService.getAllStudent();
+
+        Workbook workbook = new HSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Student Classes");
+
+        // Tạo header row
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("ID");
+        headerRow.createCell(1).setCellValue("Class Name");
+        headerRow.createCell(2).setCellValue("Status");
+
+        // Fill data rows
+        int rowNum = 1;
+        for (Student student1 : student) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(student1.getStudentId());
+            row.createCell(1).setCellValue(student1.getPerson().getLastName());
+            row.createCell(2).setCellValue(student1.getPerson().getFirstName());
+        }
+
+        // Write the output to the response output stream
+        try (OutputStream out = response.getOutputStream()) {
+            workbook.write(out);
+        }
+
+        // Close the workbook
+        workbook.close();
+    }
 
 
 }

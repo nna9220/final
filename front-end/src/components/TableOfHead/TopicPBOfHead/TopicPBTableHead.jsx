@@ -134,22 +134,16 @@ function TopicPBTableHead() {
                             <hr />
                             <h5>File báo cáo</h5>
                             <div>
-                                <p>Báo cáo 50% :
-                                    <span className="file-name">
+                                <label> Báo cáo 50%:
+                                    <a href={detail.subject?.fiftyPercent?.url} target="_blank" rel="noopener noreferrer" download="" className='content-name'>
                                         {detail.subject?.fiftyPercent?.name}
-                                    </span>
-                                    <a href={detail.subject?.fiftyPercent?.url} className="file-link">
-                                        {detail.subject?.fiftyPercent?.url}
                                     </a>
-                                </p>
-                                <p>Báo cáo 100% :
-                                    <span className="file-name">
+                                </label>
+                                <label> Báo cáo 100%:
+                                    <a href={detail.subject?.oneHundredPercent?.url} target="_blank" rel="noopener noreferrer" download="" className='content-name'>
                                         {detail.subject?.oneHundredPercent?.name}
-                                    </span>
-                                    <a href={detail.subject?.oneHundredPercent?.url} className="file-link">
-                                        {detail.subject?.oneHundredPercent?.url}
                                     </a>
-                                </p>
+                                </label>
                             </div>
                         </div>
                         <div className="modal-footer">

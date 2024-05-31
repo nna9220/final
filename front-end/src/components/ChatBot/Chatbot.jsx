@@ -1,79 +1,94 @@
-import React from 'react'
-import './Chatbot.scss'
+import React, { useState } from 'react';
+import './Chatbot.scss';
+import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 
 function Chatbot() {
+    const [messages, setMessages] = useState([]);
+    const [messageInput, setMessageInput] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    const sendMessage = async (message) => {
+        const userToken = getTokenFromUrlAndSaveToStorage();
+
+        if (!userToken) {
+            setError('Authentication token not found.');
+            return;
+        }
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            console.log('Sending message:', message);
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${userToken}`,
+                },
+                body: JSON.stringify({
+                    model: 'gpt-3.5-turbo',
+                    messages: [{ role: 'user', content: message }],
+                }),
+            });
+
+            const data = await response.json();
+            console.log('Response from API:', data);
+
+            if (response.ok) {
+                const reply = data.choices[0].message.content;
+                return reply;
+            } else {
+                throw new Error(data.error.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            setError('Có lỗi xảy ra khi kết nối với API Chat PT');
+            return null;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!messageInput.trim()) return;
+
+        const reply = await sendMessage(messageInput);
+        if (reply) {
+            setMessages([...messages, { content: messageInput, sender: 'user' }, { content: reply, sender: 'bot' }]);
+            setMessageInput('');
+        }
+    };
+
     return (
         <div>
-            <section >
-                <div class="container py-5">
-
-                    <div class="row d-flex justify-content-center">
-                        <div class="col-md-8 col-lg-6 col-xl-4">
-
-                            <div class="card" id="chat1" style={{borderRadius: '15px'}}>
-                                <div
-                                    class="card-header d-flex justify-content-between align-items-center p-3 bg-info text-white border-bottom-0"
-                                    >
-                                    <i class="fas fa-angle-left"></i>
-                                    <p class="mb-0 fw-bold">Live chat</p>
-                                    <i class="fas fa-times"></i>
-                                </div>
-                                <div class="card-body">
-
-                                    <div class="d-flex flex-row justify-content-start mb-4">
-                                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
-                                            alt="avatar 1"/>
-                                            <div class="p-3 ms-3" >
-                                                <p class="small mb-0">Hello and thank you for visiting MDBootstrap. Please click the video
-                                                    below.</p>
-                                            </div>
-                                    </div>
-
-                                    <div class="d-flex flex-row justify-content-end mb-4">
-                                        <div class="p-3 me-3 border" >
-                                            <p class="small mb-0">Thank you, I really like your product.</p>
-                                        </div>
-                                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp"
-                                            alt="avatar 1"/>
-                                    </div>
-
-                                    <div class="d-flex flex-row justify-content-start mb-4">
-                                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
-                                            alt="avatar 1"/>
-                                            <div class="ms-3">
-                                                <div class="bg-image">
-                                                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/screenshot1.webp"
-                                                        />
-                                                        <a href="#!">
-                                                            <div class="mask"></div>
-                                                        </a>
-                                                </div>
-                                            </div>
-                                    </div>
-
-                                    <div class="d-flex flex-row justify-content-start mb-4">
-                                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
-                                            alt="avatar 1"/>
-                                            <div class="p-3 ms-3">
-                                                <p class="small mb-0">...</p>
-                                            </div>
-                                    </div>
-
-                                    <div class="form-outline">
-                                        <textarea class="form-control" id="textAreaExample" rows="4"></textarea>
-                                        <label class="form-label" for="textAreaExample">Type your message</label>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                        </div>
+            <header>
+                <h1>Chat PT</h1>
+            </header>
+            <section id="messages">
+                {messages.map((msg, index) => (
+                    <div key={index} className={`message message-${msg.sender}`}>
+                        {msg.content}
                     </div>
-
-                </div>
+                ))}
             </section>
+            <form onSubmit={handleSubmit}>
+                <input
+                    type="text"
+                    value={messageInput}
+                    onChange={(e) => setMessageInput(e.target.value)}
+                    placeholder="Nhập tin nhắn..."
+                />
+                <button type="submit" disabled={loading}>
+                    Gửi
+                </button>
+            </form>
+            {loading && <div className="loading-indicator">Loading...</div>}
+            {error && <div className="error-message">{error}</div>}
         </div>
-    )
+    );
 }
 
-export default Chatbot
+export default Chatbot;
