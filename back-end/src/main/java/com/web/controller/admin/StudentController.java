@@ -9,10 +9,7 @@ import com.web.mapper.StudentMapper;
 import com.web.dto.request.PersonRequest;
 import com.web.dto.request.StudentRequest;
 import com.web.repository.*;
-import com.web.service.Admin.PersonService;
-import com.web.service.Admin.SchoolYearService;
-import com.web.service.Admin.StudentClassService;
-import com.web.service.Admin.StudentService;
+import com.web.service.Admin.*;
 import com.web.utils.Contains;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +18,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.persistence.EntityManager;
@@ -48,6 +47,8 @@ public class StudentController {
     private SchoolYearRepository schoolYearRepository;
     @Autowired
     private PersonService personService;
+    @Autowired
+    private ImportStudent importStudent;
     @Autowired
     private UserUtils userUtils;
     @Autowired
@@ -252,6 +253,11 @@ public class StudentController {
                 }
                 return new ResponseEntity<>(HttpStatus.OK);
     }*/
+
+    @PostMapping("/importSV")
+    public ResponseEntity<?> importStudent(@RequestParam("file") MultipartFile file) throws IOException {
+        return new ResponseEntity<>(importStudent.importStudent(file),HttpStatus.OK);
+    }
 
 
 
