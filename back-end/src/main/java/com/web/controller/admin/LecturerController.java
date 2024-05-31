@@ -154,9 +154,9 @@ public class LecturerController {
                                         @RequestParam("birthDay") String birthDay, // Thay đổi kiểu dữ liệu thành String
                                         @RequestParam("phone") String phone,
                                         @RequestParam("gender") boolean gender,
-                                        @RequestParam("authority") Authority authority,
+                                        @RequestParam("authority") String authority,
                                         @RequestParam("username") String username,
-                                        @RequestParam("major") Major major,
+                                        @RequestParam("major") String major,
                                         @RequestParam("address") String address,
                                         @RequestParam(value = "status", required = false, defaultValue = "true") boolean status,
                                         @RequestHeader("Authorization") String authorizationHeader) {

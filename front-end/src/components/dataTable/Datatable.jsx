@@ -19,6 +19,7 @@ function DataTable() {
     const [classes, setClasses] = useState([]);
     const [years, setYear] = useState([]);
     const [major, setMajr] = useState([]);
+    const [file, setFile] = useState(null);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [showConfirmationRestore, setShowConfirmationRestore] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
@@ -105,7 +106,7 @@ function DataTable() {
             ...prevState,
             classes: value
         }));
-    };    
+    };
 
     const handleDelete = (row) => {
         setSelectedRow(row);
@@ -316,6 +317,38 @@ function DataTable() {
             });
     };
 
+    const handleFileChange = (event) => {
+        setFile(event.target.files[0]);
+    };
+
+    const handleImportFile = () => {
+        if (!file) {
+            toast.error("Vui lòng chọn file trước khi import!");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const userToken = sessionStorage.getItem('userToken');
+
+        axiosInstance.post('/admin/student/importSV', formData, {
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+                'Content-Type': 'multipart/form-data'
+            },
+        })
+            .then(response => {
+                toast.success("Import sinh viên thành công!");
+                console.log('Import response:', response.data);
+            })
+            .catch(error => {
+                toast.error("Import sinh viên thất bại!");
+                console.error("Import error:", error);
+            });
+    };
+
+
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
         { field: 'studentId', headerName: 'MSSV', width: 130 },
@@ -357,14 +390,19 @@ function DataTable() {
                 <ToastContainer />
                 <div className='header-table'>
                     <div className='btn-add'>
-                        <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddStudent" style={{ marginBottom: '10px', marginRight:'20px' }}>
+                        <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddStudent" style={{ marginBottom: '10px', marginRight: '20px' }}>
                             Add
                         </button>
 
                         <button type="button" className="btn btn-primary" style={{ marginBottom: '10px' }} onClick={handleExport}>
-                            <SaveAltIcon/>Export
+                            <SaveAltIcon />Export
                         </button>
-                        
+
+                        <div class="input-group">
+                            <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" onChange={handleFileChange} />
+                            <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04" onClick={handleImportFile}>Import</button>
+                        </div>
+
                     </div>
                     <button className='button-listDelete' onClick={() => setShowDeleteStudents(!showDeletedStudents)}>
                         {showDeletedStudents ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách sinh viên</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách sinh viên đã xóa</>}

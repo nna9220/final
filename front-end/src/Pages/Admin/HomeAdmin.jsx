@@ -16,7 +16,6 @@ function HomeAdmin() {
             <div className='homeContainer'>
                 <Navbar />
                 <hr />
-                <Chatbot/>
                 <div className='widgets'>
                     <Context />
                 </div>
