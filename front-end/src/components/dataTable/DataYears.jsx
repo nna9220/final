@@ -184,7 +184,7 @@ function DataYears() {
                         </DialogActions>
                     </Dialog>
                 )}
-                <div style={{ height: 400, width: '100%' }}>
+                <div>
                     <DataGrid
                         rows={years.map((item, index) => ({ ...item, id: index + 1 }))}
                         columns={columns}
