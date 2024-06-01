@@ -13,6 +13,7 @@ function RegisTopicTable() {
     const [topicsRegistered, setTopicsRegistered] = useState([]);
     const [registeredSuccess, setRegisteredSuccess] = useState(false);
     const [errors, setErrors] = useState(null);
+    const [currentTopic, setCurrentTopic] = useState(null);
 
     useEffect(() => {
         const userToken = getTokenFromUrlAndSaveToStorage();
@@ -34,7 +35,6 @@ function RegisTopicTable() {
                     const result = response.data;
                     console.log("Data: ", response.data);
 
-                    // Log chi tiết các thuộc tính của result
                     if (result.person) {
                         console.log("Person:", result.person);
 
@@ -64,6 +64,7 @@ function RegisTopicTable() {
     }, []);
 
     const dangKyDeTai = (subjectId) => {
+        console.log("ID regis", subjectId)
         const userToken = getTokenFromUrlAndSaveToStorage();
         if (userToken) {
             axiosInstance.post(`/student/subject/registerTopic/${subjectId}`, null, {
@@ -108,27 +109,15 @@ function RegisTopicTable() {
                                 <td>{topic.subjectName}</td>
                                 <td>{topic.instructorId.person.firstName + ' ' + topic.instructorId.person.lastName}</td>
                                 <td>
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    <button
+                                        type="button"
+                                        className="btn btn-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#exampleModal"
+                                        onClick={() => setCurrentTopic(topic)} // Lưu trữ thông tin đề tài hiện tại khi nhấn nút đăng ký
+                                    >
                                         <EditCalendarOutlinedIcon />
                                     </button>
-
-                                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Thông báo xác nhận</h1>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    Bạn chắc chắc muốn đăng ký đề tài {topic.subjectName} không?
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                    <button type="button" data-bs-dismiss="modal" class="btn btn-success" onClick={() => dangKyDeTai(topic.subjectId)}>Xác nhận</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </td>
                             </tr>
                         ))}
@@ -137,20 +126,20 @@ function RegisTopicTable() {
             ) : topicsRegistered.length > 0 ? (
                 topicsRegistered.map((topic, index) => (
                     <div key={index}>
-                        <div style={{ margin: '16px' }} class="alert alert-success" role="alert">
+                        <div style={{ margin: '16px' }} className="alert alert-success" role="alert">
                             <CheckCircleOutlineOutlinedIcon /> BẠN ĐÃ ĐĂNG KÝ ĐỀ TÀI THÀNH CÔNG!!!
                         </div>
                         <br />
-                        <div class="container-fluid mx-auto">
-                            <div class="row">
-                                <div class="mb-3">
-                                    <div class="card">
-                                        <form class="form-card">
-                                            <h5 class="text-center mb-4 tille-name-topic">THÔNG TIN ĐỀ TÀI</h5>
+                        <div className="container-fluid mx-auto">
+                            <div className="row">
+                                <div className="mb-3">
+                                    <div className="card">
+                                        <form className="form-card">
+                                            <h5 className="text-center mb-4 tille-name-topic">THÔNG TIN ĐỀ TÀI</h5>
                                             <div className='items-content-topic'>
-                                                <label>Tên đề tài: <label className='content-name'>{topic.subjectName}</label></label><br/>
-                                                <label>Loại đề tài: <label className='content-name'>{topic.typeSubject?.typeName}</label></label><br/>
-                                                <label>Giảng viên hướng dẫn: <label className='content-name'>{topic.instructorId?.person?.firstName + ' ' + topic.instructorId?.person?.lastName}</label></label><br/>
+                                                <label>Tên đề tài: <label className='content-name'>{topic.subjectName}</label></label><br />
+                                                <label>Loại đề tài: <label className='content-name'>{topic.typeSubject?.typeName}</label></label><br />
+                                                <label>Giảng viên hướng dẫn: <label className='content-name'>{topic.instructorId?.person?.firstName + ' ' + topic.instructorId?.person?.lastName}</label></label><br />
                                                 <label>
                                                     Giảng viên phản biện:
                                                     <label className='content-name'>
@@ -158,15 +147,15 @@ function RegisTopicTable() {
                                                             ? topic.thesisAdvisorId.person.firstName + ' ' + topic.thesisAdvisorId.person.lastName
                                                             : 'Chưa có'}
                                                     </label>
-                                                </label><br/>
+                                                </label><br />
                                                 <a>Nhóm sinh viên thực hiện</a><br />
                                                 <label>Sinh viên 1: <label className='content-name'>{topic.student1}</label></label><br />
                                                 <label>Sinh viên 2: <label className='content-name'>{topic.student2}</label></label><br />
-                                                <label>Sinh viên 3: <label className='content-name'>{topic.student3}</label></label><br/>
+                                                <label>Sinh viên 3: <label className='content-name'>{topic.student3}</label></label><br />
                                                 <label>Yêu cầu: <label className='content-name'>{topic.requirement}</label></label>
                                             </div>
-                                            <div style={{float:'right'}}>
-                                                <NavLink to="/managermentTopicStudent"><button type="button" class="btn btn-mana btn-success" style={{backgroundColor:'#4eb09b', fontSize:'medium', border:'none'}}>Quản lý đề tài</button></NavLink>
+                                            <div style={{ float: 'right' }}>
+                                                <NavLink to="/managermentTopicStudent"><button type="button" className="btn btn-mana btn-success" style={{ backgroundColor: '#4eb09b', fontSize: 'medium', border: 'none' }}>Quản lý đề tài</button></NavLink>
                                             </div>
                                         </form>
                                     </div>
@@ -177,9 +166,27 @@ function RegisTopicTable() {
                 ))
             ) : (
                 <div>
-                    <h4 style={{ padding: '20px', color: 'red' }}>{errors}</h4>
+                    <h4 style={{ padding: '20px', color: 'red' }}>{errors ? errors : "Hiện tại chưa có đề tài !!!"}</h4>
                 </div>
             )}
+
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Thông báo xác nhận</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Bạn chắc chắn muốn đăng ký đề tài {currentTopic?.subjectName} không?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={() => dangKyDeTai(currentTopic?.subjectId)}>Xác nhận</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
