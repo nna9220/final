@@ -188,7 +188,7 @@ function TableRegis() {
                                 <select className="form-select" aria-label="Default select example" name="student1" value={formData.student1} onChange={handleChange}>
                                     <option selected disabled>Chọn sinh viên</option>
                                     {students.map(student => (
-                                        <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
+                                        <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName} - {student.studentId}</option>
                                     ))}
                                 </select>
                             </div>
@@ -197,7 +197,7 @@ function TableRegis() {
                                 <select className="form-select" aria-label="Default select example" name="student2" value={formData.student2} onChange={handleChange}>
                                     <option selected disabled>Chọn sinh viên</option>
                                     {students.map(student => (
-                                        <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
+                                        <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName} - {student.studentId}</option>
                                     ))}
                                 </select>
                             </div>
@@ -206,7 +206,7 @@ function TableRegis() {
                                 <select className="form-select" aria-label="Default select example" name="student3" value={formData.student3} onChange={handleChange}>
                                     <option selected disabled>Chọn sinh viên</option>
                                     {students.map(student => (
-                                        <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
+                                        <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName} - {student.studentId}</option>
                                     ))}
                                 </select>
                             </div>
