@@ -4,6 +4,9 @@ import SidebarLec from '../../components/Sidebar/SidebarLec';
 import Navbar from '../../components/Navbar/Navbar'
 import CompleteTopic from '../../components/TableOfLecturer/CompleteTopic/CompleteTopic';
 import CompleteTopicKL from '../../components/TableOfLecturer/CompleteTopic/CompleteTopicKL';
+import axiosInstance from '../../API/axios';
+import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
+import { Navigate } from 'react-router-dom';
 
 function ManageComplete() {
     useEffect(() => {
@@ -14,6 +17,47 @@ function ManageComplete() {
     const handleDropdownChange = (e) => {
         setSelectedTitle(e.target.value);
     };
+    const [authorized, setAuthorized] = useState(true);
+  useEffect(() => {
+    const checkAuthorization = async () => {
+      const userToken = getTokenFromUrlAndSaveToStorage(); // Lấy token từ URL hoặc từ bất kỳ nguồn nào khác
+      if (userToken) {
+        try {
+          const response = await axiosInstance.post('/check-authorization/lecturer', null, {
+            headers: {
+              'Authorization': `Bearer ${userToken}`,
+            },
+          });
+          console.log("Nhận : ", response.data);
+          if (response.data == "Authorized") {
+            setAuthorized(true);
+          } else {
+            setAuthorized(false);
+          }
+        } catch (error) {
+          if (error.response) {
+            console.error("Response error:", error.response.data);
+            console.error("Response status:", error.response.status);
+            console.error("Response headers:", error.response.headers);
+            setAuthorized(false);
+          } else if (error.request) {
+            console.error("Request error:", error.request);
+          } else {
+            console.error("Axios error:", error.message);
+          }
+        }
+      } else {
+        // Nếu không có token, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
+        setAuthorized(false);
+      }
+    };
+
+    checkAuthorization();
+  }, []);
+
+  if (!authorized) {
+    return <Navigate to="/" />;
+  }
     return (
         <div className='homeHead'>
             <SidebarLec />
