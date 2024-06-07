@@ -31,7 +31,7 @@ function TableApproveKL() {
     }, [userToken]);
 
     const loadTopics = () => {
-    
+
         axiosInstance.get('/head/subjectGraduation', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
@@ -66,8 +66,8 @@ function TableApproveKL() {
                     id: topic.subjectId,
                     instructorName: topic.instructorId.person.firstName + ' ' + topic.instructorId.person.lastName
                 }));
-                console.log("Subject: ",topicsDeletedWithId )
-                setTopicsDeleted(topicsDeletedWithId);            
+                console.log("Subject: ", topicsDeletedWithId)
+                setTopicsDeleted(topicsDeletedWithId);
             })
             .catch(error => {
                 console.error(error);
@@ -129,10 +129,10 @@ function TableApproveKL() {
                     ) : (
 
                         <div style={{ display: 'flex' }}>
-                            <button type="button" class="btn button-res" data-bs-toggle="modal" data-bs-target="#approve" onClick={() => {setSubjectName(params.row.subjectName); setSubjectId(params.row.id)}}>
+                            <button type="button" class="btn button-res" data-bs-toggle="modal" data-bs-target="#approve" onClick={() => { setSubjectName(params.row.subjectName); setSubjectId(params.row.id) }}>
                                 <p className='text'>Duyệt</p>
                             </button>
-                            <button type="button" class="btn button-res-de" data-bs-toggle="modal" data-bs-target="#delete" onClick={() => {setSubjectName(params.row.subjectName); setSubjectId(params.row.id)}}>
+                            <button type="button" class="btn button-res-de" data-bs-toggle="modal" data-bs-target="#delete" onClick={() => { setSubjectName(params.row.subjectName); setSubjectId(params.row.id) }}>
                                 <p className='text'>Xóa</p>
                             </button>
                         </div>
@@ -145,7 +145,7 @@ function TableApproveKL() {
     return (
         <div className='body-table'>
             <button className='button-listDelete-approve' onClick={() => setShowTable(!showTable)}>
-                    {showTable ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách đề tài chưa duyệt</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách đề tài đã xóa</>}
+                {showTable ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách đề tài chưa duyệt</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách đề tài đã xóa</>}
             </button>
 
             {showTable ? (
@@ -176,7 +176,7 @@ function TableApproveKL() {
                 </div>
             )}
 
-<div class="modal fade" id="approve" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade" id="approve" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
