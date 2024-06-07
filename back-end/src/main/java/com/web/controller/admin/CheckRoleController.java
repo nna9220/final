@@ -1,4 +1,4 @@
-package com.web.controller;
+package com.web.controller.admin;
 
 import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
@@ -10,20 +10,16 @@ import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/api/admin/check-authorization")
+@CrossOrigin(origins = {"https://hcmute.workon.space", "http://localhost:3000"})
 public class CheckRoleController {
     @Autowired
     private PersonRepository personRepository;
     @Autowired
     private UserUtils userUtils;
-    @Autowired
-    private TypeSubjectRepository typeSubjectRepository;
-    @Autowired
-    private NotificationRepository notificationRepository;
 
     private final TokenUtils tokenUtils;
 
@@ -31,15 +27,17 @@ public class CheckRoleController {
         this.tokenUtils = tokenUtils;
     }
 
-    @PostMapping("/admin/check-authorization/")
+    @PostMapping("/admin")
     public ResponseEntity<?> checkAuthorization(@RequestHeader("Authorization") String token) {
         // Kiểm tra token và xác thực người dùng
         if (isValidToken(token)) {
             String tokenCheck = tokenUtils.extractToken(token);
-            Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
+            Person personCurrent = CheckRole.getRoleCurrent2(tokenCheck,userUtils,personRepository);
+            System.out.println("Trước chekc role");
             if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")){
                 return ResponseEntity.ok("Authorized");
             }else {
+                System.out.println("Sau else");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
             }
         } else {
@@ -56,7 +54,7 @@ public class CheckRoleController {
         return true;
     }
 
-    @PostMapping("/check-authorization/student")
+    @PostMapping("/student")
     public ResponseEntity<?> checkAuthorizationStudent(@RequestHeader("Authorization") String token) {
         // Kiểm tra token và xác thực người dùng
         if (isValidToken(token)) {
@@ -73,7 +71,7 @@ public class CheckRoleController {
     }
 
 
-    @PostMapping("/check-authorization/lecturer")
+    @PostMapping("/lecturer")
     public ResponseEntity<?> checkAuthorizationLecturer(@RequestHeader("Authorization") String token) {
         // Kiểm tra token và xác thực người dùng
         if (isValidToken(token)) {
@@ -90,7 +88,7 @@ public class CheckRoleController {
     }
 
 
-    @PostMapping("/check-authorization/head")
+    @PostMapping("/head")
     public ResponseEntity<?> checkAuthorizationHead(@RequestHeader("Authorization") String token) {
         // Kiểm tra token và xác thực người dùng
         if (isValidToken(token)) {
