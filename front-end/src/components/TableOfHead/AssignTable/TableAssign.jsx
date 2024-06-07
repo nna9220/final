@@ -5,6 +5,8 @@ import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import axiosInstance from '../../../API/axios';
 import './assign.scss'
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function TableAssign() {
   const [topics, setTopics] = useState([]);
@@ -76,11 +78,13 @@ function TableAssign() {
             return topic;
           });
           setTopics(updatedTopics);
+          toast.success("Phân giảng viên thành công!")
           setShowAssignToast(true);
         })
         .catch(error => {
           console.error('Error assigning lecturer for counter argument:', error);
           setShowErrorToastAssign(true);
+          toast.error("Phân giảng viên thất bại!")
         });
     } else {
       console.error('LectureId or subjectId is undefined or empty');
@@ -91,23 +95,7 @@ function TableAssign() {
 
   return (
     <div className='home-table-assign'>
-      <Toast show={showAssignToast} onClose={() => setShowAssignToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
-        <Toast.Header>
-          <strong className="me-auto">Thông báo</strong>
-        </Toast.Header>
-        <Toast.Body>
-          <DoneOutlinedIcon /> Phân giảng viên thành công!
-        </Toast.Body>
-      </Toast>
-
-      <Toast show={showErrorToastAssign} onClose={() => setShowErrorToastAssign(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
-        <Toast.Header>
-          <strong className="me-auto" style={{ color: 'red' }}><ErrorOutlineOutlinedIcon /> Lỗi</strong>
-        </Toast.Header>
-        <Toast.Body>
-          Lỗi khi phân giảng viên!
-        </Toast.Body>
-      </Toast>
+      <ToastContainer/>
       <table className="table table-hover">
         <thead>
           <tr>
