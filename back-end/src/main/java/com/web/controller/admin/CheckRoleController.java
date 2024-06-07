@@ -35,6 +35,7 @@ public class CheckRoleController {
             Person personCurrent = CheckRole.getRoleCurrent2(tokenCheck,userUtils,personRepository);
             System.out.println("Trước chekc role");
             if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")){
+                System.out.println("check role successful");
                 return ResponseEntity.ok("Authorized");
             }else {
                 System.out.println("Sau else");

@@ -39,39 +39,80 @@ function EditProfile() {
 
 
     useEffect(() => {
-        const fetchDataAndCheckAuthorization = async () => {
-            const userToken = getTokenFromUrlAndSaveToStorage();
+        const userToken = getTokenFromUrlAndSaveToStorage();
+        console.log("Token: " + userToken);
 
+        if (userToken) {
+            // Lấy token từ storage
+            const tokenSt = sessionStorage.getItem(userToken);
+
+            if (!tokenSt) {
+                axiosInstance.get('/admin/home', {
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`,
+                    },
+                })
+                    .then(response => {
+                        console.log("UserHeader: ", response.data);
+                        setUser(response.data);
+                        setUserEdit(response.data);
+                        console.log('userEdittt: ', userEdit);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            }
+        }
+    }, []);
+
+    // Kiểm tra quyền truy cập
+    useEffect(() => {
+        const checkAuthorization = async () => {
+            const userToken = getTokenFromUrlAndSaveToStorage(); // Lấy token từ URL hoặc từ bất kỳ nguồn nào khác
             if (userToken) {
                 try {
-                    const response = await axiosInstance.get('/admin/home', {
+                    // Gửi token đến backend để kiểm tra quyền truy cập
+                    const response = await axiosInstance.post('/admin/check-authorization/admin',null, {
                         headers: {
                             'Authorization': `Bearer ${userToken}`,
                         },
-                    });
-                    setUser(response.data);
-                    setUserEdit(response.data);
-
-                    const authorizationResponse = await axiosInstance.post('/admin/check-authorization/admin', {
-                        headers: {
-                            'Authorization': `Bearer ${userToken}`,
-                        },
-                    });
-                    setAuthorized(authorizationResponse.data.Authorized);
+                });
+                    console.log("trước if : ", response.data);
+                    if (response.data == "Authorized") {
+                        // Nếu có quyền truy cập, setAuthorized(true)
+                        setAuthorized(true);
+                    } else {
+                        // Nếu không có quyền truy cập, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
+                        setAuthorized(false);
+                    }
                 } catch (error) {
-                    console.error(error);
+                    if (error.response) {
+                        // Request made and server responded
+                        console.error("Response error:", error.response.data);
+                        console.error("Response status:", error.response.status);
+                        console.error("Response headers:", error.response.headers);
+                        setAuthorized(false);
+                    } else if (error.request) {
+                        // Request made but no response received
+                        console.error("Request error:", error.request);
+                    } else {
+                        // Something else happened while setting up the request
+                        console.error("Axios error:", error.message);
+                    }
                 }
             } else {
+                // Nếu không có token, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
                 setAuthorized(false);
             }
         };
 
-        fetchDataAndCheckAuthorization();
+        checkAuthorization();
     }, []);
 
     if (!authorized) {
-        return <Navigate to="/unauthorized" />;
+        return <Navigate to="/" />;
     }
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
