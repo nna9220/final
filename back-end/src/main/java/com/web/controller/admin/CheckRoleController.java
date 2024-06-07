@@ -95,7 +95,7 @@ public class CheckRoleController {
             String tokenCheck = tokenUtils.extractToken(token);
             Person personCurrent = CheckRole.getRoleCurrent2(tokenCheck,userUtils,personRepository);
             if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")){
-                return ResponseEntity.ok("authorized");
+                return ResponseEntity.ok("Authorized");
             }else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
             }
