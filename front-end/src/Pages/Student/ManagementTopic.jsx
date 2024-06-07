@@ -31,17 +31,19 @@ function ManagementTopic() {
                     setAuthorized(false);
                 }
             } catch (error) {
-                if (error.response) {
-                    console.error("Response error:", error.response.data);
-                    console.error("Response status:", error.response.status);
-                    console.error("Response headers:", error.response.headers);
-                    setAuthorized(false);
-                } else if (error.request) {
-                    console.error("Request error:", error.request);
-                } else {
-                    console.error("Axios error:", error.message);
-                }
-            }
+              if (error.response) {
+                  console.error("Response error:", error.response.data);
+                  console.error("Response status:", error.response.status);
+                  console.error("Response headers:", error.response.headers);
+                  setAuthorized(false);
+              } else if (error.request) {
+                  console.error("Request error:", error.request);
+                  setAuthorized(false);
+              } else {
+                  console.error("Axios error:", error.message);
+                  setAuthorized(false);
+              }
+          }
         } else {
             // Nếu không có token, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
             setAuthorized(false);

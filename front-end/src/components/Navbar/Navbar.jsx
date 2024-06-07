@@ -19,16 +19,16 @@ function Navbar({ unreadCount }) {
   const handleLogout = () => {
     const token = sessionStorage.getItem('userToken');
     axiosInstance.post('/logout', {}, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
     })
     .then(response => {
-      sessionStorage.removeItem('userToken');
-      navigate('/');
+        sessionStorage.removeItem('userToken');
+        navigate('/');
     })
     .catch(error => {
-      console.error('Logout error:', error);
+        console.error('Logout error:', error);
     });
   };
 

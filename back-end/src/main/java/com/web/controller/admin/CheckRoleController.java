@@ -3,9 +3,8 @@ package com.web.controller.admin;
 import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
 import com.web.entity.Person;
-import com.web.repository.NotificationRepository;
+import com.web.jwt.JwtTokenProvider;
 import com.web.repository.PersonRepository;
-import com.web.repository.TypeSubjectRepository;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,9 +20,11 @@ public class CheckRoleController {
     private UserUtils userUtils;
 
     private final TokenUtils tokenUtils;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public CheckRoleController(TokenUtils tokenUtils) {
+    public CheckRoleController(TokenUtils tokenUtils, JwtTokenProvider jwtTokenProvider) {
         this.tokenUtils = tokenUtils;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @PostMapping("/admin")
@@ -46,14 +47,12 @@ public class CheckRoleController {
     }
 
     private boolean isValidToken(String token) {
-        // Kiểm tra xem token có tồn tại không
         if (token == null || token.isEmpty()) {
             return false;
         }
-
-        return true;
+        String tokenCheck = tokenUtils.extractToken(token);
+        return jwtTokenProvider.validateToken(tokenCheck) || !jwtTokenProvider.isTokenExpired(tokenCheck);
     }
-
     @PostMapping("/student")
     public ResponseEntity<?> checkAuthorizationStudent(@RequestHeader("Authorization") String token) {
         // Kiểm tra token và xác thực người dùng
@@ -83,6 +82,7 @@ public class CheckRoleController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
             }
         } else {
+            System.out.println("else isValue");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
     }

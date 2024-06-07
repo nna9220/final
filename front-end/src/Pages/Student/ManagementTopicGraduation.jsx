@@ -35,8 +35,10 @@ function ManagementTopicGraduation() {
                         setAuthorized(false);
                     } else if (error.request) {
                         console.error("Request error:", error.request);
+                        setAuthorized(false);
                     } else {
                         console.error("Axios error:", error.message);
+                        setAuthorized(false);
                     }
                 }
             } else {
