@@ -13,6 +13,7 @@ import com.web.service.Admin.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -39,16 +40,15 @@ public class PersonController {
 
 
 
-//    @PostMapping("/login")
-@GetMapping("")
-public ResponseEntity<?> getPerson(@RequestHeader("Authorization") String authorizationHeader){
-    List<Person> personList = personService.findAll();
-    List<PersonResponse> listPer = personMapper.toPersonListDTO(personList);
-    System.out.println("Person: " + listPer);
-    /*odelAndView model = new ModelAndView("QuanLyNguoiDung");
-    model.addObject("listPerson", listPer);*/
-    return new ResponseEntity<>(listPer,HttpStatus.OK);
-}
+    //    @PostMapping("/login")
+    @GetMapping("")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> getPerson(@RequestHeader("Authorization") String authorizationHeader){
+        List<Person> personList = personService.findAll();
+        List<PersonResponse> listPer = personMapper.toPersonListDTO(personList);
+        System.out.println("Person: " + listPer);
+        return new ResponseEntity<>(listPer,HttpStatus.OK);
+    }
 
     private boolean isValidToken(String token) {
         // Thực hiện kiểm tra token tại đây, có thể sử dụng thư viện bảo mật, so sánh giá trị, vv.
@@ -57,6 +57,7 @@ public ResponseEntity<?> getPerson(@RequestHeader("Authorization") String author
     }
 
     @GetMapping("/current")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> getUser(){
        /* if (CheckedPermission.isAdmin(personRepository)) {*/
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

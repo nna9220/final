@@ -3,6 +3,7 @@ package com.web.controller.admin;
 import com.web.service.Admin.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -12,6 +13,7 @@ public class NotificationController {
     private NotificationService notificationService;
 
     @GetMapping()
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> getAllNotification(){
         try {
             return notificationService.getListNotification();
@@ -22,6 +24,7 @@ public class NotificationController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> createNotification(@RequestHeader("Authorization") String authorizationHeader,
                                                 @RequestParam("content") String content,
                                                 @RequestParam("title") String title){
@@ -34,6 +37,7 @@ public class NotificationController {
     }
 
     @PostMapping("/edit/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> editNotification(@RequestHeader("Authorization") String authorizationHeader,
                                               @RequestParam("content") String content,
                                               @RequestParam("title") String title,
@@ -47,6 +51,7 @@ public class NotificationController {
     }
 
     @PostMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> deleteNotification(@RequestHeader("Authorization") String authorizationHeader,
                                               @PathVariable int id){
         try {

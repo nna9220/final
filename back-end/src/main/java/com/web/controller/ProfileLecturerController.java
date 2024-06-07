@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-@RequestMapping("/team/profile")
+@RequestMapping("/api/public/team/profile")
 public class ProfileLecturerController {
 
     @Autowired

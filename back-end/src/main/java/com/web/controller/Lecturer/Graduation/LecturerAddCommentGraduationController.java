@@ -16,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -64,6 +65,7 @@ public class LecturerAddCommentGraduationController {
     @Autowired
     private FileRepository fileRepository;
     @PostMapping("/create/{taskId}")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<?> createComment(@PathVariable int taskId,
                                       @RequestParam("content") String content,
                                       @RequestParam("fileInput") List<MultipartFile> files,
@@ -144,6 +146,7 @@ public class LecturerAddCommentGraduationController {
     }
 
     @GetMapping("/fileUpload/{fileName}")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<Resource> viewFile(@PathVariable String fileName, HttpServletRequest request) {
         Resource resource = fileMaterialService.loadFileAsResource(fileName);
         String contentType = null;
@@ -163,6 +166,7 @@ public class LecturerAddCommentGraduationController {
                 .body(resource);
     }
     @GetMapping("/download/{fileName}")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<Resource> redirectToDownload(@PathVariable String fileName) {
         String redirectUrl = "/fileUpload/" + fileName;
         return ResponseEntity.status(HttpStatus.FOUND)

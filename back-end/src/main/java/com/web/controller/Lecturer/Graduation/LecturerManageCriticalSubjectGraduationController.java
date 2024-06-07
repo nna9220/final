@@ -16,6 +16,7 @@ import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -43,6 +44,7 @@ public class LecturerManageCriticalSubjectGraduationController {
         this.tokenUtils = tokenUtils;
     }
     @GetMapping("/listSubject")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<?> getListSubject(@RequestHeader("Authorization") String authorizationHeader){
         try {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
@@ -54,6 +56,7 @@ public class LecturerManageCriticalSubjectGraduationController {
     }
 
     @GetMapping("/counterArgumentSubject")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<Map<String,Object>> getCounterArgument(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -72,6 +75,7 @@ public class LecturerManageCriticalSubjectGraduationController {
     }
 
     @GetMapping("/counterArgumentSubject/detail/{id}")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<Map<String,Object>> getDetailCounterArgument(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -89,6 +93,7 @@ public class LecturerManageCriticalSubjectGraduationController {
     }
     //GVPB duyệt đề tài qua cho Hội đồng
     @PostMapping("/accept-subject-to-council/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<?> CompletedSubjectBrowseToCouncil(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader){
         try {
             return new ResponseEntity<>(thesisBrowseSubjectToCouncil.CompletedSubjectBrowseToCouncil(authorizationHeader,subjectId),HttpStatus.OK);

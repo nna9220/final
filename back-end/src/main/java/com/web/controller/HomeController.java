@@ -25,7 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/public")
 public class HomeController {
     @Autowired
     private LecturerService lecturerService;

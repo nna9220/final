@@ -21,6 +21,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -56,6 +57,7 @@ public class StudentClassController {
         this.tokenUtils = tokenUtils;
     }
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Map<String,Object>> getStudentClass(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person person = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
@@ -70,6 +72,7 @@ public class StudentClassController {
         }
     }
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> saveClass(@RequestParam("className") String className, HttpServletRequest request, RedirectAttributes redirectAttributes){
 
         StudentClassRequest studentClass = new StudentClassRequest();
@@ -81,6 +84,7 @@ public class StudentClassController {
     }
 
     @GetMapping("/{classId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Map<String,Object>> editClass(HttpSession session,@PathVariable int classId) {
         // Lấy thông tin lớp học cần chỉnh sửa từ service
         StudentClass studentClass = studentClassService.getStudentClassById(classId);
@@ -107,6 +111,7 @@ public class StudentClassController {
         }
     }
    @PostMapping("/edit/{classId}")
+   @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> updateStudentClass(@PathVariable int classId, @ModelAttribute StudentClassRequest studentClass, @ModelAttribute("successMessage") String successMessage){
         StudentClass existStudentClass = studentClassService.getStudentClassById(classId);
        /*if (CheckedPermission.isAdmin(personRepository)){*/
@@ -124,6 +129,7 @@ public class StudentClassController {
     }
 
     @GetMapping("/export")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void exportStudentClasses(HttpServletResponse response) throws IOException {
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment;filename=student_classes.xls");

@@ -23,6 +23,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
@@ -57,6 +58,7 @@ public class SchoolYearController {
         this.tokenUtils = tokenUtils;
     }
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Map<String,Object>> getSchoolYear(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person person = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
@@ -79,6 +81,7 @@ public class SchoolYearController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> saveSchoolYear(@RequestParam("year") String schoolYearRequest, HttpServletRequest request){
         String referer = request.getHeader("Referer");
         SchoolYearRequest schoolYearRequest1 = new SchoolYearRequest();
@@ -89,6 +92,7 @@ public class SchoolYearController {
     }
 
     @GetMapping("/{yearId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Map<String,Object>> editClass(HttpSession session, @PathVariable int yearId) {
         // Lấy thông tin lớp học cần chỉnh sửa từ service
         SchoolYear schoolYear = schoolYearRepository.findById(yearId).orElse(null);
@@ -115,6 +119,7 @@ public class SchoolYearController {
     }
 
     @PostMapping("/edit/{yearId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> updateYear(@PathVariable int yearId, @ModelAttribute SchoolYearRequest schoolYearRequest, @ModelAttribute("successMessage") String successMessage){
         SchoolYear existSchoolYear = schoolYearRepository.findById(yearId).orElse(null);
         if (existSchoolYear != null){
@@ -132,6 +137,7 @@ public class SchoolYearController {
     }
 
     @GetMapping("/export")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void exportSchoolYear(HttpServletResponse response) throws IOException {
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment;filename=student_classes.xls");

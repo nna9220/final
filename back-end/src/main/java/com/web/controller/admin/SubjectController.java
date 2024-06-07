@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,6 +60,7 @@ public class SubjectController {
     @Autowired
     private UserUtils userUtils;
     @GetMapping("/tlcn")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> getAllSubject(HttpSession session){
         TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
         List<Subject> subjects = subjectRepository.findSubjectByType(typeSubject);
@@ -66,6 +68,7 @@ public class SubjectController {
     }
 
     @GetMapping("/kltn")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> getAllSubjectKLTN(HttpSession session){
         TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
         List<Subject> subjects = subjectRepository.findSubjectByType(typeSubject);
@@ -75,6 +78,7 @@ public class SubjectController {
 
     //Add GVPB
     @PostMapping("/addCounterArgumrnt/{subjectId}/{lecturerId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> addCounterArgumrnt(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String lecturerId){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -98,6 +102,7 @@ public class SubjectController {
 
     //Add GVHD
     @PostMapping("/addInstructor/{subjectId}/{lecturerId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> addIntructor(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String lecturerId){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -120,6 +125,7 @@ public class SubjectController {
     }
 
     @GetMapping("/listLecturer/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Map<String,Object>> getAddCounterArgument(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -144,11 +150,13 @@ public class SubjectController {
 
 
     @PostMapping("/importTLCN")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> importSubject(@RequestParam("file") MultipartFile file) throws IOException {
         return new ResponseEntity<>(subjectImport.importSubject(file),HttpStatus.OK);
     }
 
     @PostMapping("/importKLTN")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> importSubjectKLTN(@RequestParam("file") MultipartFile file) throws IOException {
         return new ResponseEntity<>(subjectImportKLTN.importSubject(file),HttpStatus.OK);
     }

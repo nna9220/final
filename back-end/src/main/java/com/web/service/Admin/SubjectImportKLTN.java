@@ -1,10 +1,7 @@
 package com.web.service.Admin;
 
 import com.web.config.TokenUtils;
-import com.web.entity.Lecturer;
-import com.web.entity.Student;
-import com.web.entity.Subject;
-import com.web.entity.TypeSubject;
+import com.web.entity.*;
 import com.web.repository.*;
 import com.web.utils.UserUtils;
 import lombok.RequiredArgsConstructor;
@@ -37,20 +34,19 @@ public class SubjectImportKLTN {
     private final LecturerRepository lecturerRepository;
     private final StudentRepository studentRepository;
     private final TokenUtils tokenUtils;
+    private final EvaluationCriteriaRepository evaluationCriteriaRepository;
+    private final CouncilRepository councilRepository;
 
     public ResponseEntity<?> importSubject(MultipartFile file) throws IOException {
         try {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
             List<Subject> saveSub = new ArrayList<>();
             Set<Student> saveStudent = new HashSet<>();
+            List<Council> saveCouncil = new ArrayList<>();
+            List<Lecturer> saveLecturer = new ArrayList<>();
             LocalDate nowYear = LocalDate.now();
             if (checkExcelFormat(file)) {
                 List<Subject> tlcn = toSubjects(file.getInputStream());
-//                Map<String, List<?>> result = toSubjects(file.getInputStream());
-//                List<Subject> tlcn = (List<Subject>) result.get("tlcn");
-//                List<Subject> kltn = (List<Subject>) result.get("kltn");
-
-                //TLCN
                 tlcn.forEach(subject -> {
                     Subject newSubject = new Subject();
                     newSubject.setSubjectName(subject.getSubjectName());
@@ -84,6 +80,8 @@ public class SubjectImportKLTN {
                         newSubject.setStudent2(null);
                     }
                     if (subject.getStudent3()!=null) {
+                        System.out.println("student 2 k null"
+                        );
                         Student student3 = studentRepository.findById(subject.getStudent3()).orElse(null);
                         if (student3 != null) {
                             if (student3.getSubjectGraduationId() == null) {
@@ -93,19 +91,43 @@ public class SubjectImportKLTN {
                             }
                         }
                     }else {
+                        System.out.println("student 3 null");
                         newSubject.setStudent3(null);
                     }
                     if (subject.getInstructorId()!=null) {
+                        System.out.println("hd k null");
                         newSubject.setInstructorId(subject.getInstructorId());
                     }
+                    System.out.println("GV:" + subject.getInstructorId().getLecturerId() + " " + subject.getThesisAdvisorId().getLecturerId());
+                    Set<EvaluationCriteria> evaluationCriteria = evaluationCriteriaRepository.getEvaluationCriteriaByTypeSubject(typeSubject);
+                    if (evaluationCriteria!=null){
+                        newSubject.setCriteria(evaluationCriteria);
+                    }
                     if (subject.getThesisAdvisorId()!=null) {
+                        System.out.println("pb k null");
+                        Lecturer thesis = subject.getThesisAdvisorId();
                         newSubject.setThesisAdvisorId(subject.getThesisAdvisorId());
+                        Council newCouncil = new Council();
+                        newCouncil.setSubject(newSubject);
+                        List<Lecturer> lecturers = new ArrayList<>();
+                        lecturers.add(subject.getThesisAdvisorId());
+                        newCouncil.setLecturers(lecturers);
+                        saveCouncil.add(newCouncil);
+                        if (thesis.getCouncils()==null) {
+                            List<Council> councils = new ArrayList<>();
+                            councils.add(newCouncil);
+                            thesis.setCouncils(councils);
+                        }else {
+                            thesis.getCouncils().add(newCouncil);
+                        }
+                        saveLecturer.add(thesis);
                     }
                     saveSub.add(newSubject);
                     System.out.println("Luu KLTN Thanh Cong");
                 });
-
                 subjectRepository.saveAll(saveSub);
+                lecturerRepository.saveAll(saveLecturer);
+                councilRepository.saveAll(saveCouncil);
                 studentRepository.saveAll(saveStudent);
                 return ResponseEntity.ok("Imported file to list subject successful!");
             } else
@@ -126,7 +148,6 @@ public class SubjectImportKLTN {
         try{
             XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
             XSSFSheet sheet = workbook.getSheet("KLTN");
-            int rowNumber = 0;
             int rowCount = sheet.getPhysicalNumberOfRows();
             for (int i = 1; i < rowCount; i++) { // Bắt đầu từ hàng thứ 2 (hàng đầu tiên chứa tiêu đề)
                 Row row = sheet.getRow(i);

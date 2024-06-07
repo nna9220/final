@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.List;
 
 @Service
@@ -47,4 +49,18 @@ public class LecturerService {
             throw new NotFoundException(CLASS_NOT_FOUND);
         }
     }
+
+/*    public void exportDataLecturerToSqlFile(String filePath) {
+        List<Lecturer> entities = lecturerRepository.findAll();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            for (Lecturer entity : entities) {
+                String sql = String.format("INSERT INTO sample_entity (id, name) VALUES (%d, '%s');",
+                        entity.getId(), entity.getName());
+                writer.write(sql);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }*/
 }
