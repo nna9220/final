@@ -70,7 +70,7 @@ function EditProfile() {
     }, []);
 
     if (!authorized) {
-        return <Navigate to="/unauthorized" />;
+        return <Navigate to="/" />;
     }
 
     const handleChange = (e) => {

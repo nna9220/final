@@ -4,34 +4,64 @@ import Sidebar from '../../components/Sidebar/SidebarAdmin';
 import Context from '../../components/Context/Context';
 import './HomeAdmin.scss';
 import Chatbot from '../../components/ChatBot/Chatbot';
-import axiosInstance from '../../API/axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate từ React Router
-
+import { Navigate} from 'react-router-dom';
+import axiosInstance from '../../API/axios';
 function HomeAdmin() {
     const [isSidebarClosed, setSidebarClosed] = useState(false);
-    const userToken = getTokenFromUrlAndSaveToStorage();
-
-    const navigate = useNavigate(); // Sử dụng hook useNavigate
     useEffect(() => {
         document.title = "Trang chủ Admin";
-        axiosInstance.post("/admin/check-authorization/", null, {
-            headers: {
-                Authorization: "Bearer " + userToken // Thay yourAuthToken bằng token của người dùng
-            }
-        })
-        .then(response => {
-            console.log(response.data);
-        })
-        .catch(error => {
-            if (error.response && error.response.status === 401) {
-                // Nếu trả về mã lỗi 401 (Unauthorized), chuyển hướng về trang chủ
-                navigate('/'); // Chuyển hướng về trang chủ (hoặc URL khác nếu muốn)
+    }, []);
+
+    const [authorized, setAuthorized] = useState(true);
+
+    // Kiểm tra quyền truy cập
+    useEffect(() => {
+        const checkAuthorization = async () => {
+            const userToken = getTokenFromUrlAndSaveToStorage(); // Lấy token từ URL hoặc từ bất kỳ nguồn nào khác
+            if (userToken) {
+                try {
+                    // Gửi token đến backend để kiểm tra quyền truy cập
+                    const response = await axiosInstance.post('/admin/check-authorization/admin',null, {
+                        headers: {
+                            'Authorization': `Bearer ${userToken}`,
+                        },
+                });
+                    console.log("trước if : ", response.data);
+                    if (response.data == "Authorized") {
+                        // Nếu có quyền truy cập, setAuthorized(true)
+                        setAuthorized(true);
+                    } else {
+                        // Nếu không có quyền truy cập, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
+                        setAuthorized(false);
+                    }
+                } catch (error) {
+                    if (error.response) {
+                        // Request made and server responded
+                        console.error("Response error:", error.response.data);
+                        console.error("Response status:", error.response.status);
+                        console.error("Response headers:", error.response.headers);
+                        setAuthorized(false);
+                    } else if (error.request) {
+                        // Request made but no response received
+                        console.error("Request error:", error.request);
+                    } else {
+                        // Something else happened while setting up the request
+                        console.error("Axios error:", error.message);
+                    }
+                }
             } else {
-                console.error("Unexpected error:", error.message);
+                // Nếu không có token, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
+                setAuthorized(false);
             }
-        });
-    }, [navigate]);
+        };
+
+        checkAuthorization();
+    }, []);
+
+    if (!authorized) {
+        return <Navigate to="/" />;
+    }
 
     return (
         <div className="HomeAdmin">
