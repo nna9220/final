@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,6 +25,7 @@ public class HeadCouncilController {
     @Autowired
     private ManageTutorialSubjectService manageTutorialSubjectService;
     @GetMapping("/listSubject")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> getListCouncilOfLecturer(@RequestHeader("Authorization") String authorizationHeader) {
         try {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
@@ -38,6 +40,7 @@ public class HeadCouncilController {
     }
 
     @GetMapping("/listCriteria")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> getListCriteria(@RequestHeader("Authorization") String authorizationHeader){
         try {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
@@ -48,6 +51,7 @@ public class HeadCouncilController {
         }
     }
     @GetMapping("/detail/{id}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> detailCouncil(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader){
         try {
             return new ResponseEntity<>(evaluationAndScoringService.detailCouncil(authorizationHeader,id),HttpStatus.OK);
@@ -58,6 +62,7 @@ public class HeadCouncilController {
     }
 
     @PostMapping("/evaluation-scoring/{id}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> evaluationAndScoring(@PathVariable int id,
                                                   @RequestHeader("Authorization") String authorizationHeader,
                                                   @RequestParam("studentId1") String studentId1,

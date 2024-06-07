@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -59,6 +60,7 @@ public class HeadManagerTopicController {
         this.tokenUtils = tokenUtils;
     }
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<Map<String,Object>> getQuanLyDeTai(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -77,6 +79,7 @@ public class HeadManagerTopicController {
     }
 
     @GetMapping("/listTask/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<Map<String,Object>> getListTask(@RequestHeader("Authorization") String authorizationHeader, @PathVariable int subjectId){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -94,6 +97,7 @@ public class HeadManagerTopicController {
     }
 
     @GetMapping("/detail/{taskId}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<Map<String,Object>> getDetail(@RequestHeader("Authorization") String authorizationHeader, @PathVariable int taskId){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);

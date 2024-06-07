@@ -8,6 +8,7 @@ import axiosInstance from '../../../API/axios';
 import moment from 'moment';
 import { FcPortraitMode } from "react-icons/fc";
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import { Navigate} from 'react-router-dom';
 function EditProfile() {
     const [user, setUser] = useState([]);
     const [userEdit, setUserEdit] = useState({
@@ -25,7 +26,7 @@ function EditProfile() {
     const [errorFirstName, setErrorFirstName] = useState('');
     const [errorLastName, setErrorLastName] = useState('');
     const [isCancelClicked, setIsCancelClicked] = useState(false);
-
+    const [authorized, setAuthorized] = useState(true);
     const [editingMode, setEditingMode] = useState(false);
 
     const handleGenderChange = (e) => {
@@ -64,6 +65,39 @@ function EditProfile() {
         }
     }, []);
 
+    // Kiểm tra quyền truy cập
+    useEffect(() => {
+        const checkAuthorization = async () => {
+            const userToken = getTokenFromUrlAndSaveToStorage(); // Lấy token từ URL hoặc từ bất kỳ nguồn nào khác
+            if (userToken) {
+                try {
+                    // Gửi token đến backend để kiểm tra quyền truy cập
+                    const response = await axiosInstance.post('/check-authorization/admin', { token: userToken });
+                    console.log("trước if : ", response.data.authorized);
+                    if (response.data.authorized) {
+                        // Nếu có quyền truy cập, setAuthorized(true)
+                        setAuthorized(true);
+                    } else {
+                        // Nếu không có quyền truy cập, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
+                        setAuthorized(false);
+                    }
+                } catch (error) {
+                    console.error("Error checking authorization:", error);
+                    setAuthorized(false);
+                }
+            } else {
+                // Nếu không có token, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
+                setAuthorized(false);
+            }
+        };
+
+        checkAuthorization();
+    }, []);
+
+    if (!authorized) {
+        return <Navigate to="/unauthorized" />;
+    }
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -78,43 +112,43 @@ function EditProfile() {
         console.log("Token: " + userToken);
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
-    
+
             if (!tokenSt) {
                 axiosInstance.get('/admin/edit', {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
                 })
-                .then(response => {
-                    console.log("EditHeader: ", response.data);
-                    console.log("birthDay: ", response.data.birthDay);
-                    
-                    const formattedDate = moment(response.data.birthDay, "DD/MM/YYYY", true);
-                    if (formattedDate.isValid()) {
-                        response.data.birthDay = formattedDate.format("YYYY-MM-DD");
-                        setUserEdit(prevState => ({
-                            ...prevState,
-                            firstName: response.data.firstName,
-                            lastName: response.data.lastName,
-                            birthDay: response.data.birthDay,
-                            phone: response.data.phone,
-                            gender: response.data.gender,
-                            address: response.data.address
-                        }));
-                        setShowModal(true);
-                        setUser(response.data);
-                    } else {
-                        console.error("Ngày không hợp lệ!");
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    setShowErrorToast(true);
-                });
+                    .then(response => {
+                        console.log("EditHeader: ", response.data);
+                        console.log("birthDay: ", response.data.birthDay);
+
+                        const formattedDate = moment(response.data.birthDay, "DD/MM/YYYY", true);
+                        if (formattedDate.isValid()) {
+                            response.data.birthDay = formattedDate.format("YYYY-MM-DD");
+                            setUserEdit(prevState => ({
+                                ...prevState,
+                                firstName: response.data.firstName,
+                                lastName: response.data.lastName,
+                                birthDay: response.data.birthDay,
+                                phone: response.data.phone,
+                                gender: response.data.gender,
+                                address: response.data.address
+                            }));
+                            setShowModal(true);
+                            setUser(response.data);
+                        } else {
+                            console.error("Ngày không hợp lệ!");
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        setShowErrorToast(true);
+                    });
             }
         }
     }
-    
+
     const isValidPhoneNumber = (phone) => {
         return /^\d{10}$/.test(phone) && /^[0-9]*$/.test(phone);
     };
@@ -256,7 +290,7 @@ function EditProfile() {
                                 <div class="account-settings">
                                     <div class="user-profile">
                                         <div class="user-avatar">
-                                            <FcPortraitMode size={100}/>
+                                            <FcPortraitMode size={100} />
                                         </div>
                                         <h5 class="user-name">{user.firstName + ' ' + user.lastName}</h5>
                                         <h6 class="user-email">{user.username}</h6>

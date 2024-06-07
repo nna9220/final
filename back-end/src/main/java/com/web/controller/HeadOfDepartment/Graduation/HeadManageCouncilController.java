@@ -9,6 +9,7 @@ import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -37,6 +38,7 @@ public class HeadManageCouncilController {
         this.tokenUtils = tokenUtils;
     }
     @GetMapping("/listSubject")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> getListSubject(@RequestHeader("Authorization") String authorizationHeader){
         try {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
@@ -48,6 +50,7 @@ public class HeadManageCouncilController {
     }
 
     @GetMapping("/listLecturer/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<Map<String,Object>> getAddCounterArgument(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -66,6 +69,7 @@ public class HeadManageCouncilController {
     }
 
     @GetMapping("/detailCouncil/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<Map<String,Object>> getDetailCouncil(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -85,6 +89,7 @@ public class HeadManageCouncilController {
     }
 
     @PostMapping("/edit/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     private ResponseEntity<?> editCouncil(@RequestHeader("Authorization") String authorizationHeader,
                                                   @PathVariable int subjectId,
                                           @RequestParam("time") String time,

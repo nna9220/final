@@ -14,7 +14,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import javax.servlet.http.HttpServletResponse;
 
 @EnableWebSecurity
 @Configuration
@@ -22,14 +25,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider tokenProvider;
-
     private final PersonRepository userRepository;
-
     private final CorsFilter corsFilter;
-
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
-    public WebSecurityConfig(JwtTokenProvider tokenProvider, PersonRepository userRepository, CorsFilter corsFilter, TokenAuthenticationFilter tokenAuthenticationFilter, OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler) {
+    public WebSecurityConfig(JwtTokenProvider tokenProvider, PersonRepository userRepository, CorsFilter corsFilter, OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler) {
         this.tokenProvider = tokenProvider;
         this.userRepository = userRepository;
         this.corsFilter = corsFilter;
@@ -45,37 +45,48 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-
+        // Configure authentication manager
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf()
-                .disable()
+                .csrf().disable()
                 .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
+                .accessDeniedHandler(accessDeniedHandler())
                 .and()
                 .headers()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/public/**").permitAll()
+                .antMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+                .antMatchers("/api/student/**").hasAuthority("ROLE_STUDENT")
+                .antMatchers("/api/lecturer/**").hasAuthority("ROLE_LECTURER")
+                .antMatchers("/api/head/**").hasAuthority("ROLE_HEAD")
                 .antMatchers("/login-form").permitAll()
-                .and().apply(securityConfigurerAdapter()).and()
+                .antMatchers("/api/public/**").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .apply(securityConfigurerAdapter())
+                .and()
                 .oauth2Login()
                 .successHandler(oAuth2AuthenticationSuccessHandler);
-
-
-//                .and()
-//                .apply(securityConfigurerAdapter());
     }
+
     @Override
     public void configure(WebSecurity web) throws Exception {
-
+        // Configure web security
     }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return (request, response, accessDeniedException) -> {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().write("Access Denied!");
+        };
+    }
+
     private JWTConfigurer securityConfigurerAdapter() {
         return new JWTConfigurer(tokenProvider, userRepository);
     }
-
 }
-

@@ -19,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,6 +46,7 @@ public class StudentManageEssayController {
 
 
     @PostMapping("/submit/fifty")
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     public ResponseEntity<?> SubmitReportFifty(@RequestHeader("Authorization") String authorizationHeader,
                                                @RequestParam(value = "fileInput", required = true) MultipartFile files){
         try {
@@ -58,6 +60,7 @@ public class StudentManageEssayController {
     }
 
     @PostMapping("/submit/oneHundred")
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     public ResponseEntity<?> SubmitReportOneHundred(@RequestHeader("Authorization") String authorizationHeader,
                                                @RequestParam(value = "fileInput", required = true) MultipartFile files){
         try {
@@ -71,6 +74,7 @@ public class StudentManageEssayController {
     }
 
     @GetMapping("/fileUpload/{fileName}")
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     public ResponseEntity<Resource> viewFile(@PathVariable String fileName, HttpServletRequest request) {
         Resource resource = fileMaterialService.loadFileAsResource(fileName);
         String contentType = null;
@@ -91,6 +95,7 @@ public class StudentManageEssayController {
     }
 
     @GetMapping("/download/{fileName}")
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     public ResponseEntity<Resource> redirectToDownload(@PathVariable String fileName) {
         String redirectUrl = "/fileUpload/" + fileName;
         return ResponseEntity.status(HttpStatus.FOUND)

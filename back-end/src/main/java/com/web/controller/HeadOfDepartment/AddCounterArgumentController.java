@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -34,10 +35,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/head/subject")
@@ -62,6 +60,8 @@ public class AddCounterArgumentController {
     @Autowired
     private TimeBrowseHeadRepository timeBrowseHeadRepository;
     @Autowired
+    private EvaluationCriteriaRepository evaluationCriteriaRepository;
+    @Autowired
     private UserUtils userUtils;
     @Autowired
     private MailServiceImpl mailService;
@@ -77,6 +77,7 @@ public class AddCounterArgumentController {
     private final TokenUtils tokenUtils;
 
     @GetMapping("/export")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public void generateExcelReport(HttpServletResponse response, HttpSession session) throws Exception{
 
         response.setContentType("application/octet-stream");
@@ -93,6 +94,7 @@ public class AddCounterArgumentController {
 
 
     @GetMapping("/listLecturer/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<Map<String,Object>> getAddCounterArgument(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -111,6 +113,7 @@ public class AddCounterArgumentController {
     }
 
     @GetMapping("/listAdd")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<Map<String,Object>> getListSubjectAddCounterArgument(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -129,6 +132,7 @@ public class AddCounterArgumentController {
 
     //Phân Giảng viên phản biện - TLCN
     @PostMapping("/addCounterArgumrnt/{subjectId}/{lecturerId}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> addCounterArgumrnt(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String lecturerId){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -178,6 +182,7 @@ public class AddCounterArgumentController {
     }
 
     @GetMapping("/delete")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<Map<String,Object>> getDanhSachDeTaiDaXoa(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -195,6 +200,7 @@ public class AddCounterArgumentController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<Map<String,Object>> getDanhSachDeTai(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -213,6 +219,7 @@ public class AddCounterArgumentController {
     }
 
     @GetMapping("/listStudent")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> getListStudent(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -225,6 +232,7 @@ public class AddCounterArgumentController {
     }
 
     @GetMapping("/periodHead")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> getPeriod(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -239,6 +247,7 @@ public class AddCounterArgumentController {
 
 
     @PostMapping("/register")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> lecturerRegisterTopic(@RequestParam("subjectName") String name,
                                                    @RequestParam("requirement") String requirement,
                                                    @RequestParam("expected") String expected,
@@ -296,10 +305,14 @@ public class AddCounterArgumentController {
                         newSubject.setCheckStudent(true);
                         studentList.add(studentId3);
                     }
-                    if (student1==null){
+                    if (student1==null && student2==null && student3==null){
                         newSubject.setCheckStudent(false);
                     }else {
                         newSubject.setCheckStudent(true);
+                    }
+                    Set<EvaluationCriteria> evaluationCriteria = evaluationCriteriaRepository.getEvaluationCriteriaByTypeSubject(typeSubject);
+                    if (evaluationCriteria!=null){
+                        newSubject.setCriteria(evaluationCriteria);
                     }
                     LocalDate nowDate = LocalDate.now();
                     newSubject.setYear(String.valueOf(nowDate));
@@ -322,6 +335,7 @@ public class AddCounterArgumentController {
 
 
     @PostMapping("/browse/{id}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> browseSubject(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -343,6 +357,7 @@ public class AddCounterArgumentController {
     }
 
     @PostMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> deleteSubject(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -362,6 +377,7 @@ public class AddCounterArgumentController {
     }
 
     @PostMapping("/import")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> importSubject(@RequestParam("file") MultipartFile file,  @RequestHeader("Authorization") String authorizationHeader) throws IOException {
         return new ResponseEntity<>(service.importSubject(file,authorizationHeader), HttpStatus.OK);
     }

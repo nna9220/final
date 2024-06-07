@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -60,6 +61,7 @@ public class LecturerController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Map<String, Object>> getAllLecturer(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
@@ -79,6 +81,7 @@ public class LecturerController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> createLecturerAndPerson(@RequestParam(value = "personId", required = true) String personId,
                                                      @RequestParam(value = "firstName", required = true) String firstName,
                                                      @RequestParam(value = "lastName", required = true) String lastName,
@@ -123,6 +126,7 @@ public class LecturerController {
         }
     }
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Map<String,Object>> editStudent(@PathVariable String id,
                                                           @RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
@@ -147,6 +151,7 @@ public class LecturerController {
         }
     }
     @PostMapping("/edit/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> updateUser(@PathVariable String id,
                                         @RequestParam("personId") String personId,
                                         @RequestParam("firstName") String firstName,
@@ -195,6 +200,7 @@ public class LecturerController {
     }
 
     @PostMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> deleteStudent(@PathVariable String id,@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);

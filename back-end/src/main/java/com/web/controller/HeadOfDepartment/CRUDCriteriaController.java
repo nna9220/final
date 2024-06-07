@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,6 +40,7 @@ public class CRUDCriteriaController {
     @Autowired
     private CriteriaService criteriaService;
     @GetMapping("/list")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> getListCriteria(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -53,6 +55,7 @@ public class CRUDCriteriaController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> createCriteria(@RequestHeader("Authorization") String authorizationHeader,
                                             @RequestParam("nameCriteria") String nameCriteria,
                                             @RequestParam("scoreCriteria") Double scoreCriteria){
@@ -66,6 +69,7 @@ public class CRUDCriteriaController {
     }
 
     @PostMapping("/edit/{id}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> editCriteria(@PathVariable int id,
                                           @RequestHeader("Authorization") String authorizationHeader,
                                             @RequestParam("nameCriteria") String nameCriteria,
@@ -79,6 +83,7 @@ public class CRUDCriteriaController {
     }
 
     @PostMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> deleteCriteria(@PathVariable int id,
                                             @RequestHeader("Authorization") String authorizationHeader) {
         try {

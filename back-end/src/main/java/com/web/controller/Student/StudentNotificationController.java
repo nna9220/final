@@ -3,6 +3,7 @@ package com.web.controller.Student;
 import com.web.service.Admin.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,7 @@ public class StudentNotificationController {
     private NotificationService notificationService;
 
     @GetMapping()
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     public ResponseEntity<?> getAllNotification(){
         try {
             return notificationService.getListNotification();

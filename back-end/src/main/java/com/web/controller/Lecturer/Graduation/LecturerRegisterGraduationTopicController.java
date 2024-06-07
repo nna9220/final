@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -75,6 +76,7 @@ public class LecturerRegisterGraduationTopicController {
 
     //Xóa đề tài
     @GetMapping("/delete")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<Map<String, Object>> getDanhSachDeTaiDaXoa(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -97,6 +99,7 @@ public class LecturerRegisterGraduationTopicController {
 
     //Danh sách đề tài
     @GetMapping("/listStudent")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<?> getListStudent(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -113,6 +116,7 @@ public class LecturerRegisterGraduationTopicController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<Map<String,Object>> getQuanLyDeTai(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -130,6 +134,7 @@ public class LecturerRegisterGraduationTopicController {
     }
 
     @GetMapping("/periodLecturer")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<?> getPeriod(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -144,6 +149,7 @@ public class LecturerRegisterGraduationTopicController {
 
     //Đăng ký đề tài
     @PostMapping("/register")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<?> lecturerRegisterTopic(@RequestParam("subjectName") String name,
                                               @RequestParam("requirement") String requirement,
                                               @RequestParam("expected") String expected,
@@ -234,6 +240,7 @@ public class LecturerRegisterGraduationTopicController {
 
     //Quản lý đề tài
     @GetMapping("/listTask/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<Map<String,Object>> getListTask(@RequestHeader("Authorization") String authorizationHeader, @PathVariable int subjectId){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -261,6 +268,7 @@ public class LecturerRegisterGraduationTopicController {
     //Chi tiết task
 
     @GetMapping("/detail/{taskId}")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<Map<String,Object>> getDetail(@RequestHeader("Authorization") String authorizationHeader, @PathVariable int taskId){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -291,6 +299,7 @@ public class LecturerRegisterGraduationTopicController {
     //Import đề tài bằng excel
 
     @PostMapping("/import")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<?> importSubject(@RequestHeader("Authorization") String authorizationHeader, @RequestParam("file") MultipartFile file, HttpSession session) throws IOException {
         service.importSubject(file,authorizationHeader);
         /*String referer = Contains.URL +  "/api/lecturer/subject";

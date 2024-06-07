@@ -11,6 +11,7 @@ import com.web.service.Admin.TypeSubjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -29,6 +30,7 @@ public class TypeSubjectController {
     private TypeSubjectRepository typeSubjectRepository;
 
     @GetMapping("/list")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> getTypeSub(){
         List<TypeSubject> typeSubjects = typeSubjectService.findAll();
         List<TypeSubjectResponse> listType = typeSubjectMapper.toTypeSubjectListDTO(typeSubjects);
@@ -36,6 +38,7 @@ public class TypeSubjectController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> saveTypeSubject(@RequestParam("typeName") String typeName){
         /*if (CheckedPermission.isAdmin(personRepository)) {*/
         TypeSubject typeSubject = new TypeSubject();

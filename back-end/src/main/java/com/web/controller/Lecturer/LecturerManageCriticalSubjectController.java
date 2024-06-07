@@ -8,6 +8,7 @@ import com.web.service.Lecturer.ThesisBrowseSubjectToCouncil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,6 +22,7 @@ public class LecturerManageCriticalSubjectController {
     private ThesisBrowseSubjectToCouncil thesisBrowseSubjectToCouncil;
 
     @GetMapping("/listSubject")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<?> getListSubject(@RequestHeader("Authorization") String authorizationHeader){
         try {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
@@ -33,6 +35,7 @@ public class LecturerManageCriticalSubjectController {
 
     //GVPB duyệt đề tài qua Hội đồng
     @PostMapping("/accept-subject-to-council/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<?> CompletedSubjectBrowseToCouncil(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader){
         try {
             return new ResponseEntity<>(thesisBrowseSubjectToCouncil.CompletedSubjectBrowseToCouncil(authorizationHeader,subjectId),HttpStatus.OK);

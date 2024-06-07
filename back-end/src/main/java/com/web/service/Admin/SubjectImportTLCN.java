@@ -1,10 +1,7 @@
 package com.web.service.Admin;
 
 import com.web.config.TokenUtils;
-import com.web.entity.Lecturer;
-import com.web.entity.Student;
-import com.web.entity.Subject;
-import com.web.entity.TypeSubject;
+import com.web.entity.*;
 import com.web.repository.*;
 import com.web.utils.UserUtils;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +30,9 @@ public class SubjectImportTLCN {
     private final UserUtils userUtils;
     private final LecturerRepository lecturerRepository;
     private final StudentRepository studentRepository;
+    private final CouncilRepository councilRepository;
     private final TokenUtils tokenUtils;
+    private final EvaluationCriteriaRepository evaluationCriteriaRepository;
 
     public ResponseEntity<?> importSubject(MultipartFile file) throws IOException {
         try {
@@ -41,13 +40,11 @@ public class SubjectImportTLCN {
 
             List<Subject> saveSub = new ArrayList<>();
             Set<Student> saveStudent = new HashSet<>();
+            List<Council> saveCouncil =new ArrayList<>();
+            List<Lecturer> saveLecturer = new ArrayList<>();
             LocalDate nowYear = LocalDate.now();
             if (checkExcelFormat(file)) {
                 List<Subject> tlcn = toSubjects(file.getInputStream());
-//                Map<String, List<?>> result = toSubjects(file.getInputStream());
-//                List<Subject> tlcn = (List<Subject>) result.get("tlcn");
-//                List<Subject> kltn = (List<Subject>) result.get("kltn");
-
                 //TLCN
                 tlcn.forEach(subject -> {
                     Subject newSubject = new Subject();
@@ -97,69 +94,43 @@ public class SubjectImportTLCN {
                         newSubject.setInstructorId(subject.getInstructorId());
                     }
                     if (subject.getThesisAdvisorId()!=null) {
+                        Lecturer instructor = subject.getInstructorId();
+                        Lecturer thesis = subject.getThesisAdvisorId();
                         newSubject.setThesisAdvisorId(subject.getThesisAdvisorId());
+                        Council newCouncil = new Council();
+                        newCouncil.setSubject(newSubject);
+                        List<Lecturer> lecturers = new ArrayList<>();
+                        lecturers.add(subject.getInstructorId());
+                        lecturers.add(subject.getThesisAdvisorId());
+                        newCouncil.setLecturers(lecturers);
+                        saveCouncil.add(newCouncil);
+                        if (instructor.getCouncils()==null) {
+                            List<Council> councils = new ArrayList<>();
+                            councils.add(newCouncil);
+                            instructor.setCouncils(councils);
+                        }else {
+                            instructor.getCouncils().add(newCouncil);
+                        }
+                        if (thesis.getCouncils()==null) {
+                            List<Council> councils = new ArrayList<>();
+                            councils.add(newCouncil);
+                            thesis.setCouncils(councils);
+                        }else {
+                            thesis.getCouncils().add(newCouncil);
+                        }
+                        saveLecturer.add(instructor);
+                        saveLecturer.add(thesis);
+                    }
+                    Set<EvaluationCriteria> evaluationCriteria = evaluationCriteriaRepository.getEvaluationCriteriaByTypeSubject(typeSubject);
+                    if (evaluationCriteria!=null){
+                        newSubject.setCriteria(evaluationCriteria);
                     }
                     saveSub.add(newSubject);
                     System.out.println("Luu TLCN Thanh Cong");
                 });
-
-                //KLTN
-
-               /* kltn.forEach(subject -> {
-                    Subject newSubject = new Subject();
-                    newSubject.setSubjectName(subject.getSubjectName());
-                    newSubject.setYear(String.valueOf(nowYear));
-                    newSubject.setTypeSubject(typeSubject2);
-                    newSubject.setActive((byte) 1);
-                    newSubject.setStatus(true);
-                    if (subject.getStudent1()!=null) {
-                        Student student1 = studentRepository.findById(subject.getStudent1()).orElse(null);
-                        if (student1 != null) {
-                            if (student1.getSubjectGraduationId() == null) {
-                                newSubject.setStudent1(subject.getStudent1());
-                                student1.setSubjectGraduationId(newSubject);
-                                newSubject.setMajor(student1.getMajor());
-                                saveStudent.add(student1);
-                            }
-                        }
-                    }else {
-                        newSubject.setStudent1(null);
-                    }
-                    if (subject.getStudent2()!=null) {
-                        Student student2 = studentRepository.findById(subject.getStudent2()).orElse(null);
-                        if (student2 != null) {
-                            if (student2.getSubjectGraduationId() == null) {
-                                newSubject.setStudent2(subject.getStudent2());
-                                student2.setSubjectGraduationId(newSubject);
-                                saveStudent.add(student2);
-                            }
-                        }
-                    }else {
-                        newSubject.setStudent2(null);
-                    }
-                    if (subject.getStudent3()!=null) {
-                        Student student3 = studentRepository.findById(subject.getStudent3()).orElse(null);
-                        if (student3 != null) {
-                            if (student3.getSubjectGraduationId() == null) {
-                                newSubject.setStudent2(subject.getStudent2());
-                                student3.setSubjectGraduationId(newSubject);
-                                saveStudent.add(student3);
-                            }
-                        }
-                    }else {
-                        newSubject.setStudent3(null);
-                    }
-                    if (subject.getInstructorId()!=null) {
-                        newSubject.setInstructorId(subject.getInstructorId());
-                    }
-                    if (subject.getThesisAdvisorId()!=null) {
-                        newSubject.setThesisAdvisorId(subject.getThesisAdvisorId());
-                    }
-                    saveSub.add(newSubject);
-                    System.out.println("Luu KLTN Thanh Cong");
-                });
-                */
                 subjectRepository.saveAll(saveSub);
+                lecturerRepository.saveAll(saveLecturer);
+                councilRepository.saveAll(saveCouncil);
                 studentRepository.saveAll(saveStudent);
                 return ResponseEntity.ok("Imported file to list subject successful!");
             } else
@@ -200,10 +171,10 @@ public class SubjectImportTLCN {
                             case 2 -> subject.setStudent2(getCellValueAsString(cell));
                             case 3 -> subject.setStudent3(getCellValueAsString(cell));
                             case 4 ->{
-                                System.out.println(getCellValueAsString(cell));
-                                Lecturer instruc = lecturerRepository.findById(getCellValueAsString(cell)).orElse(null);
-                                System.out.println("Instruc: " + instruc);
-                                subject.setInstructorId(instruc);
+                                Lecturer instructor = lecturerRepository.findById(getCellValueAsString(cell)).orElse(null);
+                                System.out.println("ID instruc: " + getCellValueAsString(cell));
+                                System.out.println("Instruc: " + instructor);
+                                subject.setInstructorId(instructor);
                             }
                             case 5 ->{
                                 System.out.println(getCellValueAsString(cell));

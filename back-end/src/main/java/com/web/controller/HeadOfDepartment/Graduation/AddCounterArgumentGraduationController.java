@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,10 +24,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/head/subjectGraduation")
@@ -36,6 +34,8 @@ public class AddCounterArgumentGraduationController {
     private SubjectImplService service;
     @Autowired
     private SubjectService subjectService;
+    @Autowired
+    private EvaluationCriteriaRepository evaluationCriteriaRepository;
     @Autowired
     private PersonRepository personRepository;
     @Autowired
@@ -61,6 +61,7 @@ public class AddCounterArgumentGraduationController {
 
 
     @GetMapping("/export")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public void generateExcelReport(HttpServletResponse response, HttpSession session) throws Exception{
 
         response.setContentType("application/octet-stream");
@@ -77,6 +78,7 @@ public class AddCounterArgumentGraduationController {
 
 
     @GetMapping("/listLecturer/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<Map<String,Object>> getAddCounterArgument(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -95,6 +97,7 @@ public class AddCounterArgumentGraduationController {
     }
 
     @GetMapping("/listAdd")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<Map<String,Object>> getListSubjectAddCounterArgument(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -112,6 +115,7 @@ public class AddCounterArgumentGraduationController {
     }
 
     @PostMapping("/addCounterArgumrnt/{subjectId}/{lecturerId}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> addCounterArgumrnt(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String lecturerId){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -154,6 +158,7 @@ public class AddCounterArgumentGraduationController {
 
 
     @GetMapping("/delete")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<Map<String,Object>> getDanhSachDeTaiDaXoa(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -172,6 +177,7 @@ public class AddCounterArgumentGraduationController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> getDanhSachDeTai(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -188,6 +194,7 @@ public class AddCounterArgumentGraduationController {
     }
 
     @GetMapping("/listStudent")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> getListStudent(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -200,6 +207,7 @@ public class AddCounterArgumentGraduationController {
     }
 
     @PostMapping("/register")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> lecturerRegisterTopic(@RequestParam("subjectName") String name,
                                               @RequestParam("requirement") String requirement,
                                               @RequestParam("expected") String expected,
@@ -259,6 +267,10 @@ public class AddCounterArgumentGraduationController {
                     }else {
                         newSubject.setCheckStudent(true);
                     }
+                    Set<EvaluationCriteria> evaluationCriteria = evaluationCriteriaRepository.getEvaluationCriteriaByTypeSubject(typeSubject);
+                    if (evaluationCriteria!=null){
+                        newSubject.setCriteria(evaluationCriteria);
+                    }
                     LocalDate nowDate = LocalDate.now();
                     newSubject.setYear(String.valueOf(nowDate));
                     newSubject.setTypeSubject(typeSubject);
@@ -286,6 +298,7 @@ public class AddCounterArgumentGraduationController {
 
 
     @PostMapping("/browse/{id}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> browseSubject(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -302,6 +315,7 @@ public class AddCounterArgumentGraduationController {
     }
 
     @PostMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> deleteSubject(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -321,6 +335,7 @@ public class AddCounterArgumentGraduationController {
     }
 
     @PostMapping("/import")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> importSubject(@RequestParam("file") MultipartFile file,  @RequestHeader("Authorization") String authorizationHeader) throws IOException {
         return new ResponseEntity<>(service.importSubject(file,authorizationHeader), HttpStatus.OK);
     }

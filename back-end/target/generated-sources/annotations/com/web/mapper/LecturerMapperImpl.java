@@ -4,7 +4,6 @@ import com.web.dto.request.LecturerRequest;
 import com.web.dto.response.LecturerResponse;
 import com.web.entity.Lecturer;
 import com.web.entity.Major;
-import com.web.entity.Subject;
 import com.web.entity.Task;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-06-01T02:51:40+0700",
+    date = "2024-06-07T16:00:50+0700",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 17.0.8 (Oracle Corporation)"
 )
 @Component
@@ -33,17 +32,9 @@ public class LecturerMapperImpl implements LecturerMapper {
             lecturerResponse.setMajor( lecturer.getMajor().name() );
         }
         lecturerResponse.setPerson( lecturer.getPerson() );
-        List<Subject> list = lecturer.getListSubInstruct();
+        List<Task> list = lecturer.getTasks();
         if ( list != null ) {
-            lecturerResponse.setListSubInstruct( new ArrayList<Subject>( list ) );
-        }
-        List<Subject> list1 = lecturer.getListSubCounterArgument();
-        if ( list1 != null ) {
-            lecturerResponse.setListSubCounterArgument( new ArrayList<Subject>( list1 ) );
-        }
-        List<Task> list2 = lecturer.getTasks();
-        if ( list2 != null ) {
-            lecturerResponse.setTasks( new ArrayList<Task>( list2 ) );
+            lecturerResponse.setTasks( new ArrayList<Task>( list ) );
         }
 
         return lecturerResponse;
@@ -77,17 +68,9 @@ public class LecturerMapperImpl implements LecturerMapper {
         if ( lecturerRequest.getMajor() != null ) {
             lecturer.setMajor( Enum.valueOf( Major.class, lecturerRequest.getMajor() ) );
         }
-        List<Subject> list = lecturerRequest.getListSubInstruct();
+        List<Task> list = lecturerRequest.getTasks();
         if ( list != null ) {
-            lecturer.setListSubInstruct( new ArrayList<Subject>( list ) );
-        }
-        List<Subject> list1 = lecturerRequest.getListSubCounterArgument();
-        if ( list1 != null ) {
-            lecturer.setListSubCounterArgument( new ArrayList<Subject>( list1 ) );
-        }
-        List<Task> list2 = lecturerRequest.getTasks();
-        if ( list2 != null ) {
-            lecturer.setTasks( new ArrayList<Task>( list2 ) );
+            lecturer.setTasks( new ArrayList<Task>( list ) );
         }
 
         return lecturer;
