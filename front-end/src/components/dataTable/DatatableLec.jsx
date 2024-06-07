@@ -10,8 +10,6 @@ import PlaylistAddCheckOutlinedIcon from '@mui/icons-material/PlaylistAddCheckOu
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
-import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import moment from 'moment';
 import axiosInstance from '../../API/axios';
 
@@ -37,8 +35,6 @@ function DatatableLec() {
     });
     const [showModal, setShowModal] = useState(false);
     const [showModalAdd, setShowModalAdd] = useState(false);
-    const [showModalEdit, setShowModalEdit] = useState(false);
-    const [showDeleteToast, setShowDeleteToast] = useState(false);
     const [gender, setGender] = useState(false);
     const [formData, setFormData] = useState({
         personId: '',
@@ -141,7 +137,6 @@ function DatatableLec() {
                 if (response.status === 200) {
                     setLectures(prevState => prevState.filter(lecturer => lecturer.lecturerId !== lecturerId));
                     setShowConfirmation(false);
-                    setShowDeleteToast(true);
                     loadData();
                     toast.success("Xóa thành công!")
                 } else if (response.status === 404) {
@@ -175,7 +170,6 @@ function DatatableLec() {
     };
 
     const handleCloseModalEdit = () => {
-        setShowModalEdit(false);
         // Remove the modal backdrop manually
         document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
     };
@@ -336,7 +330,7 @@ function DatatableLec() {
                     )}
                     {!showDeletedLecturers && (
                         <>
-                            <button className="btnView" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => {handleEdit(params.row.lecturerId); setShowModalEdit(true)}}>
+                            <button className="btnView" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => {handleEdit(params.row.lecturerId)}}>
                                 <EditOutlinedIcon />
                             </button>
                             <button className='btnDelete' onClick={() => handleDelete(params.row)}>
@@ -495,7 +489,7 @@ function DatatableLec() {
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModalEdit(false)}>Close</button>
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                 <button type="submit" className="btn btn-primary">
                                     Cập nhật
                                 </button>
