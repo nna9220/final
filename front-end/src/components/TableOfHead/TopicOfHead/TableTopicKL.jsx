@@ -176,13 +176,26 @@ function TableTopicKL() {
         <ToastContainer />
         {showSubmitButton && (
           <>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button className="submit50-all" style={{ marginRight: '10px' }} type="button" data-bs-toggle="modal" data-bs-target="#submit50">
-                Nộp báo cáo 50%
-              </button>
-              <button className="submit100-all" type="button" data-bs-toggle="modal" data-bs-target="#submit100">
-                Nộp báo cáo 100%
-              </button>
+            <div>
+              {topics.length > 0 ? (
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <button className="submit50-all" style={{ marginRight: '10px' }} type="button" data-bs-toggle="modal" data-bs-target="#submit50">
+                    Nộp báo cáo 50%
+                  </button>
+                  <button className="submit100-all" type="button" data-bs-toggle="modal" data-bs-target="#submit100">
+                    Nộp báo cáo 100%
+                  </button>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <button className="submit50-all" style={{ marginRight: '10px' }} type="button" data-bs-toggle="modal" data-bs-target="#submit50" disabled>
+                    Nộp báo cáo 50%
+                  </button>
+                  <button className="submit100-all" type="button" data-bs-toggle="modal" data-bs-target="#submit100" disabled>
+                    Nộp báo cáo 100%
+                  </button>
+                </div>
+              )}
             </div>
           </>
         )}
@@ -233,33 +246,39 @@ function TableTopicKL() {
               </tr>
             </thead>
             <tbody>
-              {topics.filter(item => item.active === 5).map((item, index) => (
-                <tr key={index}>
-                  <th scope='row'>{index + 1}</th>
-                  <td>{item.subjectName}</td>
-                  <td>{item.instructorId.person?.firstName + ' ' + item.instructorId.person?.lastName}</td>
-                  <td>{item.thesisAdvisorId?.person?.firstName + ' ' + item.thesisAdvisorId?.person?.lastName}</td>
-                  <td>{item.student1}</td>
-                  <td>{item.student2}</td>
-                  <td>{item.student3}</td>
-                  <td>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <button className="management" type="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Đi đến chi tiết để quản lý đề tài" onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}><ViewComfyAltOutlinedIcon /></button>
-                      <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          <MenuOutlinedIcon />
-                        </button>
-                        <ul class="dropdown-menu">
-                          <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-placement="bottom" onClick={() => { setSubjectIdForSubmit50(item.subjectId); setSubjectName(item.subjectName) }}>Yêu cầu nộp báo cáo 50%</button></li>
-                          <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal1" data-bs-placement="bottom" onClick={() => { setSubjectIdForSubmit100(item.subjectId); setSubjectName(item.subjectName) }}>Yêu cầu nộp báo cáo 100%</button></li>
-                          <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#modalApproval" data-bs-placement="bottom" onClick={() => { setSubjectIdForApproval(item.subjectId); setSubjectName(item.subjectName) }}>Duyệt đề tài qua phản biện</button></li>
-                          <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#modalRefuse" data-bs-placement="bottom" onClick={() => { setSubjectIdForRefuse(item.subjectId); setSubjectName(item.subjectName) }}>Từ chối đề tài</button></li>
-                        </ul>
+              {topics.length > 0 ? (
+                topics.map((item, index) => (
+                  <tr key={index}>
+                    <th scope='row'>{index + 1}</th>
+                    <td>{item.subjectName}</td>
+                    <td>{item.instructorId.person?.firstName + ' ' + item.instructorId.person?.lastName}</td>
+                    <td>{item.thesisAdvisorId?.person?.firstName + ' ' + item.thesisAdvisorId?.person?.lastName}</td>
+                    <td>{item.student1}</td>
+                    <td>{item.student2}</td>
+                    <td>{item.student3}</td>
+                    <td>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <button className="management" type="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Đi đến chi tiết để quản lý đề tài" onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}><ViewComfyAltOutlinedIcon /></button>
+                        <div class="dropdown">
+                          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <MenuOutlinedIcon />
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-placement="bottom" onClick={() => { setSubjectIdForSubmit50(item.subjectId); setSubjectName(item.subjectName) }}>Yêu cầu nộp báo cáo 50%</button></li>
+                            <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal1" data-bs-placement="bottom" onClick={() => { setSubjectIdForSubmit100(item.subjectId); setSubjectName(item.subjectName) }}>Yêu cầu nộp báo cáo 100%</button></li>
+                            <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#modalApproval" data-bs-placement="bottom" onClick={() => { setSubjectIdForApproval(item.subjectId); setSubjectName(item.subjectName) }}>Duyệt đề tài qua phản biện</button></li>
+                            <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#modalRefuse" data-bs-placement="bottom" onClick={() => { setSubjectIdForRefuse(item.subjectId); setSubjectName(item.subjectName) }}>Từ chối đề tài</button></li>
+                          </ul>
+                        </div>
                       </div>
-                    </div>
-                  </td>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8" className="text-center">No data</td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         )}

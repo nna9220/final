@@ -13,6 +13,7 @@ function TopicKLPBTableHead() {
     const [criterias, setCriterias] = useState([]);
     const userToken = getTokenFromUrlAndSaveToStorage();
     const [subjectIdForAccept, setSubjectIdForAccept] = useState(null);
+
     useEffect(() => {
         fetchTopics();
     }, []);
@@ -91,22 +92,28 @@ function TopicKLPBTableHead() {
                             </tr>
                         </thead>
                         <tbody>
-                            {topics.map((item, index) => (
-                                <tr key={index}>
-                                    <th scope="row">{index + 1}</th>
-                                    <td>{item.subjectName}</td>
-                                    <td>{item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName}</td>
-                                    <td>{item.student1}</td>
-                                    <td>{item.student2}</td>
-                                    <td>{item.student3}</td>
-                                    <td>{item.requirement}</td>
-                                    <td>
-                                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => { detailTopic(item.subjectId); setSubjectIdForAccept(item.subjectId) }} disabled={item.active != 6}>
-                                            <CreditScoreOutlinedIcon />
-                                        </button>
-                                    </td>
+                            {topics.length > 0 ? (
+                                topics.map((item, index) => (
+                                    <tr key={index}>
+                                        <th scope="row">{index + 1}</th>
+                                        <td>{item.subjectName}</td>
+                                        <td>{item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName}</td>
+                                        <td>{item.student1}</td>
+                                        <td>{item.student2}</td>
+                                        <td>{item.student3}</td>
+                                        <td>{item.requirement}</td>
+                                        <td>
+                                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => { detailTopic(item.subjectId); setSubjectIdForAccept(item.subjectId) }} disabled={item.active != 6}>
+                                                <CreditScoreOutlinedIcon />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="8" className="text-center">No data</td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
                 </div>
@@ -157,9 +164,8 @@ function TopicKLPBTableHead() {
                     </div>
                 </div>
             </div>
-
         </div>
     )
 }
 
-export default TopicKLPBTableHead
+export default TopicKLPBTableHead;
