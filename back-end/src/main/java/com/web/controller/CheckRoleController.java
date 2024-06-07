@@ -31,7 +31,7 @@ public class CheckRoleController {
         this.tokenUtils = tokenUtils;
     }
 
-    @PostMapping("/check-authorization/admin")
+    @PostMapping("/admin/check-authorization/")
     public ResponseEntity<?> checkAuthorization(@RequestHeader("Authorization") String token) {
         // Kiểm tra token và xác thực người dùng
         if (isValidToken(token)) {

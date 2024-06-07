@@ -98,7 +98,6 @@ function EditProfile() {
         return <Navigate to="/unauthorized" />;
     }
 
-
     const handleChange = (e) => {
         const { name, value } = e.target;
         setUserEdit(prevState => ({
