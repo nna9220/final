@@ -319,6 +319,12 @@ public class AddCounterArgumentController {
                     newSubject.setTypeSubject(typeSubject);
                     subjectRepository.save(newSubject);
                     studentRepository.saveAll(studentList);
+                    String subject = "ĐĂNG KÝ ĐỀ TÀI THÀNH CÔNG";
+                    String messenger = "Topic: " + newSubject.getSubjectName() + " đăng ký thành công!!";
+                    //Gửi mail cho Hội đồng - SV
+                    List<String> emailPerson = new ArrayList<>();
+                    emailPerson.add(existLecturer.getPerson().getUsername());
+                    mailService.sendMailToPerson(emailPerson,subject,messenger);
                     System.out.println("Đề tài: "+newSubject.getSubjectName());
                     return new ResponseEntity<>(newSubject, HttpStatus.CREATED);
                 }else {
