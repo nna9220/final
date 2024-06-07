@@ -39,59 +39,34 @@ function EditProfile() {
 
 
     useEffect(() => {
-        const userToken = getTokenFromUrlAndSaveToStorage();
-        console.log("Token: " + userToken);
+        const fetchDataAndCheckAuthorization = async () => {
+            const userToken = getTokenFromUrlAndSaveToStorage();
 
-        if (userToken) {
-            // Lấy token từ storage
-            const tokenSt = sessionStorage.getItem(userToken);
-
-            if (!tokenSt) {
-                axiosInstance.get('/admin/home', {
-                    headers: {
-                        'Authorization': `Bearer ${userToken}`,
-                    },
-                })
-                    .then(response => {
-                        console.log("UserHeader: ", response.data);
-                        setUser(response.data);
-                        setUserEdit(response.data);
-                        console.log('userEdittt: ', userEdit);
-                    })
-                    .catch(error => {
-                        console.error(error);
-                    });
-            }
-        }
-    }, []);
-
-    // Kiểm tra quyền truy cập
-    useEffect(() => {
-        const checkAuthorization = async () => {
-            const userToken = getTokenFromUrlAndSaveToStorage(); // Lấy token từ URL hoặc từ bất kỳ nguồn nào khác
             if (userToken) {
                 try {
-                    // Gửi token đến backend để kiểm tra quyền truy cập
-                    const response = await axiosInstance.post('/check-authorization/admin', { token: userToken });
-                    console.log("trước if : ", response.data.authorized);
-                    if (response.data.authorized) {
-                        // Nếu có quyền truy cập, setAuthorized(true)
-                        setAuthorized(true);
-                    } else {
-                        // Nếu không có quyền truy cập, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
-                        setAuthorized(false);
-                    }
+                    const response = await axiosInstance.get('/admin/home', {
+                        headers: {
+                            'Authorization': `Bearer ${userToken}`,
+                        },
+                    });
+                    setUser(response.data);
+                    setUserEdit(response.data);
+
+                    const authorizationResponse = await axiosInstance.post('/admin/check-authorization/admin', {
+                        headers: {
+                            'Authorization': `Bearer ${userToken}`,
+                        },
+                    });
+                    setAuthorized(authorizationResponse.data.Authorized);
                 } catch (error) {
-                    console.error("Error checking authorization:", error);
-                    setAuthorized(false);
+                    console.error(error);
                 }
             } else {
-                // Nếu không có token, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
                 setAuthorized(false);
             }
         };
 
-        checkAuthorization();
+        fetchDataAndCheckAuthorization();
     }, []);
 
     if (!authorized) {
