@@ -48,6 +48,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // Configure authentication manager
     }
 
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
