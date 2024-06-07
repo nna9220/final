@@ -38,6 +38,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin")
+@CrossOrigin(origins = {"https://hcmute.workon.space", "http://localhost:3000"})
 public class HomeAdminController {
     @Autowired
     private UserUtils userUtils;
