@@ -23,7 +23,7 @@ public class JwtTokenProvider {
 
     private static final String AUTHORITIES_KEY = "roles";
 
-    private final long JWT_EXPIRATION = 604800000L;
+    private final long JWT_EXPIRATION = 10800000L;
 
 
 
