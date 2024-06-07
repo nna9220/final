@@ -176,7 +176,7 @@ public class ManageSubjectService {
                         subjectRepository.save(existedSubject);
                         Subject existSubject = subjectRepository.findById(id).orElse(null);
                         String subject = "Topic: " + existSubject.getSubjectName();
-                        String messenger = "Topic: " + existSubject.getSubjectName() + " đã nộp báo cáo 50%!!";
+                        String messenger = "Topic: " + existSubject.getSubjectName() + " đã nộp báo cáo 100%!!";
                         mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
                         return new ResponseEntity<>(existedStudent, HttpStatus.OK);
                     }
