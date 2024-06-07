@@ -8,11 +8,14 @@ import '../node_modules/font-awesome/css/font-awesome.min.css';
 import '../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js'
 
 import { BrowserRouter } from 'react-router-dom';
+import { NotificationProvider } from './Pages/Head/NotificationContext.jsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
-    <App />
+    <NotificationProvider> {/* Wrap your App with NotificationProvider */}
+      <App />
+    </NotificationProvider>  
   </BrowserRouter>
 );
 

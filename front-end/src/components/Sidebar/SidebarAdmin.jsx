@@ -6,8 +6,9 @@ import AppRegistrationOutlinedIcon from '@mui/icons-material/AppRegistrationOutl
 import RecentActorsOutlinedIcon from '@mui/icons-material/RecentActorsOutlined';
 import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined';
 import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
-import ViewListOutlinedIcon from '@mui/icons-material/ViewListOutlined';
+import DvrOutlinedIcon from '@mui/icons-material/DvrOutlined';
 import BallotOutlinedIcon from '@mui/icons-material/BallotOutlined';
+import ContactSupportOutlinedIcon from '@mui/icons-material/ContactSupportOutlined';
 import { FcPortraitMode } from "react-icons/fc";
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
@@ -63,7 +64,7 @@ const SidebarAdmin = () => {
           <hr style={{ color: '#fff' }}></hr>
           {!isAvatarVisible && (
             <div className="sidebar-header">
-              <FcPortraitMode size={70}/>
+              <FcPortraitMode size={70} />
               <div className="user-info">
                 <span className="user-name"><strong>{admin.firstName + ' ' + admin.lastName}</strong></span>
                 <span className="user-role">Administrator</span>
@@ -127,15 +128,30 @@ const SidebarAdmin = () => {
               </a>
             </li>
             <li className="sidebar-item">
-              <a href="/managermentYears" className="sidebar-link">
-                <i className="lni lni-cog"><ViewListOutlinedIcon /></i>
-                <span>Quản lý niên khóa</span>
+              <a href="#" className="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth"
+                aria-expanded="false" aria-controls="auth">
+                <i className="lni lni-protection"><FactCheckOutlinedIcon /></i>
+                <span>Quản lý niên khóa - lớp</span>
               </a>
+              <ul id="auth" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                <li className="sidebar-item">
+                  <a style={{ marginLeft: '10px' }} href="/managermentYears" className="sidebar-link">Quản lý niên khóa</a>
+                </li>
+                <li className="sidebar-item">
+                  <a style={{ marginLeft: '10px' }} href="/managermentClass" className="sidebar-link">Quản lý lớp</a>
+                </li>
+              </ul>
             </li>
             <li className="sidebar-item">
               <a href="/managermentGuest" className="sidebar-link">
-                <i className="lni lni-cog"><ViewListOutlinedIcon /></i>
+                <i className="lni lni-cog"><DvrOutlinedIcon /></i>
                 <span>Quản lý khách</span>
+              </a>
+            </li>
+            <li className="sidebar-item">
+              <a href="" className="sidebar-link">
+                <i className="lni lni-cog"><ContactSupportOutlinedIcon /></i>
+                <span>Giải đáp - Liên hệ</span>
               </a>
             </li>
           </ul>

@@ -224,15 +224,20 @@ function TableTopic() {
               </tr>
             </thead>
             <tbody>
-              {topics.filter(item => item.active === 5).map((item, index) => (
+              {topics.map((item, index) => (
                 <tr key={index}>
                   <th scope='row'>{index + 1}</th>
                   <td>{item.subjectName}</td>
                   <td>{item.instructorId?.person?.firstName + ' ' + item.instructorId?.person?.lastName}</td>
-                  <td>{item.thesisAdvisorId?.person?.firstName + ' ' + item.thesisAdvisorId?.person?.lastName}</td>
-                  <td>{item.student1}</td>
-                  <td>{item.student2}</td>
-                  <td>{item.student3}</td>
+                  <td>
+                    {item.thesisAdvisorId?.person
+                      ? `${item.thesisAdvisorId.person.firstName} ${item.thesisAdvisorId.person.lastName}`
+                      : 'Chưa có'}
+                  </td>
+                  <td>{item.student1 ?? 'Trống'}</td>
+                  <td>{item.student2 ?? 'Trống'}</td>
+                  <td>{item.student3 ?? 'Trống'}</td>
+
                   <td>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <button className="management" type="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Đi đến chi tiết để quản lý đề tài" onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}><ViewComfyAltOutlinedIcon /></button>

@@ -27,6 +27,8 @@
     margin-bottom: 30px;
 }
 
+
+
 .border-container::before {
     content: "Tiểu luận chuyên ngành"; 
     position: absolute;
@@ -36,7 +38,7 @@
     background-color: #fff;
     font-size: 18px;
     font-weight: bold; 
-    color: #358c79;
+    color: #144b86;
 }
 
 .border-container-2 {
@@ -54,9 +56,14 @@
     background-color: #fff;
     font-size: 18px;
     font-weight: bold; 
-    color: #358c79;
+    color: #144b86;
 }
 
 .body-table-period {
     margin: 20px;
+    padding: 20px;
+}
+
+.content-main{
+    padding: 20px;
 }

@@ -84,6 +84,7 @@ public class StudentAddTaskGraduationController {
             Map<String,Object> response = new HashMap<>();
             response.put("listTask", taskList);
             response.put("peson", personCurrent);
+            response.put("subject", currentSubject);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

@@ -45,6 +45,8 @@ import ManagementTopicGraduation from './Pages/Student/ManagementTopicGraduation
 import ManageComplete from './Pages/Teacher/ManageComplete';
 import ManagementComplete from './Pages/Head/ManagementComplete';
 import ManagementGuest from './Pages/Admin/ManagementGuest';
+import ManagementClass from './Pages/Admin/ManagementClass';
+import ProtectedRoute from './components/AuthorizationURL/ProtectedRoute';
 
 function App() {
   return (
@@ -69,14 +71,15 @@ function App() {
 
         {/* Tách riêng trang Login không hiển thị Header và Footer */}
 
-        <Route path="/homeAdmin" element={<HomeAdmin />} />
-        <Route path="/profileAdmin" element={<Profile />} />
-        <Route path="/managermentStudent" element={<ManagementStudent />} />
-        <Route path="/managermentLec" element={<ManagementLec />} />
+        <Route path="/homeAdmin" element={<HomeAdmin/>} />
+        <Route path="/profileAdmin" element={<Profile/>} />
+        <Route path="/managermentStudent" element={<ManagementStudent/>} />
+        <Route path="/managermentLec" element={<ManagementLec/>} />
         <Route path="/managermentPeriod" element={<ManagementPeriod />} />
         <Route path="/managermentApproveTime" element={<ManagementTimeApprove />} /> 
         <Route path="/managermentRegisterTime" element={<ManagementTimeRegister />} /> 
         <Route path="/managermentYears" element={<ManagementYears />} />
+        <Route path="/managermentClass" element={<ManagementClass />} />
         <Route path='/managermentTopics' element={<ManagementTopics/>}/>
         <Route path='/managermentType' element={<ManagementType/>}/>
         <Route path='/managermentGuest' element={<ManagementGuest/>}/>

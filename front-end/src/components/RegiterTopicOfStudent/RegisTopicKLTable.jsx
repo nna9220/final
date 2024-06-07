@@ -143,8 +143,8 @@ function RegisTopicKLTable() {
                                                 <label>Sinh viên 3: <label className='content-name'>{topic.student3}</label></label><br/>
                                                 <label>Yêu cầu: <label className='content-name'>{topic.requirement}</label></label>
                                             </div>
-                                            <div className="row justify-content-end">
-                                                <div className="form-group col-sm-2"><NavLink to="/managermentTopicStudent"><button type="submit" className="btn-block btn-primary">Quản lý đề tài</button> </NavLink></div>
+                                            <div style={{float:'right'}}>
+                                                <NavLink to="/managermentTopicGraduationStudent"><button type="button" class="btn btn-mana btn-success" style={{backgroundColor:'#4eb09b', fontSize:'medium', border:'none'}}>Quản lý đề tài</button></NavLink>
                                             </div>
                                         </form>
                                     </div>

@@ -257,7 +257,7 @@ function DataTableRegistrationPeroidSt() {
     }
     
     return (
-        <div>
+        <div className='content-main'>
             <ToastContainer/>
             <div className='border-container'>
                 <div className='body-table-period'>
@@ -266,7 +266,9 @@ function DataTableRegistrationPeroidSt() {
 
                         </div>
                     </div>
-
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddTimeApprove">
+                        Add
+                    </button>
                     <div className="modal fade" id="AddTimeApprove" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div className="modal-dialog">
                             <div className="modal-content">
@@ -360,7 +362,9 @@ function DataTableRegistrationPeroidSt() {
 
                         </div>
                     </div>
-
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddTimeApprove2">
+                        Add
+                    </button>
                     <div className="modal fade" id="AddTimeApprove2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div className="modal-dialog">
                             <div className="modal-content">

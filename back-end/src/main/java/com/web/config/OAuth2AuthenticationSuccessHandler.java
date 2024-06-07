@@ -177,7 +177,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             response.sendRedirect(Contains.URL_LOCAL + "/homeStudent?token="+token);
         }
         if(person.getAuthorities().getName().equals(Contains.ROLE_GUEST)){
-            response.sendRedirect(Contains.URL_LOCAL );
+            response.sendRedirect(Contains.URL_LOCAL   + "/home/?token="+token);
         }
         if(person.getAuthorities().getName().equals(Contains.ROLE_LECTURER)){
             response.sendRedirect(Contains.URL_LOCAL   + "/homeLecturer?token="+token);
