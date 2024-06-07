@@ -17,6 +17,7 @@ import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -49,6 +50,7 @@ public class HomeLecturerController {
         this.tokenUtils = tokenUtils;
     }
     @GetMapping("/home")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<?> getHome(@RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request) {
         // Xử lý token ở đây, nếu cần
         String token = tokenUtils.extractToken(authorizationHeader);
@@ -69,6 +71,7 @@ public class HomeLecturerController {
     }
 
     @GetMapping("/profile")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<Map<String,Object>> getProfile(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -89,6 +92,7 @@ public class HomeLecturerController {
     }
 
     @GetMapping("/counterArgumentSubject")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<Map<String,Object>> getCounterArgument(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -106,6 +110,7 @@ public class HomeLecturerController {
         }
     }
     @GetMapping("/counterArgumentSubject/detail/{id}")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<Map<String,Object>> getDetailCounterArgument(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -123,6 +128,7 @@ public class HomeLecturerController {
     }
 
     @PostMapping("/addScore/{id}")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<?> addScore(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader, @RequestParam Double score){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
@@ -152,6 +158,7 @@ public class HomeLecturerController {
         }
     }
     @GetMapping("/edit")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<?> getEditProfile(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -164,6 +171,7 @@ public class HomeLecturerController {
     }
 
     @PostMapping("/edit/{id}")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<?> updateProfileLec(@PathVariable String id,
                                              @RequestParam("firstName") String firstName,
                                              @RequestParam("lastName") String lastName,

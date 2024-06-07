@@ -29,7 +29,7 @@ public class Council {
     @JoinColumn(name = "subject", unique = true)
     private Subject subject;
 
-    @ManyToMany(mappedBy = "councils")
+    @ManyToMany(mappedBy = "councils",cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Lecturer> lecturers;
 }

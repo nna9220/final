@@ -9,6 +9,7 @@ import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
@@ -43,6 +44,7 @@ public class StudentAddTaskGraduationController {
     }
 
     @GetMapping("/new")
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     public ResponseEntity<Map<String, Object>> getNewTask(@RequestHeader("Authorization") String authorizationHeader) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -71,6 +73,7 @@ public class StudentAddTaskGraduationController {
     }
 
     @GetMapping("/list")
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     public ResponseEntity<Map<String,Object>> getListTask(@RequestHeader("Authorization") String authorizationHeader) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -101,6 +104,7 @@ public class StudentAddTaskGraduationController {
         }
     }
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     public ResponseEntity<?> createTask(@RequestHeader("Authorization") String authorizationHeader,
                                    @RequestParam("requirement") String requirement,
                                    @RequestParam("timeStart") String timeStart,
@@ -150,6 +154,7 @@ public class StudentAddTaskGraduationController {
     }
 
     @PostMapping("/updateStatus/{id}")
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     public ResponseEntity<?> updateStatus(@RequestHeader("Authorization") String authorizationHeader, @PathVariable int id,@RequestParam String selectedOption) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -201,6 +206,7 @@ public class StudentAddTaskGraduationController {
 
 
     @GetMapping("/detail/{taskId}")
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     public ResponseEntity<Map<String,Object>> getDetail(@RequestHeader("Authorization") String authorizationHeader, @PathVariable int taskId){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);

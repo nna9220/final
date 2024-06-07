@@ -19,6 +19,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -72,6 +73,7 @@ public class StudentController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Map<String,Object>> getAllStudent(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
@@ -99,6 +101,7 @@ public class StudentController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> createStudentAndPerson(@RequestParam(value = "personId", required = true) String personId,
                                                     @RequestParam(value = "firstName", required = true) String firstName,
                                                     @RequestParam(value = "lastName", required = true) String lastName,
@@ -158,6 +161,7 @@ public class StudentController {
         }
     }
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Map<String,Object>> editStudent(@PathVariable String id,
                                                           @RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
@@ -192,6 +196,7 @@ public class StudentController {
     private EntityManager entityManager;
 
     @PostMapping("/edit/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> updateUser(@PathVariable String id,
                                         @RequestParam("firstName") String firstName,
                                         @RequestParam("lastName") String lastName,
@@ -234,6 +239,7 @@ public class StudentController {
         }
     }
     @PostMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> deleteStudent(@PathVariable String id, @RequestHeader("Authorization") String authorizationHeader) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -262,12 +268,14 @@ public class StudentController {
     }*/
 
     @PostMapping("/importSV")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> importStudent(@RequestParam("file") MultipartFile file) throws IOException {
         return new ResponseEntity<>(importStudent.importStudent(file),HttpStatus.OK);
     }
 
 
     @GetMapping("/export")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void exportStudent(HttpServletResponse response) throws IOException {
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment;filename=student_classes.xls");

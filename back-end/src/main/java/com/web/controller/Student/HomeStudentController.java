@@ -15,6 +15,7 @@ import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -42,6 +43,7 @@ public class HomeStudentController {
         this.tokenUtils = tokenUtils;
     }
     @GetMapping("/home")
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     public ResponseEntity<?> getListSubject(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -59,6 +61,7 @@ public class HomeStudentController {
     }
 
     @GetMapping("/listLecturer")
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     public ResponseEntity<Map<String,Object>> getListLecturer(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -81,6 +84,7 @@ public class HomeStudentController {
     }
 
     @GetMapping("/profile")
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     public ResponseEntity<?> getProfile(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -97,6 +101,7 @@ public class HomeStudentController {
     }
 
     @GetMapping("/edit")
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     public ResponseEntity<?> getEditProfile(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -109,6 +114,7 @@ public class HomeStudentController {
     }
 
     @PostMapping("/edit/{id}")
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     public ResponseEntity<?> updateProfileStudent(@PathVariable String id,
                                               @RequestParam("firstName") String firstName,
                                               @RequestParam("lastName") String lastName,

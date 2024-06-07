@@ -49,60 +49,64 @@ public class ManageSubjectService {
             Subject existedSubject = subjectRepository.findById(id).orElse(null);
             Student existedStudent = studentRepository.findById(personCurrent.getPersonId()).orElse(null);
             if (existedSubject!=null){
-                if (existedSubject.getFiftyPercent()==null) {
-                    existedSubject.setActive((byte) 3);
-                    //nộp file
-                    if (!files.isEmpty()) {
-                        String fileName = fileMaterialService.storeFile(files);
-                        FileComment newFile = new FileComment();
-                        newFile.setName(fileName);
-                        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                                .scheme("https")
-                                .path("/api/student/manage/fileUpload/")
-                                .path(fileName)
-                                .toUriString();
-                        newFile.setUrl(fileDownloadUri);
-                        var fileSave = fileMaterialService.uploadFile(newFile);
-                        existedSubject.setFiftyPercent(fileSave);
+                if (existedSubject.getActive()==2) {
+                    if (existedSubject.getFiftyPercent() == null) {
+                        existedSubject.setActive((byte) 3);
+                        //nộp file
+                        if (!files.isEmpty()) {
+                            String fileName = fileMaterialService.storeFile(files);
+                            FileComment newFile = new FileComment();
+                            newFile.setName(fileName);
+                            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                                    .scheme("https")
+                                    .path("/api/student/manage/fileUpload/")
+                                    .path(fileName)
+                                    .toUriString();
+                            newFile.setUrl(fileDownloadUri);
+                            var fileSave = fileMaterialService.uploadFile(newFile);
+                            existedSubject.setFiftyPercent(fileSave);
+                            subjectRepository.save(existedSubject);
+                        } else {
+                            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                        }
                         subjectRepository.save(existedSubject);
+                        Subject existSubject = subjectRepository.findById(id).orElse(null);
+                        String subject = "Topic: " + existSubject.getSubjectName();
+                        String messenger = "Topic: " + existSubject.getSubjectName() + " đã nộp báo cáo 50%!!";
+                        mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
+                        return new ResponseEntity<>(existedStudent, HttpStatus.OK);
                     } else {
-                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                        FileComment fileComment = existedSubject.getFiftyPercent();
+                        //xóa file cũ:
+                        existedSubject.setFiftyPercent(null);
+                        fileRepository.delete(fileComment);
+                        existedSubject.setActive((byte) 3);
+                        //nộp file
+                        if (!files.isEmpty()) {
+                            String fileName = fileMaterialService.storeFile(files);
+                            FileComment newFile = new FileComment();
+                            newFile.setName(fileName);
+                            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                                    .scheme("https")
+                                    .path("/api/student/manage/fileUpload/")
+                                    .path(fileName)
+                                    .toUriString();
+                            newFile.setUrl(fileDownloadUri);
+                            var fileSave = fileMaterialService.uploadFile(newFile);
+                            existedSubject.setFiftyPercent(fileSave);
+                            subjectRepository.save(existedSubject);
+                        } else {
+                            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                        }
+                        subjectRepository.save(existedSubject);
+                        Subject existSubject = subjectRepository.findById(id).orElse(null);
+                        String subject = "Topic: " + existSubject.getSubjectName();
+                        String messenger = "Topic: " + existSubject.getSubjectName() + " đã nộp báo cáo 50%!!";
+                        mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
+                        return new ResponseEntity<>(existedStudent, HttpStatus.OK);
                     }
-                    subjectRepository.save(existedSubject);
-                    Subject existSubject = subjectRepository.findById(id).orElse(null);
-                    String subject = "Topic: " + existSubject.getSubjectName();
-                    String messenger = "Topic: " + existSubject.getSubjectName() + " đã nộp báo cáo 50%!!";
-                    mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
-                    return new ResponseEntity<>(existedStudent, HttpStatus.OK);
                 }else {
-                    FileComment fileComment = existedSubject.getFiftyPercent();
-                    //xóa file cũ:
-                    existedSubject.setFiftyPercent(null);
-                    fileRepository.delete(fileComment);
-                    existedSubject.setActive((byte) 3);
-                    //nộp file
-                    if (!files.isEmpty()) {
-                        String fileName = fileMaterialService.storeFile(files);
-                        FileComment newFile = new FileComment();
-                        newFile.setName(fileName);
-                        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                                .scheme("https")
-                                .path("/api/student/manage/fileUpload/")
-                                .path(fileName)
-                                .toUriString();
-                        newFile.setUrl(fileDownloadUri);
-                        var fileSave = fileMaterialService.uploadFile(newFile);
-                        existedSubject.setFiftyPercent(fileSave);
-                        subjectRepository.save(existedSubject);
-                    } else {
-                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-                    }
-                    subjectRepository.save(existedSubject);
-                    Subject existSubject = subjectRepository.findById(id).orElse(null);
-                    String subject = "Topic: " + existSubject.getSubjectName();
-                    String messenger = "Topic: " + existSubject.getSubjectName() + " đã nộp báo cáo 50%!!";
-                    mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
-                    return new ResponseEntity<>(existedStudent, HttpStatus.OK);
+                    return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
                 }
             }else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -119,62 +123,65 @@ public class ManageSubjectService {
             Subject existedSubject = subjectRepository.findById(id).orElse(null);
             Student existedStudent = studentRepository.findById(personCurrent.getPersonId()).orElse(null);
             if (existedSubject!=null){
-                if (existedSubject.getOneHundredPercent()==null) {
-                    existedSubject.setActive((byte) 5);
-
-                    System.out.println("Sau khi ktra null");
-                    //nộp file
-                    if (!files.isEmpty()) {
-                        System.out.println("Kiểm tra file k rỗng");
-                        String fileName = fileMaterialService.storeFile(files);
-                        FileComment newFile = new FileComment();
-                        newFile.setName(fileName);
-                        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                                .scheme("https")
-                                .path("/api/student/manage/fileUpload/")
-                                .path(fileName)
-                                .toUriString();
-                        newFile.setUrl(fileDownloadUri);
-                        var fileSave = fileMaterialService.uploadFile(newFile);
-                        existedSubject.setOneHundredPercent(fileSave);
+                if (existedSubject.getActive()==4) {
+                    if (existedSubject.getOneHundredPercent() == null) {
+                        existedSubject.setActive((byte) 5);
+                        System.out.println("Sau khi ktra null");
+                        //nộp file
+                        if (!files.isEmpty()) {
+                            System.out.println("Kiểm tra file k rỗng");
+                            String fileName = fileMaterialService.storeFile(files);
+                            FileComment newFile = new FileComment();
+                            newFile.setName(fileName);
+                            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                                    .scheme("https")
+                                    .path("/api/student/manage/fileUpload/")
+                                    .path(fileName)
+                                    .toUriString();
+                            newFile.setUrl(fileDownloadUri);
+                            var fileSave = fileMaterialService.uploadFile(newFile);
+                            existedSubject.setOneHundredPercent(fileSave);
+                        } else {
+                            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                        }
+                        subjectRepository.save(existedSubject);
+                        Subject existSubject = subjectRepository.findById(id).orElse(null);
+                        String subject = "Topic: " + existSubject.getSubjectName();
+                        String messenger = "Topic: " + existSubject.getSubjectName() + " đã nộp báo cáo 100%!!";
+                        mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
+                        return new ResponseEntity<>(existedStudent, HttpStatus.OK);
                     } else {
-                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                        FileComment fileComment = existedSubject.getOneHundredPercent();
+                        System.out.println("File cũ: " + fileComment.getName());
+                        //xóa file cũ:
+                        existedSubject.setOneHundredPercent(null);
+                        fileRepository.delete(fileComment);
+                        existedSubject.setActive((byte) 5);
+                        //nộp file
+                        if (!files.isEmpty()) {
+                            String fileName = fileMaterialService.storeFile(files);
+                            FileComment newFile = new FileComment();
+                            newFile.setName(fileName);
+                            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                                    .scheme("https")
+                                    .path("/api/student/manage/fileUpload/")
+                                    .path(fileName)
+                                    .toUriString();
+                            newFile.setUrl(fileDownloadUri);
+                            var fileSave = fileMaterialService.uploadFile(newFile);
+                            existedSubject.setOneHundredPercent(fileSave);
+                        } else {
+                            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                        }
+                        subjectRepository.save(existedSubject);
+                        Subject existSubject = subjectRepository.findById(id).orElse(null);
+                        String subject = "Topic: " + existSubject.getSubjectName();
+                        String messenger = "Topic: " + existSubject.getSubjectName() + " đã nộp báo cáo 50%!!";
+                        mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
+                        return new ResponseEntity<>(existedStudent, HttpStatus.OK);
                     }
-                    subjectRepository.save(existedSubject);
-                    Subject existSubject = subjectRepository.findById(id).orElse(null);
-                    String subject = "Topic: " + existSubject.getSubjectName();
-                    String messenger = "Topic: " + existSubject.getSubjectName() + " đã nộp báo cáo 100%!!";
-                    mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
-                    return new ResponseEntity<>(existedStudent, HttpStatus.OK);
                 }else {
-                    FileComment fileComment = existedSubject.getOneHundredPercent();
-                    System.out.println("File cũ: " + fileComment.getName());
-                    //xóa file cũ:
-                    existedSubject.setOneHundredPercent(null);
-                    fileRepository.delete(fileComment);
-                    existedSubject.setActive((byte) 5);
-                    //nộp file
-                    if (!files.isEmpty()) {
-                        String fileName = fileMaterialService.storeFile(files);
-                        FileComment newFile = new FileComment();
-                        newFile.setName(fileName);
-                        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                                .scheme("https")
-                                .path("/api/student/manage/fileUpload/")
-                                .path(fileName)
-                                .toUriString();
-                        newFile.setUrl(fileDownloadUri);
-                        var fileSave = fileMaterialService.uploadFile(newFile);
-                        existedSubject.setOneHundredPercent(fileSave);
-                    } else {
-                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-                    }
-                    subjectRepository.save(existedSubject);
-                    Subject existSubject = subjectRepository.findById(id).orElse(null);
-                    String subject = "Topic: " + existSubject.getSubjectName();
-                    String messenger = "Topic: " + existSubject.getSubjectName() + " đã nộp báo cáo 50%!!";
-                    mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
-                    return new ResponseEntity<>(existedStudent, HttpStatus.OK);
+                    return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
                 }
             }else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
