@@ -22,7 +22,7 @@ function HomeAdmin() {
             if (userToken) {
                 try {
                     // Gửi token đến backend để kiểm tra quyền truy cập
-                    const response = await axiosInstance.post('/admin/check-authorization/admin',null, {
+                    const response = await axiosInstance.post('/check-authorization/admin',null, {
                         headers: {
                             'Authorization': `Bearer ${userToken}`,
                         },
