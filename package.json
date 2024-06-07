@@ -4,6 +4,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@lourenci/react-kanban": "^2.1.0",
     "ant": "^0.2.0",
+    "cors": "^2.8.5",
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.23.1",
