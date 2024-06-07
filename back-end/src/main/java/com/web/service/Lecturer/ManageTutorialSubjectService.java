@@ -195,7 +195,7 @@ public class ManageTutorialSubjectService {
                 String subject = "ĐẾN THỜI GIAN NỘP BÁO CÁO 100%";
                 String messenger = "Topic: " + existedSubject.getSubjectName()+"\n" +
                         "GVHD: " + personCurrent.getUsername() + "\n"
-                        + "Sinh viên vui lòng truy cập website https://hcmute.workon.space/ để thực hiện nộp báo cáo 50% trong vòng 1 tuần kể từ ngày " + today + " đến ngày " + nextWeek;
+                        + "Sinh viên vui lòng truy cập website https://hcmute.workon.space/ để thực hiện nộp báo cáo 100% trong vòng 1 tuần kể từ ngày " + today + " đến ngày " + nextWeek;
                 List<String> emailPerson = new ArrayList<>();
                 if (newSubject.getStudent1()!=null) {
                     Student student1 = studentRepository.findById(newSubject.getStudent1()).orElse(null);

@@ -277,6 +277,12 @@ public class AddCounterArgumentGraduationController {
                     subjectRepository.save(newSubject);
                     studentRepository.saveAll(studentList);
                     System.out.println("Đề tài: "+newSubject.getSubjectName());
+                    String subject = "ĐĂNG KÝ ĐỀ TÀI THÀNH CÔNG";
+                    String messenger = "Topic: " + newSubject.getSubjectName() + " đăng ký thành công!!";
+                    //Gửi mail cho Hội đồng - SV
+                    List<String> emailPerson = new ArrayList<>();
+                    emailPerson.add(existLecturer.getPerson().getUsername());
+                    mailService.sendMailToPerson(emailPerson,subject,messenger);
                     return new ResponseEntity<>(newSubject, HttpStatus.CREATED);
                 }else {
                     return new ResponseEntity<>(personCurrent,HttpStatus.OK);
