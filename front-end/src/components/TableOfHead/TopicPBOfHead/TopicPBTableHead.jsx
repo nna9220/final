@@ -4,7 +4,7 @@ import CreditScoreOutlinedIcon from '@mui/icons-material/CreditScoreOutlined';
 import axiosInstance from '../../../API/axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import './topicPb.scss'
+import './topicPb.scss';
 
 function TopicPBTableHead() {
     const [topics, setTopics] = useState([]);
@@ -13,6 +13,7 @@ function TopicPBTableHead() {
     const [criterias, setCriterias] = useState([]);
     const userToken = getTokenFromUrlAndSaveToStorage();
     const [subjectIdForAccept, setSubjectIdForAccept] = useState(null);
+
     useEffect(() => {
         fetchTopics();
     }, []);
@@ -63,11 +64,11 @@ function TopicPBTableHead() {
             })
                 .then(response => {
                     console.log('Đề tài đã được duyệt qua hội đồng', response.data);
-                    toast.success("Đề tài đã được duyệt qua hội đồng!")
+                    toast.success("Đề tài đã được duyệt qua hội đồng!");
                 })
                 .catch(error => {
                     console.error('Lỗi duyệt đề tài qua hội đồng:', error);
-                    toast.error("Lỗi duyệt đề tài qua hội đồng")
+                    toast.error("Lỗi duyệt đề tài qua hội đồng");
                 });
         }
     }
@@ -91,22 +92,28 @@ function TopicPBTableHead() {
                             </tr>
                         </thead>
                         <tbody>
-                            {topics.map((item, index) => (
-                                <tr key={index}>
-                                    <th scope="row">{index + 1}</th>
-                                    <td>{item.subjectName}</td>
-                                    <td>{item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName}</td>
-                                    <td>{item.student1}</td>
-                                    <td>{item.student2}</td>
-                                    <td>{item.student3}</td>
-                                    <td>{item.requirement}</td>
-                                    <td>
-                                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => { detailTopic(item.subjectId); setSubjectIdForAccept(item.subjectId) }} disabled={item.active != 6}>
-                                            <CreditScoreOutlinedIcon />
-                                        </button>
-                                    </td>
+                            {topics.length > 0 ? (
+                                topics.map((item, index) => (
+                                    <tr key={index}>
+                                        <th scope="row">{index + 1}</th>
+                                        <td>{item.subjectName}</td>
+                                        <td>{item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName}</td>
+                                        <td>{item.student1}</td>
+                                        <td>{item.student2}</td>
+                                        <td>{item.student3}</td>
+                                        <td>{item.requirement}</td>
+                                        <td>
+                                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => { detailTopic(item.subjectId); setSubjectIdForAccept(item.subjectId) }} disabled={item.active != 6}>
+                                                <CreditScoreOutlinedIcon />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="8" className="text-center">No data</td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
                 </div>
@@ -157,9 +164,8 @@ function TopicPBTableHead() {
                     </div>
                 </div>
             </div>
-
         </div>
-    )
+    );
 }
 
-export default TopicPBTableHead
+export default TopicPBTableHead;
