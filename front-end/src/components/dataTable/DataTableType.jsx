@@ -3,11 +3,14 @@ import axios from 'axios';
 import axiosInstance from '../../API/axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Navigate} from 'react-router-dom';
+import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 
 function DataTableType() {
     const [type, setType] = useState([]);
     const [newTypeName, setNewTypeName] = useState('');
-
+    const [isCancelClicked, setIsCancelClicked] = useState(false);
+    const [authorized, setAuthorized] = useState(true);
     useEffect(() => {
         const tokenSt = sessionStorage.getItem('userToken');
         if (tokenSt) {
@@ -26,6 +29,37 @@ function DataTableType() {
             console.log("Error: No token found");
         }
     }, []);
+
+    // Kiểm tra quyền truy cập
+    useEffect(() => {
+        const checkAuthorization = async () => {
+            const userToken = getTokenFromUrlAndSaveToStorage(); // Lấy token từ URL hoặc từ bất kỳ nguồn nào khác
+            if (userToken) {
+                try {
+                    // Gửi token đến backend để kiểm tra quyền truy cập
+                    const response = await axiosInstance.post('/check-authorization/admin', { token: userToken });
+                    if (response.data.authorized) {
+                        // Nếu có quyền truy cập, setAuthorized(true)
+                        setAuthorized(true);
+                    } else {
+                        // Nếu không có quyền truy cập, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
+                        setAuthorized(false);
+                    }
+                } catch (error) {
+                    console.error("Error checking authorization:", error);
+                }
+            } else {
+                // Nếu không có token, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
+                setAuthorized(false);
+            }
+        };
+
+        checkAuthorization();
+    }, []);
+
+    if (!authorized) {
+        return <Navigate to="/unauthorized" />;
+    }
 
     const handleAddType = () => {
         const tokenSt = sessionStorage.getItem('userToken');

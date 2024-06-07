@@ -68,8 +68,6 @@ public class AddCounterArgumentController {
     @Autowired
     private ReportService reportService;
     @Autowired
-    private EvaluationCriteriaRepository evaluationCriteriaRepository;
-    @Autowired
     private StudentRepository studentRepository;
     @Autowired
     private CouncilRepository councilRepository;
