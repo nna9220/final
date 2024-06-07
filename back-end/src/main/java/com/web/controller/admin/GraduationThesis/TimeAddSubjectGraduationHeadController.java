@@ -14,6 +14,7 @@ import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,6 +46,7 @@ public class TimeAddSubjectGraduationHeadController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Map<String,Object>> findAllExisted(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
@@ -64,6 +66,7 @@ public class TimeAddSubjectGraduationHeadController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> savePeriod(@RequestHeader("Authorization") String authorizationHeader,
                                    @RequestParam("timeStart") String timeStart,
                                    @RequestParam("timeEnd") String timeEnd, HttpServletRequest request){
@@ -83,6 +86,7 @@ public class TimeAddSubjectGraduationHeadController {
     }
 
     @GetMapping("/{timeId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Map<String,Object>> editTime(@PathVariable int timeId, @RequestHeader("Authorization") String authorizationHeader) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
@@ -116,6 +120,7 @@ public class TimeAddSubjectGraduationHeadController {
     }
 
     @PostMapping("/edit/{periodId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> updateTime(@PathVariable int periodId,
                                           @RequestParam("start") String start,
                                           @RequestParam("end") String end,

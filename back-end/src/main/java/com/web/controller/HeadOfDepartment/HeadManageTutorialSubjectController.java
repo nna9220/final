@@ -11,6 +11,7 @@ import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,6 +32,7 @@ public class HeadManageTutorialSubjectController {
 
     //
     @PostMapping("/fiftyRecent/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> NoticeOfFiftyReportSubmission(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader){
         try {
             return new ResponseEntity<>(manageTutorialSubjectService.NoticeOfFiftyReportSubmission(subjectId,authorizationHeader), HttpStatus.OK);
@@ -41,6 +43,7 @@ public class HeadManageTutorialSubjectController {
     }
 
     @PostMapping("/fiftyRecent/listSubject")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> NoticeOfFiftyReportSubmissionToListSubject(@RequestHeader("Authorization") String authorizationHeader){
         try {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
@@ -52,6 +55,7 @@ public class HeadManageTutorialSubjectController {
     }
 
     @PostMapping("/OneHundredRecent/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> NoticeOfOneHundredReportSubmission(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader){
         try {
             return new ResponseEntity<>(manageTutorialSubjectService.NoticeOfOneHundredReportSubmission(subjectId,authorizationHeader), HttpStatus.OK);
@@ -62,6 +66,7 @@ public class HeadManageTutorialSubjectController {
     }
 
     @PostMapping("/OneHundredRecent/listSubject")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> NoticeOfOneHundredReportSubmissionToListSubject(@RequestHeader("Authorization") String authorizationHeader){
         try {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
@@ -74,6 +79,7 @@ public class HeadManageTutorialSubjectController {
 
     //aget  list tiêu chí
     @GetMapping("/listCriteria")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> getListCriteria(@RequestHeader("Authorization") String authorizationHeader){
         try {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
@@ -85,6 +91,7 @@ public class HeadManageTutorialSubjectController {
     }
 
     @GetMapping("/list-subject")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> getListSubjectHaveReport(@RequestHeader("Authorization") String authorizationHeader){
         try {
             System.out.println("List subject");
@@ -98,6 +105,7 @@ public class HeadManageTutorialSubjectController {
 
     //GVHD duyệt đề tài qua cho TBM
     @PostMapping("/browse/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> browseToThesisAndScoreOfInstructor(@PathVariable int subjectId,
                                                                 @RequestHeader("Authorization") String authorizationHeader){
         try {
@@ -111,6 +119,7 @@ public class HeadManageTutorialSubjectController {
 
     //GVHD Từ chối đề tài
     @PostMapping("/refuse/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> RefuseSubject(@PathVariable int subjectId,
                                            @RequestHeader("Authorization") String authorizationHeader,
                                            @RequestParam("reason") String reason){
@@ -124,6 +133,7 @@ public class HeadManageTutorialSubjectController {
     }
     //Danh sách đề tài hướng dẫn đã hoàn thành (hội đồng đã chấm điểm)
     @GetMapping("/subjects/successful")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> getListSubjectSuccessful(@RequestHeader("Authorization") String authorizationHeader){
         try {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
@@ -137,6 +147,7 @@ public class HeadManageTutorialSubjectController {
 
     //Detail
     @GetMapping("/subjects/successful/detail/{id}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> getDetailSubjectSuccessful(@PathVariable int id,@RequestHeader("Authorization") String authorizationHeader){
         try {
             return new ResponseEntity<>(manageTutorialSubjectService.getDetailSubjectSuccessful(id,authorizationHeader),HttpStatus.OK);

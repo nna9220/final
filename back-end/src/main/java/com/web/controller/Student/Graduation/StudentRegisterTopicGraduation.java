@@ -9,6 +9,7 @@ import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +42,7 @@ public class StudentRegisterTopicGraduation {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     public ResponseEntity<Map<String,Object>> getListSubject(@RequestHeader("Authorization") String authorizationHeader) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -80,6 +82,7 @@ public class StudentRegisterTopicGraduation {
     }
 
     @PostMapping("/registerTopic/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     public ResponseEntity<?> registerTopic(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
