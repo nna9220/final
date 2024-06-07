@@ -65,7 +65,7 @@ function InforTeacher() {
                 <div className='info'>
                     <div className='avatar'>
                         <div>
-                            <img src='/assets/team-1.jpg' alt="Teacher Avatar" />
+                            <img src='/assets/avatar.png' alt="Teacher Avatar" />
                         </div>
                     </div>
                     <div className='content-info border-start'>

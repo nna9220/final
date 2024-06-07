@@ -38,6 +38,7 @@ com\web\controller\admin\TimeAddSubjectHeadController.class
 com\web\entity\Contact.class
 com\web\utils\FileFactory.class
 com\web\controller\Student\StudentManageEssayController.class
+com\web\controller\admin\CheckRoleController.class
 com\web\exception\MessageException.class
 com\web\controller\HeadOfDepartment\CRUDCriteriaController.class
 com\web\controller\admin\RegistrationPeriodLecturerController.class
@@ -131,7 +132,6 @@ com\web\controller\Lecturer\LecturerNotificationController.class
 com\web\exception\EmptyException.class
 com\web\utils\UserUtils.class
 com\web\mapper\TypeSubjectMapperImpl.class
-com\web\controller\CheckRoleController.class
 com\web\controller\ProfileLecturerController.class
 com\web\controller\Student\StudentNotificationController.class
 com\web\controller\HeadOfDepartment\Graduation\HeadManageCouncilController.class

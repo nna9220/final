@@ -8,6 +8,7 @@ import { BsCursorFill } from "react-icons/bs";
 import TopicOutlinedIcon from '@mui/icons-material/TopicOutlined';
 import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
+import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
 import axiosInstance from '../../API/axios';
 import './Styles.scss';
 
@@ -182,7 +183,7 @@ function ManagermentTask() {
           <div className='group-lecturer'>
             <nav aria-label="breadcrumb">
               <ol className="breadcrumb">
-                <li className="breadcrumb-item"><a href="#" onClick={handleGoBack}>Danh sách đề tài</a></li>
+                <li className="breadcrumb-item"><a href="#" onClick={handleGoBack}><ArrowBackOutlinedIcon/>Danh sách đề tài</a></li>
                 <li className="breadcrumb-item active" aria-current="page">{selectedSubjectName}</li>
               </ol>
             </nav>

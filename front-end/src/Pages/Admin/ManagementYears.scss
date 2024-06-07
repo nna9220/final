@@ -1,16 +1,30 @@
-.manaStudentOfAdmin {
-    display: flex;
+.titleMana-class {
+    position: relative;
+    border: none; 
+    padding: 5px; 
+    color: white;
+    background-color: #00337C;
+    width: fit-content;
+    text-transform: uppercase;
 }
 
-.homeContainer {
-    flex: 6;
+.titleMana-class::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -15px; 
+    width: 0;
+    height: 0;
+    border-top: 38px solid transparent; 
+    border-left: 15px solid rgba(0, 0, 0, 0.3); 
+    border-bottom: 0px solid transparent; 
+    border-right: 155px; 
+}
 
-    .widgets {
-        margin-top: 50px;
-        margin-left: 30px;
-        margin-right: 30px;
+.homeMana-class{
+    margin-top: 5px;
+}
 
-    }
-
-    
+.widgets-class{
+    margin: 20px;
 }

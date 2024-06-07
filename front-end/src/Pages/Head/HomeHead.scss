@@ -4,3 +4,27 @@
         flex: 6;
     }
 }
+
+.title-head {
+    position: relative;
+    border: none; 
+    padding: 5px; 
+    color: white;
+    background-color: #3d9783;
+    width: fit-content;
+    text-transform: uppercase;
+    border-bottom: 1px solid white; /* Thêm đường gạch chân dưới khung */
+}
+
+.title-head::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -15px; 
+    width: 0;
+    height: 0;
+    border-top: 38px solid transparent; 
+    border-left: 15px solid rgba(0, 0, 0, 0.3); 
+    border-bottom: 0px solid transparent; 
+    border-right: 155px; 
+}

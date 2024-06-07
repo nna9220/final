@@ -72,6 +72,7 @@ function SidebarHead() {
                             <div className="user-info">
                                 <span className="user-name"><strong>{head.firstName + ' ' + head.lastName}</strong></span>
                                 <span className="user-role">Trưởng bộ môn</span>
+                                <span className="user-role">{head.major}</span>
                             </div>
                         </div>
                     )}

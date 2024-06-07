@@ -1,6 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import './notification.scss';
 
-function NotificationOfLecturer({ notifications }) {
+function NotificationOfLecturer({ notifications, onReadNotification }) {
+    const [readNotifications, setReadNotifications] = useState(new Set(JSON.parse(localStorage.getItem('readNotificationsLecturer')) || []));
+    const [visibleContent, setVisibleContent] = useState(null);
+
+    useEffect(() => {
+        const storedReadNotifications = JSON.parse(localStorage.getItem('readNotificationsLecturer')) || [];
+        setReadNotifications(new Set(storedReadNotifications));
+    }, []);
+
+    const handleReadNotification = (id) => {
+        if (!readNotifications.has(id)) {
+            setReadNotifications(prevState => {
+                const newReadNotifications = new Set(prevState).add(id);
+                localStorage.setItem('readNotificationsLecturer', JSON.stringify(Array.from(newReadNotifications)));
+                onReadNotification(id);  // Notify parent component
+                return newReadNotifications;
+            });
+        }
+    };
+
+    const handleTitleClick = (index, id) => {
+        setVisibleContent(visibleContent === index ? null : index);
+        handleReadNotification(id);
+    };
+
     const formatContent = (content) => {
         return content.split('\n').map((line, index) => (
             <React.Fragment key={index}>
@@ -11,35 +36,22 @@ function NotificationOfLecturer({ notifications }) {
     };
 
     return (
-        <div className='widget'>
-            <div className="accordion" id="accordionFlushExample">
-                {notifications.map((item, index) => (
-                    <div className="accordion-item" key={item.notificationId}>
-                        <h2 className="accordion-header">
-                            <button 
-                                className="accordion-button collapsed" 
-                                type="button" 
-                                data-bs-toggle="collapse" 
-                                data-bs-target={`#flush-collapseOne-${index}`} 
-                                aria-expanded="false" 
-                                aria-controls={`flush-collapseOne-${index}`}
-                                style={{backgroundColor:'var(--bs-accordion-active-bg)', fontWeight:'bold'}}
-                            >
-                                {item.title}
-                            </button>
-                        </h2>
-                        <div 
-                            id={`flush-collapseOne-${index}`} 
-                            className="accordion-collapse collapse" 
-                            data-bs-parent="#accordionFlushExample"
-                        >
-                            <div className="accordion-body">
-                                {formatContent(item.content)}
-                            </div>
+        <div className='notification-list'>
+            {notifications.map((item, index) => (
+                <div key={item.notificationId} className="notification-item">
+                    <h3 
+                        className={`notification-title ${readNotifications.has(item.notificationId) ? 'read-notification' : ''}`} 
+                        onClick={() => handleTitleClick(index, item.notificationId)}
+                    >
+                        {item.title}
+                    </h3>
+                    {visibleContent === index && (
+                        <div className="notification-content">
+                            {formatContent(item.content)}
                         </div>
-                    </div>
-                ))}
-            </div>
+                    )}
+                </div>
+            ))}
         </div>
     );
 }

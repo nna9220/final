@@ -62,8 +62,37 @@
         }
 
         .homeMana{
-            margin-top: 20px;
             border-radius: 5px;
+            border: 1px solid rgb(103, 101, 101);
         }
     }
 }
+
+
+.menuMana {
+    display: flex;
+    margin-top: 20px;
+}
+
+.menuMana button {
+    background-color: #a1c9f3;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 10px 20px;
+    font-size: 16px;
+    margin-right: 10px;
+    transition: background-color 0.3s, color 0.3s;
+    border-bottom: 2px solid transparent;
+}
+
+.menuMana button:hover {
+    background-color: #296aae;
+}
+
+.menuMana button.active {
+    background-color: #296aae;
+    color: white;
+    border-color: #296aae;
+}
+

@@ -92,5 +92,18 @@ public class JwtTokenProvider {
         User principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
+
+    public boolean isTokenExpired(String token) {
+        try {
+            Claims claims = Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token).getBody();
+            return claims.getExpiration().before(new Date());
+        } catch (ExpiredJwtException ex) {
+            log.error("Token has expired");
+            return true;
+        } catch (Exception ex) {
+            log.error("Error checking token expiration", ex);
+            return true;
+        }
+    }
 }
 

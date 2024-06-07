@@ -5,6 +5,9 @@ import './RegisTopicLec.scss'
 import RegisTopicOfLecturer from '../../components/TableOfLecturer/RegisTopicOfLecturer'
 import { useState, useEffect } from 'react'
 import RegisTopicOfLecturerKL from '../../components/TableOfLecturer/RegisTopicOfLecturerKL'
+import axiosInstance from '../../API/axios';
+import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
+import { Navigate } from 'react-router-dom';
 
 function RegisTopicLec() {
   useEffect(() => {
@@ -20,6 +23,49 @@ function RegisTopicLec() {
     setSelectedTitle(e.target.value);
   };
 
+  const [authorized, setAuthorized] = useState(true);
+  useEffect(() => {
+    const checkAuthorization = async () => {
+      const userToken = getTokenFromUrlAndSaveToStorage(); // Lấy token từ URL hoặc từ bất kỳ nguồn nào khác
+      if (userToken) {
+        try {
+          const response = await axiosInstance.post('/check-authorization/lecturer', null, {
+            headers: {
+              'Authorization': `Bearer ${userToken}`,
+            },
+          });
+          console.log("Nhận : ", response.data);
+          if (response.data == "Authorized") {
+            setAuthorized(true);
+          } else {
+            setAuthorized(false);
+          }
+        } catch (error) {
+          if (error.response) {
+              console.error("Response error:", error.response.data);
+              console.error("Response status:", error.response.status);
+              console.error("Response headers:", error.response.headers);
+              setAuthorized(false);
+          } else if (error.request) {
+              console.error("Request error:", error.request);
+              setAuthorized(false);
+          } else {
+              console.error("Axios error:", error.message);
+              setAuthorized(false);
+          }
+      }
+      } else {
+        // Nếu không có token, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
+        setAuthorized(false);
+      }
+    };
+
+    checkAuthorization();
+  }, []);
+
+  if (!authorized) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <div className='homeLec'>

@@ -62,9 +62,9 @@ function KanbanBoardKL() {
             },
           })
             .then(response => {
-              console.log("detailTaskSt-KL: ", response.data.listTask);
+              console.log("detailTaskSt-KL: ", response.data);
               setData(response.data.listTask);
-
+              setStatusActive(response.data.subject.active);
             })
             .catch(error => {
               console.error("Error fetching task list:", error);
@@ -221,13 +221,23 @@ function KanbanBoardKL() {
         {!error &&
           <div>
             <div className='button-submitTopic'>
-              <button className='submit-1' data-bs-toggle="modal" data-bs-target="#submit50">
-                Nộp báo cáo lần 1
-              </button>
-  
-              <button className='submit-2' data-bs-toggle="modal" data-bs-target="#submit100">
-                Nộp báo cáo lần 2
-              </button>
+            {statusActive === 2 ? (
+                <button className='submit-1' data-bs-toggle="modal" data-bs-target="#submit50">
+                  Nộp báo cáo lần 1
+                </button>) : (
+                <button className='submit-1' data-bs-toggle="modal" data-bs-target="#submit50" disabled>
+                  Nộp báo cáo lần 1
+                </button>)
+              }
+
+              {statusActive === 4 ? (
+                <button className='submit-2' data-bs-toggle="modal" data-bs-target="#submit100">
+                  Nộp báo cáo lần 2
+                </button>) : (
+                <button  style = {{backgroundColor:''}} className='submit-2' data-bs-toggle="modal" data-bs-target="#submit100" disabled>
+                  Nộp báo cáo lần 2
+                </button>)
+              }
   
               <div class="modal fade" id="submit50" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
