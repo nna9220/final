@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/admin/check-authorization")
+@RequestMapping("/api/check-authorization")
 @CrossOrigin(origins = {"https://hcmute.workon.space", "http://localhost:3000"})
 public class CheckRoleController {
     @Autowired
@@ -60,7 +60,7 @@ public class CheckRoleController {
         // Kiểm tra token và xác thực người dùng
         if (isValidToken(token)) {
             String tokenCheck = tokenUtils.extractToken(token);
-            Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
+            Person personCurrent = CheckRole.getRoleCurrent2(tokenCheck,userUtils,personRepository);
             if (personCurrent.getAuthorities().getName().equals("ROLE_STUDENT")){
                 return ResponseEntity.ok("Authorized");
             }else {
@@ -77,7 +77,7 @@ public class CheckRoleController {
         // Kiểm tra token và xác thực người dùng
         if (isValidToken(token)) {
             String tokenCheck = tokenUtils.extractToken(token);
-            Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
+            Person personCurrent = CheckRole.getRoleCurrent2(tokenCheck,userUtils,personRepository);
             if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER")){
                 return ResponseEntity.ok("Authorized");
             }else {
@@ -94,7 +94,7 @@ public class CheckRoleController {
         // Kiểm tra token và xác thực người dùng
         if (isValidToken(token)) {
             String tokenCheck = tokenUtils.extractToken(token);
-            Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
+            Person personCurrent = CheckRole.getRoleCurrent2(tokenCheck,userUtils,personRepository);
             if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")){
                 return ResponseEntity.ok("authorized");
             }else {
