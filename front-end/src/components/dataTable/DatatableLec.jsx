@@ -37,11 +37,8 @@ function DatatableLec() {
     });
     const [showModal, setShowModal] = useState(false);
     const [showModalAdd, setShowModalAdd] = useState(false);
-    const [showSuccessToast, setShowSuccessToast] = useState(false);
-    const [showErrorToast, setShowErrorToast] = useState(false);
+    const [showModalEdit, setShowModalEdit] = useState(false);
     const [showDeleteToast, setShowDeleteToast] = useState(false);
-    const [showAddToast, setShowAddToast] = useState(false);
-    const [showErrorToastAdd, setShowErrorToastAdd] = useState(false);
     const [gender, setGender] = useState(false);
     const [formData, setFormData] = useState({
         personId: '',
@@ -115,6 +112,7 @@ function DatatableLec() {
                 console.log('Giảng viên đã được tạo thành công:', response.data);
                 loadData();
                 toast.success("Thêm giảng viên thành công!");
+                handleCloseModal();
             })
             .catch(error => {
                 console.error(error);
@@ -169,6 +167,18 @@ function DatatableLec() {
     useEffect(() => {
         console.log("userEdit:", userEdit);
     }, [userEdit]);
+
+    const handleCloseModal = () => {
+        setShowModalAdd(false);
+        // Remove the modal backdrop manually
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    };
+
+    const handleCloseModalEdit = () => {
+        setShowModalEdit(false);
+        // Remove the modal backdrop manually
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    };
 
     const loadData = () => {
         const tokenSt = sessionStorage.getItem('userToken');
@@ -286,6 +296,7 @@ function DatatableLec() {
                 setLectures(updatedLecturer);
                 setShowModal(false);
                 toast.success("Chỉnh sửa thành công!")
+                handleCloseModalEdit();
             })
             .catch(error => {
                 console.error(error);
@@ -325,7 +336,7 @@ function DatatableLec() {
                     )}
                     {!showDeletedLecturers && (
                         <>
-                            <button className="btnView" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(params.row.lecturerId)}>
+                            <button className="btnView" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => {handleEdit(params.row.lecturerId); setShowModalEdit(true)}}>
                                 <EditOutlinedIcon />
                             </button>
                             <button className='btnDelete' onClick={() => handleDelete(params.row)}>
@@ -344,7 +355,7 @@ function DatatableLec() {
                 <ToastContainer />
                 <div className='header-table'>
                     <div className='btn-add'>
-                        <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddLecturere" style={{ marginBottom: '20px' }}>
+                        <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddLecturere" style={{ marginBottom: '20px' }} onClick={() => setShowModalAdd(true)}>
                             Add
                         </button>
                     </div>
@@ -420,30 +431,34 @@ function DatatableLec() {
                             </div>
                             <div className="modal-body">
                                 <div className="mb-3">
-                                    <label htmlFor='id' className="form-label">MSGV</label>
+                                    <label htmlFor='id' className="form-label">MSGV <span className='note-required'>*</span></label>
                                     <input disabled type="text" className="form-control" id="personId" name="personId" value={userEdit.personId} onChange={handleChange} />
                                 </div>
                                 <div className='row mb-3'>
                                     <div className="col">
-                                        <label htmlFor="firstName" className="form-label">Họ</label>
+                                        <label htmlFor="firstName" className="form-label">Họ <span className='note-required'>*</span></label>
                                         <input required type="text" className="form-control" id="firstName" name="firstName" value={userEdit.firstName} onChange={handleChange} />
                                     </div>
                                     <div className="col">
-                                        <label htmlFor='lastName' className="form-label">Tên</label>
+                                        <label htmlFor='lastName' className="form-label">Tên <span className='note-required'>*</span></label>
                                         <input required type="text" className="form-control" id="lastName" name="lastName" value={userEdit.lastName} onChange={handleChange} />
                                     </div>
                                 </div>
+                                <div className="mb-3">
+                                    <label htmlFor='email' className="form-label">Email <span className='note-required'>*</span></label>
+                                    <input required pattern=".*@.*" type="text" className="form-control" id="username" name="username" value={userEdit.username} onChange={handleChange} />
+                                </div>
                                 <div className='row mb-3'>
                                     <div className="col">
-                                        <label htmlFor='birthDay' className="form-label">Ngày sinh</label>
+                                        <label htmlFor='birthDay' className="form-label">Ngày sinh <span className='note-required'>*</span></label>
                                         <input required type="date" className="form-control" id="birthDay" name="birthDay" value={userEdit.birthDay} onChange={handleChange} />
                                     </div>
                                     <div className="col">
-                                        <label htmlFor='phone' className="form-label">Số điện thoại</label>
+                                        <label htmlFor='phone' className="form-label">Số điện thoại <span className='note-required'>*</span></label>
                                         <input required pattern='\d{10}' type="text" className="form-control" id="phone" name="phone" value={userEdit.phone} onChange={handleChange} />
                                     </div>
                                     <div className="col">
-                                        <label htmlFor='gender' className="form-label">Giới tính</label>
+                                        <label htmlFor='gender' className="form-label">Giới tính <span className='note-required'>*</span></label>
                                         <div style={{ display: "flex" }}>
                                             <div>
                                                 <input required type="radio" id="nam" name="gender" value="Nam" checked={gender === false} onChange={handleGenderChange} />
@@ -457,12 +472,12 @@ function DatatableLec() {
                                     </div>
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor='email' className="form-label">Email</label>
-                                    <input required pattern=".*@.*" type="text" className="form-control" id="username" name="username" value={userEdit.username} onChange={handleChange} />
+                                    <label htmlFor='address' className="form-label">Địa chỉ</label>
+                                    <input type="text" className="form-control" id="address" name="address" value={userEdit.address} onChange={handleChange} />
                                 </div>
                                 <div className='row mb-3'>
                                     <div className="col">
-                                        <label htmlFor="major" className="form-label">Chuyên ngành</label>
+                                        <label htmlFor="major" className="form-label">Chuyên ngành <span className='note-required'>*</span></label>
                                         <select required className="form-select" id="major" value={userEdit.major} onChange={handleMajorChange} name="major">
                                             {major.map((majorItem, index) => (
                                                 <option key={index} value={majorItem}>{majorItem}</option>
@@ -470,22 +485,17 @@ function DatatableLec() {
                                         </select>
                                     </div>
                                     <div className="col">
-                                        <label htmlFor="author" className="form-label">Role</label>
+                                        <label htmlFor="author" className="form-label">Role <span className='note-required'>*</span></label>
                                         <select required className="form-select" id="author" value={userEdit.authority} onChange={handleAuthorityChange} name="author">
                                             {author.filter(Item => Item.name === "ROLE_LECTURER" || Item.name === "ROLE_HEAD").map((Item, index) => (
                                                 <option key={index} value={Item.name}>{Item.name}</option>
                                             ))}
                                         </select>
                                     </div>
-
-                                </div>
-                                <div className="mb-3">
-                                    <label htmlFor='address' className="form-label">Địa chỉ</label>
-                                    <input type="text" className="form-control" id="address" name="address" value={userEdit.address} onChange={handleChange} />
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModal(false)}>Close</button>
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModalEdit(false)}>Close</button>
                                 <button type="submit" className="btn btn-primary">
                                     Cập nhật
                                 </button>
@@ -494,7 +504,7 @@ function DatatableLec() {
                     </div>
                 </div>
 
-                <div className="modal fade" id="AddLecturere" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: showModalAdd ? 'block' : 'none' }}>
+                <div className={`modal fade ${showModalAdd ? 'show' : ''}`} id="AddLecturere" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: showModalAdd ? 'block' : 'none' }}>
                     <div className="modal-dialog modal-lg modal-dialog-scrollable" onSubmit={handleSubmitAdd}>
                         <form className="modal-content ">
                             <div className="modal-header">
@@ -503,36 +513,36 @@ function DatatableLec() {
                             </div>
                             <div className="modal-body">
                                 <div className="mb-3">
-                                    <label htmlFor="id" className="form-label">MSGV</label>
+                                    <label htmlFor="id" className="form-label">MSGV <span className='note-required'>*</span></label>
                                     <input required type="text" className="form-control" id="id" name="personId" value={formData.personId} onChange={handleChangeAdd} />
                                 </div>
                                 <div className='row mb-3'>
                                     <div className="col">
-                                        <label htmlFor="firstName" className="form-label">Họ</label>
+                                        <label htmlFor="firstName" className="form-label">Họ <span className='note-required'>*</span></label>
                                         <input required type="text" className="form-control" id="firstName" name="firstName" value={formData.firstName} onChange={handleChangeAdd} />
                                     </div>
                                     <div className="col">
-                                        <label htmlFor="lastName" className="form-label">Tên</label>
+                                        <label htmlFor="lastName" className="form-label">Tên <span className='note-required'>*</span></label>
                                         <input required type="text" className="form-control" id="lastName" name="lastName" value={formData.lastName} onChange={handleChangeAdd} />
                                     </div>
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="email" className="form-label">Email</label>
+                                    <label htmlFor="email" className="form-label">Email <span className='note-required'>*</span></label>
                                     <input required pattern=".*@.*" type="email" className="form-control" id="email" name="email" value={formData.email} onChange={handleChangeAdd} />
                                     <div class="form-text"></div>
                                 </div>
                                 <div className='row mb-3'>
                                     <div className="col">
-                                        <label htmlFor="birthDay" className="form-label">Ngày sinh</label>
+                                        <label htmlFor="birthDay" className="form-label">Ngày sinh <span className='note-required'>*</span></label>
                                         <input required type="date" className="form-control" id="birthDay" name="birthDay" value={formData.birthDay} onChange={handleChangeAdd} />
                                     </div>
                                     <div className="col">
-                                        <label htmlFor="phone" className="form-label">Số điện thoại</label>
+                                        <label htmlFor="phone" className="form-label">Số điện thoại <span className='note-required'>*</span></label>
                                         <input required pattern="\d{10}" type="text" className="form-control" id="phone" name="phone" value={formData.phone} onChange={handleChangeAdd} />
                                         <div class="form-text">Số điện thoại gồm 10 số.</div>
                                     </div>
                                     <div className="col">
-                                        <label htmlFor='genderAdd' className="form-label">Giới tính</label>
+                                        <label htmlFor='genderAdd' className="form-label">Giới tính <span className='note-required'>*</span></label>
                                         <div style={{ display: 'flex' }}>
                                             <div>
                                                 <input required type="radio" id="nam" name="gender" value="Nam" checked={formData.gender === false} onChange={handleChangeAdd} />
@@ -546,12 +556,12 @@ function DatatableLec() {
                                     </div>
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="address" className="form-label">Địa chỉ</label>
+                                    <label htmlFor="address" className="form-label">Địa chỉ </label>
                                     <input type="address" className="form-control" id="address" name="address" value={formData.address} onChange={handleChangeAdd} />
                                 </div>
                                 <div className='row mb-3'>
                                     <div className="col">
-                                        <label htmlFor="major" className="form-label">Chuyên ngành</label>
+                                        <label htmlFor="major" className="form-label">Chuyên ngành <span className='note-required'>*</span></label>
                                         <select required className="form-select" id="major" value={formData.major.name} onChange={handleChangeAdd} name="major">
                                             <option value="">Chọn ...</option>
                                             {major.map((majorItem, index) => (
@@ -560,7 +570,7 @@ function DatatableLec() {
                                         </select>
                                     </div>
                                     <div className="col">
-                                        <label htmlFor="author" className="form-label">Role</label>
+                                        <label htmlFor="author" className="form-label">Role <span className='note-required'>*</span></label>
                                         <select required className="form-select" id="author" value={formData.author} onChange={handleChangeAdd} name="author">
                                             <option value="">Chọn ...</option>
                                             {author.filter(Item => Item.name === "ROLE_LECTURER" || Item.name === "ROLE_HEAD").map((Item, index) => (
@@ -572,7 +582,7 @@ function DatatableLec() {
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModalAdd(false)}>Close</button>
-                                <button type="submit" className="btn btn-primary" data-bs-dismiss="modal">
+                                <button type="submit" className="btn btn-primary">
                                     Add
                                 </button>
                             </div>

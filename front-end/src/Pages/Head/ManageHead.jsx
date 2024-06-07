@@ -1,14 +1,19 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import SidebarHead from '../../components/Sidebar/SidebarHead';
 import Navbar from '../../components/Navbar/Navbar';
 import './MannageHead.scss';
 import TableApprove from '../../components/TableOfHead/ApproveTable/TableApprove';
 import TableApproveKL from '../../components/TableOfHead/ApproveTable/TableApproveKL';
+import { NotificationContext } from './NotificationContext';
 
 function MannageHead() {
   useEffect(() => {
     document.title = "Quản lý đề tài";
   }, []);
+
+  // Sử dụng useContext để lấy giá trị từ context
+  const { notifications, unreadCount } = useContext(NotificationContext);
+
   const [selectedTitle, setSelectedTitle] = useState({ title1: 'Duyệt đề tài', title2: '', table: null });
 
   const handleDropdownClick = (title1, title2, table) => {
@@ -19,12 +24,13 @@ function MannageHead() {
     <div className='homeManagement'>
       <SidebarHead />
       <div className='managementContext'>
-        <Navbar />
+        {/* Truyền unreadCount cho Navbar */}
+        <Navbar unreadCount={unreadCount} />
         <hr />
         <div className='context-menu'>
           <div className='contaxt-title'>
-            <div className='title-re'>
-              <h3>QUẢN LÝ ĐỀ TÀI</h3>
+            <div className='title-head'>
+              <h5>QUẢN LÝ ĐỀ TÀI</h5>
             </div>
           </div>
           <div className='context-nd'>

@@ -45,6 +45,7 @@ import ManagementTopicGraduation from './Pages/Student/ManagementTopicGraduation
 import ManageComplete from './Pages/Teacher/ManageComplete';
 import ManagementComplete from './Pages/Head/ManagementComplete';
 import ManagementGuest from './Pages/Admin/ManagementGuest';
+import ManagementClass from './Pages/Admin/ManagementClass';
 
 function App() {
   return (
@@ -77,6 +78,7 @@ function App() {
         <Route path="/managermentApproveTime" element={<ManagementTimeApprove />} /> 
         <Route path="/managermentRegisterTime" element={<ManagementTimeRegister />} /> 
         <Route path="/managermentYears" element={<ManagementYears />} />
+        <Route path="/managermentClass" element={<ManagementClass />} />
         <Route path='/managermentTopics' element={<ManagementTopics/>}/>
         <Route path='/managermentType' element={<ManagementType/>}/>
         <Route path='/managermentGuest' element={<ManagementGuest/>}/>

@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext} from 'react';
 import SidebarHead from '../../components/Sidebar/SidebarHead';
 import Navbar from '../../components/Navbar/Navbar';
 import './MannageHead.scss';
 import TableApprove from '../../components/TableOfHead/ApproveTable/TableApprove';
 import TableApproveKL from '../../components/TableOfHead/ApproveTable/TableApproveKL';
+import { NotificationContext } from './NotificationContext';
 
 function ManagementAppove() {
     useEffect(() => {
         document.title = "Duyệt đề tài";
     }, []);
+    const { notifications, unreadCount } = useContext(NotificationContext);
 
     const [selectedTitle, setSelectedTitle] = useState("Tiểu luận chuyên ngành");
 
@@ -20,7 +22,7 @@ function ManagementAppove() {
         <div className='homeHead'>
             <SidebarHead />
             <div className='context'>
-                <Navbar></Navbar>
+            <Navbar unreadCount={unreadCount} />
                 <hr></hr>
                 <div className='context-menu'>
                     <div className='context-title'>

@@ -8,27 +8,12 @@ import DataTableRegistrationPeroidSt from '../../components/dataTable/DataTableR
 function ManagementPeriod() {
     useEffect(() => {
         document.title = "Quản lý đợt đăng ký đề tài";
-      }, []);
-    const [regis, setRegis] = useState('student');
-    const [selectedTitle, setSelectedTitle] = useState({
-        title1: 'Đợt đăng ký đề tài cho sinh viên',
-        title2: 'Đợt đăng ký đề tài cho giảng viên',
-    });
+    }, []);
 
-    const handleClickStudentPeroidClick = () => {
-        setRegis('student');
-        setSelectedTitle({
-            ...selectedTitle,
-            title1: 'Đợt đăng ký đề tài cho sinh viên',
-        });
-    };
+    const [activeTab, setActiveTab] = useState('student');
 
-    const handleClickLecPeroidClick = () => {
-        setRegis('lecturer');
-        setSelectedTitle({
-            ...selectedTitle,
-            title2: 'Đợt đăng ký đề tài cho giảng viên',
-        });
+    const handleTabClick = (tab) => {
+        setActiveTab(tab);
     };
 
     return (
@@ -39,22 +24,28 @@ function ManagementPeriod() {
                     <Navbar />
                     <hr />
                     <div className="widgets">
-                        <div className='headMana'>
-                            <div className='titleMana'>
-                                <h3>Quản lý đợt đăng ký đề tài</h3>
+                        <div className='headMana-class'>
+                            <div className='titleMana-class'>
+                                <h5>Quản lý đợt đăng ký đề tài</h5>
                             </div>
                             <div className='menuMana'>
-                                <button onClick={handleClickStudentPeroidClick} className='btnMana'>Đợt đăng ký đề tài cho sinh viên</button>
-                                <button onClick={handleClickLecPeroidClick} className='btnMana'>Đợt đăng ký đề tài cho giảng viên</button>
+                                <button
+                                    className={activeTab === 'student' ? 'active' : ''}
+                                    onClick={() => handleTabClick('student')}
+                                >
+                                    Đợt đăng ký đề tài cho Sinh Viên
+                                </button>
+                                <button
+                                    className={activeTab === 'lecturer' ? 'active' : ''}
+                                    onClick={() => handleTabClick('lecturer')}
+                                >
+                                    Đợt đăng ký đề tài cho Giảng Viên
+                                </button>
                             </div>
                         </div>
-                        <div className="form-title">
-                            <span>{regis === 'student' ? selectedTitle.title1 : selectedTitle.title2}</span>
-                            <hr className="line" />
-                        </div>
                         <div className='homeMana'>
-                            {regis === 'student' && <DataTableRegistrationPeroidSt />}
-                            {regis === 'lecturer' && <DataTableRegistrationPeroidLec />}
+                            {activeTab === 'student' && <DataTableRegistrationPeroidSt />}
+                            {activeTab === 'lecturer' && <DataTableRegistrationPeroidLec />}
                         </div>
                     </div>
                 </div>

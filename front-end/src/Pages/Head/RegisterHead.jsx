@@ -1,9 +1,11 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useContext} from 'react';
 import './RegisterHead.scss';
 import SidebarHead from '../../components/Sidebar/SidebarHead';
 import Navbar from '../../components/Navbar/Navbar';
 import TableRegis from '../../components/TableOfHead/RegisterTopic/TableRegis';
 import TableRegisKL from '../../components/TableOfHead/RegisterTopic/TableRegisKL';
+import { NotificationContext } from './NotificationContext';
+
 function RegisterHead() {
     useEffect(() => {
         document.title = "Đăng ký đề tài";
@@ -13,6 +15,7 @@ function RegisterHead() {
     const handleDropdownClick = (title1, title2, table) => {
         setSelectedTitle({ title1, title2, table });
       };
+      const { notifications, unreadCount } = useContext(NotificationContext);
 
     const handleDropdownChange = (e) => {
         setSelectedTitle(e.target.value);
@@ -22,7 +25,7 @@ function RegisterHead() {
         <div className='homeHead'>
             <SidebarHead />
             <div className='context'>
-                <Navbar />
+            <Navbar unreadCount={unreadCount} />
                 <hr />
                 <div className='context-menu'>
                     <div className='context-title'>

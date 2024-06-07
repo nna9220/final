@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext} from 'react';
 import SidebarHead from '../../components/Sidebar/SidebarHead';
 import Navbar from '../../components/Navbar/Navbar';
 import './MannageHead.scss';
@@ -6,6 +6,7 @@ import TableApprove from '../../components/TableOfHead/ApproveTable/TableApprove
 import TableApproveKL from '../../components/TableOfHead/ApproveTable/TableApproveKL';
 import TableApproveBeforePB from '../../components/TableOfHead/ApproveBeforePB/TableApproveBeforePB';
 import TableApproveBeforePBKL from '../../components/TableOfHead/ApproveBeforePB/TableApproveBeforePBKL';
+import { NotificationContext } from './NotificationContext';
 
 function ManagementTopicBeforePB() {
     useEffect(() => {
@@ -17,12 +18,13 @@ function ManagementTopicBeforePB() {
     const handleDropdownChange = (e) => {
         setSelectedTitle(e.target.value);
     };
+    const { notifications, unreadCount } = useContext(NotificationContext);
 
     return (
         <div className='homeHead'>
             <SidebarHead />
             <div className='context'>
-                <Navbar></Navbar>
+            <Navbar unreadCount={unreadCount} />
                 <hr></hr>
                 <div className='context-menu'>
                     <div className='context-title'>

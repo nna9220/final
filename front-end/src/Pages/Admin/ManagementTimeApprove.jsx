@@ -9,27 +9,11 @@ function ManagementTimeApprove() {
     useEffect(() => {
         document.title = "Quản lý duyệt đề tài";
       }, []);
-    const [regis, setRegis] = useState('student');
-    const [selectedTitle, setSelectedTitle] = useState({
-        title1: 'Duyệt đề tài cho tiểu luận chuyên ngành',
-        title2: 'Duyệt đề tài cho khóa luận tốt nghiệp',
-    });
+      const [activeTab, setActiveTab] = useState('student');
 
-    const handleClickStudentPeroidClick = () => {
-        setRegis('student');
-        setSelectedTitle({
-            ...selectedTitle,
-            title1: 'Duyệt đề tài cho tiểu luận chuyên ngành',
-        });
-    };
-
-    const handleClickLecPeroidClick = () => {
-        setRegis('lecturer');
-        setSelectedTitle({
-            ...selectedTitle,
-            title2: 'Duyệt đề tài cho khóa luận tốt nghiệp',
-        });
-    };
+      const handleTabClick = (tab) => {
+          setActiveTab(tab);
+      };
 
     return (
         <div>
@@ -39,22 +23,28 @@ function ManagementTimeApprove() {
                     <Navbar />
                     <hr />
                     <div className="widgets">
-                        <div className='headMana'>
-                            <div className='titleMana'>
-                                <h3>Quản lý duyệt đề tài</h3>
+                        <div className='headMana-class'>
+                            <div className='titleMana-class'>
+                                <h5>Quản lý duyệt đề tài</h5>
                             </div>
                             <div className='menuMana'>
-                                <button onClick={handleClickStudentPeroidClick} className='btnMana'>Tiểu luận chuyên ngành</button>
-                                <button onClick={handleClickLecPeroidClick} className='btnMana'>Khóa luận tốt nghiệp</button>
+                                <button
+                                    className={activeTab === 'student' ? 'active' : ''}
+                                    onClick={() => handleTabClick('student')}
+                                >
+                                    Tiểu luận chuyên ngành
+                                </button>
+                                <button
+                                    className={activeTab === 'lecturer' ? 'active' : ''}
+                                    onClick={() => handleTabClick('lecturer')}
+                                >
+                                    Khóa luận tốt nghiệp
+                                </button>
                             </div>
                         </div>
-                        <div className="form-title">
-                            <span>{regis === 'student' ? selectedTitle.title1 : selectedTitle.title2}</span>
-                            <hr className="line" />
-                        </div>
                         <div className='homeMana'>
-                            {regis === 'student' && <DataTableTimeApprove />}
-                            {regis === 'lecturer' && <DataTableTimeApproveKL />}
+                            {activeTab === 'student' && <DataTableTimeApprove />}
+                            {activeTab === 'lecturer' && <DataTableTimeApproveKL/>}
                         </div>
                     </div>
                 </div>

@@ -15,14 +15,14 @@ function ManagementLec() {
                 <div className="homeContainer">
                     <Navbar />
                     <hr />
-                    <div className="widgets">
-                        <div className='headMana'>
-                            < div className='titleMana' >
-                                <h3>Quản lý giảng viên</h3>
-                            </div >
-                            <div className='homeMana'>
-                                <DatatableLec />
+                    <div className='widgets'>
+                        <div className='headMana-class'>
+                            <div className='titleMana-class'>
+                                <h5>Quản lý giảng viên</h5>
                             </div>
+                        </div>
+                        <div className='homeMana-class'>
+                            <DatatableLec />
                         </div>
                     </div>
                 </div>

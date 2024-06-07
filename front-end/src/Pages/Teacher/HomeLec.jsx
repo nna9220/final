@@ -8,6 +8,7 @@ import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 
 function HomeLec() {
   const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const userToken = getTokenFromUrlAndSaveToStorage();
 
   useEffect(() => {
@@ -20,7 +21,13 @@ function HomeLec() {
         }
       })
       .then(response => {
-        setNotifications(response.data);
+        const readNotifications = new Set(JSON.parse(localStorage.getItem('readNotificationsLecturer')) || []);
+        const notificationsWithReadStatus = response.data.map(notification => ({
+          ...notification,
+          read: readNotifications.has(notification.notificationId),
+        }));
+        setNotifications(notificationsWithReadStatus);
+        setUnreadCount(notificationsWithReadStatus.filter(notification => !notification.read).length);
       })
       .catch(error => {
         console.error(error);
@@ -28,7 +35,14 @@ function HomeLec() {
     }
   }, [userToken]);
 
-  const unreadCount = notifications.filter(notification => !notification.read).length;
+  const handleReadNotification = (id) => {
+    setUnreadCount(prevCount => prevCount - 1);
+    setNotifications(prevNotifications =>
+      prevNotifications.map(notification =>
+        notification.notificationId === id ? { ...notification, read: true } : notification
+      )
+    );
+  };
 
   return (
     <div className='homeLec'>
@@ -40,7 +54,7 @@ function HomeLec() {
           <div className='header-notification'>
             <h4 className='title'>TRANG CỦA BẠN</h4>
           </div>
-          <NotificationOfLecturer notifications={notifications} />
+          <NotificationOfLecturer notifications={notifications} onReadNotification={handleReadNotification} />
         </div>
       </div>
     </div>

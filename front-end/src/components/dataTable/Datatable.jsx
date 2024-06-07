@@ -503,7 +503,7 @@ function DataTable() {
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor='address' className="form-label">Địa chỉ</label>
-                                    <input type="text" className="form-control" id="address" name="address" value={userEdit.address} onChange={handleChange} />
+                                    <input type="text" className="form-control" id="address" name="address" value={userEdit.address || 'Chưa có' } onChange={handleChange} />
                                 </div>
                                 <div className='row mb-3'>
                                     <div className="col">
@@ -621,7 +621,7 @@ function DataTable() {
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModalAdd(false)}>Đóng</button>
-                                <button type="submit" className="btn btn-primary" data-bs-dismiss="modal">Thêm</button>
+                                <button type="submit" className="btn btn-primary">Thêm</button>
                             </div>
                         </form>
                     </div>

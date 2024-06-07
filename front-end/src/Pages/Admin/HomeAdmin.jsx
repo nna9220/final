@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import Sidebar from '../../components/Sidebar/SidebarAdmin';
 import Context from '../../components/Context/Context';
@@ -9,7 +9,7 @@ function HomeAdmin() {
     const [isSidebarClosed, setSidebarClosed] = useState(false);
     useEffect(() => {
         document.title = "Trang chủ Admin";
-      }, []);
+    }, []);
     return (
         <div className="HomeAdmin">
             <Sidebar />
@@ -17,7 +17,14 @@ function HomeAdmin() {
                 <Navbar />
                 <hr />
                 <div className='widgets'>
-                    <Context />
+                    <div className='headMana-class'>
+                        <div className='titleMana-class'>
+                            <h5>Trang chủ</h5>
+                        </div>
+                    </div>
+                    <div className='homeMana-class'>
+                        <Context />
+                    </div>
                 </div>
             </div>
         </div>

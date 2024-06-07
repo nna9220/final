@@ -2,9 +2,10 @@ import React from 'react'
 import SidebarHead from '../../components/Sidebar/SidebarHead'
 import Navbar from '../../components/Navbar/Navbar'
 import './ManageTopicPBOfHead.scss'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import TopicPBTableHead from '../../components/TableOfHead/TopicPBOfHead/TopicPBTableHead'
 import TopicKLPBTableHead from '../../components/TableOfHead/TopicPBOfHead/TopicKLPBTableHead'
+import { NotificationContext } from './NotificationContext';
 
 function ManageTopicPBOfHead() {
   useEffect(() => {
@@ -12,6 +13,7 @@ function ManageTopicPBOfHead() {
   }, []);
 
   const [selectedTitle, setSelectedTitle] = useState("Tiểu luận chuyên ngành");
+  const { notifications, unreadCount } = useContext(NotificationContext);
 
   const handleDropdownChange = (e) => {
     setSelectedTitle(e.target.value);
@@ -20,7 +22,7 @@ function ManageTopicPBOfHead() {
     <div className='homeHead'>
       <SidebarHead />
       <div className='context'>
-        <Navbar></Navbar>
+      <Navbar unreadCount={unreadCount} />
         <hr></hr>
         <div className='context-menu'>
           <div className='context-title'>

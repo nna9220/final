@@ -1,19 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import './notification.scss';
 
-function NotificationOfHeader({ notifications }) {
-    const [readNotifications, setReadNotifications] = useState(new Set(JSON.parse(localStorage.getItem('readNotifications')) || []));
+function NotificationOfHeader({ notifications, onReadNotification }) {
+    const [readNotifications, setReadNotifications] = useState(new Set(JSON.parse(localStorage.getItem('readNotificationsHead')) || []));
+    const [visibleContent, setVisibleContent] = useState(null);
 
     useEffect(() => {
-        const storedReadNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+        const storedReadNotifications = JSON.parse(localStorage.getItem('readNotificationsHead')) || [];
         setReadNotifications(new Set(storedReadNotifications));
     }, []);
 
     const handleReadNotification = (id) => {
-        setReadNotifications(prevState => {
-            const newReadNotifications = new Set(prevState).add(id);
-            localStorage.setItem('readNotifications', JSON.stringify(Array.from(newReadNotifications)));
-            return newReadNotifications;
-        });
+        if (!readNotifications.has(id)) {
+            setReadNotifications(prevState => {
+                const newReadNotifications = new Set(prevState).add(id);
+                localStorage.setItem('readNotificationsHead', JSON.stringify(Array.from(newReadNotifications)));
+                onReadNotification(id);
+                return newReadNotifications;
+            });
+        }
+    };
+
+    const handleTitleClick = (index, id) => {
+        setVisibleContent(visibleContent === index ? null : index);
+        handleReadNotification(id);
     };
 
     const formatContent = (content) => {
@@ -26,36 +36,22 @@ function NotificationOfHeader({ notifications }) {
     };
 
     return (
-        <div className='widget'>
-            <div className="accordion" id="accordionFlushExample">
-                {notifications.map((item, index) => (
-                    <div className="accordion-item" key={item.notificationId}>
-                        <h2 className="accordion-header">
-                            <button 
-                                className={`accordion-button collapsed ${readNotifications.has(item.notificationId) ? 'read-notification' : ''}`} 
-                                type="button" 
-                                data-bs-toggle="collapse" 
-                                data-bs-target={`#flush-collapseOne-${index}`} 
-                                aria-expanded="false" 
-                                aria-controls={`flush-collapseOne-${index}`}
-                                onClick={() => handleReadNotification(item.notificationId)}
-                                style={{backgroundColor:'var(--bs-accordion-active-bg)', fontWeight:'bold'}}
-                            >
-                                {item.title}
-                            </button>
-                        </h2>
-                        <div 
-                            id={`flush-collapseOne-${index}`} 
-                            className="accordion-collapse collapse" 
-                            data-bs-parent="#accordionFlushExample"
-                        >
-                            <div className="accordion-body">
-                                {formatContent(item.content)}
-                            </div>
+        <div className='notification-list'>
+            {notifications.map((item, index) => (
+                <div key={item.notificationId} className="notification-item">
+                    <h3 
+                        className={`notification-title ${readNotifications.has(item.notificationId) ? 'read-notification' : ''}`} 
+                        onClick={() => handleTitleClick(index, item.notificationId)}
+                    >
+                        {item.title}
+                    </h3>
+                    {visibleContent === index && (
+                        <div className="notification-content">
+                            {formatContent(item.content)}
                         </div>
-                    </div>
-                ))}
-            </div>
+                    )}
+                </div>
+            ))}
         </div>
     );
 }

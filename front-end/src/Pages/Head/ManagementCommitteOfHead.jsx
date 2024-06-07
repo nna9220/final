@@ -1,19 +1,23 @@
 import React from 'react'
 import Navbar from '../../components/Navbar/Navbar'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext} from 'react'
 import CommitteTable from '../../components/TableOfHead/Committe/CommitteTable';
 import CommitteKLTable from '../../components/TableOfHead/Committe/CommitteKLTable';
 import SidebarHead from '../../components/Sidebar/SidebarHead';
+import { NotificationContext } from './NotificationContext';
 
 function ManagementCommitteOfHead() {
     useEffect(() => {
         document.title = "Hội đồng báo cáo";
     }, []);
     const [selectedTitle, setSelectedTitle] = useState("Tiểu luận chuyên ngành");
+    const { notifications, unreadCount } = useContext(NotificationContext);
 
     const handleDropdownChange = (e) => {
         setSelectedTitle(e.target.value);
     };
+    <Navbar unreadCount={unreadCount} />
+
     return (
         <div className='homeHead'>
             <SidebarHead />

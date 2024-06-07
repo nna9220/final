@@ -228,7 +228,6 @@ function EditProfile() {
         <div>
             <div class="container">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <h4 class="text-right">TRANG CÁ NHÂN</h4>
                     <div>
                         <Toast className='toast align-items-center' show={showSuccessToast} onClose={() => setShowSuccessToast(false)} delay={3000} autohide>
                             <Toast.Header>

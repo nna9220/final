@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext} from 'react';
 import SidebarHead from '../../components/Sidebar/SidebarHead';
 import Navbar from '../../components/Navbar/Navbar';
 import './MannageHead.scss';
@@ -6,12 +6,13 @@ import TableAssign from '../../components/TableOfHead/AssignTable/TableAssign';
 import TableAssignKL from '../../components/TableOfHead/AssignTable/TableAssignKL';
 import CriteriaForTL from '../../components/TableOfHead/CriteriaTable/CriteriaForTL';
 import CriteriaForKL from '../../components/TableOfHead/CriteriaTable/CriteriaForKL';
+import { NotificationContext } from './NotificationContext';
 
 function ManagementCriteria() {
     useEffect(() => {
         document.title = "Tiêu chí phản biện";
       }, []);
-    
+      const { notifications, unreadCount } = useContext(NotificationContext);
       const [selectedTitle, setSelectedTitle] = useState("Tiểu luận chuyên ngành");
     
       const handleDropdownChange = (e) => {
@@ -22,7 +23,7 @@ function ManagementCriteria() {
         <div className='homeHead'>
           <SidebarHead />
           <div className='context'>
-            <Navbar></Navbar>
+          <Navbar unreadCount={unreadCount} />
             <hr></hr>
             <div className='context-menu'>
               <div className='context-title'>
