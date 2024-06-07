@@ -11,6 +11,7 @@ import com.web.repository.*;
 import com.web.service.Admin.StudentService;
 import com.web.service.Admin.SubjectService;
 import com.web.service.Lecturer.LecturerAddScoreGraduationService;
+import com.web.service.MailServiceImpl;
 import com.web.service.SubjectImplService;
 import com.web.utils.UserUtils;
 import org.slf4j.Logger;
@@ -39,6 +40,8 @@ public class LecturerRegisterTopicController {
     private TypeSubjectRepository typeSubjectRepository;
     @Autowired
     private FileRepository fileRepository;
+    @Autowired
+    private MailServiceImpl mailService;
     @Autowired
     private TaskRepository taskRepository;
     @Autowired
@@ -226,7 +229,12 @@ public class LecturerRegisterTopicController {
 
                         subjectRepository.save(newSubject);
                         studentRepository.saveAll(studentList);
-
+                        String subject = "ĐĂNG KÝ ĐỀ TÀI THÀNH CÔNG";
+                        String messenger = "Topic: " + newSubject.getSubjectName() + " đăng ký thành công!!";
+                        //Gửi mail cho Hội đồng - SV
+                        List<String> emailPerson = new ArrayList<>();
+                        emailPerson.add(existLecturer.getPerson().getUsername());
+                        mailService.sendMailToPerson(emailPerson,subject,messenger);
                         return new ResponseEntity<>(newSubject, HttpStatus.CREATED);
                     } else {
                         return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Lecturer không tồn tại

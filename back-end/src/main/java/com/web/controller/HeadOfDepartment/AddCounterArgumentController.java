@@ -200,6 +200,7 @@ public class AddCounterArgumentController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<Map<String,Object>> getDanhSachDeTai(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -246,32 +247,30 @@ public class AddCounterArgumentController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<?> lecturerRegisterTopic(
-            @RequestParam("subjectName") String name,
-            @RequestParam("requirement") String requirement,
-            @RequestParam("expected") String expected,
-            @RequestParam(value = "student1", required = false) String student1,
-            @RequestParam(value = "student2", required = false) String student2,
-            @RequestParam(value = "student3", required = false) String student3,
-            @RequestHeader("Authorization") String authorizationHeader,
-            HttpServletRequest request) {
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
+    public ResponseEntity<?> lecturerRegisterTopic(@RequestParam("subjectName") String name,
+                                                   @RequestParam("requirement") String requirement,
+                                                   @RequestParam("expected") String expected,
+                                                   @RequestParam(value = "student1", required = false) String student1,
+                                                   @RequestParam(value = "student2", required = false) String student2,
+                                                   @RequestParam(value = "student3", required = false) String student3,
+                                                   @RequestHeader("Authorization") String authorizationHeader,
+                                                   HttpServletRequest request) {
+
         try {
             LocalDateTime current = LocalDateTime.now();
-            System.out.println("Current time: " + current);
+            System.out.println(current);
             String token = tokenUtils.extractToken(authorizationHeader);
             Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-            System.out.println("Current person: " + personCurrent);
-
+            System.out.println("Trước if check role");
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
-            System.out.println("TypeSubject: " + typeSubject);
-
-            if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") ||
-                    personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
-
+            if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
                 List<RegistrationPeriodLectuer> periodList = registrationPeriodLecturerRepository.findAllPeriodEssay(typeSubject);
-                System.out.println("Period list: " + periodList);
-
-                if (CompareTime.isCurrentTimeInPeriodSLecturer(periodList)) {
+                System.out.println("Sau if check role, trước if check time");
+                System.out.println(CompareTime.isCurrentTimeInPeriodSLecturer(periodList));
+                List<TimeAddSubjectOfHead> timeAddSubjectOfHead = timeAddSubjectHeadRepository.findAllPeriodEssay(typeSubject);
+                if (CompareTime.isCurrentTimeInPeriodSLecturer(periodList) && CompareTime.isCurrentTimeInAddSubjectTimeHead(timeAddSubjectOfHead)) {
+                    System.out.println("sau if check time");
                     Subject newSubject = new Subject();
                     newSubject.setSubjectName(name);
                     newSubject.setRequirement(requirement);
@@ -280,63 +279,62 @@ public class AddCounterArgumentController {
                     newSubject.setStatus(false);
                     //Tìm kiếm giảng viên hiện tại
                     Lecturer existLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-                    System.out.println("Exist lecturer: " + existLecturer);
-
-                    if (existLecturer != null) {
-                        newSubject.setInstructorId(existLecturer);
-                        newSubject.setMajor(existLecturer.getMajor());
-
-                        List<Student> studentList = new ArrayList<>();
-                        if (student1 != null) {
-                            Student studentId1 = studentRepository.findById(student1).orElse(null);
-                            if (studentId1 != null) {
-                                newSubject.setStudent1(student1);
-                                studentId1.setSubjectId(newSubject);
-                                studentList.add(studentId1);
-                            }
-                        }
-
-                        if (student2 != null) {
-                            Student studentId2 = studentRepository.findById(student2).orElse(null);
-                            if (studentId2 != null) {
-                                newSubject.setStudent2(student2);
-                                studentId2.setSubjectId(newSubject);
-                                studentList.add(studentId2);
-                            }
-                        }
-
-                        if (student3 != null) {
-                            Student studentId3 = studentRepository.findById(student3).orElse(null);
-                            if (studentId3 != null) {
-                                newSubject.setStudent3(student3);
-                                studentId3.setSubjectId(newSubject);
-                                studentList.add(studentId3);
-                            }
-                        }
-                        Set<EvaluationCriteria> evaluationCriteria = evaluationCriteriaRepository.getEvaluationCriteriaByTypeSubject(typeSubject);
-                        if (evaluationCriteria!=null){
-                            newSubject.setCriteria(evaluationCriteria);
-                        }
-                        newSubject.setCheckStudent(student1 != null || student2 != null || student3 != null);
-                        LocalDate nowDate = LocalDate.now();
-                        newSubject.setYear(String.valueOf(nowDate));
-                        newSubject.setTypeSubject(typeSubject);
-
-                        subjectRepository.save(newSubject);
-                        studentRepository.saveAll(studentList);
-
-                        return new ResponseEntity<>(newSubject, HttpStatus.CREATED);
-                    } else {
-                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Lecturer không tồn tại
+                    System.out.println("GV: " + existLecturer);
+                    newSubject.setInstructorId(existLecturer);
+                    newSubject.setMajor(existLecturer.getMajor());
+                    List<Student> studentList = new ArrayList<>();
+                    //Tìm sinh viên qua mã sinh viên
+                    if (student1!=null) {
+                        Student studentId1 = studentRepository.findById(student1).orElse(null);
+                        newSubject.setStudent1(student1);
+                        studentId1.setSubjectId(newSubject);
+                        newSubject.setCheckStudent(true);
+                        studentList.add(studentId1);
                     }
-                } else {
-                    return new ResponseEntity<>(HttpStatus.OK); // Thời gian không hợp lệ
+                    if (student2!=null) {
+                        Student studentId2 = studentRepository.findById(student2).orElse(null);
+                        newSubject.setStudent2(student2);
+                        studentId2.setSubjectId(newSubject);
+                        newSubject.setCheckStudent(true);
+                        studentList.add(studentId2);
+                    }
+                    if (student3!=null) {
+                        Student studentId3 = studentRepository.findById(student3).orElse(null);
+                        newSubject.setStudent1(student3);
+                        studentId3.setSubjectId(newSubject);
+                        newSubject.setCheckStudent(true);
+                        studentList.add(studentId3);
+                    }
+                    if (student1==null && student2==null && student3==null){
+                        newSubject.setCheckStudent(false);
+                    }else {
+                        newSubject.setCheckStudent(true);
+                    }
+                    Set<EvaluationCriteria> evaluationCriteria = evaluationCriteriaRepository.getEvaluationCriteriaByTypeSubject(typeSubject);
+                    if (evaluationCriteria!=null){
+                        newSubject.setCriteria(evaluationCriteria);
+                    }
+                    LocalDate nowDate = LocalDate.now();
+                    newSubject.setYear(String.valueOf(nowDate));
+                    newSubject.setTypeSubject(typeSubject);
+                    subjectRepository.save(newSubject);
+                    studentRepository.saveAll(studentList);
+                    String subject = "ĐĂNG KÝ ĐỀ TÀI THÀNH CÔNG";
+                    String messenger = "Topic: " + newSubject.getSubjectName() + " đăng ký thành công!!";
+                    //Gửi mail cho Hội đồng - SV
+                    List<String> emailPerson = new ArrayList<>();
+                    emailPerson.add(existLecturer.getPerson().getUsername());
+                    mailService.sendMailToPerson(emailPerson,subject,messenger);
+                    System.out.println("Đề tài: "+newSubject.getSubjectName());
+                    return new ResponseEntity<>(newSubject, HttpStatus.CREATED);
+                }else {
+                    return new ResponseEntity<>(personCurrent,HttpStatus.OK);
                 }
-            } else {
-                return new ResponseEntity<>(HttpStatus.FORBIDDEN); // Không đủ quyền
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            else {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+        }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
     }

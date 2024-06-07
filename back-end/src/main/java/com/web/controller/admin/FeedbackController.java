@@ -6,6 +6,7 @@ import com.web.entity.*;
 import com.web.repository.ContactRepository;
 import com.web.repository.FeedbackRepository;
 import com.web.repository.PersonRepository;
+import com.web.service.MailServiceImpl;
 import com.web.utils.UserUtils;
 import net.bytebuddy.implementation.bind.annotation.Pipe;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,8 @@ public class FeedbackController {
     private TokenUtils tokenUtils;
     @Autowired
     private UserUtils userUtils;
+    @Autowired
+    private MailServiceImpl mailService;
 
     @GetMapping("/listContact")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -84,6 +88,13 @@ public class FeedbackController {
                 existedContact.setFeedback(feed);
                 existedContact.setStatus(true);
                 contactRepository.save(existedContact);
+                String subject = "Phản hồi liên hệ";
+                String messenger = "Chào bạn, hcmute đã nhận được liên hệ từ bạn với câu hỏi" + existedContact.getContent() + " chúng tôi xin trả lời câu hỏi của bạn: " + "\n"
+                        +feed.getContent();
+                //Gửi mail cho Hội đồng - SV
+                List<String> emailPerson = new ArrayList<>();
+                emailPerson.add(existedContact.getEmail());
+                mailService.sendMailToPerson(emailPerson,subject,messenger);
                 return new ResponseEntity<>(feedbackRepository,HttpStatus.OK);
             }else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
