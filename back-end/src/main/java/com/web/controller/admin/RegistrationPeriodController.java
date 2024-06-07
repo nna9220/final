@@ -160,7 +160,7 @@ public class RegistrationPeriodController {
                     emailLecturer.add(student.getPerson().getUsername());
                 }
                 MailStructure newMail = new MailStructure();
-                String subject = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI TIỂU LUẬN CHUYÊN NGÀNH CHO SINH VIÊN " + update.getRegistrationName();
+                String subject = "THÔNG BÁO CẬP NHẬT THỜI GIAN ĐĂNG KÝ ĐỀ TÀI TIỂU LUẬN CHUYÊN NGÀNH CHO SINH VIÊN " + update.getRegistrationName();
                 String messenger = "Thời gian bắt đầu: " + update.getRegistrationTimeStart()+"\n" +
                         "Thời gian kết thúc: " + update.getRegistrationTimeEnd() + "\n";
                 newMail.setSubject(subject);
