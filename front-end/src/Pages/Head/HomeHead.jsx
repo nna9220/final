@@ -5,7 +5,7 @@ import './HomeHead.scss';
 import NotificationOfHeader from '../../components/Notification/NotificationOfHeader';
 import axiosInstance from '../../API/axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
-import { Navigate} from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 function HomeHead() {
   const [notifications, setNotifications] = useState([]);
@@ -21,18 +21,18 @@ function HomeHead() {
           'Authorization': `Bearer ${userToken}`,
         }
       })
-      .then(response => {
-        const readNotifications = new Set(JSON.parse(localStorage.getItem('readNotificationsHead')) || []);
-        const notificationsWithReadStatus = response.data.map(notification => ({
-          ...notification,
-          read: readNotifications.has(notification.notificationId),
-        }));
-        setNotifications(notificationsWithReadStatus);
-        setUnreadCount(notificationsWithReadStatus.filter(notification => !notification.read).length);
-      })
-      .catch(error => {
-        console.error(error);
-      });
+        .then(response => {
+          const readNotifications = new Set(JSON.parse(localStorage.getItem('readNotificationsHead')) || []);
+          const notificationsWithReadStatus = response.data.map(notification => ({
+            ...notification,
+            read: readNotifications.has(notification.notificationId),
+          }));
+          setNotifications(notificationsWithReadStatus);
+          setUnreadCount(notificationsWithReadStatus.filter(notification => !notification.read).length);
+        })
+        .catch(error => {
+          console.error(error);
+        });
     }
   }, [userToken]);
 
@@ -47,52 +47,48 @@ function HomeHead() {
 
   const [authorized, setAuthorized] = useState(true);
 
-    // Kiểm tra quyền truy cập
-    useEffect(() => {
-      const checkAuthorization = async () => {
-          const userToken = getTokenFromUrlAndSaveToStorage(); // Lấy token từ URL hoặc từ bất kỳ nguồn nào khác
-          if (userToken) {
-              try {
-                  // Gửi token đến backend để kiểm tra quyền truy cập
-                  const response = await axiosInstance.post('/admin/check-authorization/admin',null, {
-                      headers: {
-                          'Authorization': `Bearer ${userToken}`,
-                      },
-              });
-                  console.log("trước if : ", response.data);
-                  if (response.data == "Authorized") {
-                      // Nếu có quyền truy cập, setAuthorized(true)
-                      setAuthorized(true);
-                  } else {
-                      // Nếu không có quyền truy cập, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
-                      setAuthorized(false);
-                  }
-              } catch (error) {
-                  if (error.response) {
-                      // Request made and server responded
-                      console.error("Response error:", error.response.data);
-                      console.error("Response status:", error.response.status);
-                      console.error("Response headers:", error.response.headers);
-                      setAuthorized(false);
-                  } else if (error.request) {
-                      // Request made but no response received
-                      console.error("Request error:", error.request);
-                  } else {
-                      // Something else happened while setting up the request
-                      console.error("Axios error:", error.message);
-                  }
-              }
+  // Kiểm tra quyền truy cập
+  useEffect(() => {
+    const checkAuthorization = async () => {
+      const userToken = getTokenFromUrlAndSaveToStorage(); // Lấy token từ URL hoặc từ bất kỳ nguồn nào khác
+      if (userToken) {
+        try {
+          const response = await axiosInstance.post('/check-authorization/head', null, {
+            headers: {
+              'Authorization': `Bearer ${userToken}`,
+            },
+          });
+          console.log("Nhận : ", response.data);
+          if (response.data == "Authorized") {
+            setAuthorized(true);
           } else {
-              // Nếu không có token, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
-              setAuthorized(false);
+            setAuthorized(false);
           }
-      };
+        } catch (error) {
+          if (error.response) {
+            console.error("Response error:", error.response.data);
+            console.error("Response status:", error.response.status);
+            console.error("Response headers:", error.response.headers);
+            setAuthorized(false);
+          } else if (error.request) {
+            console.error("Request error:", error.request);
+            setAuthorized(false);
+          } else {
+            console.error("Axios error:", error.message);
+            setAuthorized(false);
+          }
+        }
+      } else {
+        // Nếu không có token, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
+        setAuthorized(false);
+      }
+    };
 
-      checkAuthorization();
+    checkAuthorization();
   }, []);
 
   if (!authorized) {
-      return <Navigate to="/" />;
+    return <Navigate to="/" />;
   }
   return (
     <div className='homeHead'>
