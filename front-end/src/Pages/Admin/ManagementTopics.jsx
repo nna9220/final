@@ -14,14 +14,14 @@ function ManagementTopics() {
       <div className="homeContainer">
         <Navbar />
         <hr />
-        <div className="widgets">
-          <div className='headMana'>
-            <div className='titleMana'>
-              <h3>Quản lý đề tài</h3>
+        <div className='widgets'>
+          <div className='headMana-class'>
+            <div className='titleMana-class'>
+              <h5>Quản lý đề tài</h5>
             </div>
-            <div className='homeMana'>
-              <DataTableTopics />
-            </div>
+          </div>
+          <div className='homeMana-class'>
+            <DataTableTopics />
           </div>
         </div>
       </div>

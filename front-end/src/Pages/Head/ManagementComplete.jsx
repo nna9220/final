@@ -2,14 +2,16 @@ import React from 'react'
 import CompleteTopic from '../../components/TableOfHead/CompleteTopic/CompleteTopic';
 import CompleteTopicKL from '../../components/TableOfHead/CompleteTopic/CompleteTopicKL';
 import Navbar from '../../components/Navbar/Navbar'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import SidebarHead from '../../components/Sidebar/SidebarHead';
+import { NotificationContext } from './NotificationContext';
 
 function ManagementComplete() {
     useEffect(() => {
         document.title = "Đề tài đã thực hiện";
     }, []);
     const [selectedTitle, setSelectedTitle] = useState("Tiểu luận chuyên ngành");
+    const { notifications, unreadCount } = useContext(NotificationContext);
 
     const handleDropdownChange = (e) => {
         setSelectedTitle(e.target.value);
@@ -19,7 +21,7 @@ function ManagementComplete() {
         <div className='homeHead'>
             <SidebarHead />
             <div className='context'>
-                <Navbar></Navbar>
+            <Navbar unreadCount={unreadCount} />
                 <hr></hr>
                 <div className='context-menu'>
                     <div className='context-title'>

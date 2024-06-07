@@ -16,12 +16,12 @@ function DataTableType() {
                     'Authorization': `Bearer ${tokenSt}`,
                 },
             })
-            .then(response => {
-                setType(response.data);
-            })
-            .catch(error => {
-                console.error("Error: ", error);
-            });
+                .then(response => {
+                    setType(response.data);
+                })
+                .catch(error => {
+                    console.error("Error: ", error);
+                });
         } else {
             console.log("Error: No token found");
         }
@@ -30,20 +30,20 @@ function DataTableType() {
     const handleAddType = () => {
         const tokenSt = sessionStorage.getItem('userToken');
         if (tokenSt) {
-            axiosInstance.post('/admin/typeSubject/create',null,{
-                params:{ typeName: newTypeName }, 
+            axiosInstance.post('/admin/typeSubject/create', null, {
+                params: { typeName: newTypeName },
                 headers: {
                     'Authorization': `Bearer ${tokenSt}`,
                     'Content-Type': 'application/json',
                 },
             })
-            .then(response => {
-                setType([...type, response.data]);
-                setNewTypeName('');
-            })
-            .catch(error => {
-                console.error("Error: ", error);
-            });
+                .then(response => {
+                    setType([...type, response.data]);
+                    setNewTypeName('');
+                })
+                .catch(error => {
+                    console.error("Error: ", error);
+                });
         } else {
             console.log("Error: No token found");
         }
@@ -51,6 +51,9 @@ function DataTableType() {
 
     return (
         <div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Add
+            </button>
 
             <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
@@ -79,7 +82,7 @@ function DataTableType() {
             </div>
 
             <table>
-                
+
             </table>
         </div>
     );

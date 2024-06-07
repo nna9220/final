@@ -148,7 +148,9 @@ const Card = ({ task, index }) => {
                               if (files.commentId?.commentId === comment.commentId) {
                                 return (
                                   <div key={fileIndex}>
-                                    <a href={files.url}><p>{files.url}</p></a>
+                                    <a href={files.url} target="_blank" rel="noopener noreferrer" download="" className='content-name'>
+                                      {files.name}
+                                    </a>
                                   </div>
                                 );
                               } else {

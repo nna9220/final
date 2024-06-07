@@ -85,7 +85,8 @@ function DataTableTimeApprove() {
     };
 
 
-    const handleAddType = () => {
+    const handleAddType = (event) => {
+        event.preventDefault();
         const tokenSt = sessionStorage.getItem('userToken');
         console.log(newTimeApprove.timeStart);
         console.log(newTimeApprove.timeEnd);
@@ -153,28 +154,31 @@ function DataTableTimeApprove() {
         <div className='table-timeApprove'>
             <ToastContainer />
             <div className='content-table'>
-                <div className="modal fade" id="AddTimeApprove" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddTimeApprove">
+                    Add
+                </button>
+                <div className="modal fade" id="AddTimeApprove" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" onSubmit={handleAddType}>
                     <div className="modal-dialog">
-                        <div className="modal-content">
+                        <form className="modal-content">
                             <div className="modal-header">
                                 <h1 className="modal-title fs-5" id="exampleModalLabel">Thêm thời gian duyệt đề tài</h1>
                                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div className="modal-body">
                                 <div className="form-floating mb-3 mt-3">
-                                    <input type="datetime-local" className="form-control" id="timeStart" placeholder="Enter email" name="timeStart" onChange={handleChange} />
+                                    <input required type="datetime-local" className="form-control" id="timeStart" placeholder="Enter email" name="timeStart" onChange={handleChange} />
                                     <label for="timeStart">Thời gian bắt đầu</label>
                                 </div>
                                 <div className="form-floating mb-3 mt-3">
-                                    <input type="datetime-local" className="form-control" id="timeEnd" placeholder="Enter email" name="timeEnd" onChange={handleChange} />
+                                    <input required type="datetime-local" className="form-control" id="timeEnd" placeholder="Enter email" name="timeEnd" onChange={handleChange} />
                                     <label for="timeStart">Thời gian kết thúc</label>
                                 </div>
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleAddType}>Add</button>
+                                <button type="submit" className="btn btn-primary">Add</button>
                             </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
                 <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -206,7 +210,6 @@ function DataTableTimeApprove() {
                     <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Đợt duyệt đề tài</th>
                             <th scope="col">Thời gian bắt đầu</th>
                             <th scope="col">Thời gian kết thúc</th>
                             <th scope="col">Loại đề tài</th>
@@ -217,7 +220,6 @@ function DataTableTimeApprove() {
                         {timeApprove.map((item, index) => (
                             <tr key={index}>
                                 <th scope="row">{index + 1}</th>
-                                <td>{item.registrationName}</td>
                                 <td>{item.timeStart}</td>
                                 <td>{item.timeEnd}</td>
                                 <td>{item.typeSubjectId.typeName}</td>

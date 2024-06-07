@@ -16,14 +16,14 @@ function ManagementStudent() {
       <div className="homeContainer">
         <Navbar />
         <hr />
-        <div className="widgets">
-          <div className='headMana'>
-            <div className='titleMana'>
-              <h3>Quản lý sinh viên</h3>
+        <div className='widgets'>
+          <div className='headMana-class'>
+            <div className='titleMana-class'>
+              <h5>quản lý sinh viên</h5>
             </div>
-            <div className='homeMana'>
-              <Datatable />
-            </div>
+          </div>
+          <div className='homeMana-class'>
+            <Datatable />
           </div>
         </div>
       </div>

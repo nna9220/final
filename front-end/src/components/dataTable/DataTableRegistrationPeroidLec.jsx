@@ -104,7 +104,7 @@ function DataTableRegistrationPeroidLec() {
                     loadData();
                 })
                 .catch(error => {
-                    toast.error("Chỉnh sửa thất bại!")                    
+                    toast.error("Chỉnh sửa thất bại!")
                 });
         } else {
             console.log("Error: No token found or no selected period ID");
@@ -140,7 +140,7 @@ function DataTableRegistrationPeroidLec() {
                     loadData2();
                 })
                 .catch(error => {
-                    toast.error("Chỉnh sửa thất bại!")                    
+                    toast.error("Chỉnh sửa thất bại!")
                 });
         } else {
             console.log("Error: No token found or no selected period ID");
@@ -257,11 +257,13 @@ function DataTableRegistrationPeroidLec() {
     }
 
     return (
-        <div>
-            <ToastContainer/>
+        <div className='content-main'>
+            <ToastContainer />
             <div className='border-container'>
                 <div className='body-table-period'>
-
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddTimeApprove">
+                        Add
+                    </button>
                     <div className="modal fade" id="AddTimeApprove" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div className="modal-dialog">
                             <div className="modal-content">
@@ -291,7 +293,7 @@ function DataTableRegistrationPeroidLec() {
                         </div>
                     </div>
 
-                    <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div className="modal fade" id="EditTimeApprove" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div className="modal-dialog">
                             <div className="modal-content">
                                 <div className="modal-header">
@@ -335,7 +337,7 @@ function DataTableRegistrationPeroidLec() {
                                     <td>{item.registrationTimeEnd}</td>
                                     <td>{item.typeSubjectId.typeName}</td>
                                     <td>
-                                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(item)}>
+                                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#EditTimeApprove" onClick={() => handleEdit(item)}>
                                             Edit
                                         </button>
                                     </td>
@@ -349,6 +351,9 @@ function DataTableRegistrationPeroidLec() {
             <div className='border-container-2'>
                 <div className='body-table-period'>
 
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddTimeApprove2">
+                        Add
+                    </button>
                     <div className="modal fade" id="AddTimeApprove2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div className="modal-dialog">
                             <div className="modal-content">
@@ -377,7 +382,6 @@ function DataTableRegistrationPeroidLec() {
                             </div>
                         </div>
                     </div>
-
                     <div className="modal fade" id="edit2" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div className="modal-dialog">
                             <div className="modal-content">

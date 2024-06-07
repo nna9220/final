@@ -20,10 +20,12 @@ public class CompareTime {
 
     }
 
+    public static boolean isCurrentTimeInIntervalLecturer(LocalDateTime start, LocalDateTime end) {
+        LocalDateTime current = LocalDateTime.now();
+        return !current.isBefore(start) && !current.isAfter(end);
+    }
     private static boolean isCurrentTimeInIntervalStudent(LocalDateTime start, LocalDateTime end) {
         LocalDateTime currentTime = LocalDateTime.now(); // Lấy thời gian hiện tại
-
-        // So sánh thời gian hiện tại với thời gian bắt đầu và kết thúc
         return currentTime.isAfter(start) && currentTime.isBefore(end);
     }
 
@@ -61,7 +63,7 @@ public class CompareTime {
             System.out.println("start 2: " + start2);
             System.out.println("end 2: " + end2);
             System.out.println("current: " + currentTime);
-            return isCurrentTimeInIntervalStudent(start1, end1) || isCurrentTimeInIntervalStudent(start2, end2);
+            return isCurrentTimeInIntervalLecturer(start1, end1) || isCurrentTimeInIntervalLecturer(start2, end2);
         }
         return false;
     }
