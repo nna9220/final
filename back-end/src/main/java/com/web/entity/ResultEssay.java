@@ -17,7 +17,6 @@ public class ResultEssay {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="result_essay_id")
     private int resultId;
-
     @Column(name = "score_instructor")
     private Double scoreInstructor;
 
