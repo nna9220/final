@@ -17,9 +17,9 @@ function Footer() {
                     {/* Phần thông tin liên hệ */}
                     <div className="footer-contact-info">
                         <h3>THÔNG TIN LIÊN HỆ</h3>
-                        <p><BusinessOutlinedIcon className="icon"/> Địa chỉ: Số 1 Võ Văn Ngân, phường Linh Chiểu, TP.Thủ Đức, TP. Hồ Chí Minh</p>
-                        <p><EmailOutlinedIcon className="icon"/> Email: saudaihoc@hcmute.edu.vn</p>
-                        <p><PhonelinkRingOutlinedIcon className="icon"/> Điện thoại: (+84.28) 37225766 hoặc 37221223 (số nội bộ 8125)</p>
+                        <p className='icon-title'><BusinessOutlinedIcon className="icon"/> Địa chỉ: Số 1 Võ Văn Ngân, phường Linh Chiểu, TP.Thủ Đức, TP. Hồ Chí Minh</p>
+                        <p className='icon-title'><EmailOutlinedIcon className="icon"/> Email: saudaihoc@hcmute.edu.vn</p>
+                        <p className='icon-title'><PhonelinkRingOutlinedIcon className="icon"/> Điện thoại: (+84.28) 37225766 hoặc 37221223 (số nội bộ 8125)</p>
                     </div>
                     {/* Phần quick link */}
                     <div className="footer-quick-links">

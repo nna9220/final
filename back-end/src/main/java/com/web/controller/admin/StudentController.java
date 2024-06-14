@@ -102,23 +102,33 @@ public class StudentController {
 
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> createStudentAndPerson(@RequestParam(value = "personId", required = true) String personId,
-                                                    @RequestParam(value = "firstName", required = true) String firstName,
-                                                    @RequestParam(value = "lastName", required = true) String lastName,
-                                                    @RequestParam(value = "email", required = true) String email,
-                                                    @RequestParam(value = "gender", required = true) Boolean gender,
-                                                    @RequestParam(value = "birthDay", required = true) String birthDay,
-                                                    @RequestParam(value = "phone", required = true) String phone,
-                                                    @RequestParam(value = "major", required = true) Major major,
-                                                    @RequestParam(value = "id") int id,
-                                                    @RequestParam(value = "year") int yearId,
-                                                    @RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request){
+    public ResponseEntity<?> createStudentAndPerson(
+            @RequestParam(value = "personId", required = true) String personId,
+            @RequestParam(value = "firstName", required = true) String firstName,
+            @RequestParam(value = "lastName", required = true) String lastName,
+            @RequestParam(value = "email", required = true) String email,
+            @RequestParam(value = "gender", required = true) Boolean gender,
+            @RequestParam(value = "birthDay", required = true) String birthDay,
+            @RequestParam(value = "phone", required = true) String phone,
+            @RequestParam(value = "major", required = true) Major major,
+            @RequestParam(value = "id") int id,
+            @RequestParam(value = "year") int yearId,
+            @RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request) {
         try {
             System.out.println("Class " + id);
             System.out.println("Year" + yearId);
             String token = tokenUtils.extractToken(authorizationHeader);
             Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
             if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
+
+                // Check if the personId or email already exists
+                if (personRepository.existsByPersonId(personId)) {
+                    return new ResponseEntity<>("MSSV đã tồn tại", HttpStatus.CONFLICT);
+                }
+                if (personRepository.existsByUsername(email)) {
+                    return new ResponseEntity<>("Email đã tồn tại", HttpStatus.CONFLICT);
+                }
+
                 Person newPerson = new Person();
                 newPerson.setPersonId(personId);
                 newPerson.setFirstName(firstName);
@@ -131,17 +141,18 @@ public class StudentController {
                 authority.setName("ROLE_STUDENT");
                 newPerson.setAuthorities(authority);
                 newPerson.setStatus(true);
-                //newPerson.setRole(RoleName.valueOf("Student"));
+
                 var person = personRepository.save(newPerson);
                 System.out.println(person.getPersonId());
                 System.out.println(newPerson.getPersonId() + " " + newPerson.getLastName());
-                //Tạo sinh viên -> lấy id từ person vừa tạo
+
+                // Create Student -> take id from the newly created person
                 StudentRequest newStudent = new StudentRequest();
                 newStudent.setStudentId(personId);
                 newStudent.setPersonId(newPerson);
                 newStudent.setMajor(major.name());
+
                 StudentClass existedClass = studentClassRepository.findById(id).orElse(null);
-                System.out.println(id);
                 if (existedClass != null) {
                     newStudent.setStudentClass(existedClass);
                 }
@@ -149,17 +160,19 @@ public class StudentController {
                 if (existedYear != null) {
                     newStudent.setSchoolYear(existedYear);
                 }
+
                 studentService.saveStudent(newStudent);
                 return new ResponseEntity<>(newStudent, HttpStatus.CREATED);
 
             } else {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.info(e.getMessage());
-            return new ResponseEntity<>(e,HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Map<String,Object>> editStudent(@PathVariable String id,
@@ -200,13 +213,14 @@ public class StudentController {
     public ResponseEntity<?> updateUser(@PathVariable String id,
                                         @RequestParam("firstName") String firstName,
                                         @RequestParam("lastName") String lastName,
-                                        @RequestParam("birthDay") String birthDay, // Thay đổi kiểu dữ liệu thành String
+                                        @RequestParam("birthDay") String birthDay,
                                         @RequestParam("phone") String phone,
                                         @RequestParam("gender") boolean gender,
                                         @RequestParam(value = "status", required = false, defaultValue = "true") boolean status,
                                         @RequestParam("username") String username,
                                         @RequestParam("address") String address,
                                         @RequestParam("classes") String classes,
+                                        @RequestParam("major") String major, // Thêm trường chuyên ngành
                                         @RequestHeader("Authorization") String authorizationHeader) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
@@ -214,10 +228,7 @@ public class StudentController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             Person existPerson = personRepository.findById(id).orElse(null);
             Student existStudent = studentRepository.findById(id).orElse(null);
-            System.out.println("Id: " + id);
-            System.out.println("Check admin ok");
             if (existPerson != null && existStudent != null) {
-                System.out.println("Check student and person not null");
                 existPerson.setFirstName(firstName);
                 existPerson.setLastName(lastName);
                 existPerson.setBirthDay(birthDay);
@@ -226,6 +237,7 @@ public class StudentController {
                 existPerson.setPhone(phone);
                 existPerson.setGender(gender);
                 existPerson.setStatus(status);
+                existStudent.setMajor(Major.valueOf(major)); // Cập nhật chuyên ngành
                 StudentClass studentClass = studentClassRepository.getStudentClassByClassname(classes);
                 existStudent.setStudentClass(studentClass);
                 personRepository.save(existPerson);
@@ -238,6 +250,7 @@ public class StudentController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
     @PostMapping("/delete/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> deleteStudent(@PathVariable String id, @RequestHeader("Authorization") String authorizationHeader) {

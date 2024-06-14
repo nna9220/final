@@ -64,7 +64,7 @@ const SidebarAdmin = () => {
           <hr style={{ color: '#fff' }}></hr>
           {!isAvatarVisible && (
             <div className="sidebar-header">
-              <FcPortraitMode size={70} />
+              <FcPortraitMode size={50} />
               <div className="user-info">
                 <span className="user-name"><strong>{admin.firstName + ' ' + admin.lastName}</strong></span>
                 <span className="user-role">Administrator</span>
@@ -149,7 +149,7 @@ const SidebarAdmin = () => {
               </a>
             </li>
             <li className="sidebar-item">
-              <a href="" className="sidebar-link">
+              <a href="/managermentContact" className="sidebar-link">
                 <i className="lni lni-cog"><ContactSupportOutlinedIcon /></i>
                 <span>Giải đáp - Liên hệ</span>
               </a>

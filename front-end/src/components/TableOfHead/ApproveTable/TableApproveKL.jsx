@@ -18,14 +18,14 @@ function TableApproveKL() {
     const [toastMessage, setToastMessage] = useState("Duyệt đề tài không thành công!");
     const [subjectName, setSubjectName] = useState();
     const [subjectId, setSubjectId] = useState(null);
+    const [isApprovalPeriod, setIsApprovalPeriod] = useState(true);
 
     useEffect(() => {
         console.log("Token: " + userToken);
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                loadListDelete();
-                loadTopics();
+                loadTimeApprove();
             }
         }
     }, [userToken]);
@@ -108,6 +108,23 @@ function TableApproveKL() {
             });
     }
 
+    const loadTimeApprove = () => {
+        axiosInstance.get('/head/subject/timeApprove', {
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+            },
+        })
+            .then(response => {
+                setIsApprovalPeriod(true);
+                loadTopics();
+                loadListDelete();
+            })
+            .catch(error => {
+                setIsApprovalPeriod(false);
+                setToastMessage("Không nằm trong thời gian duyệt đề tài!!!");
+            });
+    };
+
     const columns = [
         { field: 'id', headerName: '#', width: 60 },
         { field: 'subjectName', headerName: 'Tên đề tài', width: 250 },
@@ -144,12 +161,14 @@ function TableApproveKL() {
 
     return (
         <div className='body-table'>
-            <button className='button-listDelete-approve' onClick={() => setShowTable(!showTable)}>
-                {showTable ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách đề tài chưa duyệt</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách đề tài đã xóa</>}
-            </button>
+            {isApprovalPeriod && (
+                <button className='button-listDelete-approve' onClick={() => setShowTable(!showTable)}>
+                    {showTable ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách đề tài chưa duyệt</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách đề tài đã xóa</>}
+                </button>
+            )}
 
-            {showTable ? (
-                <div>
+            {isApprovalPeriod ? (
+                !showTable ? (
                     <div className='home-table table-approve'>
                         <DataGrid
                             rows={topicsDeleted}
@@ -161,19 +180,25 @@ function TableApproveKL() {
                             pageSizeOptions={[10, 25, 50]}
                         />
                     </div>
-                </div>
+                ) : (
+                    <div className='home-table table-approve'>
+                        <DataGrid
+                            rows={topics}
+                            columns={columns}
+                            initialState={{
+                                ...topics.initialState,
+                                pagination: { paginationModel: { pageSize: 10 } },
+                            }}
+                            pageSizeOptions={[10, 25, 50]}
+                        />
+                    </div>
+                )
             ) : (
-                <div className='home-table table-approve'>
-                    <DataGrid
-                        rows={topics}
-                        columns={columns}
-                        initialState={{
-                            ...topics.initialState,
-                            pagination: { paginationModel: { pageSize: 10 } },
-                        }}
-                        pageSizeOptions={[10, 25, 50]}
-                    />
-                </div>
+                <>
+                    <div className="alert alert-warning alert-head" role="alert" style={{ backgroundColor: 'white', border: 'none' }}>
+                        {toastMessage}
+                    </div>
+                </>
             )}
 
             <div class="modal fade" id="approve" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

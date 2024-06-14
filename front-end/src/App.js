@@ -47,6 +47,9 @@ import ManagementComplete from './Pages/Head/ManagementComplete';
 import ManagementGuest from './Pages/Admin/ManagementGuest';
 import ManagementClass from './Pages/Admin/ManagementClass';
 import ProtectedRoute from './components/AuthorizationURL/ProtectedRoute';
+import ReferTLCN from './components/ReferTLCN';
+import ReferKLTN from './components/ReferKLTN';
+import ManagementContact from './Pages/Admin/ManagementContact';
 
 function App() {
   return (
@@ -67,6 +70,8 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/info-teacher" element={<Team />} />
           <Route path="/info-teacher/:lecturerId" element={<InforTeacher />} />
+          <Route path="/referTL" element={<ReferTLCN/>}/>
+          <Route path="/referKL" element={<ReferKLTN/>}/>
         </Route>
 
         {/* Tách riêng trang Login không hiển thị Header và Footer */}
@@ -83,6 +88,7 @@ function App() {
         <Route path='/managermentTopics' element={<ManagementTopics/>}/>
         <Route path='/managermentType' element={<ManagementType/>}/>
         <Route path='/managermentGuest' element={<ManagementGuest/>}/>
+        <Route path='/managermentContact' element={<ManagementContact/>}/>
 
         <Route path="/homeStudent" element={<HomeStudent />} />
         <Route path="/managermentTopicStudent" element={<ManagementTopic />} />

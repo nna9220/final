@@ -84,22 +84,24 @@ public class FeedbackController {
                 newFeedback.setContent(content);
                 LocalDateTime now = LocalDateTime.now();
                 newFeedback.setTime(now);
-                var feed = feedbackRepository.save(newFeedback);
+                Feedback feed = feedbackRepository.save(newFeedback);
                 existedContact.setFeedback(feed);
                 existedContact.setStatus(true);
                 contactRepository.save(existedContact);
                 String subject = "Phản hồi liên hệ";
-                String messenger = "Chào bạn, hcmute đã nhận được liên hệ từ bạn với câu hỏi" + existedContact.getContent() + " chúng tôi xin trả lời câu hỏi của bạn: " + "\n"
-                        +feed.getContent();
+                StringBuilder messenger = new StringBuilder("Chào bạn, hcmute đã nhận được liên hệ từ bạn với câu hỏi ")
+                        .append(existedContact.getContent())
+                        .append(" chúng tôi xin trả lời câu hỏi của bạn:\n")
+                        .append(feed.getContent());
                 //Gửi mail cho Hội đồng - SV
                 List<String> emailPerson = new ArrayList<>();
                 emailPerson.add(existedContact.getEmail());
-                mailService.sendMailToPerson(emailPerson,subject,messenger);
-                return new ResponseEntity<>(feedbackRepository,HttpStatus.OK);
-            }else {
+                mailService.sendMailToPerson(emailPerson, subject, messenger.toString());
+                return new ResponseEntity<>(feed, HttpStatus.OK);
+            } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-        }else {
+        } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }

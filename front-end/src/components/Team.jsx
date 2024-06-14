@@ -14,7 +14,7 @@ function Team() {
 
     useEffect(() => {
         document.title = "Danh sách giảng viên";
-        axiosInstance.get("/team")
+        axiosInstance.get("/public/team")
             .then(response => {
                 console.log("API response:", response.data);
                 setUser(response.data);
@@ -42,7 +42,7 @@ function Team() {
     return (
         <div className="hero">
             <div className="card text-bg-white">
-                <img src="/assets/Teacher.jpg" height='400px' className="card-img" alt="..." />
+                <img src="/assets/Teacher.jpg" style={{width:'100%'}} className="card-img" alt="..." />
             </div>
             <div className='breadcrumb-menu'>
                 <nav aria-label="breadcrumb">
