@@ -2,7 +2,7 @@ import React from 'react'
 import { Eventcalendar, getJson, setOptions, Toast } from '@mobiscroll/react';
 import { useCallback, useMemo, useState, useEffect } from 'react';
 import "@mobiscroll/react/dist/css/mobiscroll.min.css";
-import './TimeLineOfStudent.scss'
+import './TimeLineOfLecturer.scss'
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
 
@@ -89,13 +89,13 @@ const TimeLineOfLecturer= ({ subjectId }) =>  {
   }, []);
 
   return (
-    <div className="md-drag-drop-calendar">
+    <div className="md-drag-drop-calendar-lecturer">
       <Eventcalendar
         view={myView}
         data={firstEvents}
         resources={firstResources}
         height={500}
-        width={1150}
+        width={1050}
         dragToMove={true}
         eventDelete={true}
         externalDrag={true}

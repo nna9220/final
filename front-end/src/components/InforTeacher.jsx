@@ -19,7 +19,7 @@ function InforTeacher() {
     useEffect(() => {
         const fetchTeacherInfo = async () => {
             try {
-                const response = await axiosInstance.get(`/team/profile/${lecturerId}`);
+                const response = await axiosInstance.get(`/public/team/profile/${lecturerId}`);
                 console.log("profile: ", response.data);
                 setTeacher(response.data);
             } catch (error) {

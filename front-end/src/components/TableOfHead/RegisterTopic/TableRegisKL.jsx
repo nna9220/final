@@ -19,19 +19,19 @@ function TableRegisKL() {
         student2: null,
         student3: null,
     });
-    const [students, setStudents]= useState([]);
+    const [students, setStudents] = useState([]);
     const [periods, setPeriods] = useState([]);
     const [currentPeriod, setCurrentPeriod] = useState(null);
 
     useEffect(() => {
         loadStudents();
-        
+
     }, []);
 
     useEffect(() => {
         if (periods.length > 0) {
             const currentDate = new Date();
-            const currentDateTime = currentDate.getTime(); 
+            const currentDateTime = currentDate.getTime();
             const currentPeriod = periods.find(period => {
                 const startTime = convertStringToDate(period.registrationTimeStart).getTime();
                 const endTime = convertStringToDate(period.registrationTimeEnd).getTime();
@@ -41,7 +41,7 @@ function TableRegisKL() {
             console.log("Thời gian hiện tại: ", currentDateTime);
         }
     }, [periods]);
-    
+
     function convertStringToDate(dateTimeString) {
         const [datePart, timePart] = dateTimeString.split(' ');
         const [day, month, year] = datePart.split('/');
@@ -91,15 +91,15 @@ function TableRegisKL() {
                 'Authorization': `Bearer ${userToken}`,
             },
         })
-        .then(response => {
-            console.log('Danh sách sinh viên:', response.data);
-            setStudents(response.data);
-            setIsLoading(false);
-        })
-        .catch(error => {
-            console.error(error);
-            console.log("Lỗi");
-        });
+            .then(response => {
+                console.log('Danh sách sinh viên:', response.data);
+                setStudents(response.data);
+                setIsLoading(false);
+            })
+            .catch(error => {
+                console.error(error);
+                console.log("Lỗi");
+            });
     };
 
     const getPeriod = () => {
@@ -135,14 +135,16 @@ function TableRegisKL() {
             {currentPeriod ? (
                 <div>
                     <h3>Đang trong đợt đăng ký: {currentPeriod.registrationName}</h3>
-                    <p>Thời gian bắt đầu: {currentPeriod.registrationTimeEnd}</p>
-                    <p>Thời gian kết thúc: {currentPeriod.registrationTimeStart}</p>
+                    <p>Thời gian bắt đầu: {currentPeriod.registrationTimeStart}</p>
+                    <p>Thời gian kết thúc: {currentPeriod.registrationTimeEnd}</p>
                 </div>
             ) : (
                 <>
-                    <div className="alert alert-warning alert-head" role="alert">
-                        <WarningOutlinedIcon /> Hiện tại không nằm trong thời gian đăng ký đề tài !!!
-                    </div>
+                    <>
+                        <div className="alert alert-warning alert-head" role="alert" style={{backgroundColor:'white', border:'none'}}>
+                            <WarningOutlinedIcon /> Hiện tại không nằm trong thời gian đăng ký đề tài !!!
+                        </div>
+                    </>
                 </>
             )}
             <Toast show={showAddToast} style={{ position: 'fixed', top: '80px', right: '10px' }}>
@@ -150,7 +152,7 @@ function TableRegisKL() {
                     <strong className="me-auto">Thông báo</strong>
                 </Toast.Header>
                 <Toast.Body>
-                    Đăng ký đề tài thành công! Nhấn vào <button style={{border:'none', backgroundColor:'green', color:'white'}} onClick={reloadForm}><CheckOutlinedIcon/></button> để xác nhận.
+                    Đăng ký đề tài thành công! Nhấn vào <button style={{ border: 'none', backgroundColor: 'green', color: 'white' }} onClick={reloadForm}><CheckOutlinedIcon /></button> để xác nhận.
                 </Toast.Body>
             </Toast>
             <Toast show={showErrorToastAdd} onClose={() => setShowErrorToastAdd(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
@@ -162,7 +164,7 @@ function TableRegisKL() {
                 </Toast.Body>
             </Toast>
             <div className='menuItems'>
-            {currentPeriod && (
+                {currentPeriod && (
                     <>
                         <div className='title'>
                             <h3>ĐĂNG KÝ ĐỀ TÀI</h3>

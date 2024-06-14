@@ -12,7 +12,7 @@ const Navbar = () => {
     };
     
     return (
-        <div>
+        <div className="header-home">
             <header class="header">
                 <div class="logo">
                     <img onClick={() => { setMenu("home") }} src="/assets/logo-lv1.png" /> {menu === "home" ? <h /> : <></>}

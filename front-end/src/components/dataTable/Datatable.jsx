@@ -75,24 +75,48 @@ function DataTable() {
         event.preventDefault();
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log(formData);
-        axiosInstance.post('/admin/student/create',
-            formData
-            , {
-                headers: {
-                    'Authorization': `Bearer ${userToken}`,
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
+
+        axiosInstance.post('/admin/student/create', formData, {
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+                'Content-Type': 'multipart/form-data',
+            },
+        })
             .then(response => {
                 console.log('Sinh viên đã được tạo thành công:', response.data);
-                setShowModalAdd(false);
-                toast.success("Thêm sinh viên thành công!")
+                setShowModalAdd(false); // Đóng modal
+                toast.success("Thêm sinh viên thành công!");
+                loadData();
+                cleanupModal();
             })
             .catch(error => {
                 console.error(error);
-                console.log("Lỗi");
-                toast.error("Lỗi thêm sinh viên!")
+
+                if (error.response) {
+                    if (error.response.status === 409) {
+                        if (error.response.data === "MSSV đã tồn tại") {
+                            toast.error("MSSV đã tồn tại!");
+                        } else if (error.response.data === "Email đã tồn tại") {
+                            toast.error("Email đã tồn tại!");
+                        } else {
+                            toast.error("Lỗi thêm sinh viên!");
+                        }
+                    } else {
+                        toast.error("Lỗi thêm sinh viên!");
+                    }
+                } else if (error.request) {
+                    toast.error("Không nhận được phản hồi từ máy chủ!");
+                } else {
+                    toast.error("Đã xảy ra lỗi khi gửi yêu cầu!");
+                }
             });
+    };
+
+
+    const cleanupModal = () => {
+        document.body.classList.remove('modal-open');
+        const backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) backdrop.remove();
     };
 
     const handleGenderChange = (e) => {
@@ -105,6 +129,14 @@ function DataTable() {
         setUserEdit(prevState => ({
             ...prevState,
             classes: value
+        }));
+    };
+
+    const handleMajorChange = (e) => {
+        const value = e.target.value;
+        setUserEdit(prevState => ({
+            ...prevState,
+            major: value
         }));
     };
 
@@ -152,31 +184,35 @@ function DataTable() {
 
     const [isDataFetched, setIsDataFetched] = useState(false);
 
+    const loadData = () => {
+        const tokenSt = sessionStorage.getItem('userToken');
+        if (tokenSt) {
+            axiosInstance.get('/admin/student', {
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
+                },
+            })
+                .then(response => {
+                    const studentsArray = response.data.students || [];
+                    setStudents(studentsArray);
+                    const classArray = response.data.listClass || [];
+                    setClasses(classArray);
+                    const yearsArray = response.data.listYear || [];
+                    setYear(yearsArray);
+                    const majorArray = response.data.major || [];
+                    setMajr(majorArray);
+                    console.log("Data Student:  ", response.data);
+                    setIsDataFetched(true); // Đánh dấu rằng dữ liệu đã được lấy
+                })
+                .catch(error => {
+                    console.error("error: ", error);
+                });
+        }
+    };
+
     useEffect(() => {
         if (!isDataFetched) {
-            const tokenSt = sessionStorage.getItem('userToken');
-            if (tokenSt) {
-                axiosInstance.get('/admin/student', {
-                    headers: {
-                        'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
-                    },
-                })
-                    .then(response => {
-                        const studentsArray = response.data.students || [];
-                        setStudents(studentsArray);
-                        const classArray = response.data.listClass || [];
-                        setClasses(classArray);
-                        const yearsArray = response.data.listYear || [];
-                        setYear(yearsArray);
-                        const majorArray = response.data.major || [];
-                        setMajr(majorArray);
-                        console.log("Data Student:  ", response.data);
-                        setIsDataFetched(true); // Đánh dấu rằng dữ liệu đã được lấy
-                    })
-                    .catch(error => {
-                        console.error("error: ", error);
-                    });
-            }
+            loadData();
         }
     }, [isDataFetched]);
 
@@ -205,7 +241,8 @@ function DataTable() {
                         username: data.student.person.username,
                         address: data.student.person.address,
                         status: data.student.person.status,
-                        classes: data.student.studentClass.classname
+                        classes: data.student.studentClass.classname,
+                        major: data.student.major
                     }));
                     setGender(data.student.person.gender);
                     setClassName(data.student.studentClass.classname);
@@ -234,17 +271,7 @@ function DataTable() {
         formDataEdit.append('status', userEdit.status);
         formDataEdit.append('gender', gender);
         formDataEdit.append('classes', userEdit.classes);
-
-        console.log('personId', userEdit.personId);
-        console.log('firstName', userEdit.firstName);
-        console.log('lastName', userEdit.lastName);
-        console.log('birthDay', userEdit.birthDay);
-        console.log('phone', userEdit.phone);
-        console.log('username', userEdit.username);
-        console.log('address', userEdit.address);
-        console.log('status', userEdit.status);
-        console.log('gender', gender);
-        console.log('classes', classname);
+        formDataEdit.append('major', userEdit.major); // Thêm trường chuyên ngành
 
         axiosInstance.post(`/admin/student/edit/${id}`, formDataEdit, {
             headers: {
@@ -253,7 +280,6 @@ function DataTable() {
             },
         })
             .then(response => {
-                console.log("EditHeaderSuccess: ", response.data);
                 const updatedStudents = students.map(student => {
                     if (student.person.personId === id) {
                         return {
@@ -269,15 +295,16 @@ function DataTable() {
                                 address: userEdit.address
                             },
                             student: {
-                                classes: userEdit.classes
+                                classes: userEdit.classes,
+                                major: userEdit.major // Cập nhật chuyên ngành
                             }
                         };
                     }
-                    console.log("Student: " + student);
                     return student;
                 });
                 setStudents(updatedStudents);
                 toast.success("Chỉnh sửa sinh viên thành công!")
+                setShowModal(false);
             })
             .catch(error => {
                 toast.error("Chỉnh sửa sinh viên thất bại")
@@ -285,36 +312,13 @@ function DataTable() {
             })
     };
 
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setUserEdit(prevState => ({
             ...prevState,
             [name]: value
         }));
-    };
-
-    const handleExport = () => {
-        const tokenSt = sessionStorage.getItem('userToken');
-        axiosInstance.get('/admin/student/export', {
-            responseType: 'blob',
-            headers: {
-                'Authorization': `Bearer ${tokenSt}`,
-            },
-        })
-            .then(response => {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', 'classes_report.xls');
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                toast.success("Xuất file thành công!")
-            })
-            .catch(error => {
-                console.error("Export error: ", error);
-                toast.error('Xuất file thất bại!')
-            });
     };
 
     const handleFileChange = (event) => {
@@ -384,18 +388,43 @@ function DataTable() {
         },
     ];
 
+    const handleExportTemplate = () => {
+        const templateFilePath = `${process.env.PUBLIC_URL}/templateImportSV.xlsx`;
+        const templateFileUrl = URL.createObjectURL(new Blob([templateFilePath], { type: 'application/octet-stream' }));
+
+        // Trigger download
+        const link = document.createElement('a');
+        link.href = templateFileUrl;
+        link.setAttribute('download', 'templateImportSV.xlsx');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <div className='homeContainerSt'>
             <div className='content-table'>
                 <ToastContainer />
                 <div className='header-table'>
                     <div className='btn-add'>
-                        <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddStudent" style={{ marginBottom: '10px', marginRight: '20px' }}>
-                            Add
+                        <button
+                            type="button"
+                            className="btn btn-success"
+                            data-bs-toggle="modal"
+                            data-bs-target="#AddStudent"
+                            style={{ marginBottom: '10px', marginRight: '20px' }}
+                            onClick={() => setShowModalAdd(true)}
+                        >
+                            Thêm
                         </button>
 
-                        <button type="button" className="btn btn-primary" style={{ marginBottom: '10px' }} onClick={handleExport}>
-                            <SaveAltIcon />Export
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            style={{ marginBottom: '10px' }}
+                            onClick={handleExportTemplate}
+                        >
+                            <SaveAltIcon />Mẫu file nhập dữ liệu cho Sinh viên
                         </button>
 
                         <div class="input-group">
@@ -410,24 +439,35 @@ function DataTable() {
                 </div>
                 {showDeletedStudents && (
                     <DataGrid
-                        rows={students.filter(student => !student.person?.status).map((student, index) => ({
-                            id: index + 1,
-                            studentId: student.studentId,
-                            fullName: `${student.person?.firstName} ${student.person.lastName}`,
-                            gender: student.person?.gender ? 'Nữ' : 'Nam',
-                            phone: student.person?.phone,
-                            classes: student.studentClass?.classname,
-                            schoolYear: student.schoolYear?.year,
-                        }))}
+                        rows={students
+                            .filter(student => !student.person?.status)
+                            .map((student, index) => ({
+                                id: index + 1,
+                                studentId: student.studentId,
+                                fullName: `${student.person?.firstName} ${student.person.lastName}`,
+                                lastName: student.person?.lastName, // Thêm trường lastName
+                                gender: student.person?.gender ? 'Nữ' : 'Nam',
+                                phone: student.person?.phone,
+                                classes: student.studentClass?.classname,
+                                schoolYear: student.schoolYear?.year,
+                            }))
+                            .sort((a, b) => {
+                                const lastNameA = a.lastName.toUpperCase(); // Chuyển họ thành chữ hoa để so sánh
+                                const lastNameB = b.lastName.toUpperCase();
+                                if (lastNameA < lastNameB) return -1;
+                                if (lastNameA > lastNameB) return 1;
+                                return 0;
+                            })
+                        }
                         columns={columns}
                         initialState={{
                             ...students.initialState,
                             pagination: { paginationModel: { pageSize: 10 } },
                         }}
                         pageSizeOptions={[10, 25, 50]}
-
                     />
                 )}
+
 
                 {!showDeletedStudents && (
                     <DataGrid
@@ -487,6 +527,8 @@ function DataTable() {
                                         <label htmlFor='phone' className="form-label">Số điện thoại</label>
                                         <input required type="text" className="form-control" id="phone" name="phone" value={userEdit.phone} onChange={handleChange} />
                                     </div>
+                                </div>
+                                <div className="row mb-3">
                                     <div className="col">
                                         <label htmlFor='gender' className="form-label">Giới tính</label>
                                         <div style={{ display: 'flex' }}>
@@ -500,10 +542,18 @@ function DataTable() {
                                             </div>
                                         </div>
                                     </div>
+                                    <div className="col">
+                                        <label htmlFor="major" className="form-label">Chuyên ngành</label>
+                                        <select required className="form-select" id="major" value={userEdit.major} onChange={handleMajorChange} name="major">
+                                            {major.map((item, index) => (
+                                                <option key={index} value={item}>{item}</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor='address' className="form-label">Địa chỉ</label>
-                                    <input type="text" className="form-control" id="address" name="address" value={userEdit.address || 'Chưa có' } onChange={handleChange} />
+                                    <input type="text" className="form-control" id="address" name="address" value={userEdit.address || 'Chưa có'} onChange={handleChange} />
                                 </div>
                                 <div className='row mb-3'>
                                     <div className="col">
@@ -535,42 +585,54 @@ function DataTable() {
                     </div>
                 </div>
 
-                <div className="modal fade" id="AddStudent" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: showModalAdd ? 'block' : 'none' }}>
+                <div
+                    className={`modal fade ${showModalAdd ? 'show' : ''}`}
+                    id="AddStudent"
+                    tabIndex="-1"
+                    aria-labelledby="exampleModalLabelAdd"
+                    aria-hidden={!showModalAdd}
+                    style={{ display: showModalAdd ? 'block' : 'none' }}>
                     <div className="modal-dialog modal-lg modal-dialog-scrollable" onSubmit={handleSubmitAdd}>
                         <form className="modal-content">
                             <div className="modal-header">
-                                <h1 className="modal-title fs-5" id="exampleModalLabel">THÊM SINH VIÊN</h1>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <h1 className="modal-title fs-5" id="exampleModalLabelAdd">THÊM SINH VIÊN</h1>
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Close"
+                                    onClick={() => setShowModalAdd(false)}>
+                                </button>
                             </div>
                             <div className="modal-body">
                                 <div className="mb-3">
-                                    <label htmlFor="id" className="form-label">MSSV</label>
+                                    <label htmlFor="id" className="form-label">MSSV <span className='note-required'>*</span></label>
                                     <input required type="text" className="form-control" id="id" name="personId" value={formData.personId} onChange={handleChangeAdd} />
                                 </div>
                                 <div className="row mb-3">
                                     <div className="col">
-                                        <label htmlFor="firstName" className="form-label">Họ</label>
+                                        <label htmlFor="firstName" className="form-label">Họ <span className='note-required'>*</span></label>
                                         <input type="text" className="form-control" id="firstName" name="firstName" value={formData.firstName} onChange={handleChangeAdd} required />
                                     </div>
                                     <div className="col">
-                                        <label htmlFor="lastName" className="form-label">Tên</label>
+                                        <label htmlFor="lastName" className="form-label">Tên <span className='note-required'>*</span></label>
                                         <input type="text" className="form-control" id="lastName" name="lastName" value={formData.lastName} onChange={handleChangeAdd} required />
                                     </div>
                                 </div>
                                 <div className="row mb-3">
                                     <div className="col">
-                                        <label htmlFor="email" className="form-label">Email</label>
+                                        <label htmlFor="email" className="form-label">Email <span className='note-required'>*</span></label>
                                         <input type="email" className="form-control" id="email" name="email" value={formData.email} onChange={handleChangeAdd} required />
                                     </div>
                                     <div className="col">
-                                        <label htmlFor="phone" className="form-label">Số điện thoại</label>
+                                        <label htmlFor="phone" className="form-label">Số điện thoại <span className='note-required'>*</span></label>
                                         <input type="text" className="form-control" id="phone" name="phone" value={formData.phone} onChange={handleChangeAdd} required />
-                                        <div class="form-text">Số điện thoại gồm 10 số.</div>
+                                        <div className="form-text">Số điện thoại gồm 10 số.</div>
                                     </div>
                                 </div>
                                 <div className="row mb-3">
                                     <div className="col">
-                                        <label htmlFor='genderAdd' className="form-label">Giới tính</label>
+                                        <label htmlFor='genderAdd' className="form-label">Giới tính <span className='note-required'>*</span></label>
                                         <div style={{ display: 'flex' }}>
                                             <div>
                                                 <input required type="radio" id="nam" name="gender" value="Nam" checked={formData.gender === false} onChange={handleChangeAdd} />
@@ -583,14 +645,14 @@ function DataTable() {
                                         </div>
                                     </div>
                                     <div className="col">
-                                        <label htmlFor="birthDay" className="form-label">Ngày sinh</label>
+                                        <label htmlFor="birthDay" className="form-label">Ngày sinh <span className='note-required'>*</span></label>
                                         <input type="date" className="form-control" id="birthDay" name="birthDay" value={formData.birthDay} onChange={handleChangeAdd} required />
                                     </div>
                                 </div>
                                 <div className="row mb-3">
                                     <div className="col">
-                                        <label htmlFor="major" className="form-label">Chuyên ngành</label>
-                                        <select className="form-select" id="major" value={formData.major.name} onChange={handleChangeAdd} name="major" required>
+                                        <label htmlFor="major" className="form-label">Chuyên ngành <span className='note-required'>*</span></label>
+                                        <select className="form-select" id="major" value={formData.major} onChange={handleChangeAdd} name="major" required>
                                             <option value="">Chọn ...</option>
                                             {major.map((majorItem, index) => (
                                                 <option key={index} value={majorItem}>{majorItem}</option>
@@ -600,8 +662,8 @@ function DataTable() {
                                 </div>
                                 <div className="row mb-3">
                                     <div className="col">
-                                        <label htmlFor="class" className="form-label">Lớp</label>
-                                        <select className="form-select" id="class" value={formData.id.id} onChange={handleChangeAdd} name="id" required>
+                                        <label htmlFor="class" className="form-label">Lớp <span className='note-required'>*</span></label>
+                                        <select className="form-select" id="class" value={formData.id} onChange={handleChangeAdd} name="id" required>
                                             <option value="">Chọn ...</option>
                                             {classes.map((classItem, index) => (
                                                 <option key={index} value={classItem.id}>{classItem.classname}</option>
@@ -609,7 +671,7 @@ function DataTable() {
                                         </select>
                                     </div>
                                     <div className="col">
-                                        <label htmlFor="year" className="form-label">Niên khóa</label>
+                                        <label htmlFor="year" className="form-label">Niên khóa <span className='note-required'>*</span></label>
                                         <select className="form-select" id="year" value={formData.year} onChange={handleChangeAdd} name="year" required>
                                             <option value="">Chọn ...</option>
                                             {years.map((yearItem, index) => (

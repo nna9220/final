@@ -6,7 +6,8 @@ import ViewComfyAltOutlinedIcon from '@mui/icons-material/ViewComfyAltOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import axiosInstance from '../../../API/axios';
 import Booard from '../../KanbanOfLecturer/Booard';
-
+import ChevronLeftOutlinedIcon from '@mui/icons-material/ChevronLeftOutlined';
+import './TopicTable.scss'
 export default function TopicTable() {
     const [topics, setTopics] = useState([]);
     const [activeTLChuyenNganh, setActiveTLChuyenNganh] = useState(false);
@@ -46,25 +47,7 @@ export default function TopicTable() {
                 console.error(error);
             });
     }
-
-    const listSubjectGraduation = () => {
-        axiosInstance.get('/lecturer/subjectGraduation', {
-            headers: {
-                'Authorization': `Bearer ${userToken}`,
-            }
-        })
-            .then(response => {
-                console.log("TopicKL: ", response.data);
-                setTopics(response.data.listSubject);
-                setActiveKhoaLuan(true);
-                setActiveTLChuyenNganh(false);
-                setShowButtons(true);
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    }
-
+    
     const handleShowManagementTask = (subjectId, subjectName) => {
         setSelectedSubjectId(subjectId);
         setSelectedSubjectName(subjectName);
@@ -224,12 +207,16 @@ export default function TopicTable() {
                     <div className='group-lecturer'>
                         <nav aria-label="breadcrumb">
                             <ol className="breadcrumb">
-                                <li className="breadcrumb-item"><a href="#" onClick={handleGoBack}>Danh sách đề tài</a></li>
+                                <li className="breadcrumb-item"><a href="#" onClick={handleGoBack}> <ChevronLeftOutlinedIcon /> Danh sách đề tài</a></li>
                                 <li className="breadcrumb-item active" aria-current="page">{selectedSubjectName}</li>
                             </ol>
                         </nav>
                         <button data-bs-toggle="modal" data-bs-target="#modalApproval2">Hoàn thành đề tài</button>
                     </div>
+                    {/*<div className='files'>
+                        <p>Báo cáo 50%: {}</p>
+                        <p>Báo cáo 100%</p>
+                    </div>*/}
                 </>
             )}
             {showManagementTask ? (
@@ -260,7 +247,7 @@ export default function TopicTable() {
                                     <td>{item.student3 || ''}</td>
                                     <td>{item.typeSubject?.typeName || ''}</td>
                                     <td>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <div style={{ display: 'flex'}}>
                                             <button className="management" type="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Đi đến chi tiết để quản lý đề tài" onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}><ViewComfyAltOutlinedIcon /></button>
                                             <div class="dropdown">
                                                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">

@@ -4,6 +4,8 @@ import './EditProfile.scss';
 import AutoFixNormalOutlinedIcon from '@mui/icons-material/AutoFixNormalOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import { Alert, Toast } from 'react-bootstrap';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from 'react-toastify';
 import axiosInstance from '../../../API/axios';
 import moment from 'moment';
 import { FcPortraitMode } from "react-icons/fc";
@@ -20,7 +22,6 @@ function EditProfile() {
         address: ''
     });
     const [showModal, setShowModal] = useState(false);
-    const [showSuccessToast, setShowSuccessToast] = useState(false);
     const [showErrorToast, setShowErrorToast] = useState(false);
     const [errorPhone, setErrorPhone] = useState('');
     const [errorFirstName, setErrorFirstName] = useState('');
@@ -238,13 +239,12 @@ function EditProfile() {
                     .then(response => {
                         console.log("EditHeaderSuccess: ", response.data);
                         setUser(response.data);
-                        setShowSuccessToast(true);
+                        toast.success("Cập nhật thông tin thành công!")
                         setShowModal(false);
-                        setTimeout(() => setShowSuccessToast(false), 3000);
                     })
                     .catch(error => {
                         console.error(error);
-                        setShowErrorToast(true);
+                        toast.error("Cập nhật thông tin thất bại!")
                     })
             }
         }
@@ -276,26 +276,7 @@ function EditProfile() {
     return (
         <div>
             <div class="container">
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
-                        <Toast className='toast align-items-center' show={showSuccessToast} onClose={() => setShowSuccessToast(false)} delay={3000} autohide>
-                            <Toast.Header>
-                                <strong className="me-auto">Thông báo</strong>
-                            </Toast.Header>
-                            <Toast.Body style={{ color: 'green' }}>
-                                Cập nhật thông tin cá nhân thành công!
-                            </Toast.Body>
-                        </Toast>
-                        <Toast className='toast align-items-center' show={showErrorToast} onClose={() => setShowSuccessToast(false)} delay={3000} autohide>
-                            <Toast.Header>
-                                <strong className="me-auto">Thông báo</strong>
-                            </Toast.Header>
-                            <Toast.Body style={{ color: 'red' }}>
-                                Cập nhật thông tin cá nhân thất bại!
-                            </Toast.Body>
-                        </Toast>
-                    </div>
-                </div>
+                <ToastContainer/>
                 <br />
                 <div class="row gutters">
                     <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">

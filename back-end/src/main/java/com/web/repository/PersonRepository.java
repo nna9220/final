@@ -23,5 +23,6 @@ public interface PersonRepository extends JpaRepository<Person,String> {
 
     @Query("SELECT p FROM Person p WHERE p.username=:username")
     public Person findUsername(@Param("username") String username);
-
+    boolean existsByPersonId(String personId);  // Thêm phương thức này
+    boolean existsByUsername(String username);
 }
