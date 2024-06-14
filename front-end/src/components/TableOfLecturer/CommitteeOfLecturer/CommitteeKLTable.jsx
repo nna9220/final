@@ -194,33 +194,30 @@ function CommitteeKLTable() {
                                     </div>
                                     <hr />
                                     <h5>Tiêu chí đánh giá</h5>
-                                    <table className='table-bordered table'>
-                                        <thead>
-                                            <tr>
-                                                <th>Tiêu chí đánh giá</th>
-                                                {['student1', 'student2', 'student3'].map((student, index) => (
-                                                    <th key={index}>Sinh viên {index + 1}</th>
-                                                ))}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {criterias.map((criteria, criteriaIndex) => (
-                                                <tr key={criteriaIndex}>
-                                                    <td className='criteria'>{criteria.criteriaName}</td>
-                                                    {['student1', 'student2', 'student3'].map((student, studentIndex) => (
-                                                        <td key={studentIndex}>
-                                                            <input
-                                                                type='number'
-                                                                step='0.25'
-                                                                max={criteria.criteriaScore}
-                                                                min={0}
-                                                                value={scores[`${detail.subject[student]}_${criteria.criteriaName}`] || 0}
-                                                                onChange={(e) => handleScoreChange(detail.subject[student], criteria.criteriaName, e.target.value)}
-                                                            />
-                                                        </td>
-                                                    ))}
+                                    <tbody>
+                                            {criterias.length > 0 ? (
+                                                criterias.map((criteria, criteriaIndex) => (
+                                                    <tr key={criteriaIndex}>
+                                                        <td className='criteria'>{criteria.criteriaName}</td>
+                                                        {['student1', 'student2', 'student3'].map((student, studentIndex) => (
+                                                            <td key={studentIndex}>
+                                                                <input
+                                                                    type='number'
+                                                                    step='0.25'
+                                                                    max={criteria.criteriaScore}
+                                                                    min={0}
+                                                                    value={scores[`${detail.subject[student]}_${criteria.criteriaName}`] || 0}
+                                                                    onChange={(e) => handleScoreChange(detail.subject[student], criteria.criteriaName, e.target.value)}
+                                                                />
+                                                            </td>
+                                                        ))}
+                                                    </tr>
+                                                ))
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan={4}>Chưa có tiêu chí đánh giá</td>
                                                 </tr>
-                                            ))}
+                                            )}
                                             <tr>
                                                 <td className='criteria-sum'>Tổng</td>
                                                 {['student1', 'student2', 'student3'].map((student, studentIndex) => (
@@ -230,7 +227,7 @@ function CommitteeKLTable() {
                                                             step='0.25'
                                                             className='score'
                                                             readOnly
-                                                            value={(parseFloat(calculateTotalScore(detail.subject[student])) || 0).toFixed(2)}
+                                                            value={(parseFloat(scores[detail.subject[student]]) || 0).toFixed(2)}
                                                         />
                                                     </td>
                                                 ))}
@@ -249,7 +246,6 @@ function CommitteeKLTable() {
                                                 ))}
                                             </tr>
                                         </tbody>
-                                    </table>
                                 </>
                             ) : (
                                 <p>Loading...</p>

@@ -61,6 +61,7 @@ function ReferTLCN() {
                                         <th scope="col">#</th>
                                         <th scope="col">Tên đề tài</th>
                                         <th scope="col">GVHD</th>
+                                        <th scope='col'>Chuyên ngành</th>
                                         <th scope="col">Sinh viên 1</th>
                                         <th scope="col">Sinh viên 2</th>
                                         <th scope="col">Sinh viên 3</th>
@@ -68,12 +69,16 @@ function ReferTLCN() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {informationTopics.map((item, index) => (
+                                    {informationTopics.filter((item) => item.active == 9).map((item, index) => (
                                         <tr>
                                             <th scope="row">{index + 1}</th>
-                                            <td>{item}</td>
-                                            <td>Otto</td>
-                                            <td>@mdo</td>
+                                            <td>{item.subjectName}</td>
+                                            <td>{item.instructorId.person.firstName + ' ' +item.instructorId.person.lastName}</td>
+                                            <td>{item.major}</td>
+                                            <td>{item.student1}</td>
+                                            <td>{item.student2}</td>
+                                            <td>{item.student3}</td>
+                                            <td>{item.year}</td>
                                         </tr>
                                     ))}
                                 </tbody>
