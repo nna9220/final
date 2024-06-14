@@ -161,10 +161,12 @@ a.sidebar-link:hover {
       padding: 5px;
       margin-left: 10px;
       .user-name{
-          color: rgb(175, 219, 245);
+        font-size: 0.9vw;
+        color: rgb(175, 219, 245);
       }
       .user-role{
           color: rgb(199, 205, 208);
+          font-size: 0.9vw;
       }
   }
 }

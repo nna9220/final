@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridSaveAltIcon } from '@mui/x-data-grid';
 import './DatatableLec.scss';
 import { Modal, Button } from 'react-bootstrap';
 import PlaylistRemoveOutlinedIcon from '@mui/icons-material/PlaylistRemoveOutlined';
@@ -12,6 +12,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import moment from 'moment';
 import axiosInstance from '../../API/axios';
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
 
 function DatatableLec() {
     const [lectures, setLectures] = useState([]);
@@ -312,7 +313,6 @@ function DatatableLec() {
         setGender(value);
     };
 
-
     const columns = [
         { field: 'lecturerId', headerName: 'MSGV', width: 100 },
         { field: 'fullName', headerName: 'Họ và tên', width: 200 },
@@ -349,7 +349,7 @@ function DatatableLec() {
                 <ToastContainer />
                 <div className='header-table'>
                     <div className='btn-add'>
-                        <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddLecturere" style={{ marginBottom: '20px' }} onClick={() => setShowModalAdd(true)}>
+                        <button style={{ marginBottom: '10px', marginRight: '20px' }} type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddLecturere" onClick={() => setShowModalAdd(true)}>
                             Add
                         </button>
                     </div>

@@ -70,7 +70,7 @@ function TableApprove() {
     };
 
     const loadTimeApprove = () => {
-        axiosInstance.get('/head/subject/timeApprove', {
+        axiosInstance.get('/head/subjectGraduation/timeApprove', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -191,7 +191,11 @@ function TableApprove() {
                     </div>
                 )
             ) : (
-                <h5 style={{color:'red'}}>{toastMessage}</h5>
+                <>
+                    <div className="alert alert-warning alert-head" role="alert" style={{backgroundColor:'white', border:'none'}}>
+                             {toastMessage}
+                        </div>
+                </>
             )}
 
             <div className="modal fade" id="approve" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

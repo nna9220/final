@@ -9,6 +9,7 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import TimelineOutlinedIcon from '@mui/icons-material/TimelineOutlined';
 import TimeLineOfLecturer from '../Timeline/TimeLineOfLecturer';
 import DnsOutlinedIcon from '@mui/icons-material/DnsOutlined';
+import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
 
 const Booard = ({ subjectId }) => {
   const [data, setData] = useState([]);

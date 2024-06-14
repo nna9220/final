@@ -35,7 +35,7 @@ function DataTableRegistrationPeroidSt() {
                 .then(response => {
                     const dataTimeApproveArray = response.data.period || [];
                     setTimeApprove(dataTimeApproveArray);
-                    console.log('Times: ', dataTimeApproveArray);
+                    console.log('Times TL: ', response.data);
                 })
                 .catch(error => {
                     console.error("error: ", error);

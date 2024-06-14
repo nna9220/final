@@ -41,6 +41,8 @@ public class AddCounterArgumentGraduationController {
     @Autowired
     private CouncilRepository councilRepository;
     @Autowired
+    private TimeBrowseHeadRepository timeBrowseHeadRepository;
+    @Autowired
     private TypeSubjectRepository typeSubjectRepository;
     @Autowired
     private SubjectRepository subjectRepository;
@@ -332,6 +334,23 @@ public class AddCounterArgumentGraduationController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
+    @GetMapping("/timeApprove")
+    public ResponseEntity<?> getTimeApprove(@RequestHeader("Authorization") String authorizationHeader){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
+            TimeBrowsOfHead timeBrowsOfHead = timeBrowseHeadRepository.findById(1).orElse(null);
+            if (CompareTime.isCurrentTimeInBrowseTimeHead(timeBrowsOfHead)) {
+                return new ResponseEntity<>(HttpStatus.OK);
+            }else {
+                return new ResponseEntity<>("Không nằm trong thời gian duyệt",HttpStatus.BAD_REQUEST);
+            }
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
 
     @PostMapping("/delete/{id}")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")

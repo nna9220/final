@@ -147,7 +147,7 @@ const Card = ({ task, index }) => {
                                             <div class="mb-3">
                                                 <input type="file" class="form-control" id="commentFile" onChange={handleFileChange} multiple />
                                             </div>
-                                            <button type="submit" class="btn btn-primary">Post Comment</button>
+                                            <button type="submit" class="btn btn-primary" style={{marginBottom:'10px'}}>Post Comment</button>
                                         </form>
                                     </div>
                                     <div className='comment-items'>
