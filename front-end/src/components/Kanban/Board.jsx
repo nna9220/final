@@ -105,6 +105,12 @@ const KanbanBoard = () => {
       .then(response => {
         console.log("Thêm task thành công", response.data);
         setData([...data, response.data]);
+        setFormNewTask({
+          requirement: '',
+          timeStart: '',
+          timeEnd: '',
+          assignTo: '',
+        });
       })
       .catch(error => {
         console.error("Error add new task:", error);
