@@ -1,0 +1,31 @@
+.table-key {
+    width: 30%; /* Adjust width as needed */
+    font-weight: bold;
+    vertical-align: top;
+}
+
+.table-value {
+    width: 70%; /* Adjust width as needed */
+    vertical-align: top;
+}
+
+
+.criteria-table {
+    th.criteria-column,
+    td.criteria-column {
+        width: 30%;
+    }
+
+    th.student-column,
+    td.student-column {
+        width: 23.33%;
+    }
+
+    .criteria-sum {
+        font-weight: bold;
+    }
+
+    .form-control {
+        width: 100%;
+    }
+}

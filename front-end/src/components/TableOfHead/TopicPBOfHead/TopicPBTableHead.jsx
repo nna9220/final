@@ -103,7 +103,7 @@ function TopicPBTableHead() {
                                         <td>{item.student3}</td>
                                         <td>{item.requirement}</td>
                                         <td>
-                                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => { detailTopic(item.subjectId); setSubjectIdForAccept(item.subjectId) }} disabled={item.active != 6}>
+                                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => { detailTopic(item.subjectId); setSubjectIdForAccept(item.subjectId) }} disabled={item.active != 7}>
                                                 <CreditScoreOutlinedIcon />
                                             </button>
                                         </td>
