@@ -143,8 +143,8 @@ function TableRegis() {
             {currentPeriod ? (
                 <div className="registration-info">
                     <h5>Đang trong đợt đăng ký: {currentPeriod.registrationName}</h5>
-                    <p>Thời gian bắt đầu: {currentPeriod.registrationTimeEnd}</p>
-                    <p>Thời gian kết thúc: {currentPeriod.registrationTimeStart}</p>
+                    <p>Thời gian bắt đầu: {currentPeriod.registrationTimeStart}</p>
+                    <p>Thời gian kết thúc: {currentPeriod.registrationTimeEnd}</p>
                 </div>
 
             ) : (

@@ -233,15 +233,15 @@ function DataTableTopics() {
                     </button>
                 </div>
             </div>
-            <div className='btn-importFile'>
-                <label>Import file TLCN:</label>
-                <input className="input-file" type="file" onChange={handleFileChangeTLCN} ></input>
-                <button onClick={handleImportFileTLCN}> <AddOutlinedIcon /> Import</button>
-            </div>
-            <div className='btn-importFile'>
-                <label>Import file KLTN:</label>
-                <input className="input-file" type="file" onChange={handleFileChangeKLTN} ></input>
-                <button onClick={handleImportFileKLTN}> <AddOutlinedIcon /> Import</button>
+            <div style={{display:'flex', justifyContent:'space-between',padding:'10px'}}>
+                <div class="input-group" style={{padding:'10px'}}>
+                    <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" onChange={handleFileChangeTLCN} />
+                    <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04" onClick={handleImportFileTLCN}>Import file TLCN</button>
+                </div>
+                <div class="input-group" style={{padding:'10px'}}>
+                    <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" onChange={handleFileChangeKLTN} />
+                    <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04" onClick={handleImportFileKLTN}>Import file KLTN</button>
+                </div>
             </div>
             <div className='body-table'>
                 <table className="table table-hover">
@@ -264,6 +264,16 @@ function DataTableTopics() {
                                 <th scope="row">{index + 1}</th>
                                 <td>{item.subjectName}</td>
                                 <td>
+                                    {item.instructorId?.person?.firstName && item.instructorId?.person?.lastName
+                                        ? item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName
+                                        : 'Chưa có'}
+                                </td>
+                                <td>
+                                    {item.thesisAdvisorId?.person?.firstName && item.thesisAdvisorId?.person?.lastName
+                                        ? item.thesisAdvisorId.person.firstName + ' ' + item.thesisAdvisorId.person.lastName
+                                        : 'Chưa có'}
+                                </td>
+                                {/*<td>
                                     {item.instructorId?.person?.firstName + ' ' + item.instructorId?.person?.lastName}
                                     <select className='optionLecs' value={lecturerIds[index]} onChange={(event) => handleSelectChange(event, index)} onClick={() => handleAssignGVPB(item.subjectId, index)}>
                                         <option className='option' value="" >Chọn giảng viên hướng dẫn</option>
@@ -282,7 +292,7 @@ function DataTableTopics() {
                                         ))}
                                     </select>
                                     <button className='btn-assign' onClick={() => handleGVPB(item.subjectId, index)}>Phân công</button>
-                                </td>                                
+                                </td>  */}
                                 <td>{item.student1}</td>
                                 <td>{item.student2}</td>
                                 <td>{item.student3}</td>

@@ -53,20 +53,20 @@ const Card = ({ task, index }) => {
       for (const file of commentFiles) {
         formData.append('fileInput', file);
       }
-  
+
       const response = await axiosInstance.post(`/student/comment/create/${task.taskId}`, formData, {
         headers: {
           'Authorization': `Bearer ${userToken}`,
         },
       });
-  
+
       const newComment = response.data;
-  
+
       setDetail(prevDetail => ({
         ...prevDetail,
         listComment: [...prevDetail.listComment, newComment]
       }));
-  
+
       setCommentContent('');
       setCommentFiles([]);
     } catch (error) {
@@ -131,7 +131,9 @@ const Card = ({ task, index }) => {
                       <div className="mb-3">
                         <input type="file" className="form-control" id="commentFile" onChange={handleFileChange} multiple />
                       </div>
-                      <button type="submit" className="btn btn-primary">Post Comment</button>
+                      <div className="mb-3">
+                        <button type="submit" className="btn btn-primary" style={{ marginBottom: '10px', display:'flex', justifyContent:'right'}}>Post Comment</button>
+                      </div>
                     </form>
                   </div>
                   <div className='comment-items'>
@@ -165,7 +167,6 @@ const Card = ({ task, index }) => {
                 </div>
                 <div className="modal-footer">
                   <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="button" className="btn btn-primary">Save changes</button>
                 </div>
               </div>
             </div>

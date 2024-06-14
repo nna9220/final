@@ -17,6 +17,7 @@
         "@mui/icons-material": "^5.15.11",
         "@mui/material": "^5.15.11",
         "@mui/x-data-grid": "^6.19.5",
+        "@mui/x-data-grid-premium": "^7.7.0",
         "@popperjs/core": "^2.11.8",
         "@refinedev/core": "^4.48.0",
         "@syncfusion/ej2-inputs": "^25.1.40",

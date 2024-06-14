@@ -68,7 +68,7 @@ function SidebarLec() {
                     <hr style={{ color: '#fff' }}></hr>
                     {!isAvatarVisible && (
                         <div className="sidebar-header">
-                            <FcReadingEbook size={70} />
+                            <FcReadingEbook size={50} />
 
                             <div className="user-info">
                                 <span className="user-name"><strong>{lec.firstName + ' ' + lec.lastName}</strong></span>

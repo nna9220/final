@@ -57,7 +57,7 @@ function SidebarStudent() {
           <hr style={{ color: '#fff' }}></hr>
           {!isAvatarVisible && (
             <div className="sidebar-header">
-              <FcReading size={70} />
+              <FcReading size={50} />
               <div className="user-info">
                 <span className="user-name"><strong>{student.firstName + ' ' + student.lastName}</strong></span>
                 <span className="user-role">Sinh viên</span>

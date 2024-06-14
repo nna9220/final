@@ -1,0 +1,43 @@
+.table-contact{
+    border: 1px solid rgb(158, 155, 155);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.custom-header {
+    font-weight: bold;
+}
+
+.table-contact {
+    .status-responded {
+        color: white; /* Màu chữ xanh đậm */
+        border: 1px solid #55AD9B; /* Đường viền xanh đậm */
+        padding: 2px 5px; /* Đệm cho ô */
+        border-radius: 4px; /* Bo góc cho ô */
+        background-color: #55AD9B;
+    }
+
+    .status-pending {
+        color: white; /* Màu chữ đỏ đậm */
+        border: 1px solid #EF9C66; /* Đường viền đỏ đậm */
+        padding: 2px 5px; /* Đệm cho ô */
+        border-radius: 4px; /* Bo góc cho ô */
+        background-color: #EF9C66;
+    }
+}
+
+.buttonContact{
+    border: 1px solid white;
+    border-radius: 8px;
+    background-color: #1572A1;
+    color: white;
+    font-weight: bold;
+    padding: 8px;
+
+}
+
+.title-contact{
+    color: #1572A1;
+    font-weight: bold;
+}
+
