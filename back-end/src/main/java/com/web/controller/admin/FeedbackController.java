@@ -88,7 +88,7 @@ public class FeedbackController {
                 existedContact.setFeedback(feed);
                 existedContact.setStatus(true);
                 contactRepository.save(existedContact);
-                String subject = "Phản hồi liên hệ";
+                title = "Phản hồi liên hệ";
                 StringBuilder messenger = new StringBuilder("Chào bạn, hcmute đã nhận được liên hệ từ bạn với câu hỏi ")
                         .append(existedContact.getContent())
                         .append(" chúng tôi xin trả lời câu hỏi của bạn:\n")
@@ -96,7 +96,7 @@ public class FeedbackController {
                 //Gửi mail cho Hội đồng - SV
                 List<String> emailPerson = new ArrayList<>();
                 emailPerson.add(existedContact.getEmail());
-                mailService.sendMailToPerson(emailPerson, subject, messenger.toString());
+                mailService.sendMailToPerson(emailPerson, title, messenger.toString());
                 return new ResponseEntity<>(feed, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
