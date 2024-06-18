@@ -48,9 +48,10 @@ public class StudentRegisterTopic {
             if (currentStudentOptional.isPresent()) {
                 Student currentStudent = currentStudentOptional.get();
                 if (currentStudent.getSubjectId() == null) {
-                    List<RegistrationPeriod> periodList = registrationPeriodRepository.findAllPeriod();
+                    //Tìm những đợt đăng ký có status = true
+                    TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+                    List<RegistrationPeriod> periodList = registrationPeriodRepository.getListPeriodBYStatusAndType(typeSubject);
                     if (CompareTime.isCurrentTimeInPeriodStudent(periodList)) {
-                        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
                         List<Subject> subjectList = subjectRepository.findSubjectByStatusAndMajorAndStudent(true, currentStudent.getMajor(),typeSubject);
                         Map<String,Object> response = new HashMap<>();
                         response.put("person",personCurrent);

@@ -136,6 +136,18 @@ public class SchoolYearController {
         }
     }
 
+    @PostMapping("/deleted/{yearId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> deletedYear(@PathVariable int yearId){
+        SchoolYear existSchoolYear = schoolYearRepository.findById(yearId).orElse(null);
+        if (existSchoolYear != null){
+            schoolYearRepository.delete(existSchoolYear);
+            return new ResponseEntity<>(existSchoolYear, HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @GetMapping("/export")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void exportSchoolYear(HttpServletResponse response) throws IOException {

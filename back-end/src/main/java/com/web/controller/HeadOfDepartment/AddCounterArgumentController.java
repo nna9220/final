@@ -46,9 +46,11 @@ public class AddCounterArgumentController {
     @Autowired
     private SubjectService subjectService;
     @Autowired
+    private CouncilLecturerRepository councilLecturerRepository;
+    @Autowired
     private ResultEssayRepository resultEssayRepository;
     @Autowired
-    private TimeAddSubjectHeadRepository timeAddSubjectHeadRepository;
+    private NotificationRepository notificationRepository;
     @Autowired
     private PersonRepository personRepository;
     @Autowired
@@ -133,54 +135,87 @@ public class AddCounterArgumentController {
     //Phân Giảng viên phản biện - TLCN
     @PostMapping("/addCounterArgumrnt/{subjectId}/{lecturerId}")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
-    public ResponseEntity<?> addCounterArgumrnt(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String lecturerId){
-        String token = tokenUtils.extractToken(authorizationHeader);
-        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-        if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
-            Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
-            if (existedSubject != null) {
-                Lecturer currentLecturer = lecturerRepository.findById(lecturerId).orElse(null);
-                List<Subject> addSub = new ArrayList<>();
-                addSub.add(existedSubject);
-                if (currentLecturer != null) {
-                    //Tạo list GV để thêm vào hội đồng
-                    List<Lecturer> lecturers = new ArrayList<>();
-                    lecturers.add(currentLecturer);
-                    lecturers.add(existedSubject.getInstructorId());
-                    //Tạo mới hội đồng
-                    Council council = new Council();
-                    council.setLecturers(lecturers);
-                    council.setSubject(existedSubject);
-                    councilRepository.save(council);
-                    System.out.println("council: " + council.getCouncilId());
-                    List<Council> councils = new ArrayList<>();
-                    councils.add(council);
-                    //set GVHD và GVPB
-                    Lecturer instructor = existedSubject.getInstructorId();
-                    instructor.setCouncils(councils);
-                    currentLecturer.setCouncils(councils);
-                    existedSubject.setThesisAdvisorId(currentLecturer);
-                    existedSubject.setCouncil(council);
-                    lecturerRepository.save(currentLecturer);
-                    lecturerRepository.save(instructor);
-                    subjectRepository.save(existedSubject);
-                    //Mail thông báo hội đồng đã được lập
-                    String subject = "THÀNH LẬP HỘI ĐỒNG";
-                    String messenger = "HỘI ĐỒNG PHẢN BIỆN ĐỀ TÀI " +existedSubject.getSubjectName() + " ĐÃ ĐƯỢC THÀNH LẬP!" ;
-                    List<String> emailPerson = new ArrayList<>();
-                    emailPerson.add(existedSubject.getInstructorId().getPerson().getUsername());
-                    emailPerson.add(existedSubject.getThesisAdvisorId().getPerson().getUsername());
-                    if (!emailPerson.isEmpty()){
-                        mailService.sendMailToPerson(emailPerson,subject,messenger);
-                    }
-                }
+    public ResponseEntity<?> addCounterArgumrnt(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String lecturerId) {
+        try {
+            String token = tokenUtils.extractToken(authorizationHeader);
+            Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+
+            //Check người dùng là head
+            if (!personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
+
+            // Lấy thông tin môn học
+            Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
+            if (existedSubject == null) {
+                return new ResponseEntity<>("Môn học không tồn tại", HttpStatus.NOT_FOUND);
+            }
+
+            // Lấy thông tin giảng viên
+            Lecturer currentLecturer = lecturerRepository.findById(lecturerId).orElse(null);
+            if (currentLecturer == null) {
+                return new ResponseEntity<>("Giảng viên không tồn tại", HttpStatus.NOT_FOUND);
+            }
+
+            // Tạo mới hội đồng
+            Council council = new Council();
+
+            // Tạo CouncilLecturer của GVPB
+            CouncilLecturer councilCounterArgument = new CouncilLecturer();
+            councilCounterArgument.setLecturer(currentLecturer);
+            councilCounterArgument.setRole("Chủ tịch");
+            councilCounterArgument.setCouncil(council);
+
+            // Tạo CouncilLecturer của GVHD
+            CouncilLecturer councilInstructor = new CouncilLecturer();
+            councilInstructor.setLecturer(existedSubject.getInstructorId());
+            councilInstructor.setRole("Ủy viên");
+            councilInstructor.setCouncil(council);
+
+            // Tạo List CouncilLecturer
+            List<CouncilLecturer> councilLecturers = new ArrayList<>();
+            councilLecturers.add(councilCounterArgument);
+            councilLecturers.add(councilInstructor);
+
+            council.setCouncilLecturers(councilLecturers);
+            council.setSubject(existedSubject);
+
+            councilRepository.save(council);
+
+            // Cập nhật thông tin giảng viên
+            List<Council> councils = new ArrayList<>();
+            councils.add(council);
+
+            Lecturer instructor = existedSubject.getInstructorId();
+            instructor.setCouncilLecturers(councilLecturers);
+
+            currentLecturer.setCouncilLecturers(councilLecturers);
+            existedSubject.setThesisAdvisorId(currentLecturer);
+            existedSubject.setCouncil(council);
+
+            lecturerRepository.save(currentLecturer);
+            lecturerRepository.save(instructor);
+            subjectRepository.save(existedSubject);
+            councilLecturerRepository.save(councilCounterArgument);
+            councilLecturerRepository.save(councilInstructor);
+
+            // Gửi email thông báo
+            String subject = "THÀNH LẬP HỘI ĐỒNG";
+            String message = "HỘI ĐỒNG PHẢN BIỆN ĐỀ TÀI " + existedSubject.getSubjectName() + " ĐÃ ĐƯỢC THÀNH LẬP!";
+            List<String> emailRecipients = new ArrayList<>();
+            emailRecipients.add(existedSubject.getInstructorId().getPerson().getUsername());
+            emailRecipients.add(existedSubject.getThesisAdvisorId().getPerson().getUsername());
+
+            if (!emailRecipients.isEmpty()) {
+                mailService.sendMailToPerson(emailRecipients, subject, message);
+            }
+
             return new ResponseEntity<>(existedSubject, HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
     @GetMapping("/delete")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<Map<String,Object>> getDanhSachDeTaiDaXoa(@RequestHeader("Authorization") String authorizationHeader){
@@ -327,11 +362,17 @@ public class AddCounterArgumentController {
                         subjectRepository.save(newSubject);
                         studentRepository.saveAll(studentList);
                         String subject = "ĐĂNG KÝ ĐỀ TÀI THÀNH CÔNG";
-                        String messenger = "Topic: " + newSubject.getSubjectName() + " đăng ký thành công!!";
+                        String messenger = "Topic: " + newSubject.getSubjectName() + " đăng ký thành công vui lòng chờ TBM duyệt đề tài";
                         //Gửi mail cho Hội đồng - SV
                         List<String> emailPerson = new ArrayList<>();
                         emailPerson.add(existLecturer.getPerson().getUsername());
                         mailService.sendMailToPerson(emailPerson,subject,messenger);
+                        Notification notification = new Notification();
+                        LocalDateTime now = LocalDateTime.now();
+                        notification.setDateSubmit(now);
+                        notification.setTitle(subject);
+                        notification.setContent(messenger);
+                        notificationRepository.save(notification);
                         return new ResponseEntity<>(newSubject, HttpStatus.CREATED);
                     } else {
                         return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Lecturer không tồn tại
@@ -354,7 +395,8 @@ public class AddCounterArgumentController {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
-            TimeBrowsOfHead timeBrowsOfHead = timeBrowseHeadRepository.findById(1).orElse(null);
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            List<TimeBrowsOfHead> timeBrowsOfHead = timeBrowseHeadRepository.getListTimeBrowseByStatus(typeSubject);
             if (CompareTime.isCurrentTimeInBrowseTimeHead(timeBrowsOfHead)) {
                 subjectService.browseSubject(id);
                 Subject existSubject = subjectRepository.findById(id).orElse(null);
@@ -375,7 +417,8 @@ public class AddCounterArgumentController {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
-            TimeBrowsOfHead timeBrowsOfHead = timeBrowseHeadRepository.findById(1).orElse(null);
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            List<TimeBrowsOfHead> timeBrowsOfHead = timeBrowseHeadRepository.getListTimeBrowseByStatus(typeSubject);
             if (CompareTime.isCurrentTimeInBrowseTimeHead(timeBrowsOfHead)) {
                 return new ResponseEntity<>(HttpStatus.OK);
             }else {

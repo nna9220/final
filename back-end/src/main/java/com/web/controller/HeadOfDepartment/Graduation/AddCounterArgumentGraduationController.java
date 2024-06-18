@@ -35,6 +35,8 @@ public class AddCounterArgumentGraduationController {
     @Autowired
     private SubjectService subjectService;
     @Autowired
+    private CouncilLecturerRepository councilLecturerRepository;
+    @Autowired
     private EvaluationCriteriaRepository evaluationCriteriaRepository;
     @Autowired
     private PersonRepository personRepository;
@@ -119,42 +121,64 @@ public class AddCounterArgumentGraduationController {
     @PostMapping("/addCounterArgumrnt/{subjectId}/{lecturerId}")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> addCounterArgumrnt(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String lecturerId){
-        String token = tokenUtils.extractToken(authorizationHeader);
-        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-        if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
-            Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
-            System.out.println("Chào");
-            if (existedSubject != null) {
-                Lecturer currentLecturer = lecturerRepository.findById(lecturerId).orElse(null);
-                List<Subject> addSub = new ArrayList<>();
-                addSub.add(existedSubject);
-                if (currentLecturer != null) {
-                    existedSubject.setThesisAdvisorId(currentLecturer);
-                    //Thêm GVPB vào hội đồng
-                    Council council = new Council();
-                    List<Lecturer> lecturers = new ArrayList<>();
-                    lecturers.add(currentLecturer);
-                    council.setLecturers(lecturers);
-                    council.setSubject(existedSubject);
-                    var newCouncil = councilRepository.save(council);
-                    existedSubject.setCouncil(newCouncil);
-                    if (currentLecturer.getCouncils()!=null){
-                        currentLecturer.getCouncils().add(newCouncil);
-                    }else {
-                        List<Council> councils = new ArrayList<>();
-                        councils.add(newCouncil);
-                        currentLecturer.setCouncils(councils);
-                    }
-                    //set GVPB
-                    existedSubject.setThesisAdvisorId(currentLecturer);
-                    existedSubject.setCouncil(council);
-                    lecturerRepository.save(currentLecturer);
-                    subjectRepository.save(existedSubject);
-                }
+        try {
+            String token = tokenUtils.extractToken(authorizationHeader);
+            Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+
+            //Check người dùng là head
+            if (!personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
+
+            // Lấy thông tin môn học
+            Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
+            if (existedSubject == null) {
+                return new ResponseEntity<>("Môn học không tồn tại", HttpStatus.NOT_FOUND);
+            }
+
+            // Lấy thông tin giảng viên
+            Lecturer currentLecturer = lecturerRepository.findById(lecturerId).orElse(null);
+            if (currentLecturer == null) {
+                return new ResponseEntity<>("Giảng viên không tồn tại", HttpStatus.NOT_FOUND);
+            }
+
+            // Tạo mới hội đồng
+            Council council = new Council();
+
+            // Tạo CouncilLecturer của GVPB
+            CouncilLecturer councilCounterArgument = new CouncilLecturer();
+            councilCounterArgument.setLecturer(currentLecturer);
+            councilCounterArgument.setRole("Chủ tịch");
+            councilCounterArgument.setCouncil(council);
+
+            // Tạo List CouncilLecturer
+            List<CouncilLecturer> councilLecturers = new ArrayList<>();
+            councilLecturers.add(councilCounterArgument);
+
+            council.setCouncilLecturers(councilLecturers);
+            council.setSubject(existedSubject);
+
+            councilRepository.save(council);
+
+            // Cập nhật thông tin giảng viên
+            List<Council> councils = new ArrayList<>();
+            councils.add(council);
+
+            Lecturer instructor = existedSubject.getInstructorId();
+            instructor.setCouncilLecturers(councilLecturers);
+
+            currentLecturer.setCouncilLecturers(councilLecturers);
+            existedSubject.setThesisAdvisorId(currentLecturer);
+            existedSubject.setCouncil(council);
+
+            lecturerRepository.save(currentLecturer);
+            lecturerRepository.save(instructor);
+            subjectRepository.save(existedSubject);
+            councilLecturerRepository.save(councilCounterArgument);
             return new ResponseEntity<>(existedSubject, HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -340,7 +364,8 @@ public class AddCounterArgumentGraduationController {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
-            TimeBrowsOfHead timeBrowsOfHead = timeBrowseHeadRepository.findById(1).orElse(null);
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
+            List<TimeBrowsOfHead> timeBrowsOfHead = timeBrowseHeadRepository.getListTimeBrowseByStatus(typeSubject);
             if (CompareTime.isCurrentTimeInBrowseTimeHead(timeBrowsOfHead)) {
                 return new ResponseEntity<>(HttpStatus.OK);
             }else {

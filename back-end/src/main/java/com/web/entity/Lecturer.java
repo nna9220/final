@@ -40,13 +40,8 @@ public class Lecturer implements Serializable {
     @JsonIgnore
     private List<ScoreGraduation> scoreGraduationList;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "council_lecturer",
-            joinColumns = @JoinColumn(name = "lecturer_id"),
-            inverseJoinColumns = @JoinColumn(name = "council_id")
-    )
+    @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Council> councils;
+    private List<CouncilLecturer> councilLecturers;
 
 }

@@ -30,6 +30,8 @@ public class EvaluationAndScoringService {
     @Autowired
     private SubjectRepository subjectRepository;
     @Autowired
+    private CouncilLecturerRepository councilLecturerRepository;
+    @Autowired
     private MailServiceImpl mailService;
     @Autowired
     private StudentRepository studentRepository;
@@ -133,9 +135,15 @@ public class EvaluationAndScoringService {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             Council existedCouncil = councilRepository.findById(id).orElse(null);
             if (existedCouncil!=null){
+                //Tìm list CouncilLecturer thông qua council:
+                List<CouncilLecturer> councilLecturers = councilLecturerRepository.getListCouncilLecturerByCouncil(existedCouncil);
+                List<Lecturer> lecturers = new ArrayList<>();
+                for (CouncilLecturer c:councilLecturers) {
+                    lecturers.add(c.getLecturer());
+                }
                 Map<String,Object> response = new HashMap<>();
                 response.put("council", existedCouncil);
-                response.put("listLecturer",existedCouncil.getLecturers());
+                response.put("listLecturer",lecturers);
                 response.put("subject",existedCouncil.getSubject());
                 response.put("criteria",existedCouncil.getSubject().getCriteria());
                 return new ResponseEntity<>(response,HttpStatus.OK);
@@ -367,7 +375,7 @@ public class EvaluationAndScoringService {
             Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
             if (CompareTime.isCurrentTimeInCouncilTime(existedSubject.getCouncil())) {
                 //Đếm số luượng giảng viên trong hội đồng
-                int countLecturers = existedSubject.getCouncil().getLecturers().size();
+                int countLecturers = 0;//existedSubject.getCouncil().getLecturers().size();
                 if (existedSubject != null) {
                     //Kiểm tra xem có tồn tại SVTH k - Student 1
                     if (existedSubject.getStudent1() != null) {
@@ -657,7 +665,7 @@ public class EvaluationAndScoringService {
             //Tìm ds điểm của kq đó
             List<ScoreGraduation> scoreGraduations = scoreGraduationRepository.getScoreGraduationByResultGraduation(resultGraduation);
             int countScore = scoreGraduations.size();
-            int countLecturers = existedSubject.getCouncil().getLecturers().size();
+            int countLecturers = 0;//existedSubject.getCouncil().getLecturers().size();
             if (countScore==countLecturers && resultGraduation.getScoreInstructor()!=null){
                 existedSubject.setActive((byte)9);
             }

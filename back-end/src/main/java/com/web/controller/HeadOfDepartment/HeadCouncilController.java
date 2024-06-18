@@ -4,6 +4,7 @@ import com.web.entity.TypeSubject;
 import com.web.repository.SubjectRepository;
 import com.web.repository.TypeSubjectRepository;
 import com.web.service.Council.EvaluationAndScoringService;
+import com.web.service.HeaderOdDepartment.ManageCouncilService;
 import com.web.service.Lecturer.ManageTutorialSubjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class HeadCouncilController {
     private TypeSubjectRepository typeSubjectRepository;
     @Autowired
     private SubjectRepository subjectRepository;
+    @Autowired
+    private ManageCouncilService manageCouncilService;
     @Autowired
     private ManageTutorialSubjectService manageTutorialSubjectService;
     @GetMapping("/listSubject")
@@ -75,6 +78,24 @@ public class HeadCouncilController {
                                                   @RequestParam(value = "reviewStudent3", required = false) String review3){
         try {
             return new ResponseEntity<>(evaluationAndScoringService.evaluationAndScoringEssay(authorizationHeader,id,studentId1,studentId2,studentId3,review1,review2,review3,score1,score2,score3),HttpStatus.OK);
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+
+    @PostMapping("/editCouncilEssay/{id}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
+    public ResponseEntity<?> updateCouncil(@PathVariable int id,@RequestHeader("Authorization") String authorizationHeader,
+                                           @RequestParam(value = "lecturer1", required = false) String lecturer1,
+                                           @RequestParam(value = "lecturer2", required = false) String lecturer2,
+                                           @RequestParam(value = "start", required = false) String start,
+                                           @RequestParam(value = "end", required = false) String end,
+                                           @RequestParam(value = "date", required = false) String date,
+                                           @RequestParam(value = "address", required = false) String address){
+        try {
+            return new ResponseEntity<>(manageCouncilService.updateCouncilEssay(id,authorizationHeader,date,start,end,address,lecturer1,lecturer2),HttpStatus.OK);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);
