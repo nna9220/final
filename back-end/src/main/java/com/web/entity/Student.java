@@ -29,6 +29,9 @@ public class Student implements Serializable {
     @Enumerated(EnumType.STRING)
     private Major major;
 
+    @Column(name="status")
+    private Boolean status;
+
     @ManyToOne
     @JoinColumn(name="class_id")
     private StudentClass studentClass;

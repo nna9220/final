@@ -63,6 +63,7 @@ public class ImportStudent {
                         newPerson.setAuthorities(authority);
                         savePersons.add(newPerson);
                         Student newStudent = new Student();
+                        newStudent.setStatus(false);
                         newStudent.setStudentId(student.getStudentId());
                         newStudent.setStudentClass(student.getStudentClass());
                         newStudent.setMajor(student.getMajor());

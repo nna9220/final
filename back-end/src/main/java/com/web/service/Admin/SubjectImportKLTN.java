@@ -44,6 +44,7 @@ public class SubjectImportKLTN {
             Set<Student> saveStudent = new HashSet<>();
             List<Council> saveCouncil = new ArrayList<>();
             List<Lecturer> saveLecturer = new ArrayList<>();
+            List<CouncilLecturer> councilLecturers = new ArrayList<>();
             LocalDate nowYear = LocalDate.now();
             if (checkExcelFormat(file)) {
                 List<Subject> tlcn = toSubjects(file.getInputStream());
@@ -109,18 +110,24 @@ public class SubjectImportKLTN {
                         newSubject.setThesisAdvisorId(subject.getThesisAdvisorId());
                         Council newCouncil = new Council();
                         newCouncil.setSubject(newSubject);
-                        List<Lecturer> lecturers = new ArrayList<>();
-                        lecturers.add(subject.getThesisAdvisorId());
-                        newCouncil.setLecturers(lecturers);
-                        saveCouncil.add(newCouncil);
-                        if (thesis.getCouncils()==null) {
-                            List<Council> councils = new ArrayList<>();
-                            councils.add(newCouncil);
-                            thesis.setCouncils(councils);
-                        }else {
-                            thesis.getCouncils().add(newCouncil);
+                        // Tạo CouncilLecturer của GVPB
+                        CouncilLecturer councilCounterArgument = new CouncilLecturer();
+                        councilCounterArgument.setLecturer(subject.getThesisAdvisorId());
+                        councilCounterArgument.setRole("Chủ tịch");
+                        councilCounterArgument.setCouncil(newCouncil);
+                        newCouncil.setCouncilLecturers(councilLecturers);
+                        boolean isLecturerInCouncil2 = newCouncil.getCouncilLecturers().stream()
+                                .anyMatch(cl -> cl.getLecturer().equals(thesis));
+                        if (!isLecturerInCouncil2) {
+                            thesis.getCouncilLecturers().add(councilCounterArgument);
+                            councilCounterArgument.setCouncil(newCouncil);
+                            councilCounterArgument.setRole("Chủ tịch");
+                            councilCounterArgument.setLecturer(thesis);
                         }
+                        saveCouncil.add(newCouncil);
                         saveLecturer.add(thesis);
+                        // thêm vào CouncilLecturer
+                        councilLecturers.add(councilCounterArgument);
                     }
                     saveSub.add(newSubject);
                     System.out.println("Luu KLTN Thanh Cong");

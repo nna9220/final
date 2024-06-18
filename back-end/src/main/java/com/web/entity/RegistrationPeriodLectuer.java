@@ -36,8 +36,13 @@ public class RegistrationPeriodLectuer implements Serializable {
     @Column(name="registration_name")
     private String registrationName;
 
+    @Column(name="status")
+    private Boolean status;
+
     @ManyToOne
     @JoinColumn(name="type_subject_id")
     private TypeSubject typeSubjectId;
+
+
 
 }

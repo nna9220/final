@@ -128,6 +128,18 @@ public class StudentClassController {
        }*/
     }
 
+    @PostMapping("/deleted/{classId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> deletedClass(@PathVariable int classId){
+        StudentClass existStudentClass = studentClassService.getStudentClassById(classId);
+        if (existStudentClass != null){
+            studentClassRepository.delete(existStudentClass);
+            return new ResponseEntity<>(existStudentClass,HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @GetMapping("/export")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void exportStudentClasses(HttpServletResponse response) throws IOException {

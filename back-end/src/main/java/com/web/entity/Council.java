@@ -3,10 +3,14 @@ package com.web.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -25,11 +29,23 @@ public class Council {
     @Column(name = "date_time")
     private LocalDateTime timeReport;
 
+    @Column(name = "date")
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    private LocalDate date;
+
+    @Column(name = "start")
+    @DateTimeFormat(pattern = "HH:mm:ss")
+    private LocalTime start;
+
+    @Column(name = "end")
+    @DateTimeFormat(pattern = "HH:mm:ss")
+    private LocalTime end;
+
     @OneToOne
     @JoinColumn(name = "subject", unique = true)
     private Subject subject;
 
-    @ManyToMany(mappedBy = "councils",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "council", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Lecturer> lecturers;
+    private List<CouncilLecturer> councilLecturers;
 }

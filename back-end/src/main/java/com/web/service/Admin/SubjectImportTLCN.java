@@ -32,6 +32,7 @@ public class SubjectImportTLCN {
     private final StudentRepository studentRepository;
     private final CouncilRepository councilRepository;
     private final TokenUtils tokenUtils;
+    private final CouncilLecturerRepository councilLecturerRepository;
     private final EvaluationCriteriaRepository evaluationCriteriaRepository;
 
     public ResponseEntity<?> importSubject(MultipartFile file) throws IOException {
@@ -42,6 +43,7 @@ public class SubjectImportTLCN {
             Set<Student> saveStudent = new HashSet<>();
             List<Council> saveCouncil =new ArrayList<>();
             List<Lecturer> saveLecturer = new ArrayList<>();
+            List<CouncilLecturer> councilLecturers = new ArrayList<>();
             LocalDate nowYear = LocalDate.now();
             if (checkExcelFormat(file)) {
                 List<Subject> tlcn = toSubjects(file.getInputStream());
@@ -99,27 +101,41 @@ public class SubjectImportTLCN {
                         newSubject.setThesisAdvisorId(subject.getThesisAdvisorId());
                         Council newCouncil = new Council();
                         newCouncil.setSubject(newSubject);
-                        List<Lecturer> lecturers = new ArrayList<>();
-                        lecturers.add(subject.getInstructorId());
-                        lecturers.add(subject.getThesisAdvisorId());
-                        newCouncil.setLecturers(lecturers);
+                        // Tạo CouncilLecturer của GVPB
+                        CouncilLecturer councilCounterArgument = new CouncilLecturer();
+                        councilCounterArgument.setLecturer(subject.getThesisAdvisorId());
+                        councilCounterArgument.setRole("Chủ tịch");
+                        councilCounterArgument.setCouncil(newCouncil);
+
+                        // Tạo CouncilLecturer của GVHD
+                        CouncilLecturer councilInstructor = new CouncilLecturer();
+                        councilInstructor.setLecturer(subject.getInstructorId());
+                        councilInstructor.setRole("Ủy viên");
+                        councilInstructor.setCouncil(newCouncil);
+
+                        newCouncil.setCouncilLecturers(councilLecturers);
+                        boolean isLecturerInCouncil = newCouncil.getCouncilLecturers().stream()
+                                .anyMatch(cl -> cl.getLecturer().equals(instructor));
+                        boolean isLecturerInCouncil2 = newCouncil.getCouncilLecturers().stream()
+                                .anyMatch(cl -> cl.getLecturer().equals(thesis));
+                        if (!isLecturerInCouncil) {
+                            instructor.getCouncilLecturers().add(councilInstructor);
+                            councilInstructor.setLecturer(instructor);
+                            councilInstructor.setRole("Ủy viên");
+                            councilInstructor.setCouncil(newCouncil);
+                        }
+                        if (!isLecturerInCouncil2) {
+                           thesis.getCouncilLecturers().add(councilCounterArgument);
+                           councilCounterArgument.setCouncil(newCouncil);
+                           councilCounterArgument.setRole("Chủ tịch");
+                           councilCounterArgument.setLecturer(thesis);
+                        }
                         saveCouncil.add(newCouncil);
-                        if (instructor.getCouncils()==null) {
-                            List<Council> councils = new ArrayList<>();
-                            councils.add(newCouncil);
-                            instructor.setCouncils(councils);
-                        }else {
-                            instructor.getCouncils().add(newCouncil);
-                        }
-                        if (thesis.getCouncils()==null) {
-                            List<Council> councils = new ArrayList<>();
-                            councils.add(newCouncil);
-                            thesis.setCouncils(councils);
-                        }else {
-                            thesis.getCouncils().add(newCouncil);
-                        }
                         saveLecturer.add(instructor);
                         saveLecturer.add(thesis);
+                        // thêm vào CouncilLecturer
+                        councilLecturers.add(councilCounterArgument);
+                        councilLecturers.add(councilInstructor);
                     }
                     Set<EvaluationCriteria> evaluationCriteria = evaluationCriteriaRepository.getEvaluationCriteriaByTypeSubject(typeSubject);
                     if (evaluationCriteria!=null){
@@ -132,6 +148,7 @@ public class SubjectImportTLCN {
                 lecturerRepository.saveAll(saveLecturer);
                 councilRepository.saveAll(saveCouncil);
                 studentRepository.saveAll(saveStudent);
+                councilLecturerRepository.saveAll(councilLecturers);
                 return ResponseEntity.ok("Imported file to list subject successful!");
             } else
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File upload is not match format, please try again!");
