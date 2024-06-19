@@ -13,4 +13,5 @@ public interface ResultEssayRepository extends JpaRepository<ResultEssay, Intege
     //Tìm kiếm kết quả theo đề tài và sinh viên
     @Query("select r from ResultEssay r where r.student=:student and r.subject=:subject")
     public ResultEssay findResultEssayByStudentAndSubject(Student student, Subject subject);
+
 }

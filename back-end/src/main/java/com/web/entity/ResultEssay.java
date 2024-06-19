@@ -17,21 +17,14 @@ public class ResultEssay {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="result_essay_id")
     private int resultId;
-    @Column(name = "score_instructor")
-    private Double scoreInstructor;
-
-    @Column(name = "score_thesis")
-    private Double scoreThesis;
-
-    @Column(name = "review_instructor")
-    private String reviewInstructor;
-
-    @Column(name = "review_thesis")
-    private String reviewThesis;
 
     @ManyToOne
     @JoinColumn(name = "subject_id")
     private Subject subject;
+
+    @OneToMany(mappedBy = "resultEssay", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<ScoreEssay> scoreCouncil;
 
     @OneToOne
     @JoinColumn(name = "student_id", unique = true)
