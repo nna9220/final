@@ -30,6 +30,8 @@ public class EvaluationAndScoringService {
     @Autowired
     private SubjectRepository subjectRepository;
     @Autowired
+    private ScoreEssayRepository scoreEssayRepository;
+    @Autowired
     private CouncilLecturerRepository councilLecturerRepository;
     @Autowired
     private MailServiceImpl mailService;
@@ -176,7 +178,7 @@ public class EvaluationAndScoringService {
     }
 
     //GV chấm điểm cho từng sinh viên và đánh giá - TLCN - Hội đồng là GVHD và GVPB
-    public ResponseEntity<?> evaluationAndScoringEssay(String authorizationHeader, int subjectId,
+   /* public ResponseEntity<?> evaluationAndScoringEssay(String authorizationHeader, int subjectId,
                                                        String studentId1,String studentId2,String studentId3,
                                                        String reviewStudent1, String reviewStudent2, String reviewStudent3,
                                                        Double scoreStudent1, Double scoreStudent2, Double scoreStudent3) {
@@ -349,7 +351,261 @@ public class EvaluationAndScoringService {
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
+    }*/
+
+
+    //CHẤM ĐIỂM TLCN
+    public ResponseEntity<?> evaluationAndScoringEssay(String authorizationHeader, int subjectId,
+                                                            String studentId1,String studentId2,String studentId3,
+                                                            String reviewStudent1, String reviewStudent2, String reviewStudent3,
+                                                            Double scoreStudent1, Double scoreStudent2, Double scoreStudent3){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+
+            Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+            Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
+            if (CompareTime.isCurrentTimeInCouncilTime(existedSubject.getCouncil())) {
+                //Đếm số luượng giảng viên trong hội đồng - đếm số lượng councillecturer của council đó
+                List<CouncilLecturer> councilLecturerByCouncil = councilLecturerRepository.getListCouncilLecturerByCouncil(existedSubject.getCouncil());
+                int countLecturers = councilLecturerByCouncil.size();
+                if (existedSubject != null) {
+                    //Kiểm tra xem có tồn tại SVTH k - Student 1
+                    if (existedSubject.getStudent1() != null) {
+                        //Tìm Sv
+                        Student student1 = studentRepository.findById(studentId1).orElse(null);
+                        if (student1 != null) {
+                            //Kiểm tra xem student này đã có kết quả chưa
+                            ResultEssay existedResultEssay = resultEssayRepository.findResultEssayByStudentAndSubject(student1,existedSubject);
+                            if (existedResultEssay == null) {
+                                //nếu chưa có, tạo mới 1 result - score
+                                ResultEssay resultEssay = new ResultEssay();
+                                ScoreEssay scoreEssay = new ScoreEssay();
+                                //Set sinh viên và đề tài cho result này
+                                resultEssay.setStudent(student1);
+                                resultEssay.setSubject(existedSubject);
+                                //Set điểm, giảng viên, đánh giá và result cho score
+                                scoreEssay.setScore(scoreStudent1);
+                                scoreEssay.setByLecturer(existedLecturer);
+                                scoreEssay.setReview(reviewStudent1);
+                                scoreEssay.setResultEssay(resultEssay);
+                                //Tạo mới 1 list score rỗng, bỏ score mới tạo vào và set list score này cho result
+                                List<ScoreEssay> scoreEssayList = new ArrayList<>();
+                                scoreEssayList.add(scoreEssay);
+                                resultEssay.setScoreCouncil(scoreEssayList);
+                                resultEssayRepository.save(resultEssay);
+                                scoreEssayRepository.save(scoreEssay);
+                                //Tạo mới list result để gán cho subject
+                                List<ResultEssay> resultEssays = new ArrayList<>();
+                                resultEssays.add(resultEssay);
+                                existedSubject.setResultEssays(resultEssays);
+                                subjectRepository.save(existedSubject);
+                                existedLecturer.setScoreEssayList(scoreEssayList);
+                                lecturerRepository.save(existedLecturer);
+                                student1.setResultEssay(resultEssay);
+                                studentRepository.save(student1);
+                            } else {
+                                //Chỉnh sửa result có sẵn - Kiểm tra xe GV đó cho điểm chưa có rồi thì thông báo đã chấm điểm rồi, không được cấm điểm lại
+                                ScoreEssay existedScoreEssay = scoreEssayRepository.getScoreEssayByLecturerAndReAndResultEssay(existedLecturer, existedResultEssay);
+                                if (existedScoreEssay == null) {
+                                    //Giảng viên này chưa có score cho result này
+                                    //tạo mới score
+                                    ScoreEssay scoreEssay = new ScoreEssay();
+                                    //Set điểm, giảng viên, đánh giá và result cho score
+                                    scoreEssay.setScore(scoreStudent1);
+                                    scoreEssay.setByLecturer(existedLecturer);
+                                    scoreEssay.setReview(reviewStudent1);
+                                    scoreEssay.setResultEssay(existedResultEssay);
+                                    scoreEssayRepository.save(scoreEssay);
+                                    //Tạo mới 1 list score rỗng, bỏ score mới tạo vào và set list score này cho result
+                                    List<ScoreEssay> scoreEssayList = new ArrayList<>();
+                                    scoreEssayList.add(scoreEssay);
+                                    existedResultEssay.setScoreCouncil(scoreEssayList);
+                                    resultEssayRepository.save(existedResultEssay);
+                                    //Tạo mới list result để gán cho subject
+                                    List<ResultEssay> resultEssays = new ArrayList<>();
+                                    resultEssays.add(existedResultEssay);
+                                    existedSubject.setResultEssays(resultEssays);
+                                    //đếm số lượng score của result student 1 rồi ó sánh với countLecturers
+                                    if (student1.getResultEssay().getScoreCouncil().size() == countLecturers) {
+                                        existedSubject.setActive((byte) 9);
+                                    }
+
+                                    existedLecturer.setScoreEssayList(scoreEssayList);
+                                    lecturerRepository.save(existedLecturer);
+                                    student1.setResultEssay(existedResultEssay);
+                                    studentRepository.save(student1);
+                                    //Sau khi lưu kết quả, check số lượng kết quả của subject và student này
+                                    //Nếu bằng số lượng GV trong hội đồng và GVHD đã chấm điểm thì cho active = 9
+                                    //Tìm Kết quả
+                                    /*ResultEssay resultEssay = resultEssayRepository.findResultEssayByStudentAndSubject(student1, existedSubject);
+                                    //Tìm ds điểm của kq đó
+                                    List<ScoreEssay> scoreEssays = scoreEssayRepository.getScoreEssayByResultEssay(resultEssay);
+                                    int countScore = scoreEssays.size();
+                                    if (countScore == countLecturers && resultEssay.getScoreInstructor() != null) {
+                                        existedSubject.setActive((byte) 9);
+                                    }*/
+                                    subjectRepository.save(existedSubject);
+
+                                } else {
+                                    //Trả về mã 302 - Thông báo đã chấm điểm
+                                    return new ResponseEntity<>(HttpStatus.FOUND);
+                                }
+                            }
+                        }
+                    }
+
+                    //Kiểm tra xem có tồn tại SVTH k - Student 2
+                    if (existedSubject.getStudent2() != null) {
+                        //Tìm Sv
+                        Student student2 = studentRepository.findById(studentId2).orElse(null);
+                        if (student2 != null) {
+                            //Kiểm tra xem student này đã có kết quả chưa
+                            ResultEssay existedResultEssay = resultEssayRepository.findResultEssayByStudentAndSubject(student2, existedSubject);
+                            if (existedResultEssay == null) {
+                                //nếu chưa có, tạo mới 1 result - score
+                                ResultEssay resultEssay = new ResultEssay();
+                                ScoreEssay scoreEssay = new ScoreEssay();
+                                //Set sinh viên và đề tài cho result này
+                                resultEssay.setStudent(student2);
+                                resultEssay.setSubject(existedSubject);
+                                //Set điểm, giảng viên, đánh giá và result cho score
+                                scoreEssay.setScore(scoreStudent2);
+                                scoreEssay.setByLecturer(existedLecturer);
+                                scoreEssay.setReview(reviewStudent2);
+                                scoreEssay.setResultEssay(resultEssay);
+                                scoreEssayRepository.save(scoreEssay);
+                                //Tạo mới 1 list score rỗng, bỏ score mới tạo vào và set list score này cho result
+                                List<ScoreEssay> scoreEssayList = new ArrayList<>();
+                                scoreEssayList.add(scoreEssay);
+                                resultEssay.setScoreCouncil(scoreEssayList);
+                                resultEssayRepository.save(resultEssay);
+                                //Tạo mới list result để gán cho subject
+                                List<ResultEssay> resultEssays = new ArrayList<>();
+                                resultEssays.add(resultEssay);
+                                existedSubject.setResultEssays(resultEssays);
+                                subjectRepository.save(existedSubject);
+                                existedLecturer.setScoreEssayList(scoreEssayList);
+                                lecturerRepository.save(existedLecturer);
+                                student2.setResultEssay(resultEssay);
+                                studentRepository.save(student2);
+                            } else {
+                                //Chỉnh sửa result có sẵn - Kiểm tra xe GV đó cho điểm chưa có rồi thì thông báo đã chấm điểm rồi, không được cấm điểm lại
+                                ScoreEssay existedScoreEssay = scoreEssayRepository.getScoreEssayByLecturerAndReAndResultEssay(existedLecturer,existedResultEssay);
+                                if (existedScoreEssay == null) {
+                                    //Giảng viên này chưa có score cho result này
+                                    //tạo mới score
+                                    ScoreEssay scoreEssay = new ScoreEssay();
+                                    //Set điểm, giảng viên, đánh giá và result cho score
+                                    scoreEssay.setScore(scoreStudent2);
+                                    scoreEssay.setByLecturer(existedLecturer);
+                                    scoreEssay.setReview(reviewStudent2);
+                                    scoreEssay.setResultEssay(existedResultEssay);
+                                    scoreEssayRepository.save(scoreEssay);
+                                    //Tạo mới 1 list score rỗng, bỏ score mới tạo vào và set list score này cho result
+                                    List<ScoreEssay> scoreEssayList = new ArrayList<>();
+                                    scoreEssayList.add(scoreEssay);
+                                    existedResultEssay.setScoreCouncil(scoreEssayList);
+                                    resultEssayRepository.save(existedResultEssay);
+                                    //Tạo mới list result để gán cho subject
+                                    List<ResultEssay> resultEssays = new ArrayList<>();
+                                    resultEssays.add(existedResultEssay);
+                                    existedSubject.setResultEssays(resultEssays);
+                                    subjectRepository.save(existedSubject);
+                                    existedLecturer.setScoreEssayList(scoreEssayList);
+                                    lecturerRepository.save(existedLecturer);
+                                    student2.setResultEssay(existedResultEssay);
+                                    studentRepository.save(student2);
+                                } else {
+                                    //Trả về mã 302 - Thông báo đã chấm điểm
+                                    return new ResponseEntity<>(HttpStatus.FOUND);
+                                }
+                            }
+                        }
+                    }
+
+                    //Kiểm tra xem có tồn tại SVTH k - Student 1
+                    if (existedSubject.getStudent3() != null) {
+                        //Tìm Sv
+                        Student student3 = studentRepository.findById(studentId3).orElse(null);
+                        if (student3 != null) {
+                            //Kiểm tra xem student này đã có kết quả chưa
+                            ResultEssay existedResultEssay = resultEssayRepository.findResultEssayByStudentAndSubject(student3, existedSubject);
+                            if (existedResultEssay == null) {
+                                //nếu chưa có, tạo mới 1 result - score
+                                ResultEssay resultEssay = new ResultEssay();
+                                ScoreEssay scoreEssay = new ScoreEssay();
+                                //Set sinh viên và đề tài cho result này
+                                resultEssay.setStudent(student3);
+                                resultEssay.setSubject(existedSubject);
+                                //Set điểm, giảng viên, đánh giá và result cho score
+                                scoreEssay.setScore(scoreStudent3);
+                                scoreEssay.setByLecturer(existedLecturer);
+                                scoreEssay.setReview(reviewStudent3);
+                                scoreEssay.setResultEssay(resultEssay);
+                                scoreEssayRepository.save(scoreEssay);
+                                //Tạo mới 1 list score rỗng, bỏ score mới tạo vào và set list score này cho result
+                                List<ScoreEssay> scoreEssayList = new ArrayList<>();
+                                scoreEssayList.add(scoreEssay);
+                                resultEssay.setScoreCouncil(scoreEssayList);
+                                resultEssayRepository.save(resultEssay);
+                                //Tạo mới list result để gán cho subject
+                                List<ResultEssay> resultEssays = new ArrayList<>();
+                                resultEssays.add(resultEssay);
+                                existedSubject.setResultEssays(resultEssays);
+                                subjectRepository.save(existedSubject);
+                                existedLecturer.setScoreEssayList(scoreEssayList);
+                                lecturerRepository.save(existedLecturer);
+                                student3.setResultEssay(resultEssay);
+                                studentRepository.save(student3);
+                            } else {
+                                //Chỉnh sửa result có sẵn - Kiểm tra xe GV đó cho điểm chưa có rồi thì thông báo đã chấm điểm rồi, không được cấm điểm lại
+                                ScoreEssay existedScoreEssay = scoreEssayRepository.getScoreEssayByLecturerAndReAndResultEssay(existedLecturer, existedResultEssay);
+                                if (existedScoreEssay == null) {
+                                    //Giảng viên này chưa có score cho result này
+                                    //tạo mới score
+                                    ScoreEssay scoreEssay = new ScoreEssay();
+                                    //Set điểm, giảng viên, đánh giá và result cho score
+                                    scoreEssay.setScore(scoreStudent3);
+                                    scoreEssay.setByLecturer(existedLecturer);
+                                    scoreEssay.setReview(reviewStudent3);
+                                    scoreEssay.setResultEssay(existedResultEssay);
+                                    scoreEssayRepository.save(scoreEssay);
+                                    //Tạo mới 1 list score rỗng, bỏ score mới tạo vào và set list score này cho result
+                                    List<ScoreEssay> scoreEssayList = new ArrayList<>();
+                                    scoreEssayList.add(scoreEssay);
+                                    existedResultEssay.setScoreCouncil(scoreEssayList);
+                                    resultEssayRepository.save(existedResultEssay);
+                                    //Tạo mới list result để gán cho subject
+                                    List<ResultEssay> resultEssays = new ArrayList<>();
+                                    resultEssays.add(existedResultEssay);
+                                    existedSubject.setResultEssays(resultEssays);
+                                    subjectRepository.save(existedSubject);
+                                    existedLecturer.setScoreEssayList(scoreEssayList);
+                                    lecturerRepository.save(existedLecturer);
+                                    student3.setResultEssay(existedResultEssay);
+                                    studentRepository.save(student3);
+                                } else {
+                                    //Trả về mã 302 - Thông báo đã chấm điểm
+                                    return new ResponseEntity<>(HttpStatus.FOUND);
+                                }
+                            }
+                        }
+                    }
+
+                    return new ResponseEntity<>(existedSubject, HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
+            }else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
+
+
 
     //đánh giá chấm điểm kltn
     //mỗi sv c 1 result
@@ -374,8 +630,9 @@ public class EvaluationAndScoringService {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
             if (CompareTime.isCurrentTimeInCouncilTime(existedSubject.getCouncil())) {
-                //Đếm số luượng giảng viên trong hội đồng
-                int countLecturers = 0;//existedSubject.getCouncil().getLecturers().size();
+                //Đếm số luượng giảng viên trong hội đồng - đếm số lượng councillecturer của council đó
+                List<CouncilLecturer> councilLecturerByCouncil = councilLecturerRepository.getListCouncilLecturerByCouncil(existedSubject.getCouncil());
+                int countLecturers = councilLecturerByCouncil.size();
                 if (existedSubject != null) {
                     //Kiểm tra xem có tồn tại SVTH k - Student 1
                     if (existedSubject.getStudent1() != null) {

@@ -40,6 +40,10 @@ public class Lecturer implements Serializable {
     @JsonIgnore
     private List<ScoreGraduation> scoreGraduationList;
 
+    @OneToMany(mappedBy = "byLecturer", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<ScoreEssay> scoreEssayList;
+
     @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<CouncilLecturer> councilLecturers;
