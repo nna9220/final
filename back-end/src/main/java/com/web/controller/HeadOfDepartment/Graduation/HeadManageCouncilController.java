@@ -4,6 +4,7 @@ import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
 import com.web.entity.*;
 import com.web.repository.*;
+import com.web.service.Council.CouncilCreationService;
 import com.web.service.HeaderOdDepartment.ManageCouncilService;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ public class HeadManageCouncilController {
     private ManageCouncilService manageCouncilService;
     @Autowired
     private TypeSubjectRepository typeSubjectRepository;
+    @Autowired
+    private CouncilCreationService councilCreationService;
     @Autowired
     private UserUtils userUtils;
     @Autowired
@@ -112,6 +115,23 @@ public class HeadManageCouncilController {
         System.out.println("Hello");
         try {
             return new ResponseEntity<>(manageCouncilService.updateCouncil(subjectId,authorizationHeader,date,timeStart,timeEnd,address,lecturer1,lecturer2,lecturer3,lecturer4,lecturer5),HttpStatus.OK);
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    @PostMapping("/automationCouncil")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
+    private ResponseEntity<?> automaticCouncilDivision(@RequestHeader("Authorization") String authorizationHeader,
+                                                        @RequestParam("address") String address,
+                                                       @RequestParam("date") String date){
+        try {
+            String token = tokenUtils.extractToken(authorizationHeader);
+            Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+            Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+            assert existedLecturer != null;
+            return new ResponseEntity<>(councilCreationService.createCouncils(date,address,existedLecturer),HttpStatus.OK);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);
