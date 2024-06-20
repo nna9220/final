@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -35,7 +36,7 @@ public class ManageTutorialSubjectService {
     @Autowired
     private MailServiceImpl mailService;
     @Autowired
-    private ResultEssayRepository resultEssayRepository;
+    private NotificationRepository notificationRepository;
     @Autowired
     private EvaluationCriteriaRepository evaluationCriteriaRepository;
     @Autowired
@@ -60,25 +61,25 @@ public class ManageTutorialSubjectService {
                 List<String> emailPerson = new ArrayList<>();
                 if (newSubject.getStudent1()!=null) {
                     Student student1 = studentRepository.findById(newSubject.getStudent1()).orElse(null);
-                    if (student1.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                        emailPerson.add(student1.getPerson().getUsername());
-                    }
+                    emailPerson.add(student1.getPerson().getUsername());
                 }
                 if (newSubject.getStudent2()!=null) {
                     Student student2 = studentRepository.findById(newSubject.getStudent2()).orElse(null);
-                    if (student2.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                        emailPerson.add(student2.getPerson().getUsername());
-                    }
+                    emailPerson.add(student2.getPerson().getUsername());
                 }
                 if (newSubject.getStudent3()!=null) {
                     Student student3 = studentRepository.findById(newSubject.getStudent3()).orElse(null);
-                    if (student3.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                        emailPerson.add(student3.getPerson().getUsername());
-                    }
+                    emailPerson.add(student3.getPerson().getUsername());
                 }
                 if (!emailPerson.isEmpty()){
                     mailService.sendMailToPerson(emailPerson,subject,messenger);
                 }
+                Notification notification = new Notification();
+                LocalDateTime now = LocalDateTime.now();
+                notification.setDateSubmit(now);
+                notification.setTitle(subject);
+                notification.setContent(messenger);
+                notificationRepository.save(notification);
                 return new ResponseEntity<>(newSubject, HttpStatus.OK);
             }else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -108,25 +109,25 @@ public class ManageTutorialSubjectService {
                 List<String> emailPerson = new ArrayList<>();
                 if (newSubject.getStudent1()!=null) {
                     Student student1 = studentRepository.findById(newSubject.getStudent1()).orElse(null);
-                    if (student1.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                        emailPerson.add(student1.getPerson().getUsername());
-                    }
+                    emailPerson.add(student1.getPerson().getUsername());
                 }
                 if (newSubject.getStudent2()!=null) {
                     Student student2 = studentRepository.findById(newSubject.getStudent2()).orElse(null);
-                    if (student2.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                        emailPerson.add(student2.getPerson().getUsername());
-                    }
+                    emailPerson.add(student2.getPerson().getUsername());
                 }
                 if (newSubject.getStudent3()!=null) {
                     Student student3 = studentRepository.findById(newSubject.getStudent3()).orElse(null);
-                    if (student3.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                        emailPerson.add(student3.getPerson().getUsername());
-                    }
+                    emailPerson.add(student3.getPerson().getUsername());
                 }
                 if (!emailPerson.isEmpty()){
                     mailService.sendMailToPerson(emailPerson,subject,messenger);
                 }
+                Notification notification = new Notification();
+                LocalDateTime now = LocalDateTime.now();
+                notification.setDateSubmit(now);
+                notification.setTitle(subject);
+                notification.setContent(messenger);
+                notificationRepository.save(notification);
                 return new ResponseEntity<>(newSubject, HttpStatus.OK);
             }
             return new ResponseEntity<>(HttpStatus.OK);
@@ -153,25 +154,25 @@ public class ManageTutorialSubjectService {
                 List<String> emailPerson = new ArrayList<>();
                 if (newSubject.getStudent1()!=null) {
                     Student student1 = studentRepository.findById(newSubject.getStudent1()).orElse(null);
-                    if (student1.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                        emailPerson.add(student1.getPerson().getUsername());
-                    }
+                    emailPerson.add(student1.getPerson().getUsername());
                 }
                 if (newSubject.getStudent2()!=null) {
                     Student student2 = studentRepository.findById(newSubject.getStudent2()).orElse(null);
-                    if (student2.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                        emailPerson.add(student2.getPerson().getUsername());
-                    }
+                    emailPerson.add(student2.getPerson().getUsername());
                 }
                 if (newSubject.getStudent3()!=null) {
                     Student student3 = studentRepository.findById(newSubject.getStudent3()).orElse(null);
-                    if (student3.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                        emailPerson.add(student3.getPerson().getUsername());
-                    }
+                    emailPerson.add(student3.getPerson().getUsername());
                 }
                 if (!emailPerson.isEmpty()){
                     mailService.sendMailToPerson(emailPerson,subject,messenger);
                 }
+                Notification notification = new Notification();
+                LocalDateTime now = LocalDateTime.now();
+                notification.setDateSubmit(now);
+                notification.setTitle(subject);
+                notification.setContent(messenger);
+                notificationRepository.save(notification);
                 return new ResponseEntity<>(newSubject, HttpStatus.OK);
             }else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -199,25 +200,26 @@ public class ManageTutorialSubjectService {
                 List<String> emailPerson = new ArrayList<>();
                 if (newSubject.getStudent1()!=null) {
                     Student student1 = studentRepository.findById(newSubject.getStudent1()).orElse(null);
-                    if (student1.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                        emailPerson.add(student1.getPerson().getUsername());
-                    }
+                    emailPerson.add(student1.getPerson().getUsername());
+
                 }
                 if (newSubject.getStudent2()!=null) {
                     Student student2 = studentRepository.findById(newSubject.getStudent2()).orElse(null);
-                    if (student2.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                        emailPerson.add(student2.getPerson().getUsername());
-                    }
+                    emailPerson.add(student2.getPerson().getUsername());
                 }
                 if (newSubject.getStudent3()!=null) {
                     Student student3 = studentRepository.findById(newSubject.getStudent3()).orElse(null);
-                    if (student3.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                        emailPerson.add(student3.getPerson().getUsername());
-                    }
+                    emailPerson.add(student3.getPerson().getUsername());
                 }
                 if (!emailPerson.isEmpty()){
                     mailService.sendMailToPerson(emailPerson,subject,messenger);
                 }
+                Notification notification = new Notification();
+                LocalDateTime now = LocalDateTime.now();
+                notification.setDateSubmit(now);
+                notification.setTitle(subject);
+                notification.setContent(messenger);
+                notificationRepository.save(notification);
                 return new ResponseEntity<>(newSubject, HttpStatus.OK);
             }
             return new ResponseEntity<>(HttpStatus.OK);

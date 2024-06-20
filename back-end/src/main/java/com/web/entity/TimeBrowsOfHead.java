@@ -36,4 +36,7 @@ public class TimeBrowsOfHead implements Serializable {
     @JoinColumn(name="type_subject_id")
     private TypeSubject typeSubjectId;
 
+    @Column(name="status")
+    private Boolean status;
+
 }

@@ -52,7 +52,7 @@ public class LecturerRegisterGraduationTopicController {
     @Autowired
     private LecturerRepository lecturerRepository;
     @Autowired
-    private StudentService studentService;
+    private NotificationRepository notificationRepository;
     @Autowired
     private LecturerAddScoreGraduationService lecturerSubjectService;
     @Autowired
@@ -228,11 +228,17 @@ public class LecturerRegisterGraduationTopicController {
                     subjectRepository.save(newSubject);
                     studentRepository.saveAll(studentList);
                     String subject = "ĐĂNG KÝ ĐỀ TÀI THÀNH CÔNG";
-                    String messenger = "Topic: " + newSubject.getSubjectName() + " đăng ký thành công!!";
+                    String messenger = "Topic: " + newSubject.getSubjectName() + " đăng ký thành công - VUi lòng chờ TBM duyệt đề tài";
                     //Gửi mail cho Hội đồng - SV
                     List<String> emailPerson = new ArrayList<>();
                     emailPerson.add(existLecturer.getPerson().getUsername());
                     mailService.sendMailToPerson(emailPerson,subject,messenger);
+                    Notification notification = new Notification();
+                    LocalDateTime now = LocalDateTime.now();
+                    notification.setDateSubmit(now);
+                    notification.setTitle(subject);
+                    notification.setContent(messenger);
+                    notificationRepository.save(notification);
                     return new ResponseEntity<>(newSubject,HttpStatus.CREATED);
                 }else {
                     return new ResponseEntity<>(personCurrent,HttpStatus.OK);

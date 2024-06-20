@@ -2,6 +2,7 @@ package com.web.controller.admin;
 
 //import hcmute.edu.vn.registertopic_be.authentication.CheckedPermission;
 import com.web.config.CheckRole;
+import com.web.config.CompareTime;
 import com.web.config.TokenUtils;
 import com.web.entity.*;
 import com.web.mapper.RegistrationPeriodMapper;
@@ -36,6 +37,8 @@ import java.util.Map;
 public class RegistrationPeriodController {
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private TimeBrowseHeadRepository timeBrowseHeadRepository;
     @Autowired
     private MailServiceImpl mailService;
     @Autowired
@@ -83,15 +86,45 @@ public class RegistrationPeriodController {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
             RegistrationPeriod registrationPeriod = new RegistrationPeriod();
             registrationPeriod.setRegistrationName(periodName);
+            if (convertToLocalDateTime(timeEnd).isBefore(convertToLocalDateTime(timeStart))) {
+                //Mã lỗi 400
+                return new ResponseEntity<>("Ngày kết thúc phải lớn hơn ngày bắt đầu", HttpStatus.BAD_REQUEST);
+            }
+            List<TimeBrowsOfHead> timeBrowsOfHeads = timeBrowseHeadRepository.getListTimeBrowseByStatus(typeSubject);
+            //kiểm tra xem nó có nằm sau thời gian duyệt ề tài của TBM không.
+            if (!CompareTime.isStartAfter(timeBrowsOfHeads,convertToLocalDateTime(timeStart))){
+                //mã lỗi 406
+                return new ResponseEntity<>("Thời gian đăng ký của SV phải ở sau thời gian duyệt đề tài của TBM",HttpStatus.NOT_ACCEPTABLE);
+            }
             registrationPeriod.setRegistrationTimeStart(convertToLocalDateTime(timeStart));
             registrationPeriod.setRegistrationTimeEnd(convertToLocalDateTime(timeEnd));
-            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
             registrationPeriod.setTypeSubjectId(typeSubject);
-            registrationPeriodRepository.save(registrationPeriod);
+            registrationPeriod.setStatus(true);
+            var save = registrationPeriodRepository.save(registrationPeriod);
+            List<Student> studentList = studentRepository.getListStudentActiveTrue();
+            List<String> emailLecturer = new ArrayList<>();
+            String subject = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI TIỂU LUẬN CHUYÊN NGÀNH CHO SINH VIÊN " + save.getRegistrationName();
+            String messenger = "Thời gian bắt đầu: " + save.getRegistrationTimeStart()+"\n" +
+                    "Thời gian kết thúc: " + save.getRegistrationTimeEnd() + "\n";
+            if (!studentList.isEmpty()){
+                mailService.sendMailToStudents(emailLecturer,subject,messenger);
+            }
+            //Tạo thông báo trên web
+            String title = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI TIỂU LUẬN CHUYÊN NGÀNH CHO SINH VIÊN";
+            String content = "Thời gian bắt đầu: " + save.getRegistrationTimeStart()+"\n" +
+                    "Thời gian kết thúc: " + save.getRegistrationTimeEnd() + "\n";
+            Notification notification = new Notification();
+            notification.setContent(content);
+            notification.setTitle(title);
+            LocalDateTime now = LocalDateTime.now();
+            notification.setDateSubmit(now);
+            notificationRepository.save(notification);
             return new ResponseEntity<>(registrationPeriod,HttpStatus.CREATED);
         }else {
+            //mã lỗi 403
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
@@ -149,12 +182,19 @@ public class RegistrationPeriodController {
                        return new ResponseEntity<>("Ngày kết thúc phải lớn hơn ngày bắt đầu", HttpStatus.BAD_REQUEST);
                 }
                 System.out.println("data nhận về:" + start + " end : " + end);
+                List<TimeBrowsOfHead> timeBrowsOfHeads = timeBrowseHeadRepository.getListTimeBrowseByStatus(existRegistrationPeriod.getTypeSubjectId());
+                //kiểm tra xem nó có nằm sau thời gian duyệt ề tài của TBM không.
+                if (!CompareTime.isStartAfter(timeBrowsOfHeads,convertToLocalDateTime(start))){
+                    //mã lỗi 406
+                    return new ResponseEntity<>("Thời gian đăng ký của SV phải ở sau thời gian duyệt đề tài của TBM",HttpStatus.NOT_ACCEPTABLE);
+                }
                 existRegistrationPeriod.setRegistrationTimeStart(convertToLocalDateTime(start));
                 existRegistrationPeriod.setRegistrationTimeEnd(convertToLocalDateTime(end));
+                existRegistrationPeriod.setStatus(true);
                 var update = registrationPeriodRepository.save(existRegistrationPeriod);
                 //GỬI MAIL
                 //Dnah sách SV
-                List<Student> studentList = studentRepository.findAll();
+                List<Student> studentList = studentRepository.getListStudentActiveTrue();
                 List<String> emailLecturer = new ArrayList<>();
                 for (Student student:studentList) {
                     emailLecturer.add(student.getPerson().getUsername());
@@ -169,7 +209,7 @@ public class RegistrationPeriodController {
                     mailService.sendMailToStudents(emailLecturer,subject,messenger);
                 }
                 //Tạo thông báo trên web
-                String title = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI TIỂU LUẬN CHUYÊN NGÀNH CHO SINH VIÊN";
+                String title = "THÔNG BÁO CẬP NHẬT THỜI GIAN ĐĂNG KÝ ĐỀ TÀI TIỂU LUẬN CHUYÊN NGÀNH CHO SINH VIÊN";
                 String content = "Thời gian bắt đầu: " + update.getRegistrationTimeStart()+"\n" +
                         "Thời gian kết thúc: " + update.getRegistrationTimeEnd() + "\n";
                 Notification notification = new Notification();

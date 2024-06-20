@@ -7,8 +7,8 @@ const Navbar = () => {
     const [menu, setMenu] = useState("home");
 
     const handleLoginClick = () => {
-       /*window.location.href = 'http://hcmute.workon.space/oauth2/authorization/google';*/
-        window.location.href = 'http://localhost:5000/oauth2/authorization/google';
+       window.location.href = 'http://hcmute.workon.space/oauth2/authorization/google';
+       // window.location.href = 'http://localhost:5000/oauth2/authorization/google';
     };
     
     return (

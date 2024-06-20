@@ -21,4 +21,7 @@ public interface StudentRepository extends JpaRepository<Student, String> {
 
     @Query("SELECT S FROM Student S WHERE S.subjectId IS NULL")
     public List<Student> getStudentSubjectEssayNull();
+
+    @Query("SELECT S FROM Student S WHERE S.status=true")
+    public List<Student> getListStudentActiveTrue();
 }

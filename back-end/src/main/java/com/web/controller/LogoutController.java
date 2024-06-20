@@ -5,7 +5,9 @@ import com.web.config.TokenUtils;
 import com.web.entity.Lecturer;
 import com.web.entity.Person;
 import com.web.entity.Subject;
+import com.web.repository.ExpiredTokenRepository;
 import com.web.repository.PersonRepository;
+import com.web.service.AuthService;
 import com.web.utils.UserUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -34,6 +36,10 @@ public class LogoutController {
     private UserUtils userUtils;
     @Autowired
     private PersonRepository personRepository;
+    @Autowired
+    private AuthService authService;
+    @Autowired
+    private ExpiredTokenRepository expiredTokenRepository;
 
 
     public LogoutController(TokenUtils tokenUtils) {
@@ -43,11 +49,10 @@ public class LogoutController {
     @PostMapping("/api/logout")
     public ResponseEntity<Void> logout(@RequestHeader("Authorization") String authorizationHeader) {
         String token = extractToken(authorizationHeader);
-
+        authService.logoutAndSaveToken(token);
         if (token == null || token.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-
         // Tạo một token hết hạn ngay lập tức
         String expiredToken = createExpiredToken(token);
 

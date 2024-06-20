@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,8 @@ public class HeadManageCouncilController {
     private UserUtils userUtils;
     @Autowired
     private SubjectRepository subjectRepository;
+    @Autowired
+    private CouncilLecturerRepository councilLecturerRepository;
     @Autowired
     private LecturerRepository lecturerRepository;
     @Autowired
@@ -80,7 +83,12 @@ public class HeadManageCouncilController {
             Map<String,Object> response = new HashMap<>();
             response.put("council",council);
             if ((council!=null)) {
-                response.put("listLecturerOfCouncil", council.getLecturers());
+                List<CouncilLecturer> councilLecturers = councilLecturerRepository.getListCouncilLecturerByCouncil(council);
+                List<Lecturer> lecturers = new ArrayList<>();
+                for (CouncilLecturer c:councilLecturers) {
+                    lecturers.add(c.getLecturer());
+                }
+                response.put("listLecturerOfCouncil", lecturers);
             }
             return new ResponseEntity<>(response,HttpStatus.OK);
         }else {
@@ -92,15 +100,18 @@ public class HeadManageCouncilController {
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
     private ResponseEntity<?> editCouncil(@RequestHeader("Authorization") String authorizationHeader,
                                                   @PathVariable int subjectId,
-                                          @RequestParam("time") String time,
+                                          @RequestParam("timeStart") String timeStart,
+                                          @RequestParam("date") String date,
+                                          @RequestParam("timeEnd") String timeEnd,
                                           @RequestParam("address") String address,
-                                          @RequestParam("lecturer1")String lecturer1,
-                                          @RequestParam("lecturer2")String lecturer2,
+                                          @RequestParam(value = "lecturer1", required = false)String lecturer1,
+                                          @RequestParam(value = "lecturer2", required = false)String lecturer2,
                                           @RequestParam(value = "lecturer3",required = false)String lecturer3,
-                                          @RequestParam(value = "lecturer4",required = false)String lecturer4){
+                                          @RequestParam(value = "lecturer4",required = false)String lecturer4,
+                                          @RequestParam(value = "lecturer5",required = false)String lecturer5){
         System.out.println("Hello");
         try {
-            return new ResponseEntity<>(manageCouncilService.updateCouncil(subjectId,authorizationHeader,time,address,lecturer1,lecturer2,lecturer3,lecturer4),HttpStatus.OK);
+            return new ResponseEntity<>(manageCouncilService.updateCouncil(subjectId,authorizationHeader,date,timeStart,timeEnd,address,lecturer1,lecturer2,lecturer3,lecturer4,lecturer5),HttpStatus.OK);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);

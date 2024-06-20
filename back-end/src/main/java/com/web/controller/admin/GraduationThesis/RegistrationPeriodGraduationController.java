@@ -2,6 +2,7 @@ package com.web.controller.admin.GraduationThesis;
 
 //import hcmute.edu.vn.registertopic_be.authentication.CheckedPermission;
 import com.web.config.CheckRole;
+import com.web.config.CompareTime;
 import com.web.config.TokenUtils;
 import com.web.entity.*;
 import com.web.mapper.RegistrationPeriodMapper;
@@ -36,6 +37,8 @@ import java.util.Map;
 public class RegistrationPeriodGraduationController {
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private TimeBrowseHeadRepository timeBrowseHeadRepository;
     @Autowired
     private NotificationRepository notificationRepository;
     @Autowired
@@ -84,17 +87,42 @@ public class RegistrationPeriodGraduationController {
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             RegistrationPeriod registrationPeriod = new RegistrationPeriod();
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
+            if (convertToLocalDateTime(timeEnd).isBefore(convertToLocalDateTime(timeStart))) {
+                //Mã lỗi 400
+                return new ResponseEntity<>("Ngày kết thúc phải lớn hơn ngày bắt đầu", HttpStatus.BAD_REQUEST);
+            }
+            List<TimeBrowsOfHead> timeBrowsOfHeads = timeBrowseHeadRepository.getListTimeBrowseByStatus(typeSubject);
+            //kiểm tra xem nó có nằm sau thời gian duyệt ề tài của TBM không.
+            if (!CompareTime.isStartAfter(timeBrowsOfHeads,convertToLocalDateTime(timeStart))){
+                //mã lỗi 406
+                return new ResponseEntity<>("Thời gian đăng ký của SV phải ở sau thời gian duyệt đề tài của TBM",HttpStatus.NOT_ACCEPTABLE);
+            }
             registrationPeriod.setRegistrationName(periodName);
             registrationPeriod.setRegistrationTimeStart(convertToLocalDateTime(timeStart));
             registrationPeriod.setRegistrationTimeEnd(convertToLocalDateTime(timeEnd));
-            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
             registrationPeriod.setTypeSubjectId(typeSubject);
-            registrationPeriodRepository.save(registrationPeriod);
+            var save = registrationPeriodRepository.save(registrationPeriod);
+            List<Student> studentList = studentRepository.getListStudentActiveTrue();
+            List<String> emailLecturer = new ArrayList<>();
+            String subject = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI KLTN CHO SINH VIÊN " + save.getRegistrationName();
+            String messenger = "Thời gian bắt đầu: " + save.getRegistrationTimeStart()+"\n" +
+                    "Thời gian kết thúc: " + save.getRegistrationTimeEnd() + "\n";
+            if (!studentList.isEmpty()){
+                mailService.sendMailToStudents(emailLecturer,subject,messenger);
+            }
+            //Tạo thông báo trên web
+            String title = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI KLTN CHO SINH VIÊN";
+            String content = "Thời gian bắt đầu: " + save.getRegistrationTimeStart()+"\n" +
+                    "Thời gian kết thúc: " + save.getRegistrationTimeEnd() + "\n";
+            Notification notification = new Notification();
+            notification.setContent(content);
+            notification.setTitle(title);
+            LocalDateTime now = LocalDateTime.now();
+            notification.setDateSubmit(now);
+            notificationRepository.save(notification);
             return new ResponseEntity<>(registrationPeriod,HttpStatus.CREATED);
         }else {
-            /*ModelAndView error = new ModelAndView();
-            error.addObject("errorMessage", "Bạn không có quyền truy cập.");
-            return error;*/
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -147,22 +175,28 @@ public class RegistrationPeriodGraduationController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             RegistrationPeriod existRegistrationPeriod = registrationPeriodRepository.findById(periodId).orElse(null);
             if (existRegistrationPeriod != null) {
-                System.out.println("data nhận về:" + start + " end : " + end);
                 if (convertToLocalDateTime(end).isBefore(convertToLocalDateTime(start))) {
                     return new ResponseEntity<>("Ngày kết thúc phải lớn hơn ngày bắt đầu", HttpStatus.BAD_REQUEST);
+                }
+                System.out.println("data nhận về:" + start + " end : " + end);
+                List<TimeBrowsOfHead> timeBrowsOfHeads = timeBrowseHeadRepository.getListTimeBrowseByStatus(existRegistrationPeriod.getTypeSubjectId());
+                //kiểm tra xem nó có nằm sau thời gian duyệt ề tài của TBM không.
+                if (!CompareTime.isStartAfter(timeBrowsOfHeads,convertToLocalDateTime(start))){
+                    //mã lỗi 406
+                    return new ResponseEntity<>("Thời gian đăng ký của SV phải ở sau thời gian duyệt đề tài của TBM",HttpStatus.NOT_ACCEPTABLE);
                 }
                 existRegistrationPeriod.setRegistrationTimeStart(convertToLocalDateTime(start));
                 existRegistrationPeriod.setRegistrationTimeEnd(convertToLocalDateTime(end));
                 var update = registrationPeriodRepository.save(existRegistrationPeriod);
                 //GỬI MAIL
                 //Dnah sách SV
-                List<Student> studentList = studentRepository.findAll();
+                List<Student> studentList = studentRepository.getListStudentActiveTrue();
                 List<String> emailLecturer = new ArrayList<>();
                 for (Student student:studentList) {
                     emailLecturer.add(student.getPerson().getUsername());
                 }
                 MailStructure newMail = new MailStructure();
-                String subject = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI KHÓA LUẬN TỐT NGHIỆP CHO SINH VIÊN " + update.getRegistrationName();
+                String subject = "THÔNG BÁO CẬP NHẬT THỜI GIAN ĐĂNG KÝ ĐỀ TÀI KLTN CHO SINH VIÊN " + update.getRegistrationName();
                 String messenger = "Thời gian bắt đầu: " + update.getRegistrationTimeStart()+"\n" +
                         "Thời gian kết thúc: " + update.getRegistrationTimeEnd() + "\n";
                 newMail.setSubject(subject);
@@ -170,7 +204,8 @@ public class RegistrationPeriodGraduationController {
                 if (!studentList.isEmpty()){
                     mailService.sendMailToStudents(emailLecturer,subject,messenger);
                 }
-                String title = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI KHÓA LUẬN TỐT NGHIỆP CHO SINH VIÊN";
+                //Tạo thông báo trên web
+                String title = "THÔNG BÁO CẬP NHẬT THỜI GIAN ĐĂNG KÝ ĐỀ TÀI KLTN CHO SINH VIÊN";
                 String content = "Thời gian bắt đầu: " + update.getRegistrationTimeStart()+"\n" +
                         "Thời gian kết thúc: " + update.getRegistrationTimeEnd() + "\n";
                 Notification notification = new Notification();

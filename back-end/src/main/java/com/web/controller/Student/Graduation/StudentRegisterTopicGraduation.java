@@ -51,18 +51,23 @@ public class StudentRegisterTopicGraduation {
             if (currentStudentOptional.isPresent()) {
                 Student currentStudent = currentStudentOptional.get();
                 if (currentStudent.getSubjectGraduationId() == null) {
-                    List<RegistrationPeriod> periodList = registrationPeriodRepository.findAllPeriod();
-                    if (CompareTime.isCurrentTimeInPeriodStudent(periodList)) {
-                        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
-                        List<Subject> subjectList = subjectRepository.findSubjectByStatusAndMajorAndStudent(true, currentStudent.getMajor(),typeSubject);
-                        Map<String,Object> response = new HashMap<>();
-                        response.put("person",personCurrent);
-                        response.put("subjectList", subjectList);
-                        return new ResponseEntity<>(response, HttpStatus.OK);
+                    TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
+                    List<RegistrationPeriod> periodList = registrationPeriodRepository.getListPeriodBYStatusAndType(typeSubject);
+                    if (currentStudent.getStatus()) {
+                        if (CompareTime.isCurrentTimeInPeriodStudent(periodList)) {
+                            List<Subject> subjectList = subjectRepository.findSubjectByStatusAndMajorAndStudent(true, currentStudent.getMajor(), typeSubject);
+                            Map<String, Object> response = new HashMap<>();
+                            response.put("person", personCurrent);
+                            response.put("subjectList", subjectList);
+                            return new ResponseEntity<>(response, HttpStatus.OK);
+                        } else {
+                            Map<String, Object> response = new HashMap<>();
+                            response.put("person", personCurrent);
+                            return new ResponseEntity<>(response, HttpStatus.OK);
+                        }
                     }else {
-                        Map<String,Object> response = new HashMap<>();
-                        response.put("person",personCurrent);
-                        return new ResponseEntity<>(response,HttpStatus.OK);
+                        //"Bạn không thuộc danh sách sinh vieen được đăng ký"
+                        return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
                     }
                 }
                 else {

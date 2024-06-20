@@ -3,10 +3,7 @@ package com.web.service.Lecturer;
 import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
 import com.web.entity.*;
-import com.web.repository.LecturerRepository;
-import com.web.repository.PersonRepository;
-import com.web.repository.StudentRepository;
-import com.web.repository.SubjectRepository;
+import com.web.repository.*;
 import com.web.service.MailServiceImpl;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +24,8 @@ public class ThesisBrowseSubjectToCouncil {
     private TokenUtils tokenUtils;
     @Autowired
     private LecturerRepository lecturerRepository;
+    @Autowired
+    private CouncilLecturerRepository councilLecturerRepository;
     @Autowired
     private SubjectRepository subjectRepository;
     @Autowired
@@ -81,8 +80,13 @@ public class ThesisBrowseSubjectToCouncil {
                         emailPerson.add(student3.getPerson().getUsername());
                     }
                 }
+                List<CouncilLecturer> councilLecturers = councilLecturerRepository.getListCouncilLecturerByCouncil(existedSubject.getCouncil());
+                List<Lecturer> lecturers = new ArrayList<>();
+                for (CouncilLecturer c:councilLecturers) {
+                    lecturers.add(c.getLecturer());
+                }
                 if (existedSubject.getCouncil()!=null) {
-                    for (Lecturer lecturer : existedSubject.getCouncil().getLecturers()) {
+                    for (Lecturer lecturer : lecturers) {
                         if (lecturer!=existedLecturer) {
                             emailPerson.add(lecturer.getPerson().getUsername());
                         }

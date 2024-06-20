@@ -45,6 +45,8 @@ public class StudentController {
     @Autowired
     private StudentClassRepository studentClassRepository;
     @Autowired
+    private ImportStudentCheckRegister importStudentCheckRegister;
+    @Autowired
     private StudentService studentService;
     @Autowired
     private StudentMapper studentMapper;
@@ -322,5 +324,25 @@ public class StudentController {
         workbook.close();
     }
 
+
+    //IMPORT STUDENT ĐƯỢC QUYỀN ĐĂNG KÝ TRONG ĐỢT
+    @PostMapping("/importStudentId")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> importStudentCheck(@RequestParam("file") MultipartFile file) throws IOException {
+        return new ResponseEntity<>(importStudentCheckRegister.importStudent(file),HttpStatus.OK);
+    }
+
+    @PostMapping("/addStudentId/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> importStudentCheck(@PathVariable String id) throws IOException {
+        Student oldStudent = studentRepository.findById(id).orElse(null);
+        if (oldStudent!=null){
+            oldStudent.setStatus(true);
+            studentRepository.save(oldStudent);
+            return new ResponseEntity<>(oldStudent,HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
 }

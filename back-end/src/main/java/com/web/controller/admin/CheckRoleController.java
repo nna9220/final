@@ -4,6 +4,7 @@ import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
 import com.web.entity.Person;
 import com.web.jwt.JwtTokenProvider;
+import com.web.repository.ExpiredTokenRepository;
 import com.web.repository.PersonRepository;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ public class CheckRoleController {
     private PersonRepository personRepository;
     @Autowired
     private UserUtils userUtils;
+    @Autowired
+    private ExpiredTokenRepository expiredTokenRepository;
 
     private final TokenUtils tokenUtils;
     private final JwtTokenProvider jwtTokenProvider;
@@ -34,11 +37,15 @@ public class CheckRoleController {
             String tokenCheck = tokenUtils.extractToken(token);
             Person personCurrent = CheckRole.getRoleCurrent2(tokenCheck,userUtils,personRepository);
             System.out.println("Trước chekc role");
-            if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")){
-                System.out.println("check role successful");
-                return ResponseEntity.ok("Authorized");
-            }else {
-                System.out.println("Sau else");
+            if (expiredTokenRepository.findByToken(tokenCheck)==null) {
+                if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
+                    System.out.println("check role successful");
+                    return ResponseEntity.ok("Authorized");
+                } else {
+                    System.out.println("Sau else");
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+                }
+            }else{
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
             }
         } else {

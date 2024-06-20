@@ -2,10 +2,7 @@ package com.web.service.Student;
 
 import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
-import com.web.entity.FileComment;
-import com.web.entity.Person;
-import com.web.entity.Student;
-import com.web.entity.Subject;
+import com.web.entity.*;
 import com.web.repository.*;
 import com.web.service.FileMaterialService;
 import com.web.service.MailServiceImpl;
@@ -20,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +39,8 @@ public class ManageSubjectService {
     private FileRepository fileRepository;
     @Autowired
     private FileMaterialService fileMaterialService;
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     public ResponseEntity<?> SubmitReportFifty(int id,@RequestHeader("Authorization") String authorizationHeader,@RequestParam(value = "fileInput", required = true) MultipartFile files){
         String token = tokenUtils.extractToken(authorizationHeader);
@@ -74,6 +74,12 @@ public class ManageSubjectService {
                         String subject = "Topic: " + existSubject.getSubjectName();
                         String messenger = "Topic: " + existSubject.getSubjectName() + " đã nộp báo cáo 50%!!";
                         mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
+                        Notification notification = new Notification();
+                        LocalDateTime now = LocalDateTime.now();
+                        notification.setDateSubmit(now);
+                        notification.setTitle(subject);
+                        notification.setContent(messenger);
+                        notificationRepository.save(notification);
                         return new ResponseEntity<>(existedStudent, HttpStatus.OK);
                     } else {
                         FileComment fileComment = existedSubject.getFiftyPercent();
@@ -101,8 +107,14 @@ public class ManageSubjectService {
                         subjectRepository.save(existedSubject);
                         Subject existSubject = subjectRepository.findById(id).orElse(null);
                         String subject = "Topic: " + existSubject.getSubjectName();
-                        String messenger = "Topic: " + existSubject.getSubjectName() + " đã nộp báo cáo 50%!!";
+                        String messenger = "Topic: " + existSubject.getSubjectName() + " đã nộp lại báo cáo 50%!!";
                         mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
+                        Notification notification = new Notification();
+                        LocalDateTime now = LocalDateTime.now();
+                        notification.setDateSubmit(now);
+                        notification.setTitle(subject);
+                        notification.setContent(messenger);
+                        notificationRepository.save(notification);
                         return new ResponseEntity<>(existedStudent, HttpStatus.OK);
                     }
                 }else {
@@ -149,6 +161,12 @@ public class ManageSubjectService {
                         String subject = "Topic: " + existSubject.getSubjectName();
                         String messenger = "Topic: " + existSubject.getSubjectName() + " đã nộp báo cáo 100%!!";
                         mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
+                        Notification notification = new Notification();
+                        LocalDateTime now = LocalDateTime.now();
+                        notification.setDateSubmit(now);
+                        notification.setTitle(subject);
+                        notification.setContent(messenger);
+                        notificationRepository.save(notification);
                         return new ResponseEntity<>(existedStudent, HttpStatus.OK);
                     } else {
                         FileComment fileComment = existedSubject.getOneHundredPercent();
@@ -176,8 +194,14 @@ public class ManageSubjectService {
                         subjectRepository.save(existedSubject);
                         Subject existSubject = subjectRepository.findById(id).orElse(null);
                         String subject = "Topic: " + existSubject.getSubjectName();
-                        String messenger = "Topic: " + existSubject.getSubjectName() + " đã nộp báo cáo 100%!!";
+                        String messenger = "Topic: " + existSubject.getSubjectName() + " đã nộp lại báo cáo 100%!!";
                         mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
+                        Notification notification = new Notification();
+                        LocalDateTime now = LocalDateTime.now();
+                        notification.setDateSubmit(now);
+                        notification.setTitle(subject);
+                        notification.setContent(messenger);
+                        notificationRepository.save(notification);
                         return new ResponseEntity<>(existedStudent, HttpStatus.OK);
                     }
                 }else {

@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -94,8 +95,9 @@ public class StudentAddTaskGraduationController {
 
     private static LocalDateTime convertToLocalDateTime(String dateString) {
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            return LocalDateTime.parse(dateString, formatter);
+            // Sử dụng định dạng yyyy-MM-dd cho ngày tháng không có thời gian
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            return LocalDate.parse(dateString, formatter).atStartOfDay();
         } catch (DateTimeParseException e) {
             // Xử lý ngoại lệ khi có lỗi trong quá trình chuyển đổi
             System.out.println("Lỗi: " + e);

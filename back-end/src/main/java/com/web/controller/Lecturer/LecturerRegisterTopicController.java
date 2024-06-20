@@ -45,7 +45,7 @@ public class LecturerRegisterTopicController {
     @Autowired
     private TaskRepository taskRepository;
     @Autowired
-    private SubjectService subjectService;
+    private NotificationRepository notificationRepository;
     @Autowired
     private SubjectMapper subjectMapper;
     @Autowired
@@ -151,15 +151,14 @@ public class LecturerRegisterTopicController {
 
     @PostMapping("/register")
     @PreAuthorize("hasAuthority('ROLE_LECTURER')")
-    public ResponseEntity<?> lecturerRegisterTopic(
-            @RequestParam("subjectName") String name,
-            @RequestParam("requirement") String requirement,
-            @RequestParam("expected") String expected,
-            @RequestParam(value = "student1", required = false) String student1,
-            @RequestParam(value = "student2", required = false) String student2,
-            @RequestParam(value = "student3", required = false) String student3,
-            @RequestHeader("Authorization") String authorizationHeader,
-            HttpServletRequest request) {
+    public ResponseEntity<?> lecturerRegisterTopic(@RequestParam("subjectName") String name,
+                                                    @RequestParam("requirement") String requirement,
+                                                    @RequestParam("expected") String expected,
+                                                    @RequestParam(value = "student1", required = false) String student1,
+                                                    @RequestParam(value = "student2", required = false) String student2,
+                                                    @RequestParam(value = "student3", required = false) String student3,
+                                                    @RequestHeader("Authorization") String authorizationHeader,
+                                                    HttpServletRequest request) {
         try {
             LocalDateTime current = LocalDateTime.now();
             System.out.println("Current time: " + current);
@@ -183,10 +182,8 @@ public class LecturerRegisterTopicController {
                     newSubject.setExpected(expected);
                     newSubject.setActive((byte) 0);
                     newSubject.setStatus(false);
-
                     Lecturer existLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
                     System.out.println("Exist lecturer: " + existLecturer);
-
                     if (existLecturer != null) {
                         newSubject.setInstructorId(existLecturer);
                         newSubject.setMajor(existLecturer.getMajor());
@@ -230,11 +227,17 @@ public class LecturerRegisterTopicController {
                         subjectRepository.save(newSubject);
                         studentRepository.saveAll(studentList);
                         String subject = "ĐĂNG KÝ ĐỀ TÀI THÀNH CÔNG";
-                        String messenger = "Topic: " + newSubject.getSubjectName() + " đăng ký thành công!!";
+                        String messenger = "Topic: " + newSubject.getSubjectName() + " đăng ký thành công - Vui lòng chờ TBM duyệt đề tài";
                         //Gửi mail cho Hội đồng - SV
                         List<String> emailPerson = new ArrayList<>();
                         emailPerson.add(existLecturer.getPerson().getUsername());
                         mailService.sendMailToPerson(emailPerson,subject,messenger);
+                        Notification notification = new Notification();
+                        LocalDateTime now = LocalDateTime.now();
+                        notification.setDateSubmit(now);
+                        notification.setTitle(subject);
+                        notification.setContent(messenger);
+                        notificationRepository.save(notification);
                         return new ResponseEntity<>(newSubject, HttpStatus.CREATED);
                     } else {
                         return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Lecturer không tồn tại
