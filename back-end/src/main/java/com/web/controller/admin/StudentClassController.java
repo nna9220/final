@@ -135,12 +135,12 @@ public class StudentClassController {
 
     @PostMapping("/deleted/{classId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> deletedClass(@PathVariable int classId){
+    public ResponseEntity<?> deletedClass(@PathVariable int classId) {
         StudentClass existStudentClass = studentClassService.getStudentClassById(classId);
-        if (existStudentClass != null){
+        if (existStudentClass != null) {
             studentClassRepository.delete(existStudentClass);
-            return new ResponseEntity<>(existStudentClass,HttpStatus.OK);
-        }else {
+            return new ResponseEntity<>(existStudentClass, HttpStatus.OK);
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }

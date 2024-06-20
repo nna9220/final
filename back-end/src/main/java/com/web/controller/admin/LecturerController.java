@@ -96,8 +96,11 @@ public class LecturerController {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
-            /*if (CheckedPermission.isAdmin(personRepository)) {
-                //Tạo person*/
+            // Kiểm tra xem mã số giảng viên đã tồn tại hay chưa
+            if (personRepository.existsByPersonId(personId)) {
+                return new ResponseEntity<>("Mã số giảng viên đã tồn tại", HttpStatus.CONFLICT);
+            }
+
             Person newPerson = new Person();
             newPerson.setPersonId(personId);
             newPerson.setFirstName(firstName);
@@ -109,22 +112,23 @@ public class LecturerController {
             newPerson.setAddress(address);
             newPerson.setAuthorities(author);
             newPerson.setStatus(true);
-            //newPerson.setRole(RoleName.valueOf("Student"));
+
             var person = personRepository.save(newPerson);
-            System.out.println(person.getPersonId());
-            System.out.println(newPerson.getPersonId() + " " + newPerson.getLastName());
+
             LecturerRequest lecturerRequest = new LecturerRequest();
             lecturerRequest.setLecturerId(personId);
             lecturerRequest.setPerson(person);
             lecturerRequest.setAuthority(author);
             lecturerRequest.setMajor(String.valueOf(major));
-            lecturerService.saveLecturer(lecturerRequest);
-            return new ResponseEntity<>(person,HttpStatus.CREATED);
 
+            lecturerService.saveLecturer(lecturerRequest);
+
+            return new ResponseEntity<>(person, HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Map<String,Object>> editStudent(@PathVariable String id,

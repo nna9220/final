@@ -93,31 +93,32 @@ function DatatableLec() {
         console.log("Selected authority:", userEdit.authority);
     }, [userEdit.authority]);
 
-
     const handleSubmitAdd = (event) => {
         event.preventDefault();
         const userToken = getTokenFromUrlAndSaveToStorage();
-        console.log(formData)
-        axiosInstance.post('/admin/lecturer/create',
-            formData
-            , {
-                headers: {
-                    'Authorization': `Bearer ${userToken}`,
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-            .then(response => {
-                console.log('Giảng viên đã được tạo thành công:', response.data);
-                loadData();
-                toast.success("Thêm giảng viên thành công!");
-                handleCloseModal();
-            })
-            .catch(error => {
-                console.error(error);
-                toast.error("Lỗi khi thêm giảng viên")
-                console.log("Lỗi");
-            });
-    };
+        console.log(formData);
+        axiosInstance.post('/admin/lecturer/create', formData, {
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+        .then(response => {
+            console.log('Giảng viên đã được tạo thành công:', response.data);
+            loadData();
+            toast.success("Thêm giảng viên thành công!");
+            handleCloseModal();
+        })
+        .catch(error => {
+            console.error(error);
+            if (error.response && error.response.status === 409) {
+                toast.error("Mã số giảng viên đã tồn tại");
+            } else {
+                toast.error("Lỗi khi thêm giảng viên");
+            }
+            console.log("Lỗi");
+        });
+    };    
 
     const handleDelete = (row) => {
         setSelectedRow(row);

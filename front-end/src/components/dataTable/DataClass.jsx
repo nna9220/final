@@ -10,14 +10,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import { DataGrid } from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 
 function DataClass() {
     const [classes, setClasses] = useState([]);
     const [newClass, setNewClass] = useState('');
     const [showForm, setShowForm] = useState(false);
-    const [selectedClass, setSelectedClass] = useState(null); // State lưu thông tin năm được chọn để chỉnh sửa
-
+    const [selectedClass, setSelectedClass] = useState(null);
+    const [modalType, setModalType] = useState('');
+    const [idClass, setIdClass] = useState(null);
     useEffect(() => {
         fetchClasses();
     }, []);
@@ -32,13 +32,14 @@ function DataClass() {
             })
                 .then(response => {
                     const classArray = response.data.listClass || [];
+                    console.log("Classes: ", response.data.listClass);
                     setClasses(classArray);
                 })
                 .catch(error => {
                     console.error("error: ", error);
                 });
         } else {
-            console.log("Lỗi !!")
+            console.log("Lỗi !!");
         }
     };
 
@@ -47,7 +48,7 @@ function DataClass() {
 
         axiosInstance.post('/admin/studentClass/create', null, {
             params: {
-                className: newClass
+                className: newClass,
             },
             headers: {
                 'Authorization': `Bearer ${userToken}`,
@@ -69,14 +70,13 @@ function DataClass() {
             });
     };
 
-
     const handleEditClass = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
 
         axiosInstance.post(`/admin/studentClass/edit/${selectedClass.id}`, null, {
             params: {
                 classId: selectedClass.id,
-                classname: newClass
+                classname: newClass,
             },
             headers: {
                 'Authorization': `Bearer ${userToken}`,
@@ -92,49 +92,40 @@ function DataClass() {
                 setClasses(updatedClass);
                 setNewClass('');
                 setShowForm(false);
-                toast.success('Chỉnh sửa lớp thành công!')
+                toast.success('Chỉnh sửa lớp thành công!');
             })
             .catch(error => {
                 console.error(error);
-                toast.error("Chỉnh sửa thông tin lớp thất bại")
+                toast.error("Chỉnh sửa thông tin lớp thất bại");
             });
     };
 
     const handleViewClass = (classname) => {
         setSelectedClass(classname);
         setNewClass(classname.classname);
+        setModalType('edit');
         setShowForm(true);
     };
 
-    const handleDeleteClass = () => {
-
-    }
-
-    const handleExport = () => {
-        const tokenSt = sessionStorage.getItem('userToken');
-        axiosInstance.get('/admin/studentClass/export', {
-            responseType: 'blob',
+    const handleDeleteClass = (idClass) => {
+        const userToken = getTokenFromUrlAndSaveToStorage();
+        console.log("idClass", idClass)
+        axiosInstance.post(`/admin/studentClass/deleted/${idClass}`, null, {
             headers: {
-                'Authorization': `Bearer ${tokenSt}`,
+                'Authorization': `Bearer ${userToken}`,
             },
         })
             .then(response => {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', 'classes_report.xls');
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                toast.success('Xóa lớp thành công!');
             })
             .catch(error => {
-                console.error("Export error: ", error);
-                toast.error('Xuất báo cáo thất bại!')
+                console.error(error);
+                toast.error('Xóa lớp thất bại!');
             });
     };
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 100 },
+        { field: 'stt', headerName: 'STT', width: 100 },
         { field: 'classname', headerName: 'Tên lớp học', width: 200 },
         {
             field: 'action',
@@ -142,77 +133,47 @@ function DataClass() {
             width: 150,
             renderCell: (params) => (
                 <>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleViewClass(params.row)}
-                    >
+                    <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editClass" onClick={() =>  {handleViewClass(params.row);setModalType('edit');}}>
                         <EditOutlinedIcon />
-                    </Button>
-                    <Button
-                        variant="contained"
-                        sx={{ backgroundColor: '#F05454', marginLeft: 1 }}
-                        onClick={() => handleDeleteClass(params.row)}
-                    >
+                    </button>
+                    <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteClass" onClick={() => { setIdClass(params.row.id); setSelectedClass(params.row) }}>
                         <DeleteOutlineOutlinedIcon />
-                    </Button>
+                    </button>
                 </>
             ),
         },
     ];
 
+    const rows = classes.map((item, index) => ({
+        id: item.id, // Ensure this id is unique
+        stt: index + 1,
+        classname: item.classname,
+    }));
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (modalType === 'add') {
+            handleAddClass();
+        } else if (modalType === 'edit') {
+            handleEditClass();
+        }
+    };
+
     return (
-        <div className='table-classes'>
+        <div className="table-classes">
             <ToastContainer />
-            <div className='content-table'>
-                <Button
-                    variant="contained"
-                    color="success"
-                    onClick={() => {
-                        setSelectedClass(null);
-                        setNewClass('');
-                        setShowForm(true);
-                    }}
-                >
+            <div className="content-table">
+                <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addClass" onClick={() => {
+                    setSelectedClass(null);
+                    setNewClass('');
+                    setModalType('add');
+                    setShowForm(true);
+                }}>
                     <AddCircleOutlineOutlinedIcon />
-                </Button>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<SaveAltIcon />}
-                    onClick={handleExport}
-                    style={{ marginLeft: '10px' }}
-                >
-                    Export
-                </Button>
-                {showForm && (
-                    <Dialog open={showForm} onClose={() => setShowForm(false)}>
-                        <DialogTitle>{selectedClass ? 'CHỈNH SỬA LỚP' : 'THÊM LỚP'}</DialogTitle>
-                        <DialogContent>
-                            <TextField
-                                autoFocus
-                                margin="dense"
-                                label="Tên lớp"
-                                type="text"
-                                fullWidth
-                                variant="standard"
-                                value={newClass}
-                                onChange={(e) => setNewClass(e.target.value)}
-                            />
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={() => setShowForm(false)}>Cancel</Button>
-                            {selectedClass ? (
-                                <Button onClick={handleEditClass}>Update</Button>
-                            ) : (
-                                <Button onClick={handleAddClass}>Add</Button>
-                            )}
-                        </DialogActions>
-                    </Dialog>
-                )}
+                </button>
                 <div>
                     <DataGrid
-                        rows={classes.map((item, index) => ({ ...item, id: index + 1 }))}
+                        rows={rows}
                         columns={columns}
                         pageSize={5}
                         initialState={{
@@ -223,7 +184,84 @@ function DataClass() {
                     />
                 </div>
             </div>
+
+            <div className="modal fade" id="addClass" tabIndex="-1" aria-labelledby="addClassLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                    <form className="modal-content" onSubmit={handleSubmit}>
+                        <div className="modal-header">
+                            <h1 className="modal-title fs-5" id="addClassLabel">Thêm Lớp học</h1>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="form-floating mb-3 mt-3">
+                                <input required
+                                    type="text"
+                                    className="form-control"
+                                    id="className"
+                                    placeholder="Nhập tên lớp"
+                                    value={newClass}
+                                    onChange={(e) => setNewClass(e.target.value)}
+                                />
+                                <label htmlFor="className">Tên Lớp</label>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="submit" className="btn btn-primary">Lưu</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div className="modal fade" id="editClass" tabIndex="-1" aria-labelledby="editClassLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h1 className="modal-title fs-5" id="editClassLabel">Chỉnh sửa lớp</h1>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            <form onSubmit={handleSubmit}>
+                                <div className="form-floating mb-3 mt-3">
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        id="className"
+                                        placeholder="Nhập tên lớp"
+                                        value={newClass}
+                                        onChange={(e) => setNewClass(e.target.value)}
+                                    />
+                                    <label htmlFor="className">Tên Lớp</label>
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                    <button type="submit" className="btn btn-primary">Lưu</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="modal fade" id="deleteClass" tabIndex="-1" aria-labelledby="deleteClassLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h1 className="modal-title fs-5" id="deleteClassLabel">Xác nhận xóa</h1>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            Bạn chắc chắn muốn xóa lớp {selectedClass?.classname} không?
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <button type="button" className="btn btn-primary" onClick={() => handleDeleteClass(idClass)}>Xác nhận</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
+
 export default DataClass;
