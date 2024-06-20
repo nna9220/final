@@ -31,4 +31,8 @@ public class StudentClassService {
     public StudentClass editStudentClass(StudentClass studentClass){
         return studentClassRepository.save(studentClass);
     }
+
+    public boolean classExistsByName(String className) {
+        return studentClassRepository.findByClassName(className).isPresent();
+    }
 }

@@ -15,29 +15,44 @@ function Intruction() {
 
 
     return (
-        <div>
-            <div style={{ margin: '20px' }}>
-                <nav aria-label="breadcrumb">
-                    <ol className="breadcrumb" style={{ fontSize: '15px' }}>
-                        <li className="breadcrumb-item" style={{ alignItems: 'center' }}>
-                            <Link style={{ textDecoration: 'none', color: 'black' }} to="/">
-                                <Home />
-                                <span>Trang chủ</span>
-                            </Link>
-                        </li>
-                        <li className="breadcrumb-item" aria-current="page">Hướng dẫn</li>
-                    </ol>
-                </nav>
+        <div class="container marketing">
+            <hr class="featurette-divider" />
+            <div class="row featurette">
+                <div class="col-md-7">
+                    <h2 class="featurette-heading">Xem thông tin các đề tài</h2>
+                    <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
+                </div>
+                <div class="col-md-5">
+                    <img></img>
+                </div>
             </div>
-            <div>
-            <Document
-                    file="D:\REACT\register\public\assets\HDSD_SauDaiHoc_HocVien.pdf"
-                    onLoadSuccess={onDocumentLoadSuccess}
-                >
-                    <Page pageNumber={pageNumber} />
-                </Document>
-                <p>Page {pageNumber} of {numPages}</p>
+
+            <hr class="featurette-divider" />
+
+            <div class="row featurette">
+                <div class="col-md-7 order-md-2">
+                    <h2 class="featurette-heading">Xem thông tin liên lạc của Giảng viên</h2>
+                    <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
+                </div>
+                <div class="col-md-5 order-md-1">
+                    <img />
+                </div>
             </div>
+
+            <hr class="featurette-divider" />
+
+            <div class="row featurette">
+                <div class="col-md-7">
+                    <h2 class="featurette-heading">Gửi liên hệ, thắc mắc</h2>
+                    <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
+                </div>
+                <div class="col-md-5">
+                    <img />
+                </div>
+            </div>
+
+            <hr class="featurette-divider" />
+
         </div>
     )
 }

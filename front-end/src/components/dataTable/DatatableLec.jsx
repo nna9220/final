@@ -7,6 +7,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import RestoreOutlinedIcon from '@mui/icons-material/RestoreOutlined';
 import PlaylistAddCheckOutlinedIcon from '@mui/icons-material/PlaylistAddCheckOutlined';
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -350,7 +351,7 @@ function DatatableLec() {
                 <div className='header-table'>
                     <div className='btn-add'>
                         <button style={{ marginBottom: '10px', marginRight: '20px' }} type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddLecturere" onClick={() => setShowModalAdd(true)}>
-                            Add
+                            <AddCircleOutlineOutlinedIcon/>
                         </button>
                     </div>
                     <button className='button-listDelete' onClick={() => setShowDeleteLecturers(!showDeletedLecturers)}>

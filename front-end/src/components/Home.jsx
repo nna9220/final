@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 
 function Home() {
-
     return (
         <div class="hero">
             <Helmet>

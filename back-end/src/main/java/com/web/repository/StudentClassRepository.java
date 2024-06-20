@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface StudentClassRepository extends JpaRepository<StudentClass, Integer> {
@@ -13,4 +14,6 @@ public interface StudentClassRepository extends JpaRepository<StudentClass, Inte
     List<StudentClass> getAllStudentClass();
     @Query("select c from StudentClass  c where c.classname=:name")
     StudentClass getStudentClassByClassname(String name);
+    @Query("select c from StudentClass c where c.classname = :name")
+    Optional<StudentClass> findByClassName(String name);
 }

@@ -8,6 +8,7 @@ import axiosInstance from "../../API/axios";
 import AlarmOnOutlinedIcon from '@mui/icons-material/AlarmOnOutlined';
 import HourglassEmptyOutlinedIcon from '@mui/icons-material/HourglassEmptyOutlined';
 import WarningOutlinedIcon from '@mui/icons-material/WarningOutlined';
+import Select from 'react-select';
 
 function RegisTopicOfLecturerKL() {
     const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +22,7 @@ function RegisTopicOfLecturerKL() {
         student2: null,
         student3: null,
     });
-    const [students, setStudents]= useState([]);
+    const [students, setStudents] = useState([]);
     const [periods, setPeriods] = useState([]);
     const [currentPeriod, setCurrentPeriod] = useState(null);
 
@@ -140,8 +141,8 @@ function RegisTopicOfLecturerKL() {
             {currentPeriod ? (
                 <div className='informationPeriod'>
                     <h5 className='namePeriod'>Đợt đăng ký: {currentPeriod.registrationName}</h5>
-                    <p className='timePeriod'><AlarmOnOutlinedIcon/> Bắt đầu: {currentPeriod.registrationTimeStart}</p>
-                    <p className='timePeriod'><HourglassEmptyOutlinedIcon/> Kết thúc: {currentPeriod.registrationTimeEnd}</p>
+                    <p className='timePeriod'><AlarmOnOutlinedIcon /> Bắt đầu: {currentPeriod.registrationTimeStart}</p>
+                    <p className='timePeriod'><HourglassEmptyOutlinedIcon /> Kết thúc: {currentPeriod.registrationTimeEnd}</p>
                 </div>
             ) : (
                 <>
@@ -150,76 +151,80 @@ function RegisTopicOfLecturerKL() {
                     </div>
                 </>
             )}
-            <Toast show={showAddToast} onClose={() => setShowAddToast(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
-                <Toast.Header>
-                    <strong className="me-auto">Thông báo</strong>
-                </Toast.Header>
-                <Toast.Body>
-                    <DoneOutlinedIcon /> Đăng ký đề tài thành công!
-                </Toast.Body>
-            </Toast>
 
-            <Toast show={showErrorToastAdd} onClose={() => setShowErrorToastAdd(false)} delay={3000} autohide style={{ position: 'fixed', top: '80px', right: '10px' }}>
-                <Toast.Header>
-                    <strong className="me-auto" style={{ color: 'red' }}><ErrorOutlineOutlinedIcon /> Lỗi</strong>
-                </Toast.Header>
-                <Toast.Body>
-                    Đăng ký đề tài không thành công!
-                </Toast.Body>
-            </Toast>
             <div className='menuItems'>
                 {currentPeriod && (
                     <>
                         <div className='title'>
                             <h3>ĐĂNG KÝ ĐỀ TÀI</h3>
                         </div>
-                        <form>
-                            <div className="mb-3">
-                                <label htmlFor="subjectName" className="form-label">Tên đề tài</label>
-                                <input type="text" className="form-control" id="subjectName" name="subjectName" value={formData.subjectName} onChange={handleChange} />
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="requirement" className="form-label">Yêu cầu </label>
-                                <input type="text" className="form-control" id="requirement" name="requirement" value={formData.requirement} onChange={handleChange} />
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="expected" className="form-label">Kết quả mong muốn</label>
-                                <input type="text" className="form-control" id="expected" name="expected" value={formData.expected} onChange={handleChange} />
-                            </div>
-                            <h5>Nhóm sinh viên thực hiện: </h5>
-                            <div className="mb-3">
-                                <label htmlFor="student1" className="form-label">Sinh viên 1</label>
-                                <select className="form-select" aria-label="Default select example" name="student1" value={formData.student1} onChange={handleChange}>
-                                    <option selected disabled>Chọn sinh viên</option>
-                                    {students.map(student => (
-                                        <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="student2" className="form-label">Sinh viên 2</label>
-                                <select className="form-select" aria-label="Default select example" name="student2" value={formData.student2} onChange={handleChange}>
-                                    <option selected disabled>Chọn sinh viên</option>
-                                    {students.map(student => (
-                                        <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="student3" className="form-label">Sinh viên 3</label>
-                                <select className="form-select" aria-label="Default select example" name="student3" value={formData.student3} onChange={handleChange}>
-                                    <option selected disabled>Chọn sinh viên</option>
-                                    {students.map(student => (
-                                        <option key={student.id} value={student.studentId}>{student.person?.firstName + ' ' + student.person?.lastName}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className='footerForm'>
-                                <div>
-                                    <button className="buttonRegister" type="submit" onClick={handleSubmitAdd}>Đăng ký</button>
+                        <div className='form-Register' onSubmit={handleSubmitAdd}>
+                            <form>
+                                <div className="mb-3">
+                                    <label htmlFor="subjectName" className="form-label">Tên đề tài</label>
+                                    <input required type="text" className="form-control" id="subjectName" name="subjectName" value={formData.subjectName} onChange={(e) => handleChange('subjectName', e.target)} />
                                 </div>
-                            </div>
-                        </form>
+                                <div className="mb-3">
+                                    <label htmlFor="requirement" className="form-label">Yêu cầu</label>
+                                    <textarea required type="text" className="form-control" id="requirement" name="requirement" value={formData.requirement} onChange={(e) => handleChange('requirement', e.target)} />
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="expected" className="form-label">Kết quả mong muốn</label>
+                                    <textarea required type="text" className="form-control" id="expected" name="expected" value={formData.expected} onChange={(e) => handleChange('expected', e.target)} />
+                                </div>
+                                <h5>Nhóm sinh viên thực hiện:</h5>
+                                <div className="mb-3">
+                                    <label htmlFor="student1" className="form-label">Sinh viên 1</label>
+                                    <Select
+                                        options={students.map(student => ({
+                                            value: student.studentId,
+                                            label: `${student.studentId} - ${student.person?.firstName} ${student.person?.lastName}`
+                                        }))}
+                                        value={students.find(student => student.studentId === formData.student1) ? {
+                                            value: formData.student1,
+                                            label: `${formData.student1} - ${students.find(student => student.studentId === formData.student1).person?.firstName} ${students.find(student => student.studentId === formData.student1).person?.lastName}`
+                                        } : null}
+                                        onChange={(selectedOption) => handleChange('student1', selectedOption)}
+                                        isClearable
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="student2" className="form-label">Sinh viên 2</label>
+                                    <Select
+                                        options={students.map(student => ({
+                                            value: student.studentId,
+                                            label: `${student.studentId} - ${student.person?.firstName} ${student.person?.lastName}`
+                                        }))}
+                                        value={students.find(student => student.studentId === formData.student2) ? {
+                                            value: formData.student2,
+                                            label: `${formData.student2} - ${students.find(student => student.studentId === formData.student2).person?.firstName} ${students.find(student => student.studentId === formData.student2).person?.lastName}`
+                                        } : null}
+                                        onChange={(selectedOption) => handleChange('student2', selectedOption)}
+                                        isClearable
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="student3" className="form-label">Sinh viên 3</label>
+                                    <Select
+                                        options={students.map(student => ({
+                                            value: student.studentId,
+                                            label: `${student.studentId} - ${student.person?.firstName} ${student.person?.lastName}`
+                                        }))}
+                                        value={students.find(student => student.studentId === formData.student3) ? {
+                                            value: formData.student3,
+                                            label: `${formData.student3} - ${students.find(student => student.studentId === formData.student3).person?.firstName} ${students.find(student => student.studentId === formData.student3).person?.lastName}`
+                                        } : null}
+                                        onChange={(selectedOption) => handleChange('student3', selectedOption)}
+                                        isClearable
+                                    />
+                                </div>
+                                <div className='footerForm'>
+                                    <div>
+                                        <button className="buttonRegister" type="submit">Đăng ký</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </>
                 )}
             </div>
