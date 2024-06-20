@@ -1,5 +1,6 @@
 package com.web.repository;
 
+import com.nimbusds.jose.crypto.impl.MACProvider;
 import com.web.entity.Authority;
 import com.web.entity.Lecturer;
 import com.web.entity.Major;
@@ -24,6 +25,9 @@ public interface LecturerRepository extends JpaRepository<Lecturer, String> {
 
     @Query("select l from Lecturer l where l.authority =:authority")
     List<Lecturer> getListLecturerISHead(Authority authority);
+
+    @Query("select l from Lecturer l where l.major =:major")
+    List<Lecturer> getListLecturerByMajor(Major major);
 
     @Query("select l from Lecturer l where l.authority =:authority and l.major=:major")
     Lecturer getLecturerISHead(Authority authority, Major major);
