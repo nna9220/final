@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
+import { DataGrid } from '@mui/x-data-grid';
 import './DataTableTopics.scss';
-import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
-import TopicOutlinedIcon from '@mui/icons-material/TopicOutlined';
-import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined';
-import { Toast } from 'react-bootstrap';
-import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
-import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
 import axiosInstance from '../../API/axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -56,7 +51,6 @@ function DataTableTopics() {
                 console.log("DataTableSubject: ", response.data);
                 const topicArray = response.data || [];
                 setTopics(topicArray);
-                setActiveKhoaLuan(true);
                 setActiveTLChuyenNganh(false);
             })
             .catch(error => {
@@ -67,18 +61,6 @@ function DataTableTopics() {
     const handleFileChangeTLCN = (event) => {
         const file = event.target.files[0];
         setFile(file); // Lưu file vào state
-    };
-
-    const handleFileChangeKLTN = (event) => {
-        const file = event.target.files[0];
-        setFile(file); // Lưu file vào state
-    };
-
-    const handleSelectChange = (event, index) => {
-        const { value } = event.target;
-        const newLecturerIds = [...lecturerIds];
-        newLecturerIds[index] = value;
-        setLecturerIds(newLecturerIds);
     };
 
     const handleImportFileTLCN = () => {
@@ -97,38 +79,11 @@ function DataTableTopics() {
                 // Cập nhật state topics chỉ khi dữ liệu trả về từ API là một mảng
                 if (Array.isArray(response.data)) {
                     setTopics(response.data);
-                    setShowAddToast(true);
+                    toast.success("Import file thành công!")
                 } else {
                     // Xử lý trường hợp khi dữ liệu không phải là mảng
                     console.error("Dữ liệu trả về không phải là một mảng");
-                }
-            })
-            .catch(error => {
-                console.error(error);
-                console.log("Lỗi");
-            });
-    };
-
-    const handleImportFileKLTN = () => {
-        const userToken = getTokenFromUrlAndSaveToStorage(); // Lấy userToken
-        const formData = new FormData(); // Khởi tạo formData
-        formData.append('file', file); // Thêm file vào formData
-
-        axiosInstance.post('/admin/subject/importKLTN', formData, {
-            headers: {
-                'Authorization': `Bearer ${userToken}`,
-                'Content-Type': 'multipart/form-data',
-            },
-        })
-            .then(response => {
-                console.log("Import KLTN thành công!");
-                // Cập nhật state topics chỉ khi dữ liệu trả về từ API là một mảng
-                if (Array.isArray(response.data)) {
-                    setTopics(response.data);
-                    setShowAddToast(true);
-                } else {
-                    // Xử lý trường hợp khi dữ liệu không phải là mảng
-                    console.error("Dữ liệu trả về không phải là một mảng");
+                    toast.error("Có lỗi khi import file!")
                 }
             })
             .catch(error => {
@@ -197,118 +152,75 @@ function DataTableTopics() {
         }
     };
 
+    const columns = [
+        {
+            field: 'id', headerName: '#', width: 70
+        },
+        { field: 'subjectName', headerName: 'Tên đề tài', width: 200 },
+        {
+            field: 'instructorName',
+            headerName: 'GVHD',
+            width: 170,
+            valueGetter: (params) =>
+                params.row.instructorId?.person?.firstName && params.row.instructorId?.person?.lastName
+                    ? `${params.row.instructorId.person.firstName} ${params.row.instructorId.person.lastName}`
+                    : 'Chưa có'
+        },
+        {
+            field: 'thesisAdvisorName',
+            headerName: 'GVPB',
+            width: 170,
+            valueGetter: (params) =>
+                params.row.thesisAdvisorId?.person?.firstName && params.row.thesisAdvisorId?.person?.lastName
+                    ? `${params.row.thesisAdvisorId.person.firstName} ${params.row.thesisAdvisorId.person.lastName}`
+                    : 'Chưa có'
+        },
+        { field: 'student1', headerName: 'SV 1', width: 100 },
+        { field: 'student2', headerName: 'SV 2', width: 100 },
+        { field: 'student3', headerName: 'SV 3', width: 100 },
+        { field: 'requirement', headerName: 'Yêu cầu', width: 200 },
+        {
+            field: 'action',
+            headerName: 'Action',
+            width: 100,
+            renderCell: (params) => (
+                <button className='btnView'>View</button>
+            ),
+        },
+    ];
+
+    const rows = topics.map((topic, index) => ({
+        id: index + 1,
+        ...topic,
+    }));
+
     return (
         <div className='table-subject'>
-            <div className='header-tableTopic'>
-                <div className='button-add'>
-                    <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddTopic">
-                        Add
-                    </button>
-
-                    <div className="modal fade" id="AddTopic" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div className="modal-dialog">
-                            <div className="modal-content">
-                                <div className="modal-header">
-                                    <h1 className="modal-title fs-5" id="exampleModalLabel">Thêm đề tài</h1>
-                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div className="modal-body">
-                                    ...
-                                </div>
-                                <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" className="btn btn-primary">Add</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className='btn-type'>
-                    <button className={`button-listDelete ${activeTLChuyenNganh ? 'active' : ''}`} onClick={handleListTLCN}>
-                        <TopicOutlinedIcon /> Tiểu luận chuyên ngành
-                    </button>
-                    <button className={`button-listDelete ${activeKhoaLuan ? 'active' : ''}`} onClick={handleListKLTN}>
-                        <SummarizeOutlinedIcon /> Khóa luận tốt nghiệp
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
+                <div>
+                    <button  style={{border:'none', backgroundColor:'white', color:'#00337C'}}>
+                        <DownloadOutlinedIcon /> Mẫu file Import đề tài TLCN
                     </button>
                 </div>
-            </div>
-            <div style={{display:'flex', justifyContent:'space-between',padding:'10px'}}>
-                <div class="input-group" style={{padding:'10px'}}>
-                    <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" onChange={handleFileChangeTLCN} />
-                    <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04" onClick={handleImportFileTLCN}>Import file TLCN</button>
-                </div>
-                <div class="input-group" style={{padding:'10px'}}>
-                    <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" onChange={handleFileChangeKLTN} />
-                    <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04" onClick={handleImportFileKLTN}>Import file KLTN</button>
+                <div className="input-group" style={{ width: 'auto' }}>
+                    <input type="file" className="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" onChange={handleFileChangeTLCN} />
+                    <button className="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04" onClick={handleImportFileTLCN}>Import file TLCN</button>
                 </div>
             </div>
-            <div className='body-table'>
-                <table className="table table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Tên đề tài</th>
-                            <th scope='col'>GVHD</th>
-                            <th scope='col'>GVPB</th>
-                            <th scope='col'>SV 1</th>
-                            <th scope='col'>SV 2</th>
-                            <th scope='col'>SV 3</th>
-                            <th scope='col'>Yêu cầu</th>
-                            <th scope='col'>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {Array.isArray(topics) && topics.map((item, index) => (
-                            <tr key={index}>
-                                <th scope="row">{index + 1}</th>
-                                <td>{item.subjectName}</td>
-                                <td>
-                                    {item.instructorId?.person?.firstName && item.instructorId?.person?.lastName
-                                        ? item.instructorId.person.firstName + ' ' + item.instructorId.person.lastName
-                                        : 'Chưa có'}
-                                </td>
-                                <td>
-                                    {item.thesisAdvisorId?.person?.firstName && item.thesisAdvisorId?.person?.lastName
-                                        ? item.thesisAdvisorId.person.firstName + ' ' + item.thesisAdvisorId.person.lastName
-                                        : 'Chưa có'}
-                                </td>
-                                {/*<td>
-                                    {item.instructorId?.person?.firstName + ' ' + item.instructorId?.person?.lastName}
-                                    <select className='optionLecs' value={lecturerIds[index]} onChange={(event) => handleSelectChange(event, index)} onClick={() => handleAssignGVPB(item.subjectId, index)}>
-                                        <option className='option' value="" >Chọn giảng viên hướng dẫn</option>
-                                        {lecturers.map((lecturer, idx) => (
-                                            <option key={idx} value={lecturer.lecturerId}>{lecturer.person?.firstName} {lecturer.person?.lastName}</option>
-                                        ))}
-                                    </select>
-                                    <button className='btn-assign' onClick={() => handleGVHD(item.subjectId, index)}>Phân công</button>
-                                </td>
-                                <td>
-                                    {item.thesisAdvisorId?.person?.firstName + ' ' + item.thesisAdvisorId?.person?.lastName}
-                                    <select className='optionLecs' value={lecturerIds[index]} onChange={(event) => handleSelectChange(event, index)} onClick={() => handleAssignGVPB(item.subjectId, index)}>
-                                        <option className='option' value="" >Chọn giảng viên phản biện</option>
-                                        {lecturers.map((lecturer, idx) => (
-                                            <option key={idx} value={lecturer.lecturerId}>{lecturer.person?.firstName} {lecturer.person?.lastName}</option>
-                                        ))}
-                                    </select>
-                                    <button className='btn-assign' onClick={() => handleGVPB(item.subjectId, index)}>Phân công</button>
-                                </td>  */}
-                                <td>{item.student1}</td>
-                                <td>{item.student2}</td>
-                                <td>{item.student3}</td>
-                                <td>{item.requirement}</td>
-                                <td>
-                                    <button className='btnView'>View</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+            <div className='body-table' style={{ padding: '10px' }} >
+                <DataGrid
+                    rows={rows}
+                    columns={columns}
+                    initialState={{
+                        ...topics.initialState,
+                        pagination: { paginationModel: { pageSize: 10 } },
+                    }}
+                    pageSizeOptions={[10, 25, 50]}
+                />
             </div>
+            <ToastContainer />
         </div>
     );
 }
 
 export default DataTableTopics;
-
-

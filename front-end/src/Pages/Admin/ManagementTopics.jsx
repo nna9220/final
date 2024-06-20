@@ -7,10 +7,17 @@ import { useEffect, useState } from 'react'
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
 import { Navigate } from 'react-router-dom';
+import DataTableTopicsKL from '../../components/dataTable/DataTableTopicsKL'
 function ManagementTopics() {
   useEffect(() => {
     document.title = "Quản lý đề tài";
   }, []);
+
+  const [activeTab, setActiveTab] = useState('student');
+
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+  };
 
   const [authorized, setAuthorized] = useState(true);
 
@@ -63,14 +70,29 @@ function ManagementTopics() {
       <div className="homeContainer">
         <Navbar />
         <hr />
-        <div className='widgets'>
+        <div className="widgets">
           <div className='headMana-class'>
             <div className='titleMana-class'>
-              <h5>Quản lý đề tài</h5>
+              <h5>Quản lý đợt đăng ký đề tài</h5>
+            </div>
+            <div className='menuMana'>
+              <button
+                className={activeTab === 'student' ? 'active' : ''}
+                onClick={() => handleTabClick('student')}
+              >
+                Tiểu luận chuyên ngành
+              </button>
+              <button
+                className={activeTab === 'lecturer' ? 'active' : ''}
+                onClick={() => handleTabClick('lecturer')}
+              >
+                Khóa luận tốt nghiệp
+              </button>
             </div>
           </div>
-          <div className='homeMana-class'>
-            <DataTableTopics />
+          <div className='homeMana' style={{marginTop:'5px'}}>
+            {activeTab === 'student' && <DataTableTopics />}
+            {activeTab === 'lecturer' && <DataTableTopicsKL />}
           </div>
         </div>
       </div>

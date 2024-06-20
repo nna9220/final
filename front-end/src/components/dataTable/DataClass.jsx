@@ -3,6 +3,9 @@ import './DataClass.scss';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
 import { toast, ToastContainer } from 'react-toastify';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import 'react-toastify/dist/ReactToastify.css';
 import { DataGrid } from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
@@ -38,7 +41,7 @@ function DataClass() {
             console.log("Lỗi !!")
         }
     };
- 
+
     const handleAddClass = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
 
@@ -54,13 +57,18 @@ function DataClass() {
                 setClasses([...classes, response.data]);
                 setNewClass('');
                 setShowForm(false);
-                toast.success('Thêm lớp thành công!')
+                toast.success('Thêm lớp thành công!');
             })
             .catch(error => {
                 console.error(error);
-                toast.error('Thêm lớp thất bại!')
+                if (error.response && error.response.status === 409) {
+                    toast.error('Lớp đã tồn tại!');
+                } else {
+                    toast.error('Thêm lớp thất bại!');
+                }
             });
     };
+
 
     const handleEditClass = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
@@ -98,6 +106,10 @@ function DataClass() {
         setShowForm(true);
     };
 
+    const handleDeleteClass = () => {
+
+    }
+
     const handleExport = () => {
         const tokenSt = sessionStorage.getItem('userToken');
         axiosInstance.get('/admin/studentClass/export', {
@@ -106,38 +118,45 @@ function DataClass() {
                 'Authorization': `Bearer ${tokenSt}`,
             },
         })
-        .then(response => {
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'classes_report.xls');
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        })
-        .catch(error => {
-            console.error("Export error: ", error);
-            toast.error('Xuất báo cáo thất bại!')
-        });
+            .then(response => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'classes_report.xls');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            })
+            .catch(error => {
+                console.error("Export error: ", error);
+                toast.error('Xuất báo cáo thất bại!')
+            });
     };
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 100 },
         { field: 'classname', headerName: 'Tên lớp học', width: 200 },
-        { field: 'status', headerName: 'Trạng thái', width: 200 },
-
         {
             field: 'action',
             headerName: 'Action',
             width: 150,
             renderCell: (params) => (
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleViewClass(params.row)}
-                >
-                    Edit
-                </Button>
+                <>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleViewClass(params.row)}
+                    >
+                        <EditOutlinedIcon />
+                    </Button>
+                    <Button
+                        variant="contained"
+                        sx={{ backgroundColor: '#F05454', marginLeft: 1 }}
+                        onClick={() => handleDeleteClass(params.row)}
+                    >
+                        <DeleteOutlineOutlinedIcon />
+                    </Button>
+                </>
             ),
         },
     ];
@@ -155,7 +174,7 @@ function DataClass() {
                         setShowForm(true);
                     }}
                 >
-                    Add
+                    <AddCircleOutlineOutlinedIcon />
                 </Button>
                 <Button
                     variant="contained"
@@ -200,8 +219,8 @@ function DataClass() {
                             ...classes.initialState,
                             pagination: { paginationModel: { pageSize: 10 } },
                         }}
-                        pageSizeOptions={[10, 25, 50]}                    
-                        />
+                        pageSizeOptions={[10, 25, 50]}
+                    />
                 </div>
             </div>
         </div>

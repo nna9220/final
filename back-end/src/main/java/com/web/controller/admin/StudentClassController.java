@@ -74,13 +74,18 @@ public class StudentClassController {
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> saveClass(@RequestParam("className") String className, HttpServletRequest request, RedirectAttributes redirectAttributes){
+        // Check if class already exists
+        if (studentClassService.classExistsByName(className)) {
+            return new ResponseEntity<>("Class already exists", HttpStatus.CONFLICT);
+        }
 
+        // Create new class
         StudentClassRequest studentClass = new StudentClassRequest();
         studentClass.setClassname(className);
         studentClass.setStatus(true);
         studentClassService.createStudentClass(studentClass);
 
-        return new ResponseEntity<>(studentClass,HttpStatus.CREATED);
+        return new ResponseEntity<>(studentClass, HttpStatus.CREATED);
     }
 
     @GetMapping("/{classId}")

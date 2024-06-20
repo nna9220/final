@@ -62,7 +62,7 @@ function DatatableContact() {
         console.log("contactID: ", contactId);
         console.log("content", replyContent);
         console.log("title", replyTitle);
-    
+
         const tokenSt = sessionStorage.getItem('userToken');
         if (tokenSt) {
             // Lấy thông tin liên hệ trước khi gửi email
@@ -71,51 +71,51 @@ function DatatableContact() {
                     'Authorization': `Bearer ${tokenSt}`,
                 },
             })
-            .then(response => {
-                const existedContact = response.data;
-                // Kiểm tra xem liên hệ đã được giải quyết chưa
-                if (existedContact.status) {
-                    // Nếu đã được giải quyết, hiển thị thông báo và không gửi email
-                    toast.warning("Liên hệ này đã được giải quyết trước đó!");
-                } else {
-                    // Nếu chưa được giải quyết, thực hiện gửi email
-                    axiosInstance.post(`/admin/feedback/reply/${contactId}`, null, {
-                        headers: {
-                            'Authorization': `Bearer ${tokenSt}`,
-                        },
-                        params: {
-                            title: replyTitle,
-                            content: replyContent,
-                        },
-                    })
-                    .then(response => {
-                        if (response.status === 200) {
-                            console.log('reply contact: ', response.data);
-                            loadData(); // Reload the data to reflect the changes
-                            setSelectedContact(null); // Clear the selected contact after replying
-                            toast.success("Đã gửi mail giải đáp thắc mắc!")
-                            // Set title và content thành rỗng
-                            setReplyTitle("");
-                            setReplyContent("");
-                        } else {
-                            console.error("error: ", response.data);
-                            toast.error("Đã xảy ra lỗi !");
-                        }
-                    })
-                    .catch(error => {
-                        console.error("error: ", error);
-                        toast.error("Đã xảy ra lỗi !");
-                    });
-                }
-            })
-            .catch(error => {
-                console.error("error: ", error);
-                toast.error("Đã xảy ra lỗi khi kiểm tra trạng thái liên hệ !");
-            });
+                .then(response => {
+                    const existedContact = response.data;
+                    // Kiểm tra xem liên hệ đã được giải quyết chưa
+                    if (existedContact.status) {
+                        // Nếu đã được giải quyết, hiển thị thông báo và không gửi email
+                        toast.warning("Liên hệ này đã được giải quyết trước đó!");
+                    } else {
+                        // Nếu chưa được giải quyết, thực hiện gửi email
+                        axiosInstance.post(`/admin/feedback/reply/${contactId}`, null, {
+                            headers: {
+                                'Authorization': `Bearer ${tokenSt}`,
+                            },
+                            params: {
+                                title: replyTitle,
+                                content: replyContent,
+                            },
+                        })
+                            .then(response => {
+                                if (response.status === 200) {
+                                    console.log('reply contact: ', response.data);
+                                    loadData(); // Reload the data to reflect the changes
+                                    setSelectedContact(null); // Clear the selected contact after replying
+                                    toast.success("Đã gửi mail giải đáp thắc mắc!")
+                                    // Set title và content thành rỗng
+                                    setReplyTitle("");
+                                    setReplyContent("");
+                                } else {
+                                    console.error("error: ", response.data);
+                                    toast.error("Đã xảy ra lỗi !");
+                                }
+                            })
+                            .catch(error => {
+                                console.error("error: ", error);
+                                toast.error("Đã xảy ra lỗi !");
+                            });
+                    }
+                })
+                .catch(error => {
+                    console.error("error: ", error);
+                    toast.error("Đã xảy ra lỗi khi kiểm tra trạng thái liên hệ !");
+                });
         } else {
             console.log("Lỗi !!");
         }
-    };    
+    };
 
     const columns = [
         { field: 'stt', headerName: 'STT', width: 70 },
@@ -161,7 +161,7 @@ function DatatableContact() {
 
     return (
         <div className='table-contact'>
-            <ToastContainer/>
+            <ToastContainer />
             <DataGrid
                 rows={rows}
                 columns={columns}
@@ -208,21 +208,34 @@ function DatatableContact() {
                                             <td style={{ width: '100px' }}><strong>Trạng thái:</strong></td>
                                             <td>{selectedContact && (selectedContact.status ? 'Đã phản hồi' : 'Chưa giải đáp')}</td>
                                         </tr>
+                                        <tr>
+                                            <td style={{ width: '200px' }}><strong>Nội dung phản hồi:</strong></td>
+                                            <td>{selectedContact && (selectedContact.feedback?.content)}</td>
+                                        </tr>
                                     </tbody>
                                 </table>
-                                <h5 className='title-contact'>Phản hồi liên hệ</h5>
-                                <div class="mb-3">
-                                    <label for="exampleFormControlInput1" class="form-label">Tiêu đề</label>
-                                    <input name="title" required type="text" class="form-control" id="exampleFormControlInput1" value={replyTitle} onChange={(e) => setReplyTitle(e.target.value)} />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="exampleFormControlTextarea1" class="form-label">Nội dung</label>
-                                    <textarea name="content" required class="form-control" id="exampleFormControlTextarea1" rows="3" value={replyContent} onChange={(e) => setReplyContent(e.target.value)}></textarea>
-                                </div>
+                                {selectedContact && !selectedContact.status && (
+                                    <>
+                                        <h5 className='title-contact'>Phản hồi liên hệ</h5>
+                                        <div class="mb-3">
+                                            <label for="exampleFormControlInput1" class="form-label">Tiêu đề</label>
+                                            <input name="title" required type="text" class="form-control" id="exampleFormControlInput1" value={replyTitle} onChange={(e) => setReplyTitle(e.target.value)} />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="exampleFormControlTextarea1" class="form-label">Nội dung</label>
+                                            <textarea name="content" required class="form-control" id="exampleFormControlTextarea1" rows="3" value={replyContent} onChange={(e) => setReplyContent(e.target.value)}></textarea>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button className='buttonContact' type="submit" data-bs-dismiss="modal">Gửi liên hệ</button>
+                            {selectedContact && !selectedContact.status && (
+                                <>
+                                    <button className='buttonContact' type="submit" data-bs-dismiss="modal">Gửi liên hệ</button>
+
+                                </>
+                            )}
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         </div>
                     </form>

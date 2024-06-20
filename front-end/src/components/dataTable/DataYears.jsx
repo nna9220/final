@@ -4,6 +4,8 @@ import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { DataGrid } from '@mui/x-data-grid';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import Button from '@mui/material/Button';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import { Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
@@ -93,6 +95,10 @@ function DataYears() {
         setShowForm(true);
     };
 
+    const handleDeleteYear = () => {
+
+    }
+
     const handleExport = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         axiosInstance.get('/admin/schoolYear/export', {
@@ -123,13 +129,22 @@ function DataYears() {
             headerName: 'Action',
             width: 150,
             renderCell: (params) => (
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleViewYear(params.row)}
-                >
-                    Edit
-                </Button>
+                <>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleEditYear(params.row)}
+                    >
+                        <EditOutlinedIcon />
+                    </Button>
+                    <Button
+                        variant="contained"
+                        sx={{ backgroundColor: '#F05454', marginLeft: 1 }}
+                        onClick={() => handleDeleteYear(params.row)}
+                    >
+                        <DeleteOutlineOutlinedIcon />
+                    </Button>
+                </>
             ),
         },
     ];

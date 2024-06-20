@@ -6,6 +6,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import RestoreOutlinedIcon from '@mui/icons-material/RestoreOutlined';
 import PlaylistAddCheckOutlinedIcon from '@mui/icons-material/PlaylistAddCheckOutlined';
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import { DataGrid } from '@mui/x-data-grid';
 import axiosInstance from '../../API/axios';
@@ -415,7 +416,7 @@ function DataTable() {
                             style={{ marginBottom: '10px', marginRight: '20px' }}
                             onClick={() => setShowModalAdd(true)}
                         >
-                            Thêm
+                            <AddCircleOutlineOutlinedIcon/>
                         </button>
 
                         <button

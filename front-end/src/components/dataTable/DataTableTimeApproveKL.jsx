@@ -8,7 +8,7 @@ import './DataTableTimeApprove.scss'
 
 function DataTableTimeApproveKL() {
     const [timeApprove, setTimeApprove] = useState([]);
-    const [selectedTimeId, setSelectedTimeId] = useState(null); 
+    const [selectedTimeId, setSelectedTimeId] = useState(null);
     const [newTimeApprove, setNewTimeApprove] = useState({
         timeStart: '',
         timeEnd: ''
@@ -60,32 +60,32 @@ function DataTableTimeApproveKL() {
                     'Content-Type': 'multipart/form-data',
                 },
             })
-            .then(response => {
-                console.log("Edit successful");
-                // Tìm và cập nhật chỉ mục của phần tử được chỉnh sửa trong mảng state
-                const updatedTimeApprove = timeApprove.map(item => {
-                    if (item.timeId === selectedTimeId) {
-                        return {
-                            ...item,
-                            timeStart: editedStartTime,
-                            timeEnd: editedEndTime
-                        };
-                    }
-                    return item;
+                .then(response => {
+                    console.log("Edit successful");
+                    // Tìm và cập nhật chỉ mục của phần tử được chỉnh sửa trong mảng state
+                    const updatedTimeApprove = timeApprove.map(item => {
+                        if (item.timeId === selectedTimeId) {
+                            return {
+                                ...item,
+                                timeStart: editedStartTime,
+                                timeEnd: editedEndTime
+                            };
+                        }
+                        return item;
+                    });
+                    // Cập nhật state với dữ liệu mới
+                    setTimeApprove(updatedTimeApprove);
+                    toast.success("Chỉnh sửa thành công!")
+                })
+                .catch(error => {
+                    console.error("Error: ", error);
+                    toast.error("Chỉnh sửa thất bại!")
                 });
-                // Cập nhật state với dữ liệu mới
-                setTimeApprove(updatedTimeApprove);
-                toast.success("Chỉnh sửa thành công!")
-            })
-            .catch(error => {
-                console.error("Error: ", error);
-                toast.error("Chỉnh sửa thất bại!")
-            });
         } else {
             console.log("Error: No token found or no selected period ID");
         }
     };
-    
+
 
     const handleAddType = () => {
         const tokenSt = sessionStorage.getItem('userToken');
@@ -156,6 +156,9 @@ function DataTableTimeApproveKL() {
         <div className='table-timeApprove'>
             <ToastContainer />
             <div className='content-table'>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddTimeApprove">
+                    Add
+                </button>
                 <div className="modal fade" id="AddTimeApprove" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div className="modal-dialog">
                         <div className="modal-content">
@@ -209,7 +212,6 @@ function DataTableTimeApproveKL() {
                     <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Đợt duyệt đề tài</th>
                             <th scope="col">Thời gian bắt đầu</th>
                             <th scope="col">Thời gian kết thúc</th>
                             <th scope="col">Loại đề tài</th>
@@ -220,7 +222,6 @@ function DataTableTimeApproveKL() {
                         {timeApprove.map((item, index) => (
                             <tr key={index}>
                                 <th scope="row">{index + 1}</th>
-                                <td>{item.registrationName}</td>
                                 <td>{item.timeStart}</td>
                                 <td>{item.timeEnd}</td>
                                 <td>{item.typeSubjectId.typeName}</td>
