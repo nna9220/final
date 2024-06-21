@@ -156,17 +156,17 @@ function DataTableRegistrationPeroidSt() {
         console.log(newTimeApprove.periodName);
         console.log(newTimeApprove.timeStart);
         console.log(newTimeApprove.timeEnd);
-
+    
         const formattedNewTimeApprove = {
             periodName: newTimeApprove.periodName,
             timeStart: convertDateTime(newTimeApprove.timeStart),
             timeEnd: convertDateTime(newTimeApprove.timeEnd)
         };
-
+    
         console.log(formattedNewTimeApprove.timeStart);
         console.log(formattedNewTimeApprove.timeEnd);
         console.log("Data: ", formattedNewTimeApprove);
-
+    
         if (tokenSt) {
             axiosInstance.post('/admin/Period/create', formattedNewTimeApprove, {
                 headers: {
@@ -174,18 +174,37 @@ function DataTableRegistrationPeroidSt() {
                     'Content-Type': 'multipart/form-data',
                 },
             })
-                .then(response => {
-                    setNewTimeApprove('');
-                    toast.success("Thêm thành công!")
-                    loadData();
-                })
-                .catch(error => {
-                    console.error("Error: ", error);
-                });
+            .then(response => {
+                setNewTimeApprove('');
+                toast.success("Thêm thành công!");
+                loadData();
+            })
+            .catch(error => {
+                console.error("Error: ", error);
+                if (error.response) {
+                    switch (error.response.status) {
+                        case 400:
+                            toast.error("Ngày kết thúc phải lớn hơn ngày bắt đầu");
+                            break;
+                        case 406:
+                            toast.error("Thời gian đăng ký của SV phải ở sau thời gian duyệt đề tài của TBM");
+                            break;
+                        case 403:
+                            toast.error("Bạn không có quyền thực hiện hành động này");
+                            break;
+                        default:
+                            toast.error("Lỗi khi thêm thời gian đăng ký");
+                    }
+                } else {
+                    toast.error("Lỗi kết nối mạng");
+                }
+            });
         } else {
             console.log("Error: No token found");
+            toast.error("Lỗi xác thực. Vui lòng đăng nhập lại");
         }
     };
+    
 
     const handleAddPeroid2 = () => {
         const tokenSt = sessionStorage.getItem('userToken');
