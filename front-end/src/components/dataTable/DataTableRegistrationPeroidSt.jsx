@@ -188,7 +188,7 @@ function DataTableRegistrationPeroidSt() {
                             break;
                         case 406:
                             toast.error("Thời gian đăng ký của SV phải ở sau thời gian duyệt đề tài của TBM");
-                            break;
+                            break;  
                         case 403:
                             toast.error("Bạn không có quyền thực hiện hành động này");
                             break;
@@ -275,6 +275,16 @@ function DataTableRegistrationPeroidSt() {
         return formattedDateTime;
     }
     
+    const [minDateTime, setMinDateTime] = useState('');
+
+  useEffect(() => {
+    const now = new Date();
+    const offset = now.getTimezoneOffset();
+    now.setMinutes(now.getMinutes() - offset);
+    const minDateTime = now.toISOString().slice(0, -8);
+    setMinDateTime(minDateTime);
+  }, []);
+
     return (
         <div className='content-main'>
             <ToastContainer/>
@@ -301,11 +311,11 @@ function DataTableRegistrationPeroidSt() {
                                         <label for="periodName">Tên đợt</label>
                                     </div>
                                     <div className="form-floating mb-3 mt-3">
-                                        <input type="datetime-local" className="form-control" id="timeStart" placeholder="Enter email" name="timeStart" onChange={handleChange} />
+                                        <input type="datetime-local" className="form-control" id="timeStart" placeholder="Enter email" name="timeStart" onChange={handleChange} min={minDateTime}/>
                                         <label for="timeStart">Thời gian bắt đầu</label>
                                     </div>
                                     <div className="form-floating mb-3 mt-3">
-                                        <input type="datetime-local" className="form-control" id="timeEnd" placeholder="Enter email" name="timeEnd" onChange={handleChange} />
+                                        <input type="datetime-local" className="form-control" id="timeEnd" placeholder="Enter email" name="timeEnd" onChange={handleChange} min={minDateTime}/>
                                         <label for="timeStart">Thời gian kết thúc</label>
                                     </div>
                                 </div>
