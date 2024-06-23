@@ -169,6 +169,7 @@ public class RegistrationPeriodGraduationController {
                                           @RequestParam("start") String start,
                                           @RequestParam("end") String end,
                                           @RequestHeader("Authorization") String authorizationHeader,
+                                          @RequestParam(value = "status", required = false) boolean status,
                                           @ModelAttribute("successMessage") String successMessage) throws ParseException {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
@@ -187,6 +188,7 @@ public class RegistrationPeriodGraduationController {
                 }
                 existRegistrationPeriod.setRegistrationTimeStart(convertToLocalDateTime(start));
                 existRegistrationPeriod.setRegistrationTimeEnd(convertToLocalDateTime(end));
+                existRegistrationPeriod.setStatus(status);
                 var update = registrationPeriodRepository.save(existRegistrationPeriod);
                 //GỬI MAIL
                 //Dnah sách SV
