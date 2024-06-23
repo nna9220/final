@@ -169,6 +169,7 @@ public class RegistrationPeriodController {
     public ResponseEntity<?> updatePeriod(@PathVariable int periodId,
                                           @RequestParam("start") String start,
                                           @RequestParam("end") String end,
+                                          @RequestParam(value = "status", required = false) boolean status,
                                           @RequestHeader("Authorization") String authorizationHeader,
                                           @ModelAttribute("successMessage") String successMessage) throws ParseException {
         String token = tokenUtils.extractToken(authorizationHeader);
@@ -190,7 +191,7 @@ public class RegistrationPeriodController {
                 }
                 existRegistrationPeriod.setRegistrationTimeStart(convertToLocalDateTime(start));
                 existRegistrationPeriod.setRegistrationTimeEnd(convertToLocalDateTime(end));
-                existRegistrationPeriod.setStatus(true);
+                existRegistrationPeriod.setStatus(status);
                 var update = registrationPeriodRepository.save(existRegistrationPeriod);
                 //GỬI MAIL
                 //Dnah sách SV
