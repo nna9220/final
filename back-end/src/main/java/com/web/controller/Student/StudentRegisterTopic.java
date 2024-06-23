@@ -51,16 +51,20 @@ public class StudentRegisterTopic {
                     //Tìm những đợt đăng ký có status = true
                     TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
                     List<RegistrationPeriod> periodList = registrationPeriodRepository.getListPeriodBYStatusAndType(typeSubject);
-                    if (CompareTime.isCurrentTimeInPeriodStudent(periodList)) {
-                        List<Subject> subjectList = subjectRepository.findSubjectByStatusAndMajorAndStudent(true, currentStudent.getMajor(),typeSubject);
-                        Map<String,Object> response = new HashMap<>();
-                        response.put("person",personCurrent);
-                        response.put("subjectList", subjectList);
-                        return new ResponseEntity<>(response, HttpStatus.OK);
+                    if (currentStudent.getStatus()) {
+                        if (CompareTime.isCurrentTimeInPeriodStudent(periodList)) {
+                            List<Subject> subjectList = subjectRepository.findSubjectByStatusAndMajorAndStudent(true, currentStudent.getMajor(), typeSubject);
+                            Map<String, Object> response = new HashMap<>();
+                            response.put("person", personCurrent);
+                            response.put("subjectList", subjectList);
+                            return new ResponseEntity<>(response, HttpStatus.OK);
+                        } else {
+                            Map<String, Object> response = new HashMap<>();
+                            response.put("person", personCurrent);
+                            return new ResponseEntity<>(response, HttpStatus.OK);
+                        }
                     }else {
-                        Map<String,Object> response = new HashMap<>();
-                        response.put("person",personCurrent);
-                        return new ResponseEntity<>(response,HttpStatus.OK);
+                        return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
                     }
                 }
                 else {
@@ -100,28 +104,32 @@ public class StudentRegisterTopic {
         if (personCurrent.getAuthorities().getName().equals("ROLE_STUDENT")) {
                 Student currentStudent = studentRepository.findById(personCurrent.getPersonId()).orElse(null);
                 Subject existSubject = subjectRepository.findById(subjectId).orElse(null);
-                if (existSubject != null) {
-                    if (existSubject.getStudent1() == null) {
-                        existSubject.setStudent1(currentStudent.getStudentId());
-                        existSubject.setActive((byte)1);
-                        currentStudent.setSubjectId(existSubject);
-                    } else if (existSubject.getStudent2() == null) {
-                        existSubject.setStudent2(currentStudent.getStudentId());
-                        existSubject.setActive((byte)1);
-                        currentStudent.setSubjectId(existSubject);
-                    } else if (existSubject.getStudent3() == null) {
-                        existSubject.setStudent3(currentStudent.getStudentId());
-                        existSubject.setActive((byte)1);
-                        currentStudent.setSubjectId(existSubject);
+                if (currentStudent.getStatus()) {
+                    if (existSubject != null) {
+                        if (existSubject.getStudent1() == null) {
+                            existSubject.setStudent1(currentStudent.getStudentId());
+                            existSubject.setActive((byte) 1);
+                            currentStudent.setSubjectId(existSubject);
+                        } else if (existSubject.getStudent2() == null) {
+                            existSubject.setStudent2(currentStudent.getStudentId());
+                            existSubject.setActive((byte) 1);
+                            currentStudent.setSubjectId(existSubject);
+                        } else if (existSubject.getStudent3() == null) {
+                            existSubject.setStudent3(currentStudent.getStudentId());
+                            existSubject.setActive((byte) 1);
+                            currentStudent.setSubjectId(existSubject);
+                        } else {
+                            existSubject.setActive((byte) 0);
+                            return new ResponseEntity<>("Đã đủ SVTH", HttpStatus.BAD_REQUEST);
+                        }
+                        subjectRepository.save(existSubject);
+                        studentRepository.save(currentStudent);
+                        return new ResponseEntity<>(currentStudent, HttpStatus.OK);
                     } else {
-                        existSubject.setActive((byte)0);
-                        return new ResponseEntity<>("Đã đủ SVTH", HttpStatus.BAD_REQUEST);
+                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
-                    subjectRepository.save(existSubject);
-                    studentRepository.save(currentStudent);
-                    return new ResponseEntity<>(currentStudent, HttpStatus.OK);
-                } else {
-                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }else {
+                    return new ResponseEntity<>("Bạn không nằm trong danh saách đk",HttpStatus.NOT_ACCEPTABLE);
                 }
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
