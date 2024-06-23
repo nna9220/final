@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './styleRegis.scss'
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
-import { Toast } from 'react-bootstrap';
-import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import axiosInstance from '../../../API/axios';
-import Select from 'react-select';
-import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
 import WarningOutlinedIcon from '@mui/icons-material/WarningOutlined';
-import { ToastContainer } from 'react-toastify';
+import Select from 'react-select';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function TableRegisKL() {
     const [isLoading, setIsLoading] = useState(false);
@@ -65,8 +63,8 @@ function TableRegisKL() {
 
     const handleSubmitAdd = (e) => {
         e.preventDefault();
+        console.log("data add: ", formData);
         const userToken = getTokenFromUrlAndSaveToStorage();
-        console.log(formData)
         axiosInstance.post('/head/subjectGraduation/register',
             formData
             , {
@@ -77,14 +75,23 @@ function TableRegisKL() {
             })
             .then(response => {
                 console.log('Đề tài đã được tạo thành công:', response.data);
-                setShowAddToast(true);
+                if (response.status === 201) {
+                    toast.success("Đăng ký đề tài thành công. Vui lòng chờ TBM duyệt đề tài!");
+                    reloadForm();
+                } else if (response.status === 200) {
+                    toast.warning("Không trong thời gian đăng ký đề tài hoặc quá hạn đăng ký!");
+                } else {
+                    toast.error("Đăng ký đề tài thất bại!");
+                    setShowErrorToastAdd(true);
+                }
             })
             .catch(error => {
                 console.error(error);
-                console.log("Lỗi");
+                toast.error("Đăng ký đề tài thất bại!");
                 setShowErrorToastAdd(true);
             });
     };
+
 
     const loadStudents = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
@@ -96,7 +103,6 @@ function TableRegisKL() {
             .then(response => {
                 console.log('Danh sách sinh viên:', response.data);
                 setStudents(response.data);
-                setIsLoading(false);
             })
             .catch(error => {
                 console.error(error);
@@ -124,30 +130,28 @@ function TableRegisKL() {
         }
     }
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
+    const handleChange = (name, selectedOption) => {
         setFormData(prevState => ({
             ...prevState,
-            [name]: value
+            [name]: selectedOption ? selectedOption.value : null
         }));
     };
 
     return (
-        <div className='homeRegis'>
-            <ToastContainer/>
+        <div className='homeRegis-Head'>
+            <ToastContainer />
             {currentPeriod ? (
-                <div>
-                    <h3>Đang trong đợt đăng ký: {currentPeriod.registrationName}</h3>
+                <div className="registration-info">
+                    <h5>Đang trong đợt đăng ký: {currentPeriod.registrationName}</h5>
                     <p>Thời gian bắt đầu: {currentPeriod.registrationTimeStart}</p>
                     <p>Thời gian kết thúc: {currentPeriod.registrationTimeEnd}</p>
                 </div>
+
             ) : (
                 <>
-                    <>
-                        <div className="alert alert-warning alert-head" role="alert" style={{backgroundColor:'white', border:'none'}}>
-                            <WarningOutlinedIcon /> Hiện tại không nằm trong thời gian đăng ký đề tài !!!
-                        </div>
-                    </>
+                    <div className="alert alert-warning alert-head" role="alert">
+                        <WarningOutlinedIcon /> Hiện tại không nằm trong thời gian đăng ký đề tài !!!
+                    </div>
                 </>
             )}
             <div className='menuItems'>
@@ -230,4 +234,4 @@ function TableRegisKL() {
     );
 }
 
-export default TableRegisKL
+export default TableRegisKL;

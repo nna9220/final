@@ -15,11 +15,9 @@ function DataTableTimeApprove() {
     const [editedStartTime, setEditedStartTime] = useState('');
     const [editedEndTime, setEditedEndTime] = useState('');
 
-    useEffect(() => {
+    const loadData = () => {
         const tokenSt = sessionStorage.getItem('userToken');
-        console.log("Token SV2: " + tokenSt);
         if (tokenSt) {
-            console.log("Test: " + tokenSt);
             axiosInstance.get('/admin/timeBrowse', {
                 headers: {
                     'Authorization': `Bearer ${tokenSt}`,
@@ -28,7 +26,6 @@ function DataTableTimeApprove() {
                 .then(response => {
                     const dataTimeApproveArray = response.data.timeBrowse || [];
                     setTimeApprove(dataTimeApproveArray);
-                    console.log('Times: ', dataTimeApproveArray);
                 })
                 .catch(error => {
                     console.error("error: ", error);
@@ -36,8 +33,11 @@ function DataTableTimeApprove() {
         } else {
             console.log("Lỗi !!")
         }
+    };
 
-    }, [])
+    useEffect(() => {
+        loadData();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -45,7 +45,7 @@ function DataTableTimeApprove() {
             ...prevState,
             [name]: value
         }));
-    }
+    };
 
     const handleEditTimeApprove = () => {
         const tokenSt = sessionStorage.getItem('userToken');
@@ -60,7 +60,6 @@ function DataTableTimeApprove() {
                 },
             })
                 .then(response => {
-                    console.log("Edit successful");
                     const updatedTimeApprove = timeApprove.map(item => {
                         if (item.timeId === selectedTimeId) {
                             return {
@@ -73,31 +72,25 @@ function DataTableTimeApprove() {
                     });
                     // Cập nhật state với dữ liệu mới
                     setTimeApprove(updatedTimeApprove);
-                    toast.success("Chỉnh sửa thành công!")
+                    toast.success("Chỉnh sửa thành công!");
                 })
                 .catch(error => {
                     console.error("Error: ", error);
-                    toast.error("Chỉnh sửa thất bại!")
+                    toast.error("Chỉnh sửa thất bại!");
                 });
         } else {
             console.log("Error: No token found or no selected period ID");
         }
     };
 
-
     const handleAddType = (event) => {
         event.preventDefault();
         const tokenSt = sessionStorage.getItem('userToken');
-        console.log(newTimeApprove.timeStart);
-        console.log(newTimeApprove.timeEnd);
 
         const formattedNewTimeApprove = {
             timeStart: convertDateTime(newTimeApprove.timeStart),
             timeEnd: convertDateTime(newTimeApprove.timeEnd)
         };
-
-        console.log(formattedNewTimeApprove.timeStart);
-        console.log(formattedNewTimeApprove.timeEnd);
 
         if (tokenSt) {
             axiosInstance.post('/admin/timeBrowse/create', formattedNewTimeApprove, {
@@ -107,10 +100,19 @@ function DataTableTimeApprove() {
                 },
             })
                 .then(response => {
-                    setNewTimeApprove('');
+                    setNewTimeApprove({ timeStart: '', timeEnd: '' });
+                    toast.success("Thêm thành công!");
+                    // Đóng modal
+                    const closeModalButton = document.querySelector('#AddTimeApprove .btn-close');
+                    if (closeModalButton) {
+                        closeModalButton.click();
+                    }
+                    // Tải lại dữ liệu
+                    loadData();
                 })
                 .catch(error => {
                     console.error("Error: ", error);
+                    toast.error("Thêm thất bại!");
                 });
         } else {
             console.log("Error: No token found");
@@ -126,7 +128,6 @@ function DataTableTimeApprove() {
     };
 
     function convertToDateTimeLocalFormat(dateTimeString) {
-        // Chuyển đổi từ "DD/MM/YYYY HH:MM:SS" sang "YYYY-MM-DDTHH:MM"
         const [date, time] = dateTimeString.split(' ');
         const [day, month, year] = date.split('/');
         const [hours, minutes, seconds] = time.split(':');
@@ -135,29 +136,27 @@ function DataTableTimeApprove() {
     }
 
     function convertDateTime(dateTimeString) {
-        // Phân tích chuỗi thành các phần riêng biệt
         const parts = dateTimeString.split('T');
         const datePart = parts[0]; // Ngày/tháng/năm
         const timePart = parts[1]; // Giờ/phút
 
-        // Phân tích phần thời gian thành giờ và phút
         const timeParts = timePart.split(':');
         const hour = timeParts[0]; // Giờ
         const minute = timeParts[1]; // Phút
 
-        // Định dạng lại chuỗi thành "yyyy-MM-dd HH:mm:ss"
         const formattedDateTime = `${datePart} ${hour}:${minute}:00`;
 
         return formattedDateTime;
     }
+
     return (
         <div className='table-timeApprove'>
             <ToastContainer />
             <div className='content-table'>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddTimeApprove">
+                <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddTimeApprove">
                     Add
                 </button>
-                <div className="modal fade" id="AddTimeApprove" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" onSubmit={handleAddType}>
+                <div className="modal fade" id="AddTimeApprove" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" onSubmit={handleAddType}>
                     <div className="modal-dialog">
                         <form className="modal-content">
                             <div className="modal-header">
@@ -167,11 +166,11 @@ function DataTableTimeApprove() {
                             <div className="modal-body">
                                 <div className="form-floating mb-3 mt-3">
                                     <input required type="datetime-local" className="form-control" id="timeStart" placeholder="Enter email" name="timeStart" onChange={handleChange} />
-                                    <label for="timeStart">Thời gian bắt đầu</label>
+                                    <label htmlFor="timeStart">Thời gian bắt đầu</label>
                                 </div>
                                 <div className="form-floating mb-3 mt-3">
                                     <input required type="datetime-local" className="form-control" id="timeEnd" placeholder="Enter email" name="timeEnd" onChange={handleChange} />
-                                    <label for="timeStart">Thời gian kết thúc</label>
+                                    <label htmlFor="timeStart">Thời gian kết thúc</label>
                                 </div>
                             </div>
                             <div className="modal-footer">
@@ -197,7 +196,6 @@ function DataTableTimeApprove() {
                                     <label htmlFor="end" className="form-label">Thời gian kết thúc: </label>
                                     <input type="datetime-local" className="form-control" id="end" value={editedEndTime} onChange={(e) => setEditedEndTime(e.target.value)} />
                                 </div>
-
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -206,14 +204,14 @@ function DataTableTimeApprove() {
                         </div>
                     </div>
                 </div>
-                <table class="table table-hover">
+                <table className="table table-hover">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Thời gian bắt đầu</th>
                             <th scope="col">Thời gian kết thúc</th>
                             <th scope="col">Loại đề tài</th>
-                            <th scope='col'> Action</th>
+                            <th scope='col'>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -237,4 +235,4 @@ function DataTableTimeApprove() {
     )
 }
 
-export default DataTableTimeApprove
+export default DataTableTimeApprove;
