@@ -1,11 +1,13 @@
 package com.web.controller.HeadOfDepartment;
 
-import com.web.entity.TypeSubject;
-import com.web.repository.SubjectRepository;
-import com.web.repository.TypeSubjectRepository;
+import com.web.config.CheckRole;
+import com.web.config.TokenUtils;
+import com.web.entity.*;
+import com.web.repository.*;
 import com.web.service.Council.EvaluationAndScoringService;
 import com.web.service.HeaderOdDepartment.ManageCouncilService;
 import com.web.service.Lecturer.ManageTutorialSubjectService;
+import com.web.utils.UserUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,10 +15,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/head/council")
 @RequiredArgsConstructor
 public class HeadCouncilController {
+    @Autowired
+    private UserUtils userUtils;
+    @Autowired
+    private CouncilLecturerRepository councilLecturerRepository;
+    @Autowired
+    private LecturerRepository lecturerRepository;
+    @Autowired
+    private CouncilRepository councilRepository;
+    @Autowired
+    private PersonRepository personRepository;
+    private final TokenUtils tokenUtils;
     @Autowired
     private EvaluationAndScoringService evaluationAndScoringService;
     @Autowired
@@ -101,4 +119,41 @@ public class HeadCouncilController {
             throw new ExceptionInInitializerError(e);
         }
     }
+
+    @GetMapping("/detail/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
+    private ResponseEntity<Map<String,Object>> getDetailSubjectCouncilLecturer(@RequestHeader("Authorization") String authorizationHeader,
+                                                                               @PathVariable int subjectId){
+        try {
+            String token = tokenUtils.extractToken(authorizationHeader);
+            Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+            Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+            Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
+            if (existedSubject!=null){
+                Council existedCouncil = councilRepository.getCouncilBySubject(existedSubject);
+                if (existedCouncil!=null){
+                    List<CouncilLecturer> councilLecturers = councilLecturerRepository.getListCouncilLecturerByCouncil(existedCouncil);
+                    Map<String,Object> response = new HashMap<>();
+                    response.put("subject",existedSubject);
+                    List<Lecturer> lecturers = new ArrayList<>();
+                    for (CouncilLecturer c:councilLecturers) {
+                        lecturers.add(c.getLecturer());
+                    }
+                    response.put("council",existedCouncil);
+                    response.put("councilLecturer",councilLecturers);
+                    response.put("listLecturerOfCouncil", lecturers);
+                    return new ResponseEntity<>(response,HttpStatus.OK);
+                }else {
+                    //mã 417
+                    return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+                }
+            }else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
 }
