@@ -215,6 +215,7 @@ function DataTableTimeApproveKL() {
                             <th scope="col">Thời gian bắt đầu</th>
                             <th scope="col">Thời gian kết thúc</th>
                             <th scope="col">Loại đề tài</th>
+                            <th scope='col'>Trạng thái</th>
                             <th scope='col'> Action</th>
                         </tr>
                     </thead>
@@ -225,6 +226,7 @@ function DataTableTimeApproveKL() {
                                 <td>{item.timeStart}</td>
                                 <td>{item.timeEnd}</td>
                                 <td>{item.typeSubjectId.typeName}</td>
+                                <td>{item.status}</td>
                                 <td>
                                     <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(item)}>
                                         Edit

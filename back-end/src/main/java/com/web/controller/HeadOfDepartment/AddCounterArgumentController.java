@@ -133,14 +133,14 @@ public class AddCounterArgumentController {
     }
 
     //Phân Giảng viên phản biện - TLCN
-    @PostMapping("/addCounterArgumrnt/{subjectId}/{lecturerId}")
+    @PostMapping("/addCounterArgument/{subjectId}/{lecturerId}")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
-    public ResponseEntity<?> addCounterArgumrnt(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String lecturerId) {
+    public ResponseEntity<?> addCounterArgument(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String lecturerId) {
         try {
             String token = tokenUtils.extractToken(authorizationHeader);
             Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
 
-            //Check người dùng là head
+            // Check người dùng là head
             if (!personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
@@ -148,7 +148,7 @@ public class AddCounterArgumentController {
             // Lấy thông tin môn học
             Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
             if (existedSubject == null) {
-                return new ResponseEntity<>("Môn học không tồn tại", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("Đề tài không tồn tại", HttpStatus.NOT_FOUND);
             }
 
             // Lấy thông tin giảng viên
@@ -159,6 +159,7 @@ public class AddCounterArgumentController {
 
             // Tạo mới hội đồng
             Council council = new Council();
+            councilRepository.save(council);
 
             // Tạo CouncilLecturer của GVPB
             CouncilLecturer councilCounterArgument = new CouncilLecturer();
@@ -179,32 +180,29 @@ public class AddCounterArgumentController {
 
             council.setCouncilLecturers(councilLecturers);
             council.setSubject(existedSubject);
-
-            councilRepository.save(council);
-
-            // Cập nhật thông tin giảng viên
-            List<Council> councils = new ArrayList<>();
-            councils.add(council);
-
-            Lecturer instructor = existedSubject.getInstructorId();
-            instructor.setCouncilLecturers(councilLecturers);
-
-            currentLecturer.setCouncilLecturers(councilLecturers);
-            existedSubject.setThesisAdvisorId(currentLecturer);
-            existedSubject.setCouncil(council);
-
-            lecturerRepository.save(currentLecturer);
-            lecturerRepository.save(instructor);
-            subjectRepository.save(existedSubject);
             councilLecturerRepository.save(councilCounterArgument);
             councilLecturerRepository.save(councilInstructor);
+            // Lưu hội đồng và các thành viên vào cơ sở dữ liệu
+            System.out.println("LỖi save c 2");
+            councilRepository.save(council);
+            System.out.println("sau c save 2");
+
+            // Cập nhật thông tin giảng viên
+            currentLecturer.getCouncilLecturers().add(councilCounterArgument);
+            existedSubject.getInstructorId().getCouncilLecturers().add(councilInstructor);
+            existedSubject.setCouncil(council);
+            existedSubject.setThesisAdvisorId(currentLecturer);
+
+            lecturerRepository.save(currentLecturer);
+            lecturerRepository.save(existedSubject.getInstructorId());
+            subjectRepository.save(existedSubject);
 
             // Gửi email thông báo
             String subject = "THÀNH LẬP HỘI ĐỒNG";
             String message = "HỘI ĐỒNG PHẢN BIỆN ĐỀ TÀI " + existedSubject.getSubjectName() + " ĐÃ ĐƯỢC THÀNH LẬP!";
             List<String> emailRecipients = new ArrayList<>();
             emailRecipients.add(existedSubject.getInstructorId().getPerson().getUsername());
-            emailRecipients.add(existedSubject.getThesisAdvisorId().getPerson().getUsername());
+            emailRecipients.add(currentLecturer.getPerson().getUsername());
 
             if (!emailRecipients.isEmpty()) {
                 mailService.sendMailToPerson(emailRecipients, subject, message);
@@ -216,6 +214,7 @@ public class AddCounterArgumentController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @GetMapping("/delete")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<Map<String,Object>> getDanhSachDeTaiDaXoa(@RequestHeader("Authorization") String authorizationHeader){
@@ -224,7 +223,7 @@ public class AddCounterArgumentController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
-            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) 0,typeSubject);
+            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) -1,typeSubject);
             Map<String,Object> response = new HashMap<>();
             response.put("person",personCurrent);
             response.put("lstSubject",subjectByCurrentLecturer);
@@ -253,18 +252,27 @@ public class AddCounterArgumentController {
         }
     }
 
+
+
     @GetMapping("/listStudent")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
-    public ResponseEntity<?> getListStudent(@RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<?> getStudentsSameMajorNoSubject(@RequestHeader("Authorization") String authorizationHeader) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
-            List<Student> studentList = studentRepository.getStudentSubjectNull();
-            return new ResponseEntity<>(studentList, HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+            Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+            if (existedLecturer != null) {
+                Major major = existedLecturer.getMajor();
+                List<Student> studentsSameMajorNoSubject = studentRepository.findStudentsByMajorAndNoSubject(major);
+                return new ResponseEntity<>(studentsSameMajorNoSubject, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Lecturer không tồn tại
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN); // Không đủ quyền
         }
     }
+
 
     @GetMapping("/periodHead")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
@@ -437,6 +445,26 @@ public class AddCounterArgumentController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
             Subject existSubject = subjectRepository.findById(id).orElse(null);
             existSubject.setActive((byte) -1);
+            subjectRepository.save(existSubject);
+
+            String subject = "Topic: " + existSubject.getSubjectName() ;
+            String messenger = "Topic: " + existSubject.getSubjectName() + " đã bị xóa!!";
+            mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
+
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @PostMapping("/restore/{id}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
+    public ResponseEntity<?> restoreSubject(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
+            Subject existSubject = subjectRepository.findById(id).orElse(null);
+            existSubject.setActive((byte) 1);
             subjectRepository.save(existSubject);
 
             String subject = "Topic: " + existSubject.getSubjectName() ;

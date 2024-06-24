@@ -25,6 +25,7 @@ function DataTableTimeApprove() {
             })
                 .then(response => {
                     const dataTimeApproveArray = response.data.timeBrowse || [];
+                    console.log("Times Approve: ", response.data)
                     setTimeApprove(dataTimeApproveArray);
                 })
                 .catch(error => {
@@ -149,6 +150,17 @@ function DataTableTimeApprove() {
         return formattedDateTime;
     }
 
+    const [minDateTime, setMinDateTime] = useState('');
+
+    useEffect(() => {
+        const now = new Date();
+        const offset = now.getTimezoneOffset();
+        now.setMinutes(now.getMinutes() - offset);
+        const minDateTime = now.toISOString().slice(0, -8);
+        setMinDateTime(minDateTime);
+    }, []);
+
+
     return (
         <div className='table-timeApprove'>
             <ToastContainer />
@@ -165,11 +177,11 @@ function DataTableTimeApprove() {
                             </div>
                             <div className="modal-body">
                                 <div className="form-floating mb-3 mt-3">
-                                    <input required type="datetime-local" className="form-control" id="timeStart" placeholder="Enter email" name="timeStart" onChange={handleChange} />
+                                    <input required type="datetime-local" className="form-control" id="timeStart" placeholder="Enter email" name="timeStart" onChange={handleChange} min={minDateTime} />
                                     <label htmlFor="timeStart">Thời gian bắt đầu</label>
                                 </div>
                                 <div className="form-floating mb-3 mt-3">
-                                    <input required type="datetime-local" className="form-control" id="timeEnd" placeholder="Enter email" name="timeEnd" onChange={handleChange} />
+                                    <input required type="datetime-local" className="form-control" id="timeEnd" placeholder="Enter email" name="timeEnd" onChange={handleChange} min={minDateTime}/>
                                     <label htmlFor="timeStart">Thời gian kết thúc</label>
                                 </div>
                             </div>
@@ -190,11 +202,11 @@ function DataTableTimeApprove() {
                             <div className="modal-body">
                                 <div className="mb-3">
                                     <label htmlFor="start" className="form-label">Thời gian bắt đầu: </label>
-                                    <input type="datetime-local" className="form-control" id="start" value={editedStartTime} onChange={(e) => setEditedStartTime(e.target.value)} />
+                                    <input type="datetime-local" className="form-control" id="start" value={editedStartTime} onChange={(e) => setEditedStartTime(e.target.value)} min={minDateTime}/>
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="end" className="form-label">Thời gian kết thúc: </label>
-                                    <input type="datetime-local" className="form-control" id="end" value={editedEndTime} onChange={(e) => setEditedEndTime(e.target.value)} />
+                                    <input type="datetime-local" className="form-control" id="end" value={editedEndTime} onChange={(e) => setEditedEndTime(e.target.value)} min={minDateTime}/>
                                 </div>
                             </div>
                             <div className="modal-footer">
@@ -211,6 +223,7 @@ function DataTableTimeApprove() {
                             <th scope="col">Thời gian bắt đầu</th>
                             <th scope="col">Thời gian kết thúc</th>
                             <th scope="col">Loại đề tài</th>
+                            <th scope="col">Trạng thái</th>
                             <th scope='col'>Action</th>
                         </tr>
                     </thead>
@@ -221,6 +234,7 @@ function DataTableTimeApprove() {
                                 <td>{item.timeStart}</td>
                                 <td>{item.timeEnd}</td>
                                 <td>{item.typeSubjectId.typeName}</td>
+                                <td>{item.status}</td>
                                 <td>
                                     <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEdit(item)}>
                                         Edit

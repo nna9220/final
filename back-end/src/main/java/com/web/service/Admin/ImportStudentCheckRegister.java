@@ -25,73 +25,64 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class ImportStudentCheckRegister {
-    private final SubjectRepository subjectRepository;
-    private final TypeSubjectRepository typeSubjectRepository;
     private final StudentRepository studentRepository;
-    private final SchoolYearRepository schoolYearRepository;
-    private final StudentClassRepository studentClassRepository;
-    private final PersonRepository personRepository;
-    private final AuthorityRepository authorityRepository;
 
     public ResponseEntity<?> importStudent(MultipartFile file) throws IOException {
         try {
             List<Student> updateStudents = new ArrayList<>();
             if (checkExcelFormat(file)) {
                 List<Student> students = toStudents(file.getInputStream());
-                    for (int i=0;i< students.size();i++) {
-                        Student student = students.get(i);
-                        Student oldStudent = studentRepository.findById(student.getStudentId()).orElse(null);
-                        if (oldStudent!=null){
-                            oldStudent.setStatus(true);
-                            students.add(oldStudent);
-                        }
-                        System.out.println("Đọc và sao chép thành công");
+                for (Student student : students) {
+                    Student oldStudent = studentRepository.findById(student.getStudentId()).orElse(null);
+                    if (oldStudent != null) {
+                        oldStudent.setStatus(true);
+                        updateStudents.add(oldStudent);
+                    } else {
+                        System.err.println("Student not found: " + student.getStudentId());
                     }
+                }
                 studentRepository.saveAll(updateStudents);
-                return ResponseEntity.ok("Imported file to list subject successful!");
-            } else
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File upload is not match format, please try again!");
-        }catch (Exception e){
-            throw new RuntimeException("Lỗi r" + e);
+                return ResponseEntity.ok("Imported file and updated students successfully!");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File upload is not in the correct format. Please try again!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Error during import: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-
-    public boolean checkExcelFormat(MultipartFile file){
+    public boolean checkExcelFormat(MultipartFile file) {
         String contentType = file.getContentType();
         if (contentType == null) throw new AssertionError();
         return contentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     }
-    public List<Student> toStudents(InputStream inputStream){
+
+    public List<Student> toStudents(InputStream inputStream) {
         List<Student> students = new ArrayList<>();
-        try{
+        try {
             XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
             XSSFSheet sheet = workbook.getSheet("student");
             int rowCount = sheet.getPhysicalNumberOfRows();
             for (int i = 1; i < rowCount; i++) {
                 Row row = sheet.getRow(i);
                 if (row != null) {
-                    Student student = new Student(); // Tạo một đối tượng Student và Person cho mỗi hàng
-                    // Duyệt qua từng ô trong hàng và đọc dữ liệu
+                    Student student = new Student();
                     for (int j = 0; j < row.getLastCellNum(); j++) {
                         Cell cell = row.getCell(j);
-                        switch (j) {
-                            case 0 -> {//ID
-                                student.setStudentId(getCellValueAsString(cell));
-                            }
-                            default -> throw new IllegalStateException("Unsupported column index: " + j);
+                        if (j == 0) {
+                            student.setStudentId(getCellValueAsString(cell));
+                        } else {
+                            throw new IllegalStateException("Unsupported column index: " + j);
                         }
                     }
-                    // Sau khi đọc dữ liệu từ một hàng, thêm đối tượng Subject vào danh sách
                     students.add(student);
                 }
             }
-        } catch (Exception e){
-            throw new RuntimeException("Error when convert file csv!" + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException("Error when converting file to students: " + e.getMessage());
         }
-        students.forEach(student -> {
-            System.out.println("ID: " + student.getStudentId());
-        });
+        students.forEach(student -> System.out.println("ID: " + student.getStudentId()));
         return students;
     }
 
@@ -102,16 +93,12 @@ public class ImportStudentCheckRegister {
             return cell.getStringCellValue();
         } else if (cell.getCellType() == CellType.NUMERIC) {
             if (DateUtil.isCellDateFormatted(cell)) {
-                // Nếu là ngày tháng, chuyển đổi sang chuỗi theo định dạng mong muốn
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
                 return dateFormat.format(cell.getDateCellValue());
             } else {
-                // Kiểm tra nếu giá trị số có dạng chuỗi
                 if (NumberToTextConverter.toText(cell.getNumericCellValue()).contains("E")) {
-                    // Nếu có dạng chuỗi, sử dụng phương thức toText để chuyển đổi giá trị số thành chuỗi
                     return NumberToTextConverter.toText(cell.getNumericCellValue());
                 } else {
-                    // Nếu không, chuyển đổi giá trị số thành chuỗi
                     return String.valueOf((long) cell.getNumericCellValue());
                 }
             }
@@ -120,3 +107,4 @@ public class ImportStudentCheckRegister {
         }
     }
 }
+

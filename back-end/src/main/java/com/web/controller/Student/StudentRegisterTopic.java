@@ -64,6 +64,7 @@ public class StudentRegisterTopic {
                             return new ResponseEntity<>(response, HttpStatus.OK);
                         }
                     }else {
+                        //mã 406
                         return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
                     }
                 }

@@ -141,30 +141,37 @@ function CommitteTable() {
                         </tr>
                     </thead>
                     <tbody>
-                        {topics.map((item, index) => (
-                            <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>{item.subject.subjectName}</td>
-                                <td>{item.subject?.instructorId?.person?.firstName + ' ' + item.subject?.instructorId?.person?.lastName}</td>
-                                <td>{item.subject?.thesisAdvisorId?.person?.firstName + ' ' + item.subject?.thesisAdvisorId?.person?.lastName}</td>
-                                <td>{item.subject?.student1}</td>
-                                <td>{item.subject?.student2}</td>
-                                <td>{item.subject?.student3}</td>
-                                <td>
-                                    <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                                        onClick={() => {
-                                            setDetail(item.subject.subjectId);
-                                            setSubjectIdDetail(item.subject.subjectId);
-                                            setSubjectId(item.subject.subjectId);
-                                        }}>
-                                        Đánh giá
-                                    </button>
-                                </td>
-                                <td style={{ display: 'none' }}>{item.subject.subjectId}</td>
+                        {topics.length === 0 ? (
+                            <tr>
+                                <td colSpan="8" className="text-center">Không có dữ liệu</td>
                             </tr>
-                        ))}
+                        ) : (
+                            topics.map((item, index) => (
+                                <tr key={index}>
+                                    <td>{index + 1}</td>
+                                    <td>{item.subject.subjectName}</td>
+                                    <td>{item.subject?.instructorId?.person?.firstName + ' ' + item.subject?.instructorId?.person?.lastName}</td>
+                                    <td>{item.subject?.thesisAdvisorId?.person?.firstName + ' ' + item.subject?.thesisAdvisorId?.person?.lastName}</td>
+                                    <td>{item.subject?.student1}</td>
+                                    <td>{item.subject?.student2}</td>
+                                    <td>{item.subject?.student3}</td>
+                                    <td>
+                                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                            onClick={() => {
+                                                setDetail(item.subject.subjectId);
+                                                setSubjectIdDetail(item.subject.subjectId);
+                                                setSubjectId(item.subject.subjectId);
+                                            }}>
+                                            Đánh giá
+                                        </button>
+                                    </td>
+                                    <td style={{ display: 'none' }}>{item.subject.subjectId}</td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
+
             </div>
 
             <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -284,7 +291,7 @@ function CommitteTable() {
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
                                 Đóng
                             </button>
-                            <button type="button" className="btn btn-primary"data-bs-dismiss="modal" onClick={submitEvaluation}>
+                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={submitEvaluation}>
                                 Xác nhận
                             </button>
                         </div>

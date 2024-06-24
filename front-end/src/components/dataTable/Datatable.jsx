@@ -12,6 +12,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import axiosInstance from '../../API/axios';
 import moment from 'moment';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -353,6 +354,33 @@ function DataTable() {
             });
     };
 
+    const handleImportFileCheckRegister = () => {
+        if (!file) {
+            toast.error("Vui lòng chọn file trước khi import!");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const userToken = sessionStorage.getItem('userToken');
+
+        axiosInstance.post('/admin/student/importStudentId', formData, {
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+                'Content-Type': 'multipart/form-data'
+            },
+        })
+            .then(response => {
+                toast.success("Import sinh viên thành công!");
+                console.log('Import response:', response.data);
+            })
+            .catch(error => {
+                toast.error("Import sinh viên thất bại!");
+                console.error("Import error:", error);
+            });
+    };
+
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
@@ -419,18 +447,17 @@ function DataTable() {
                             <AddCircleOutlineOutlinedIcon/>
                         </button>
 
-                        <button
-                            type="button"
-                            className="btn btn-primary"
-                            style={{ marginBottom: '10px' }}
-                            onClick={handleExportTemplate}
-                        >
-                            <SaveAltIcon />Mẫu file nhập dữ liệu cho Sinh viên
+                        <button type="button" style={{border:'none', color:'blue', backgroundColor:'white'}} onClick={handleExportTemplate}>
+                            <DownloadOutlinedIcon/> Mẫu file nhập dữ liệu cho Sinh viên
                         </button>
-
+                        
                         <div class="input-group">
                             <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" onChange={handleFileChange} />
                             <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04" onClick={handleImportFile}>Import</button>
+                        </div>
+                        <div class="input-group">
+                            <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" onChange={handleFileChange} />
+                            <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04" onClick={handleImportFileCheckRegister}>Import danh sách sinh viên theo đợt đăng ký</button>
                         </div>
 
                     </div>
@@ -472,7 +499,7 @@ function DataTable() {
 
                 {!showDeletedStudents && (
                     <DataGrid
-                        rows={students.filter(student => student).map((student, index) => ({
+                        rows={students.filter(student => student.person?.status === true).map((student, index) => ({
                             id: index + 1,
                             studentId: student.studentId,
                             fullName: `${student.person?.firstName} ${student.person?.lastName}`,

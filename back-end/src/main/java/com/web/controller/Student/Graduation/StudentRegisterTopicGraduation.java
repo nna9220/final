@@ -53,7 +53,7 @@ public class StudentRegisterTopicGraduation {
                 if (currentStudent.getSubjectGraduationId() == null) {
                     TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
                     List<RegistrationPeriod> periodList = registrationPeriodRepository.getListPeriodBYStatusAndType(typeSubject);
-                    if (currentStudent.getStatus()) {
+                    if (currentStudent.getStatus()) {//mà k càn, nó k true thì k nhảy vô đây r đây hiện tạ mọi sv có status = false đợi tý t viết cái hàm edit all SV = True
                         if (CompareTime.isCurrentTimeInPeriodStudent(periodList)) {
                             List<Subject> subjectList = subjectRepository.findSubjectByStatusAndMajorAndStudent(true, currentStudent.getMajor(), typeSubject);
                             Map<String, Object> response = new HashMap<>();
@@ -65,7 +65,7 @@ public class StudentRegisterTopicGraduation {
                             response.put("person", personCurrent);
                             return new ResponseEntity<>(response, HttpStatus.OK);
                         }
-                    }else {
+                    } else {
                         //"Bạn không thuộc danh sách sinh vieen được đăng ký"
                         return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
                     }

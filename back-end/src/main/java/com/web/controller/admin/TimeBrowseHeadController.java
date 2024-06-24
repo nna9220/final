@@ -87,6 +87,7 @@ public class TimeBrowseHeadController {
             timeBrowsOfHead.setTypeSubjectId(typeSubject);
             timeBrowsOfHead.setTimeStart(convertToLocalDateTime(timeStart));
             timeBrowsOfHead.setTimeEnd(convertToLocalDateTime(timeEnd));
+            timeBrowsOfHead.setStatus(true);
             timeBrowseHeadRepository.save(timeBrowsOfHead);
             return new ResponseEntity<>(timeBrowsOfHead,HttpStatus.CREATED);
         }else {
@@ -147,6 +148,7 @@ public class TimeBrowseHeadController {
                 System.out.println("data nhận về:" + start + " end : " + end);
                 existTimeBrowsOfHead.setTimeStart(convertToLocalDateTime(start));
                 existTimeBrowsOfHead.setTimeEnd(convertToLocalDateTime(end));
+                existTimeBrowsOfHead.setStatus(true);
                 var update = timeBrowseHeadRepository.save(existTimeBrowsOfHead);
                 //GỬI MAIL
                 //TBM

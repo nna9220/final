@@ -48,7 +48,6 @@
 .button-res, .button-res-de {
     border: 1px solid transparent;
     background-color: white;
-    padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -87,3 +86,34 @@
         color: white;
     }
 }
+
+
+.body-table {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.home-table {
+    width: 100%;
+    max-width: 1200px;
+    height: auto;
+}
+
+.data-grid {
+    width: 100%;
+}
+
+.button-listDelete-approve {
+    margin-bottom: 20px;
+}
+
+.button-res, .button-res-de {
+    margin: 0 5px;
+}
+
+.modal-body {
+    text-align: center;
+}
+

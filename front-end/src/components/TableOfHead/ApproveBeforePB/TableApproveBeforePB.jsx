@@ -153,8 +153,8 @@ function TableApproveBeforePB() {
                                 Bạn chắc chắn muốn duyệt đề tài {topicName} qua hội đồng không?
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={handleApproveSubject}>Confirm</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={handleApproveSubject}>Xác nhận</button>
                             </div>
                         </div>
                     </div>

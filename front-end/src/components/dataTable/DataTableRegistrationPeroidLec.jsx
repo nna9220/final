@@ -256,6 +256,16 @@ function DataTableRegistrationPeroidLec() {
         return formattedDateTime;
     }
 
+    const [minDateTime, setMinDateTime] = useState('');
+
+    useEffect(() => {
+        const now = new Date();
+        const offset = now.getTimezoneOffset();
+        now.setMinutes(now.getMinutes() - offset);
+        const minDateTime = now.toISOString().slice(0, -8);
+        setMinDateTime(minDateTime);
+    }, []);
+
     return (
         <div className='content-main'>
             <ToastContainer />
@@ -277,11 +287,11 @@ function DataTableRegistrationPeroidLec() {
                                         <label for="periodName">Tên đợt</label>
                                     </div>
                                     <div className="form-floating mb-3 mt-3">
-                                        <input type="datetime-local" className="form-control" id="timeStart" placeholder="Enter email" name="timeStart" onChange={handleChange} />
+                                        <input type="datetime-local" className="form-control" id="timeStart" placeholder="Enter email" name="timeStart" onChange={handleChange} min={minDateTime}/>
                                         <label for="timeStart">Thời gian bắt đầu</label>
                                     </div>
                                     <div className="form-floating mb-3 mt-3">
-                                        <input type="datetime-local" className="form-control" id="timeEnd" placeholder="Enter email" name="timeEnd" onChange={handleChange} />
+                                        <input type="datetime-local" className="form-control" id="timeEnd" placeholder="Enter email" name="timeEnd" onChange={handleChange}min={minDateTime} />
                                         <label for="timeStart">Thời gian kết thúc</label>
                                     </div>
                                 </div>
@@ -303,11 +313,11 @@ function DataTableRegistrationPeroidLec() {
                                 <div className="modal-body">
                                     <div className="mb-3">
                                         <label htmlFor="start" className="form-label">Thời gian bắt đầu: </label>
-                                        <input type="datetime-local" className="form-control" id="start" value={editedStartTime} onChange={(e) => setEditedStartTime(e.target.value)} />
+                                        <input type="datetime-local" className="form-control" id="start" value={editedStartTime} onChange={(e) => setEditedStartTime(e.target.value)} min={minDateTime}/>
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="end" className="form-label">Thời gian kết thúc: </label>
-                                        <input type="datetime-local" className="form-control" id="end" value={editedEndTime} onChange={(e) => setEditedEndTime(e.target.value)} />
+                                        <input type="datetime-local" className="form-control" id="end" value={editedEndTime} onChange={(e) => setEditedEndTime(e.target.value)} min={minDateTime}/>
                                     </div>
                                 </div>
                                 <div className="modal-footer">

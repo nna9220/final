@@ -143,12 +143,12 @@ export default function TopicTable() {
                 }
             })
                 .then(response => {
-                    console.log('Duyệt đề tài thành công:', response.data);
-                    toast.success("Duyệt đề tài thành công!")
+                    console.log('Xác nhận hoàn thành đề tài. Vui lòng chờ TBM duyệt qua phản biện!', response.data);
+                    toast.success("Xác nhận hoàn thành đề tài. Vui lòng chờ TBM duyệt qua phản biện!")
                 })
                 .catch(error => {
-                    console.error('Lỗi khi duyệt đề tài qua phản biện:', error);
-                    toast.error("Lỗi khi duyệt đề tài qua phản biện!")
+                    console.error('Lỗi khi Xác nhận hoàn thành', error);
+                    toast.error("Xác nhận hoàn thành thất bại!")
                 });
         }
     };
@@ -165,7 +165,7 @@ export default function TopicTable() {
                 }
             })
                 .then(response => {
-                    console.log('Đề tài đã bị từ chối thành công:', response.data);
+                    console.log('Đề tài đã bị từ chối thành công!', response.data);
                     toast.success("Đề tài đã bị từ chối thành công!")
                 })
                 .catch(error => {
@@ -284,8 +284,8 @@ export default function TopicTable() {
                                 Yêu cầu nộp báo cáo 50% cho đề tài {subjectName} này?
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmit50}>Confirm</button>
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmit50}>Xác nhận</button>
                             </div>
                         </div>
                     </div>
@@ -302,8 +302,8 @@ export default function TopicTable() {
                                 Yêu cầu nộp báo cáo 100% cho đề tài {subjectName} này?
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmit100}>Confirm</button>
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmit100}>Xác nhận</button>
                             </div>
                         </div>
                     </div>
@@ -320,8 +320,8 @@ export default function TopicTable() {
                                 Yêu cầu nôp báo cáo 50% cho toàn bộ đề tài?
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitAll50}>Confirm</button>
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitAll50}>Xác nhận</button>
                             </div>
                         </div>
                     </div>
@@ -338,8 +338,8 @@ export default function TopicTable() {
                                 Yêu cầu nôp báo cáo 100% cho toàn bộ đề tài?
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitAll100}>Confirm</button>
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitAll100}>Xác nhận</button>
                             </div>
                         </div>
                     </div>
@@ -353,29 +353,11 @@ export default function TopicTable() {
                                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div className="modal-body">
-                                Xác nhận duyệt đề tài {subjectName} qua phản biện
+                                Xác nhận hoàn thành đề tài {subjectName} và chờ duyệt qua phản biện!
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitApproval}>Confirm</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="modal fade" id="modalApproval2" tabIndex="-1" aria-labelledby="exampleModalApproval" aria-hidden="true">
-                    <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h1 className="modal-title fs-5" id="exampleModalApproval">Hoàn thành đề tài</h1>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div className="modal-body">
-                                Xác nhận hoàn thành đề tài {subjectName}  và chuyển qua phản biện.
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitApproval}>Confirm</button>
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitApproval}>Xác nhận</button>
                             </div>
                         </div>
                     </div>
@@ -396,8 +378,8 @@ export default function TopicTable() {
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitRefuse}>Confirm</button>
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitRefuse}>Xác nhận</button>
                             </div>
                         </div>
                     </div>
@@ -414,8 +396,8 @@ export default function TopicTable() {
                                 Bạn chắc chắn muốn hoàn thành đề tài này không?
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary">Confirm</button>
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" className="btn btn-primary">Xác nhận</button>
                             </div>
                         </div>
                     </div>
