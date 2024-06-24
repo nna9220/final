@@ -6,7 +6,9 @@ import java.sql.Date;
 import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public class CompareTime {
@@ -102,12 +104,15 @@ public class CompareTime {
 
     public static boolean isCurrentTimeInCouncilTime(Council council) {
         if (council != null) {
-            LocalDateTime currentTime = LocalDateTime.now(); // Lấy thời gian hiện tại
+            LocalDate currentDate = LocalDate.now();
+            LocalTime currentTime = LocalTime.now();
 
-            // So sánh thời gian hiện tại với thời gian trong Council
-            return currentTime.isAfter(council.getTimeReport()); // Trả về true nếu thời gian hiện tại sau thời gian trong Council
+            // Kiểm tra ngày hiện tại và thời gian hiện tại nằm trong khoảng thời gian của council
+            if (currentDate.equals(council.getDate())) {
+                return currentTime.isAfter(council.getStart()) && currentTime.isBefore(council.getEnd());
+            }
         }
-        return false; // Trả về false nếu Council là null
+        return false;
     }
 
 
