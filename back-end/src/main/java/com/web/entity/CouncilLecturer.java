@@ -4,9 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
-@Table(name = "council_lecturer", uniqueConstraints = @UniqueConstraint(columnNames = {"council_id", "lecturer_id"}))
+@Table(name = "council_lecturer")
 @Getter
 @Setter
 public class CouncilLecturer {

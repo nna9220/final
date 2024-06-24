@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.io.Serializable;
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Setter
@@ -29,6 +30,11 @@ public class Notification implements Serializable {
 
     @Column(name="title")
     private String title;
+
+
+    // Thêm quan hệ nhiều-nhiều với Person
+    @ManyToMany(mappedBy = "notifications")
+    private List<Person> persons;
 
     @Column(name = "date_Submit")
     @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")

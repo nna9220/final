@@ -48,6 +48,7 @@ public class ManageTutorialSubjectService {
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Subject existedSubject = subjectRepository.findById(id).orElse(null);
+            List<String> emailPerson = new ArrayList<>();
             if (existedSubject!=null){
                 existedSubject.setActive((byte)2);
                 var newSubject = subjectRepository.save(existedSubject);
@@ -58,7 +59,6 @@ public class ManageTutorialSubjectService {
                         "GVHD: " + personCurrent.getUsername() + "\n"
                         + "Sinh viên vui lòng truy cập website https://hcmute.workon.space/ để thực hiện nộp báo cáo 50% trong vòng 1 tuần kể từ ngày " + today + " đến ngày " + nextWeek;
 
-                List<String> emailPerson = new ArrayList<>();
                 if (newSubject.getStudent1()!=null) {
                     Student student1 = studentRepository.findById(newSubject.getStudent1()).orElse(null);
                     emailPerson.add(student1.getPerson().getUsername());
@@ -74,9 +74,17 @@ public class ManageTutorialSubjectService {
                 if (!emailPerson.isEmpty()){
                     mailService.sendMailToPerson(emailPerson,subject,messenger);
                 }
+                List<Person> personList = new ArrayList<>();
+                for (String s:emailPerson) {
+                    Person p = personRepository.findUsername(s);
+                    if (p!=null){
+                        personList.add(p);
+                    }
+                }
                 Notification notification = new Notification();
                 LocalDateTime now = LocalDateTime.now();
                 notification.setDateSubmit(now);
+                notification.setPersons(personList);
                 notification.setTitle(subject);
                 notification.setContent(messenger);
                 notificationRepository.save(notification);
@@ -97,16 +105,16 @@ public class ManageTutorialSubjectService {
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             List<Subject> existedSubjects = subjectRepository.findSubjectByInstructorAndStatusAndActiveAndTypeSubject(existedLecturer,true,typeSubject,(byte)1);
+            List<String> emailPerson = new ArrayList<>();
+            LocalDate today = LocalDate.now();
+            LocalDate nextWeek = today.plusDays(7);
             for (Subject existedSubject:existedSubjects) {
                 existedSubject.setActive((byte)2);
                 var newSubject = subjectRepository.save(existedSubject);
-                LocalDate today = LocalDate.now();
-                LocalDate nextWeek = today.plusDays(7);
                 String subject = "ĐẾN THỜI GIAN NỘP BÁO CÁO 50%";
                 String messenger = "Topic: " + existedSubject.getSubjectName()+"\n" +
                         "GVHD: " + personCurrent.getUsername() + "\n"
                         + "Sinh viên vui lòng truy cập website https://hcmute.workon.space/ để thực hiện nộp báo cáo 50% trong vòng 1 tuần kể từ ngày " + today + " đến ngày " + nextWeek;
-                List<String> emailPerson = new ArrayList<>();
                 if (newSubject.getStudent1()!=null) {
                     Student student1 = studentRepository.findById(newSubject.getStudent1()).orElse(null);
                     emailPerson.add(student1.getPerson().getUsername());
@@ -122,7 +130,15 @@ public class ManageTutorialSubjectService {
                 if (!emailPerson.isEmpty()){
                     mailService.sendMailToPerson(emailPerson,subject,messenger);
                 }
+                List<Person> personList = new ArrayList<>();
+                for (String s:emailPerson) {
+                    Person p = personRepository.findUsername(s);
+                    if (p!=null){
+                        personList.add(p);
+                    }
+                }
                 Notification notification = new Notification();
+                notification.setPersons(personList);
                 LocalDateTime now = LocalDateTime.now();
                 notification.setDateSubmit(now);
                 notification.setTitle(subject);
@@ -169,6 +185,14 @@ public class ManageTutorialSubjectService {
                 }
                 Notification notification = new Notification();
                 LocalDateTime now = LocalDateTime.now();
+                List<Person> personList = new ArrayList<>();
+                for (String s:emailPerson) {
+                    Person p = personRepository.findUsername(s);
+                    if (p!=null){
+                        personList.add(p);
+                    }
+                }
+                notification.setPersons(personList);
                 notification.setDateSubmit(now);
                 notification.setTitle(subject);
                 notification.setContent(messenger);
@@ -201,7 +225,6 @@ public class ManageTutorialSubjectService {
                 if (newSubject.getStudent1()!=null) {
                     Student student1 = studentRepository.findById(newSubject.getStudent1()).orElse(null);
                     emailPerson.add(student1.getPerson().getUsername());
-
                 }
                 if (newSubject.getStudent2()!=null) {
                     Student student2 = studentRepository.findById(newSubject.getStudent2()).orElse(null);
@@ -215,6 +238,14 @@ public class ManageTutorialSubjectService {
                     mailService.sendMailToPerson(emailPerson,subject,messenger);
                 }
                 Notification notification = new Notification();
+                List<Person> personList = new ArrayList<>();
+                for (String s:emailPerson) {
+                    Person p = personRepository.findUsername(s);
+                    if (p!=null){
+                        personList.add(p);
+                    }
+                }
+                notification.setPersons(personList);
                 LocalDateTime now = LocalDateTime.now();
                 notification.setDateSubmit(now);
                 notification.setTitle(subject);
@@ -346,6 +377,20 @@ public class ManageTutorialSubjectService {
                 if (!emailPerson.isEmpty()) {
                     mailService.sendMailToPerson(emailPerson, subject, messenger);
                 }
+                List<Person> personList = new ArrayList<>();
+                for (String s:emailPerson) {
+                    Person p = personRepository.findUsername(s);
+                    if (p!=null){
+                        personList.add(p);
+                    }
+                }
+                Notification notification = new Notification();
+                LocalDateTime now = LocalDateTime.now();
+                notification.setDateSubmit(now);
+                notification.setPersons(personList);
+                notification.setTitle(subject);
+                notification.setContent(messenger);
+                notificationRepository.save(notification);
                 return new ResponseEntity<>(existedSubject, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -395,6 +440,20 @@ public class ManageTutorialSubjectService {
                     if (!emailPerson.isEmpty()){
                         mailService.sendMailToPerson(emailPerson,subject,messenger);
                     }
+                    List<Person> personList = new ArrayList<>();
+                    for (String s:emailPerson) {
+                        Person p = personRepository.findUsername(s);
+                        if (p!=null){
+                            personList.add(p);
+                        }
+                    }
+                    Notification notification = new Notification();
+                    LocalDateTime now = LocalDateTime.now();
+                    notification.setDateSubmit(now);
+                    notification.setPersons(personList);
+                    notification.setTitle(subject);
+                    notification.setContent(messenger);
+                    notificationRepository.save(notification);
                     return new ResponseEntity<>(existedSubject, HttpStatus.OK);
                 }else {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
