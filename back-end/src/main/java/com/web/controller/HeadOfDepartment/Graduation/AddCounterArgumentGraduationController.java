@@ -33,6 +33,8 @@ public class AddCounterArgumentGraduationController {
     @Autowired
     private SubjectImplService service;
     @Autowired
+    private NotificationRepository notificationRepository;
+    @Autowired
     private SubjectService subjectService;
     @Autowired
     private CouncilLecturerRepository councilLecturerRepository;
@@ -309,6 +311,20 @@ public class AddCounterArgumentGraduationController {
                     List<String> emailPerson = new ArrayList<>();
                     emailPerson.add(existLecturer.getPerson().getUsername());
                     mailService.sendMailToPerson(emailPerson,subject,messenger);
+                    List<Person> personList = new ArrayList<>();
+                    for (String s:emailPerson) {
+                        Person p = personRepository.findUsername(s);
+                        if (p!=null){
+                            personList.add(p);
+                        }
+                    }
+                    Notification notification = new Notification();
+                    LocalDateTime now = LocalDateTime.now();
+                    notification.setPersons(personList);
+                    notification.setDateSubmit(now);
+                    notification.setTitle(subject);
+                    notification.setContent(messenger);
+                    notificationRepository.save(notification);
                     return new ResponseEntity<>(newSubject, HttpStatus.CREATED);
                 }else {
                     return new ResponseEntity<>(personCurrent,HttpStatus.OK);

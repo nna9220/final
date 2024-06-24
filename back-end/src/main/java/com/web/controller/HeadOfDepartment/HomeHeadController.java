@@ -116,7 +116,6 @@ public class HomeHeadController {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
-
             return new ResponseEntity<>(personCurrent,HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
