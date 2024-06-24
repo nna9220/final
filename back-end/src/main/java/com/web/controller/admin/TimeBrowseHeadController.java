@@ -169,9 +169,17 @@ public class TimeBrowseHeadController {
                 String title = "THÔNG BÁO THỜI GIAN DUYỆT ĐỀ TÀI TIỂU LUẬN CHUYÊN NGÀNH CHO TBM";
                 String content = "Thời gian bắt đầu: " + update.getTimeStart()+"\n" +
                         "Thời gian kết thúc: " + update.getTimeEnd() + "\n";
+                List<Person> personList = new ArrayList<>();
+                for (String s:emailLecturer) {
+                    Person p = personRepository.findUsername(s);
+                    if (p!=null){
+                        personList.add(p);
+                    }
+                }
                 Notification notification = new Notification();
                 notification.setContent(content);
                 notification.setTitle(title);
+                notification.setPersons(personList);
                 LocalDateTime now = LocalDateTime.now();
                 notification.setDateSubmit(now);
                 notificationRepository.save(notification);

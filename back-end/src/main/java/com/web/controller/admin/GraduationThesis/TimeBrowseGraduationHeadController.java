@@ -84,7 +84,41 @@ public class TimeBrowseGraduationHeadController {
             timeBrowsOfHead.setTypeSubjectId(typeSubject);
             timeBrowsOfHead.setTimeStart(convertToLocalDateTime(timeStart));
             timeBrowsOfHead.setTimeEnd(convertToLocalDateTime(timeEnd));
-            timeBrowseHeadRepository.save(timeBrowsOfHead);
+            var update = timeBrowseHeadRepository.save(timeBrowsOfHead);
+            //GỬI MAIL
+            //Dnah sách SV
+            Authority authority = authorityRepository.findByName("ROLE_HEAD");
+            List<Lecturer> lecturers = lecturerRepository.getListLecturerISHead(authority);
+            List<String> emailLecturer = new ArrayList<>();
+            for (Lecturer lecturer:lecturers) {
+                emailLecturer.add(lecturer.getPerson().getUsername());
+            }
+            MailStructure newMail = new MailStructure();
+            String subject = "THÔNG BÁO THỜI GIAN DUYỆT ĐỀ TÀI KHÓA LUẬN TỐT NGHIỆP CHO TBM";
+            String messenger = "Thời gian bắt đầu: " + update.getTimeStart()+"\n" +
+                    "Thời gian kết thúc: " + update.getTimeEnd() + "\n";
+            newMail.setSubject(subject);
+            newMail.setSubject(messenger);
+            if (!lecturers.isEmpty()){
+                mailService.sendMailToStudents(emailLecturer,subject,messenger);
+            }
+            String title = "THÔNG BÁO THỜI GIAN DUYỆT ĐỀ TÀI KHÓA LUẬN TỐT NGHIỆP CHO TBM";
+            String content = "Thời gian bắt đầu: " + update.getTimeStart()+"\n" +
+                    "Thời gian kết thúc: " + update.getTimeEnd() + "\n";
+            List<Person> personList = new ArrayList<>();
+            for (String s:emailLecturer) {
+                Person p = personRepository.findUsername(s);
+                if (p!=null){
+                    personList.add(p);
+                }
+            }
+            Notification notification = new Notification();
+            notification.setContent(content);
+            notification.setPersons(personList);
+            notification.setTitle(title);
+            LocalDateTime now = LocalDateTime.now();
+            notification.setDateSubmit(now);
+            notificationRepository.save(notification);
             return new ResponseEntity<>(timeBrowsOfHead,HttpStatus.CREATED);
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -165,8 +199,16 @@ public class TimeBrowseGraduationHeadController {
                 String title = "THÔNG BÁO THỜI GIAN DUYỆT ĐỀ TÀI KHÓA LUẬN TỐT NGHIỆP CHO TBM";
                 String content = "Thời gian bắt đầu: " + update.getTimeStart()+"\n" +
                         "Thời gian kết thúc: " + update.getTimeEnd() + "\n";
+                List<Person> personList = new ArrayList<>();
+                for (String s:emailLecturer) {
+                    Person p = personRepository.findUsername(s);
+                    if (p!=null){
+                        personList.add(p);
+                    }
+                }
                 Notification notification = new Notification();
                 notification.setContent(content);
+                notification.setPersons(personList);
                 notification.setTitle(title);
                 LocalDateTime now = LocalDateTime.now();
                 notification.setDateSubmit(now);
