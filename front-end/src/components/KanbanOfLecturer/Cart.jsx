@@ -61,6 +61,7 @@ const Card = ({ task, index }) => {
     
             setCommentContent('');
             setCommentFiles([]);
+            handleViewTask(task.taskId);
         } catch (error) {
             console.error('Error creating comment:', error);
         }

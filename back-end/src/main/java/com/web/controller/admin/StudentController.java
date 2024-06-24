@@ -288,49 +288,13 @@ public class StudentController {
         return new ResponseEntity<>(importStudent.importStudent(file),HttpStatus.OK);
     }
 
-
-    @GetMapping("/export")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public void exportStudent(HttpServletResponse response) throws IOException {
-        response.setContentType("application/vnd.ms-excel");
-        response.setHeader("Content-Disposition", "attachment;filename=student_classes.xls");
-
-        List<Student> student = studentService.getAllStudent();
-
-        Workbook workbook = new HSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Student Classes");
-
-        // Tạo header row
-        Row headerRow = sheet.createRow(0);
-        headerRow.createCell(0).setCellValue("ID");
-        headerRow.createCell(1).setCellValue("Class Name");
-        headerRow.createCell(2).setCellValue("Status");
-
-        // Fill data rows
-        int rowNum = 1;
-        for (Student student1 : student) {
-            Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(student1.getStudentId());
-            row.createCell(1).setCellValue(student1.getPerson().getLastName());
-            row.createCell(2).setCellValue(student1.getPerson().getFirstName());
-        }
-
-        // Write the output to the response output stream
-        try (OutputStream out = response.getOutputStream()) {
-            workbook.write(out);
-        }
-
-        // Close the workbook
-        workbook.close();
-    }
-
-
     //IMPORT STUDENT ĐƯỢC QUYỀN ĐĂNG KÝ TRONG ĐỢT
     @PostMapping("/importStudentId")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> importStudentCheck(@RequestParam("file") MultipartFile file) throws IOException {
-        return new ResponseEntity<>(importStudentCheckRegister.importStudent(file),HttpStatus.OK);
+        return new ResponseEntity<>(importStudentCheckRegister.importStudent(file), HttpStatus.OK);
     }
+
 
     @PostMapping("/addStudentId/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")

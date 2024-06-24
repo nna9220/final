@@ -23,14 +23,14 @@ function RegisTopicTable() {
                 if (!tokenSt) {
                     sessionStorage.setItem('userToken', userToken);
                 }
-
+    
                 try {
                     const response = await axiosInstance.get('/student/subject', {
                         headers: {
                             'Authorization': `Bearer ${userToken}`,
                         },
                     });
-
+    
                     const result = response.data;
                     if (result.person) {
                         if (result.subjectList) {
@@ -42,21 +42,28 @@ function RegisTopicTable() {
                         }
                     }
                 } catch (error) {
-                    if (error.response && error.response.status === 404) {
-                        setErrors("Không tìm thấy sinh viên.");
-                    } else if (error.response && error.response.status === 403) {
-                        setErrors("Bạn không có quyền truy cập.");
+                    if (error.response) {
+                        if (error.response.status === 404) {
+                            setErrors("Không tìm thấy sinh viên.");
+                        } else if (error.response.status === 403) {
+                            setErrors("Bạn không có quyền truy cập.");
+                        } else if (error.response.status === 406) {
+                            setErrors("Bạn chưa đủ điều kiện đăng ký đề tài.");
+                        } else {
+                            setErrors("Đã xảy ra lỗi khi lấy dữ liệu từ máy chủ.");
+                        }
                     } else {
-                        setErrors("Bạn đã hoàn thành tiểu luận chuyên ngành.");
+                        setErrors("Đã xảy ra lỗi không xác định.");
                     }
                 } finally {
                     setLoading(false);
                 }
             }
         };
-
+    
         fetchTopics();
     }, []);
+    
 
     const registerTopic = async (subjectId) => {
         const userToken = getTokenFromUrlAndSaveToStorage();

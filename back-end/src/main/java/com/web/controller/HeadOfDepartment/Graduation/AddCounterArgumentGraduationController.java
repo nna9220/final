@@ -221,14 +221,20 @@ public class AddCounterArgumentGraduationController {
 
     @GetMapping("/listStudent")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
-    public ResponseEntity<?> getListStudent(@RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<?> getStudentsSameMajor(@RequestHeader("Authorization") String authorizationHeader) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
-            List<Student> studentList = studentRepository.getStudentSubjectEssayNull();
-            return new ResponseEntity<>(studentList, HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+            Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+            if (existedLecturer != null) {
+                Major major = existedLecturer.getMajor();
+                List<Student> studentsSameMajor = studentRepository.findStudentsByMajorAndNoSubject(major);
+                return new ResponseEntity<>(studentsSameMajor, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Lecturer không tồn tại
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN); // Không đủ quyền
         }
     }
 

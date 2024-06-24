@@ -84,6 +84,7 @@ public class TimeBrowseGraduationHeadController {
             timeBrowsOfHead.setTypeSubjectId(typeSubject);
             timeBrowsOfHead.setTimeStart(convertToLocalDateTime(timeStart));
             timeBrowsOfHead.setTimeEnd(convertToLocalDateTime(timeEnd));
+            timeBrowsOfHead.setStatus(true);
             timeBrowseHeadRepository.save(timeBrowsOfHead);
             return new ResponseEntity<>(timeBrowsOfHead,HttpStatus.CREATED);
         }else {

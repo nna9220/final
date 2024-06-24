@@ -171,7 +171,7 @@ public class RegistrationPeriodLecturerController {
                 if (!lecturers.isEmpty()){
                     mailService.sendMailToLecturers(emailLecturer,subject,messenger);
                 }
-                String title = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI TIỂU LUẬN CHUYÊN NGÀNH CHO GIẢNG VIÊN";
+                String title = "THÔNG BÁO CẬP NHẬT THỜI GIAN ĐĂNG KÝ ĐỀ TÀI TIỂU LUẬN CHUYÊN NGÀNH CHO GIẢNG VIÊN";
                 String content = "Thời gian bắt đầu: " + update.getRegistrationTimeStart()+"\n" +
                         "Thời gian kết thúc: " + update.getRegistrationTimeEnd() + "\n";
                 Notification notification = new Notification();

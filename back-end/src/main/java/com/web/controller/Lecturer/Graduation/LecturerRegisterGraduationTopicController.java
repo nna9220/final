@@ -103,18 +103,20 @@ public class LecturerRegisterGraduationTopicController {
     //Danh sách đề tài
     @GetMapping("/listStudent")
     @PreAuthorize("hasAuthority('ROLE_LECTURER')")
-    public ResponseEntity<?> getListStudent(@RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<?> getStudentsSameMajor(@RequestHeader("Authorization") String authorizationHeader) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
-            List<Subject> subjectList = subjectRepository.findSubjectByActive((byte)8);
-            List<Student> studentList = studentRepository.getStudentSubjectGraduationNull();
-            for (int i =0;i<studentList.size();i++){
-                System.out.println(studentList.get(i));
+        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+            Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+            if (existedLecturer != null) {
+                Major major = existedLecturer.getMajor();
+                List<Student> studentsSameMajor = studentRepository.findStudentsByMajorAndNoSubject(major);
+                return new ResponseEntity<>(studentsSameMajor, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Lecturer không tồn tại
             }
-            return new ResponseEntity<>(studentList, HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN); // Không đủ quyền
         }
     }
 
@@ -179,7 +181,7 @@ public class LecturerRegisterGraduationTopicController {
                     newSubject.setSubjectName(name);
                     newSubject.setRequirement(requirement);
                     newSubject.setExpected(expected);
-                    newSubject.setActive((byte) 0);
+                    newSubject.setActive((byte) 1);
                     newSubject.setStatus(false);
                     //Tìm kiếm giảng viên hiện tại
                     System.out.println("Trước tìm gv");

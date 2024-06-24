@@ -11,7 +11,7 @@ import axiosInstance from '../../API/axios';
 
 const Card = ({ task, index }) => {
   const [selectedTask, setSelectedTask] = useState(null);
-  const [detail, setDetail] = useState([]);
+  const [detail, setDetail] = useState({});
   const [file, setFile] = useState([]);
   const [commentContent, setCommentContent] = useState('');
   const [commentFiles, setCommentFiles] = useState([]);
@@ -39,7 +39,7 @@ const Card = ({ task, index }) => {
         setDetail(response.data);
         setFile(response.data.listFile);
       } catch (error) {
-        console.error(error);
+        console.error('Error fetching task detail:', error);
       }
     }
   };
@@ -53,26 +53,27 @@ const Card = ({ task, index }) => {
       for (const file of commentFiles) {
         formData.append('fileInput', file);
       }
-
+  
       const response = await axiosInstance.post(`/student/comment/create/${task.taskId}`, formData, {
         headers: {
           'Authorization': `Bearer ${userToken}`,
         },
       });
-
+  
       const newComment = response.data;
-
+  
       setDetail(prevDetail => ({
         ...prevDetail,
         listComment: [...prevDetail.listComment, newComment]
       }));
-
+  
       setCommentContent('');
       setCommentFiles([]);
+      handleViewTask(task.taskId);
     } catch (error) {
       console.error('Error creating comment:', error);
     }
-  };
+  };  
 
   const modalId = `exampleModal-${task.taskId}`;
 

@@ -1,23 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
-import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import axiosInstance from '../../../API/axios';
-import './assign.scss'
+import './assign.scss';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function TableAssign() {
   const [topics, setTopics] = useState([]);
   const [lecturers, setLecturers] = useState([]);
-  const [lecturerIds, setLecturerIds] = useState([]); // Mảng lưu trữ lecturerId cho mỗi đề tài
+  const [lecturerIds, setLecturerIds] = useState([]);
   const userToken = getTokenFromUrlAndSaveToStorage();
-  const [showAssignToast, setShowAssignToast] = useState(false);
-  const [showErrorToastAssign, setShowErrorToastAssign] = useState(false);
 
-  useEffect(() => {
-    console.log("Token: " + userToken);
+  const fetchTopics = () => {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
@@ -29,7 +25,6 @@ function TableAssign() {
           .then(response => {
             console.log("Topic: ", response.data);
             setTopics(response.data.listSubject);
-            // Khởi tạo mảng lecturerIds với độ dài bằng số lượng đề tài
             setLecturerIds(Array(response.data.listSubject.length).fill(''));
           })
           .catch(error => {
@@ -37,6 +32,11 @@ function TableAssign() {
           });
       }
     }
+  };
+
+  useEffect(() => {
+    console.log("Token: " + userToken);
+    fetchTopics();
   }, [userToken]);
 
   const handleSelectChange = (event, index) => {
@@ -62,40 +62,52 @@ function TableAssign() {
   };
 
   const handleGVPB = (subjectId, index) => {
-    const lecturerId = lecturerIds[index]; // Lấy lecturerId tương ứng với đề tài
+    const lecturerId = lecturerIds[index];
     if (lecturerId && subjectId) {
-      axiosInstance.post(`/head/subject/addCounterArgumrnt/${subjectId}/${lecturerId}`, null, {
+      axiosInstance.post(`/head/subject/addCounterArgument/${subjectId}/${lecturerId}`, null, {
         headers: {
           'Authorization': `Bearer ${userToken}`
         }
       })
         .then(response => {
           console.log('Successfully assigned lecturer for counter argument:', response.data);
-          const updatedTopics = topics.map((topic, idx) => {
-            if (idx === index) {
-              return { ...topic, counterArgumentLecturer: response.data };
-            }
-            return topic;
-          });
-          setTopics(updatedTopics);
-          toast.success("Phân giảng viên thành công!")
-          setShowAssignToast(true);
+          toast.success("Phân giảng viên thành công!");
+          fetchTopics(); // Tải lại danh sách đề tài sau khi phân giảng viên thành công
         })
         .catch(error => {
-          console.error('Error assigning lecturer for counter argument:', error);
-          setShowErrorToastAssign(true);
-          toast.error("Phân giảng viên thất bại!")
+          if (error.response) {
+            switch (error.response.status) {
+              case 403:
+                toast.error("Bạn không có quyền thực hiện hành động này!");
+                break;
+              case 404:
+                toast.error(error.response.data);
+                break;
+              case 406:
+                toast.error("Thời gian đăng ký của SV phải ở sau thời gian duyệt đề tài của TBM");
+                break;
+              case 500:
+                toast.error("Có lỗi xảy ra. Vui lòng thử lại sau.");
+                break;
+              default:
+                toast.error("Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
+            }
+          } else {
+            console.error('Error assigning lecturer for counter argument:', error);
+            toast.error("Phân giảng viên thất bại!");
+          }
         });
     } else {
       console.error('LectureId or subjectId is undefined or empty');
       console.log("LectureId: ", lecturerId);
       console.log("SubjectId: ", subjectId);
+      toast.error("LectureId hoặc SubjectId không hợp lệ!");
     }
   };
 
   return (
     <div className='home-table-assign'>
-      <ToastContainer/>
+      <ToastContainer />
       <table className="table table-hover">
         <thead>
           <tr>
@@ -120,7 +132,7 @@ function TableAssign() {
               <td>
                 <div className='group-assign'>
                   <select className='optionLecs' value={lecturerIds[index]} onChange={(event) => handleSelectChange(event, index)} onClick={() => handleAssignGVPB(item.subjectId, index)}>
-                    <option className='option' value="" >Chọn GVPB</option>
+                    <option className='option' value="">Chọn GVPB</option>
                     {lecturers.map((lecturer, idx) => (
                       <option key={idx} value={lecturer.lecturerId}>{lecturer.person.firstName} {lecturer.person.lastName}</option>
                     ))}

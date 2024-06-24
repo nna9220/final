@@ -178,7 +178,6 @@ public class RegistrationPeriodController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
             RegistrationPeriod existRegistrationPeriod = registrationPeriodRepository.findById(periodId).orElse(null);
             if (existRegistrationPeriod != null) {
-
                 if (convertToLocalDateTime(end).isBefore(convertToLocalDateTime(start))) {
                        return new ResponseEntity<>("Ngày kết thúc phải lớn hơn ngày bắt đầu", HttpStatus.BAD_REQUEST);
                 }

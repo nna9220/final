@@ -4,6 +4,7 @@ import './DataTableRegistrationPeroidSt.scss'
 import axiosInstance from '../../API/axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Checkbox } from '@mui/material';
 
 function DataTableRegistrationPeroidSt() {
     const [timeApprove, setTimeApprove] = useState([]);
@@ -16,6 +17,7 @@ function DataTableRegistrationPeroidSt() {
     });
     const [editedStartTime, setEditedStartTime] = useState('');
     const [editedEndTime, setEditedEndTime] = useState('');
+    const [editedStatus, setEditedStatus] = useState(false);
 
     useEffect(() => {
         loadData();
@@ -67,7 +69,7 @@ function DataTableRegistrationPeroidSt() {
             console.log("Lỗi !!")
         }
     }
- 
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setNewTimeApprove(prevState => ({
@@ -82,7 +84,8 @@ function DataTableRegistrationPeroidSt() {
             axiosInstance.post(`/admin/Period/edit/${selectedTimeId}`, null, {
                 params: {
                     start: convertDateTime(editedStartTime),
-                    end: convertDateTime(editedEndTime)
+                    end: convertDateTime(editedEndTime),
+                    status: editedStatus
                 },
                 headers: {
                     'Authorization': `Bearer ${tokenSt}`,
@@ -95,7 +98,8 @@ function DataTableRegistrationPeroidSt() {
                             return {
                                 ...item,
                                 timeStart: editedStartTime,
-                                timeEnd: editedEndTime
+                                timeEnd: editedEndTime,
+                                status: editedStatus
                             };
                         }
                         return item;
@@ -119,7 +123,8 @@ function DataTableRegistrationPeroidSt() {
             axiosInstance.post(`/admin/PeriodGraduation/edit/${selectedTimeId}`, null, {
                 params: {
                     start: convertDateTime(editedStartTime),
-                    end: convertDateTime(editedEndTime)
+                    end: convertDateTime(editedEndTime),
+                    status: editedStatus
                 },
                 headers: {
                     'Authorization': `Bearer ${tokenSt}`,
@@ -132,7 +137,8 @@ function DataTableRegistrationPeroidSt() {
                             return {
                                 ...item,
                                 timeStart: editedStartTime,
-                                timeEnd: editedEndTime
+                                timeEnd: editedEndTime,
+                                status: editedStatus
                             };
                         }
                         return item;
@@ -156,17 +162,17 @@ function DataTableRegistrationPeroidSt() {
         console.log(newTimeApprove.periodName);
         console.log(newTimeApprove.timeStart);
         console.log(newTimeApprove.timeEnd);
-    
+
         const formattedNewTimeApprove = {
             periodName: newTimeApprove.periodName,
             timeStart: convertDateTime(newTimeApprove.timeStart),
             timeEnd: convertDateTime(newTimeApprove.timeEnd)
         };
-    
+
         console.log(formattedNewTimeApprove.timeStart);
         console.log(formattedNewTimeApprove.timeEnd);
         console.log("Data: ", formattedNewTimeApprove);
-    
+
         if (tokenSt) {
             axiosInstance.post('/admin/Period/create', formattedNewTimeApprove, {
                 headers: {
@@ -174,37 +180,37 @@ function DataTableRegistrationPeroidSt() {
                     'Content-Type': 'multipart/form-data',
                 },
             })
-            .then(response => {
-                setNewTimeApprove('');
-                toast.success("Thêm thành công!");
-                loadData();
-            })
-            .catch(error => {
-                console.error("Error: ", error);
-                if (error.response) {
-                    switch (error.response.status) {
-                        case 400:
-                            toast.error("Ngày kết thúc phải lớn hơn ngày bắt đầu");
-                            break;
-                        case 406:
-                            toast.error("Thời gian đăng ký của SV phải ở sau thời gian duyệt đề tài của TBM");
-                            break;  
-                        case 403:
-                            toast.error("Bạn không có quyền thực hiện hành động này");
-                            break;
-                        default:
-                            toast.error("Lỗi khi thêm thời gian đăng ký");
+                .then(response => {
+                    setNewTimeApprove('');
+                    toast.success("Thêm thành công!");
+                    loadData();
+                })
+                .catch(error => {
+                    console.error("Error: ", error);
+                    if (error.response) {
+                        switch (error.response.status) {
+                            case 400:
+                                toast.error("Ngày kết thúc phải lớn hơn ngày bắt đầu");
+                                break;
+                            case 406:
+                                toast.error("Thời gian đăng ký của SV phải ở sau thời gian duyệt đề tài của TBM");
+                                break;
+                            case 403:
+                                toast.error("Bạn không có quyền thực hiện hành động này");
+                                break;
+                            default:
+                                toast.error("Lỗi khi thêm thời gian đăng ký");
+                        }
+                    } else {
+                        toast.error("Lỗi kết nối mạng");
                     }
-                } else {
-                    toast.error("Lỗi kết nối mạng");
-                }
-            });
+                });
         } else {
             console.log("Error: No token found");
             toast.error("Lỗi xác thực. Vui lòng đăng nhập lại");
         }
     };
-    
+
 
     const handleAddPeroid2 = () => {
         const tokenSt = sessionStorage.getItem('userToken');
@@ -274,20 +280,20 @@ function DataTableRegistrationPeroidSt() {
 
         return formattedDateTime;
     }
-    
+
     const [minDateTime, setMinDateTime] = useState('');
 
-  useEffect(() => {
-    const now = new Date();
-    const offset = now.getTimezoneOffset();
-    now.setMinutes(now.getMinutes() - offset);
-    const minDateTime = now.toISOString().slice(0, -8);
-    setMinDateTime(minDateTime);
-  }, []);
+    useEffect(() => {
+        const now = new Date();
+        const offset = now.getTimezoneOffset();
+        now.setMinutes(now.getMinutes() - offset);
+        const minDateTime = now.toISOString().slice(0, -8);
+        setMinDateTime(minDateTime);
+    }, []);
 
     return (
         <div className='content-main'>
-            <ToastContainer/>
+            <ToastContainer />
             <div className='border-container'>
                 <div className='body-table-period'>
                     <div style={{ display: 'flex' }}>
@@ -311,11 +317,11 @@ function DataTableRegistrationPeroidSt() {
                                         <label for="periodName">Tên đợt</label>
                                     </div>
                                     <div className="form-floating mb-3 mt-3">
-                                        <input type="datetime-local" className="form-control" id="timeStart" placeholder="Enter email" name="timeStart" onChange={handleChange} min={minDateTime}/>
+                                        <input type="datetime-local" className="form-control" id="timeStart" placeholder="Enter email" name="timeStart" onChange={handleChange} min={minDateTime} />
                                         <label for="timeStart">Thời gian bắt đầu</label>
                                     </div>
                                     <div className="form-floating mb-3 mt-3">
-                                        <input type="datetime-local" className="form-control" id="timeEnd" placeholder="Enter email" name="timeEnd" onChange={handleChange} min={minDateTime}/>
+                                        <input type="datetime-local" className="form-control" id="timeEnd" placeholder="Enter email" name="timeEnd" onChange={handleChange} min={minDateTime} />
                                         <label for="timeStart">Thời gian kết thúc</label>
                                     </div>
                                 </div>
@@ -337,11 +343,22 @@ function DataTableRegistrationPeroidSt() {
                                 <div className="modal-body">
                                     <div className="mb-3">
                                         <label htmlFor="start" className="form-label">Thời gian bắt đầu: </label>
-                                        <input type="datetime-local" className="form-control" id="start" value={editedStartTime} onChange={(e) => setEditedStartTime(e.target.value)} />
+                                        <input type="datetime-local" className="form-control" id="start" value={editedStartTime} onChange={(e) => setEditedStartTime(e.target.value)} min={minDateTime} />
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="end" className="form-label">Thời gian kết thúc: </label>
-                                        <input type="datetime-local" className="form-control" id="end" value={editedEndTime} onChange={(e) => setEditedEndTime(e.target.value)} />
+                                        <input type="datetime-local" className="form-control" id="end" value={editedEndTime} onChange={(e) => setEditedEndTime(e.target.value)} min={minDateTime} />
+                                    </div>
+                                    <div className="mb-3">
+                                        <label className="form-label">Trạng thái: </label>
+                                        <div>
+                                            <input type="radio" id="open" name="status" value="true" checked={editedStatus === true} onChange={(e) => setEditedStatus(true)} />
+                                            <label htmlFor="open" className="form-check-label">Mở</label>
+                                        </div>
+                                        <div>
+                                            <input type="radio" id="closed" name="status" value="false" checked={editedStatus === false} onChange={(e) => setEditedStatus(false)} />
+                                            <label htmlFor="closed" className="form-check-label">Đóng</label>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="modal-footer">
@@ -351,6 +368,7 @@ function DataTableRegistrationPeroidSt() {
                             </div>
                         </div>
                     </div>
+
                     <table class="table table-hover">
                         <thead>
                             <tr>
@@ -386,7 +404,7 @@ function DataTableRegistrationPeroidSt() {
             <div className='border-container-2'>
                 <div className='body-table-period'>
                     <div style={{ display: 'flex' }}>
-                    
+
                         <div>
 
                         </div>
@@ -437,6 +455,10 @@ function DataTableRegistrationPeroidSt() {
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="end" className="form-label">Thời gian kết thúc: </label>
+                                        <input type="datetime-local" className="form-control" id="end" value={editedEndTime} onChange={(e) => setEditedEndTime(e.target.value)} />
+                                    </div>
+                                    <div className="mb-3">
+                                        <label htmlFor="end" className="form-label">Trạng thái: </label>
                                         <input type="datetime-local" className="form-control" id="end" value={editedEndTime} onChange={(e) => setEditedEndTime(e.target.value)} />
                                     </div>
                                 </div>

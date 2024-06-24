@@ -15,7 +15,7 @@ function NotificationOfLecturer({ notifications, onReadNotification }) {
             setReadNotifications(prevState => {
                 const newReadNotifications = new Set(prevState).add(id);
                 localStorage.setItem('readNotificationsLecturer', JSON.stringify(Array.from(newReadNotifications)));
-                onReadNotification(id);  // Notify parent component
+                onReadNotification(id);
                 return newReadNotifications;
             });
         }
@@ -35,9 +35,12 @@ function NotificationOfLecturer({ notifications, onReadNotification }) {
         ));
     };
 
+    // Đảo ngược thứ tự mảng notifications
+    const reversedNotifications = [...notifications].reverse();
+
     return (
         <div className='notification-list'>
-            {notifications.map((item, index) => (
+            {reversedNotifications.map((item, index) => (
                 <div key={item.notificationId} className="notification-item">
                     <h3 
                         className={`notification-title ${readNotifications.has(item.notificationId) ? 'read-notification' : ''}`} 

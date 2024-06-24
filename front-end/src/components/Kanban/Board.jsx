@@ -10,6 +10,7 @@ import TimelineOutlinedIcon from '@mui/icons-material/TimelineOutlined';
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 import TimeLineOfStudent from '../Timeline/TimeLineOfStudent';
 import DnsOutlinedIcon from '@mui/icons-material/DnsOutlined';
+import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined';
 import axiosInstance from '../../API/axios';
 
 const KanbanBoard = () => {
@@ -28,6 +29,8 @@ const KanbanBoard = () => {
   });
   const [statusActive, SetStatusActive] = useState(null);
   const [error, setError] = useState(null);
+  const [report50, setReport50] = useState('');
+  const [report100, setReport100] = useState('');
   const [currentDroppableId, setCurrentDroppableId] = useState('MustDo'); // State lưu trữ droppableId hiện tại
   const handleChangeAdd = (e) => {
     const { name, value } = e.target;
@@ -66,6 +69,8 @@ const KanbanBoard = () => {
             setSubject(response.data.subject.subjectName)
             setData(response.data.listTask);
             SetStatusActive(response.data.subject.active);
+            setReport50(response.data.subject?.fiftyPercent?.name);
+            setReport100(response.data.subject?.oneHundredPercent?.name);
           })
           .catch(error => {
             console.error("Error fetching task list:", error);
@@ -233,7 +238,13 @@ const KanbanBoard = () => {
             {!error &&
               <div>
                 <div className='group-button' style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <h6>Đề tài: {subject}</h6>
+                  <div>
+                    <h6 style={{marginLeft:'10px'}}>  Đề tài: {subject}</h6>
+                    <button type="button" style={{border:'none', backgroundColor:'white', color:'#4477CE', fontWeight:'bold'}} data-bs-toggle="modal" data-bs-target="#Reports">
+                     <SummarizeOutlinedIcon/> Các bài báo cáo
+                    </button>
+                  </div>
+
                   <div className='button-submitTopic'>
                     {statusActive === 2 ? (
                       <button className='submit-1' data-bs-toggle="modal" data-bs-target="#submit50">
@@ -291,6 +302,24 @@ const KanbanBoard = () => {
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                           <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitReport100}>Submit</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="modal fade" id="Reports" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="exampleModalLabel">Các bài báo cáo của đề tài</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <p>Báo cáo 50%: <span>{report50}</span></p>
+                          <p>Báo cáo 100%: <span>{report100}</span></p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                         </div>
                       </div>
                     </div>
@@ -365,8 +394,9 @@ const KanbanBoard = () => {
           </div>
         </>
       ) : (
-        <h5>Đề tài chưa được duyệt!</h5>
-      )}
+        <div class="alert alert-warning" role="alert">
+          Đề tài chưa được duyệt
+        </div>)}
     </div>
   );
 };
