@@ -8,79 +8,74 @@ function DataTableTopicSuccess() {
     const [address, setAddress] = useState('');
     const [lecturer1, setLecturer1] = useState('');
     const [lecturer2, setLecturer2] = useState('');
-    const [lecturer3, setLecturer3] = useState('');
-    const [lecturer4, setLecturer4] = useState('');
-    const [lecturers, setLecturers] = useState([]);
-    const [subjectId, setSubjectId] = useState(null);
-    const [council, setCouncil] = useState([]);
-    const [defaultLecturerId, setDefaultLecturerId] = useState('');
+    const [role1, setRole1] = useState('');
+    const [role2, setRole2] = useState('');
     const [lecturerList, setLecturerList] = useState([]);
+    const [subjectId, setSubjectId] = useState(null);
+    const [defaultLecturerId, setDefaultLecturerId] = useState('');
     const userToken = getTokenFromUrlAndSaveToStorage();
 
     useEffect(() => {
         if (userToken) {
             loadData();
-            console.log("ID sau f5: ", defaultLecturerId);
-            if (defaultLecturerId !== undefined) {
-                // Thiết lập giá trị mặc định cho Thành viên 1 nếu chưa có giá trị được chọn
-                const updatedLecturers = lecturers.map((lecturer, index) => index === 0 && !lecturer ? defaultLecturerId : lecturer);
-                // Cập nhật giá trị cho state lecturers
-                setLecturers(updatedLecturers);
-            }
         }
-    }, [userToken, defaultLecturerId]);
+    }, [userToken]);
 
     const loadData = async () => {
         try {
-            const response = await axiosInstance.get('/head/manager/council/listSubject', {
+            const response = await axiosInstance.get('/head/council/listCouncil', {
                 headers: {
                     'Authorization': `Bearer ${userToken}`,
                 },
             });
-            console.log("Topic: ", response.data.body);
-            setSubjects(response.data.body);
+            setSubjects(response.data.body || []);
+            console.log("Council: ", response.data);
         } catch (error) {
             console.error('Error fetching subjects:', error);
         }
     };
 
-
-    // Hàm chuyển đổi từ xâu kí tự sang đối tượng Date
-    function convertStringToDate(dateTimeString) {
-        const [datePart, timePart] = dateTimeString.split(' ');
-        const [day, month, year] = datePart.split('/');
-        const [hour, minute, second] = timePart.split(':');
-        // Chú ý rằng month - 1 vì tháng trong JavaScript bắt đầu từ 0
-        return new Date(year, month - 1, day, hour, minute, second);
-    }
+    const loadCouncilDetails = async (subjectId) => {
+        console.log("id", subjectId);
+        try {
+            const response = await axiosInstance.get(`/head/council/detail/${subjectId}`, {
+                headers: {
+                    'Authorization': `Bearer ${userToken}`,
+                },
+            });
+            const councilDetails = response.data;
+            setDefaultLecturerId(councilDetails.lecturer1);
+            setLecturer2(councilDetails.lecturer2);
+            setRole1(councilDetails.role1);
+            setRole2(councilDetails.role2);
+            setTime(councilDetails.time);
+            setAddress(councilDetails.address);
+            console.log("Detaillllllllll: ", response.data);
+        } catch (error) {
+            console.error('Error fetching council details:', error);
+        }
+    };
 
     function convertDateTime(dateTimeString) {
-        // Phân tích chuỗi thành các phần riêng biệt
         const parts = dateTimeString.split('T');
-        const datePart = parts[0]; // Ngày/tháng/năm
-        const timePart = parts[1]; // Giờ/phút
-
-        // Phân tích phần thời gian thành giờ và phút
+        const datePart = parts[0];
+        const timePart = parts[1];
         const timeParts = timePart.split(':');
-        const hour = timeParts[0]; // Giờ
-        const minute = timeParts[1]; // Phút
-
-        // Định dạng lại chuỗi thành "yyyy-MM-dd HH:mm:ss"
+        const hour = timeParts[0];
+        const minute = timeParts[1];
         const formattedDateTime = `${datePart} ${hour}:${minute}:00`;
-
         return formattedDateTime;
     }
 
     const handleFormSubmit = async () => {
         try {
-            console.log("dt: ", lecturer1+lecturer2+lecturer3+lecturer4);
-            const response = await axiosInstance.post(`/head/manager/council/edit/${subjectId}`, {
-                time:convertDateTime(time),
+            const response = await axiosInstance.post(`/head/council/edit/${subjectId}`, {
+                time: convertDateTime(time),
                 address,
                 lecturer1,
                 lecturer2,
-                lecturer3,
-                lecturer4,
+                role1,
+                role2,
             }, {
                 headers: {
                     'Authorization': `Bearer ${userToken}`,
@@ -92,55 +87,18 @@ function DataTableTopicSuccess() {
             console.error('Error submitting form:', error);
         }
     };
-    
-    
-    const loadLecturers = async (subjectId) => {
-        try {
-            const response = await axiosInstance.get(`/head/manager/council/listLecturer/${subjectId}`, {
-                headers: {
-                    'Authorization': `Bearer ${userToken}`,
-                },
-            });
-            setLecturerList(response.data.listLecturer);
-        } catch (error) {
-            console.error('Error fetching lecturers:', error);
-        }
-    };
-
-    const loadCouncil = async (subjectId) => {
-        try {
-            const response = await axiosInstance.get(`/head/manager/council/detailCouncil/${subjectId}`, {
-                headers: {
-                    'Authorization': `Bearer ${userToken}`,
-                },
-            });
-            console.log("Council", response.data);
-            setCouncil(response.data.listLecturerOfCouncil);
-            // Thiết lập giá trị mặc định cho Thành viên 1
-            if (response.data.listLecturerOfCouncil.length > 0) {
-                setDefaultLecturerId(response.data.listLecturerOfCouncil[0].person.firstName + ' ' + response.data.listLecturerOfCouncil[0].person.lastName);
-                console.log("ID: ", defaultLecturerId);
-                console.log(response.data.listLecturerOfCouncil[0].person.personId)
-            }
-        } catch (error) {
-            console.error('Error fetching lecturers:', error);
-        }
-    };
-
 
     const handleLecturerChange = (e, setLecturer) => {
         setLecturer(e.target.value);
     };
-    const getDefaultLecturerId = (index) => {
-        if (lecturerList.length > index) {
-            return lecturerList[index].id;
-        }
-        return '';
+
+    const handleRoleChange = (e, setRole) => {
+        setRole(e.target.value);
     };
 
     return (
         <div>
-            <div className='body-table'>
+            <div style={{ padding: '16px' }} className='body-table-topic'>
                 <table className="table table-hover">
                     <thead>
                         <tr>
@@ -151,30 +109,35 @@ function DataTableTopicSuccess() {
                             <th scope='col'>SV 1</th>
                             <th scope='col'>SV 2</th>
                             <th scope='col'>SV 3</th>
-                            <th scope='col'>Action</th>
+                            <th scope='col'>Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {subjects.map((subject, index) => (
-                            <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>{subject.subjectName}</td>
-                                <td>{`${subject.instructorId.person.firstName} ${subject.instructorId.person.lastName}`}</td>
-                                <td>{subject.thesisAdvisorId?.person ? `${subject.thesisAdvisorId.person.firstName} ${subject.thesisAdvisorId.person.lastName}` : 'Chưa có'}</td>
-                                <td>{subject.student1}</td>
-                                <td>{subject.student2}</td>
-                                <td>{subject.student3}</td>
-                                <td>
-                                    <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => {
-                                        setSubjectId(subject.subjectId);
-                                        loadLecturers(subject.subjectId);
-                                        loadCouncil(subject.subjectId);
-                                    }}>
-                                        Lập hội đồng
-                                    </button>
-                                </td>
+                        {subjects.length === 0 ? (
+                            <tr>
+                                <td colSpan="8" className="text-center">Không có dữ liệu</td>
                             </tr>
-                        ))}
+                        ) : (
+                            subjects.map((item, index) => (
+                                <tr key={index}>
+                                    <td>{index + 1}</td>
+                                    <td>{item.subjectName}</td>
+                                    <td>{item.instructorId?.person?.firstName} {item.instructorId?.person?.lastName}</td>
+                                    <td>{item.thesisAdvisorId?.person?.firstName} {item.thesisAdvisorId?.person?.lastName}</td>
+                                    <td>{item.student1}</td>
+                                    <td>{item.student2}</td>
+                                    <td>{item.student3}</td>
+                                    <td>
+                                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => {
+                                            setSubjectId(item.subjectId);
+                                            loadCouncilDetails(item.subjectId);
+                                        }}>
+                                            Lập hội đồng
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -202,34 +165,27 @@ function DataTableTopicSuccess() {
                                         <tr>
                                             <th>Thành viên</th>
                                             <th>Họ và tên</th>
+                                            <th>Vai trò</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
                                             <td>Thành viên 1</td>
-                                            <td>
-                                                {defaultLecturerId}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Thành viên 2</td>
+                                            <td>{defaultLecturerId}</td>
                                             <td>
                                                 <select
                                                     className="form-select"
-                                                    onChange={(e) => handleLecturerChange(e, setLecturer1)}
-                                                    value={lecturer1}
+                                                    onChange={(e) => handleRoleChange(e, setRole1)}
+                                                    value={role1}
                                                 >
-                                                    <option value="">Chọn giảng viên</option>
-                                                    {lecturerList.map((lecturer) => (
-                                                        <option key={lecturer.lecturerId} value={lecturer.lecturerId}>
-                                                            {lecturer.person.firstName + ' ' + lecturer.person.lastName}
-                                                        </option>
-                                                    ))}
+                                                    <option value="">Chọn vai trò</option>
+                                                    <option value="Chủ tịch">Chủ tịch</option>
+                                                    <option value="Ủy viên">Ủy viên</option>
                                                 </select>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>Thành viên 3</td>
+                                            <td>Thành viên 2</td>
                                             <td>
                                                 <select
                                                     className="form-select"
@@ -244,38 +200,15 @@ function DataTableTopicSuccess() {
                                                     ))}
                                                 </select>
                                             </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Thành viên 4</td>
                                             <td>
                                                 <select
                                                     className="form-select"
-                                                    onChange={(e) => handleLecturerChange(e, setLecturer3)}
-                                                    value={lecturer3}
+                                                    onChange={(e) => handleRoleChange(e, setRole2)}
+                                                    value={role2}
                                                 >
-                                                    <option value="">Chọn giảng viên</option>
-                                                    {lecturerList.map((lecturer) => (
-                                                        <option key={lecturer.lecturerId} value={lecturer.lecturerId}>
-                                                            {lecturer.person.firstName + ' ' + lecturer.person.lastName}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Thành viên 5</td>
-                                            <td>
-                                                <select
-                                                    className="form-select"
-                                                    onChange={(e) => handleLecturerChange(e, setLecturer4)}
-                                                    value={lecturer4}
-                                                >
-                                                    <option value="">Chọn giảng viên</option>
-                                                    {lecturerList.map((lecturer) => (
-                                                        <option key={lecturer.lecturerId} value={lecturer.lecturerId}>
-                                                            {lecturer.person.firstName + ' ' + lecturer.person.lastName}
-                                                        </option>
-                                                    ))}
+                                                    <option value="">Chọn vai trò</option>
+                                                    <option value="Chủ tịch">Chủ tịch</option>
+                                                    <option value="Ủy viên">Ủy viên</option>
                                                 </select>
                                             </td>
                                         </tr>

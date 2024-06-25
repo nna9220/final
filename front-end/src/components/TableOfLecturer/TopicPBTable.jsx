@@ -66,6 +66,7 @@ function TopicPBTable() {
                 .then(response => {
                     console.log('Đề tài đã được duyệt qua hội đồng', response.data);
                     toast.success("Đề tài đã được duyệt qua hội đồng!");
+                    fetchTopics();
                 })
                 .catch(error => {
                     console.error('Lỗi duyệt đề tài qua hội đồng:', error);
@@ -89,6 +90,7 @@ function TopicPBTable() {
                                 <th scope="col">Sinh viên 2</th>
                                 <th scope="col">Sinh viên 3</th>
                                 <th scope="col">Yêu cầu</th>
+                                <th scope="col">Trạng thái</th>
                                 <th scope="col">Đánh giá</th>
                             </tr>
                         </thead>
@@ -104,7 +106,14 @@ function TopicPBTable() {
                                         <td>{item.student3}</td>
                                         <td>{item.requirement}</td>
                                         <td>
-                                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => { detailTopic(item.subjectId); setSubjectIdForAccept(item.subjectId) }} disabled={item.active !== 7}>
+                                            <p className={item.active === 8 ? "status-approved" : "status-not-approved"}>                                            
+                                                {item.active === 8 ? "Đã duyệt" : "Chưa duyệt"}
+                                            </p>
+                                        </td>
+                                        <td>
+                                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                                onClick={() => { detailTopic(item.subjectId); setSubjectIdForAccept(item.subjectId) }}
+                                                disabled={item.active !== 7}>
                                                 <CreditScoreOutlinedIcon />
                                             </button>
                                         </td>
@@ -112,7 +121,7 @@ function TopicPBTable() {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="8" className="text-center">No data</td>
+                                    <td colSpan="9" className="text-center">Không có dữ liệu</td>
                                 </tr>
                             )}
                         </tbody>
@@ -127,39 +136,76 @@ function TopicPBTable() {
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                            <h5>Thông tin đề tài</h5>
-                            <div>
-                                <p>1. Tên đề tài: {detail.subject?.subjectName}</p>
-                                <p>2. Chuyên ngành: {detail.subject?.major}</p>
-                                <p>3. Loại đề tài: {detail.subject?.typeSubject?.typeName}</p>
-                                <p>4. Giảng viên hướng dẫn: {detail.subject?.instructorId?.person?.firstName + ' ' + detail.subject?.instructorId?.person?.lastName}</p>
-                                <p>5. Giảng viên phản biện: {detail.subject?.thesisAdvisorId?.person?.firstName + ' ' + detail.subject?.thesisAdvisorId?.person?.lastName}</p>
-                                <p>6. Nhóm sinh viên thực hiện: </p>
-                                <p>Sinh viên 1: {detail.subject?.student1}</p>
-                                <p>Sinh viên 2: {detail.subject?.student2}</p>
-                                <p>Sinh viên 3: {detail.subject?.student3}</p>
-                            </div>
-                            <hr />
-                            <h5>File báo cáo</h5>
-                            <div>
-                                <label> Báo cáo 50%:
-                                    <a href={detail.subject?.fiftyPercent?.url} target="_blank" rel="noopener noreferrer" download="" className='content-name'>
-                                        {detail.subject?.fiftyPercent?.name}
-                                    </a>
-                                </label>
-                                <label> Báo cáo 100%:
-                                    <a href={detail.subject?.oneHundredPercent?.url} target="_blank" rel="noopener noreferrer" download="" className='content-name'>
-                                        {detail.subject?.oneHundredPercent?.name}
-                                    </a>
-                                </label>
-                            </div>
+                            <h5 className="mb-4" style={{ color: '#4477CE' }}>Thông tin đề tài</h5>
+                            <table className="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" style={{ width: '30%' }}>Tên đề tài:</th>
+                                        <td>{detail.subject?.subjectName}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Chuyên ngành:</th>
+                                        <td>{detail.subject?.major}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Loại đề tài:</th>
+                                        <td>{detail.subject?.typeSubject?.typeName}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Giảng viên hướng dẫn:</th>
+                                        <td>{detail.subject?.instructorId?.person?.firstName + ' ' + detail.subject?.instructorId?.person?.lastName}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Giảng viên phản biện:</th>
+                                        <td>{detail.subject?.thesisAdvisorId?.person?.firstName + ' ' + detail.subject?.thesisAdvisorId?.person?.lastName}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Nhóm sinh viên thực hiện:</th>
+                                        <td>
+                                            <div>Sinh viên 1: {detail.subject?.student1}</div>
+                                            <div>Sinh viên 2: {detail.subject?.student2}</div>
+                                            <div>Sinh viên 3: {detail.subject?.student3}</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <hr className="my-4" />
+                            <h5 className="mb-4" style={{ color: '#4477CE' }}>File báo cáo</h5>
+                            <table className="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" style={{ width: '30%' }}>Báo cáo 50%:</th>
+                                        <td>
+                                            {detail.subject?.fiftyPercent?.url ? (
+                                                <a href={detail.subject?.fiftyPercent?.url} target="_blank" rel="noopener noreferrer" download className="content-name">
+                                                    {detail.subject?.fiftyPercent?.name}
+                                                </a>
+                                            ) : (
+                                                <span>Chưa có</span>
+                                            )}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Báo cáo 100%:</th>
+                                        <td>
+                                            {detail.subject?.oneHundredPercent?.url ? (
+                                                <a href={detail.subject?.oneHundredPercent?.url} target="_blank" rel="noopener noreferrer" download className="content-name">
+                                                    {detail.subject?.oneHundredPercent?.name}
+                                                </a>
+                                            ) : (
+                                                <span>Chưa có</span>
+                                            )}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
-                                Close
+                                Đóng
                             </button>
                             <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleAccept}>
-                                Confirm
+                                Xác nhận
                             </button>
                         </div>
                     </div>

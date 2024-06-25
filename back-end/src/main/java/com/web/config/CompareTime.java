@@ -102,14 +102,22 @@ public class CompareTime {
 
     public static boolean isCurrentTimeInCouncilTime(Council council) {
         if (council != null) {
-            LocalDateTime currentTime = LocalDateTime.now(); // Lấy thời gian hiện tại
+            LocalDateTime timeReport = council.getTimeReport();
+            if (timeReport != null) {
+                LocalDateTime currentTime = LocalDateTime.now(); // Lấy thời gian hiện tại
+                System.out.println("Current time: " + currentTime);
+                System.out.println("Council timeReport: " + timeReport);
 
-            // So sánh thời gian hiện tại với thời gian trong Council
-            return currentTime.isAfter(council.getTimeReport()); // Trả về true nếu thời gian hiện tại sau thời gian trong Council
+                // So sánh thời gian hiện tại với thời gian trong Council
+                return currentTime.isAfter(timeReport); // Trả về true nếu thời gian hiện tại sau thời gian trong Council
+            } else {
+                System.err.println("Council timeReport is null");
+                return false; // Hoặc có thể trả về giá trị mặc định khác
+            }
         }
+        System.err.println("Council is null");
         return false; // Trả về false nếu Council là null
     }
-
 
     //Check time của a nằm sau time của b - Admin - Quản lý đợt đăng ký đề taì (Thời gian SV sau GV, Thời gian Duyệt sau ĐK - Dành cho LocalDateTime)
     public static boolean isStartAfter(List<TimeBrowsOfHead> timeBrowsOfHeads, LocalDateTime start) {

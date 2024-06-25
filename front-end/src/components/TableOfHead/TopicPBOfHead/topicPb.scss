@@ -1,11 +1,38 @@
-.criteria{
+.criteria {
     width: 80%;
 }
 
-.score{
+.score {
     padding: 5px;
 }
 
-.criteria-sum{
+.criteria-sum {
     font-weight: bold;
+}
+
+.status-approved {
+    color: green;
+    font-weight: bold;
+}
+
+.home-table-topicPB {
+    .table {
+        .status-approved {
+            color: green;
+            font-weight: bold;
+            border: 1px solid green;
+            border-radius: 8px;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .status-not-approved {
+            color: red;
+            font-weight: bold;
+            border: 1px solid red;
+            border-radius: 8px;
+            padding: 5px;
+            text-align: center;
+        }
+    }
 }

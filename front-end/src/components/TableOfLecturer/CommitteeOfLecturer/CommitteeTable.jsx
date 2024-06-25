@@ -3,15 +3,15 @@ import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import axiosInstance from '../../../API/axios';
 import './committee.scss';
 
-function CommitteeTable() {
+function CommitteTable() {
     const [topics, setTopics] = useState([]);
     const [criterias, setCriterias] = useState([]);
-    const [detail, setDetail] = useState();
+    const [detail, setDetail] = useState(null);
     const [scores, setScores] = useState({});
     const [review, setReview] = useState({});
-    const userToken = getTokenFromUrlAndSaveToStorage();
     const [subjectIdDetail, setSubjectIdDetail] = useState(null);
     const [subjectId, setSubjectId] = useState(null);
+    const userToken = getTokenFromUrlAndSaveToStorage();
 
     useEffect(() => {
         if (userToken) {
@@ -25,6 +25,50 @@ function CommitteeTable() {
             detailTopic();
         }
     }, [subjectIdDetail]);
+
+    const listTopic = () => {
+        axiosInstance.get('/lecturer/council/listCouncil', {
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+            }
+        })
+            .then(response => {
+                setTopics(response.data.body?.council || []);
+                console.log("Topic:", response.data)
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    };
+
+    const detailTopic = () => {
+        axiosInstance.get(`/lecturer/council/detail/${subjectIdDetail}`, {
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+            }
+        })
+            .then(response => {
+                setDetail(response.data.body || null);
+                console.log("Detail: ", response.data);
+            })
+            .catch(error => {
+                console.error('Lỗi lấy chi tiết:', error);
+            });
+    };
+
+    const listCriteria = () => {
+        axiosInstance.get('/lecturer/council/listCriteria', {
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+            }
+        })
+            .then(response => {
+                setCriterias(response.data.body || []);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    };
 
     const handleScoreChange = (studentId, criteriaKey, value) => {
         setScores(prevScores => ({
@@ -40,89 +84,44 @@ function CommitteeTable() {
         }));
     };
 
-    const listTopic = () => {
-        axiosInstance.get('/lecturer/council/listCouncil', {
-            headers: {
-                'Authorization': `Bearer ${userToken}`,
-            }
-        })
-            .then(response => {
-                console.log("Danh sách đề tài: ", response.data.body);
-                setTopics(response.data.body.subjects);
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    };
-
-    const detailTopic = () => {
-        console.log("ID: ", subjectIdDetail);
-        axiosInstance.get(`/lecturer/council/detail/${subjectIdDetail}`, {
-            headers: {
-                'Authorization': `Bearer ${userToken}`,
-            }
-        })
-            .then(response => {
-                console.log("Chi tiết:", response.data);
-                setDetail(response.data.body);
-            })
-            .catch(error => {
-                console.error('Lỗi lấy chi tiết:', error);
-            });
-    };
-
-    const listCriteria = () => {
-        axiosInstance.get('/lecturer/council/listCriteria', {
-            headers: {
-                'Authorization': `Bearer ${userToken}`,
-            }
-        })
-            .then(response => {
-                console.log("Tiêu chí: ", response.data);
-                setCriterias(response.data.body);
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    };
-
     const calculateTotalScore = (studentId) => {
         let totalScore = 0;
         criterias.forEach(criteria => {
             const score = parseFloat(scores[`${studentId}_${criteria.criteriaName}`]) || 0;
             totalScore += score;
         });
-        return totalScore.toFixed(2); // Làm tròn tổng điểm đến 2 chữ số thập phân
+        return totalScore.toFixed(2);
     };
 
     const submitEvaluation = async () => {
         try {
-            console.log("student1: " + detail.subject.student1);
             const evaluationData = {
                 studentId1: detail.subject.student1,
-                studentId2: detail.subject.student2,
-                studentId3: detail.subject.student3,
+                studentId2: detail.subject.student2 || null,
+                studentId3: detail.subject.student3 || null,
                 scoreStudent1: parseFloat(calculateTotalScore(detail.subject.student1)),
                 scoreStudent2: detail.subject.student2 ? parseFloat(calculateTotalScore(detail.subject.student2)) : null,
                 scoreStudent3: detail.subject.student3 ? parseFloat(calculateTotalScore(detail.subject.student3)) : null,
-                reviewStudent1: review[detail.subject.student1] || null,
-                reviewStudent2: detail.subject.student2 ? (review[detail.subject.student2] || null) : null,
-                reviewStudent3: detail.subject.student3 ? (review[detail.subject.student3] || null) : null,
+                reviewStudent1: review[detail.subject.student1] || '',
+                reviewStudent2: detail.subject.student2 ? (review[detail.subject.student2] || '') : null,
+                reviewStudent3: detail.subject.student3 ? (review[detail.subject.student3] || '') : null,
             };
 
-            console.log("Data to Submit: ", evaluationData);
+            console.log("Sending evaluation data: ", evaluationData);
+
             const response = await axiosInstance.post(`/lecturer/council/evaluation-scoring/${subjectId}`, evaluationData, {
                 headers: {
                     'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
-                    'Content-Type': 'multipart/form-data',
+                    'Content-Type': 'multipart/form-data', // Ensure the correct content type
                 }
             });
 
             console.log("Đánh giá và tính điểm thành công: ", response.data);
         } catch (error) {
-            console.error("Lỗi khi đánh giá và tính điểm: ", error);
+            console.error("Lỗi khi đánh giá và tính điểm: ", error.response?.data || error.message);
         }
     };
+
 
     return (
         <div style={{ margin: '20px' }}>
@@ -141,28 +140,33 @@ function CommitteeTable() {
                         </tr>
                     </thead>
                     <tbody>
-                        {topics.map((item, index) => (
-                            <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>{item.subjectName}</td>
-                                <td>{item.instructorId?.person?.firstName + ' ' + item.instructorId?.person?.lastName}</td>
-                                <td>{item.thesisAdvisorId?.person?.firstName + ' ' + item.thesisAdvisorId?.person?.lastName}</td>
-                                <td>{item.student1}</td>
-                                <td>{item.student2}</td>
-                                <td>{item.student3}</td>
-                                <td>
-                                    <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                                        onClick={() => {
-                                            setDetail(item.subjectId);
-                                            setSubjectIdDetail(item.subjectId);
-                                            setSubjectId(item.subjectId);
-                                        }}>
-                                        Đánh giá
-                                    </button>
-                                </td>
-                                <td style={{ display: 'none' }}>{item.subjectId}</td>
+                        {topics.length === 0 ? (
+                            <tr>
+                                <td colSpan="8" className="text-center">Không có dữ liệu</td>
                             </tr>
-                        ))}
+                        ) : (
+                            topics.map((item, index) => (
+                                <tr key={index}>
+                                    <td>{index + 1}</td>
+                                    <td>{item.subject.subjectName}</td>
+                                    <td>{item.subject?.instructorId?.person?.firstName} {item.subject?.instructorId?.person?.lastName}</td>
+                                    <td>{item.subject?.thesisAdvisorId?.person?.firstName} {item.subject?.thesisAdvisorId?.person?.lastName}</td>
+                                    <td>{item.subject?.student1}</td>
+                                    <td>{item.subject?.student2}</td>
+                                    <td>{item.subject?.student3}</td>
+                                    <td>
+                                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                            onClick={() => {
+                                                setDetail(item.subject);
+                                                setSubjectIdDetail(item.councilId);
+                                                setSubjectId(item.councilId);
+                                            }}>
+                                            Đánh giá
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -177,41 +181,41 @@ function CommitteeTable() {
                         <div className="modal-body">
                             {detail && detail.subject ? (
                                 <>
-                                    <h5>Thông tin đề tài</h5>
+                                    <h5 style={{ color: '#4477CE' }}>Thông tin đề tài</h5>
                                     <div>
                                         <table className="table table-bordered">
                                             <tbody>
                                                 <tr>
                                                     <td className="table-key">1. Tên đề tài:</td>
-                                                    <td className="table-value">{detail?.subject?.subjectName}</td>
+                                                    <td className="table-value">{detail.subject.subjectName}</td>
                                                 </tr>
                                                 <tr>
                                                     <td className="table-key">2. Loại đề tài:</td>
-                                                    <td className="table-value">{detail?.subject?.typeSubject?.typeName}</td>
+                                                    <td className="table-value">{detail.subject.typeSubject.typeName}</td>
                                                 </tr>
                                                 <tr>
                                                     <td className="table-key">3. Chuyên ngành:</td>
-                                                    <td className="table-value">{detail?.subject?.major}</td>
+                                                    <td className="table-value">{detail.subject.major}</td>
                                                 </tr>
                                                 <tr>
                                                     <td className="table-key">4. Giảng viên hướng dẫn:</td>
-                                                    <td className="table-value">{detail?.subject?.instructorId?.person?.firstName + ' ' + detail.subject?.instructorId?.person?.lastName}</td>
+                                                    <td className="table-value">{detail.subject.instructorId.person.firstName} {detail.subject.instructorId.person.lastName}</td>
                                                 </tr>
                                                 <tr>
                                                     <td className="table-key">5. Giảng viên phản biện:</td>
-                                                    <td className="table-value">{detail?.subject?.thesisAdvisorId?.person?.firstName + ' ' + detail.subject?.thesisAdvisorId?.person?.lastName}</td>
+                                                    <td className="table-value">{detail.subject.thesisAdvisorId.person.firstName} {detail.subject.thesisAdvisorId.person.lastName}</td>
                                                 </tr>
                                                 <tr>
                                                     <td className="table-key">6. Yêu cầu:</td>
-                                                    <td className="table-value">{detail?.subject?.requirement}</td>
+                                                    <td className="table-value">{detail.subject.requirement}</td>
                                                 </tr>
                                                 <tr>
                                                     <td className="table-key">7. Danh sách thành viên:</td>
                                                     <td className="table-value">
                                                         <ul>
-                                                            <li>Sinh viên 1: {detail?.subject?.student1}</li>
-                                                            <li>Sinh viên 2: {detail?.subject?.student2}</li>
-                                                            <li>Sinh viên 3: {detail?.subject?.student3}</li>
+                                                            <li>Sinh viên 1: {detail.subject.student1}</li>
+                                                            <li>Sinh viên 2: {detail.subject.student2}</li>
+                                                            <li>Sinh viên 3: {detail.subject.student3}</li>
                                                         </ul>
                                                     </td>
                                                 </tr>
@@ -219,7 +223,7 @@ function CommitteeTable() {
                                         </table>
                                     </div>
                                     <hr />
-                                    <h5>Tiêu chí đánh giá</h5>
+                                    <h5 style={{ color: '#4477CE' }}>Tiêu chí đánh giá</h5>
                                     <table className='table-bordered table criteria-table'>
                                         <thead>
                                             <tr>
@@ -284,7 +288,7 @@ function CommitteeTable() {
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
                                 Đóng
                             </button>
-                            <button type="button" className="btn btn-primary"data-bs-dismiss="modal" onClick={submitEvaluation}>
+                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={submitEvaluation}>
                                 Xác nhận
                             </button>
                         </div>
@@ -295,4 +299,4 @@ function CommitteeTable() {
     );
 }
 
-export default CommitteeTable;
+export default CommitteTable;
