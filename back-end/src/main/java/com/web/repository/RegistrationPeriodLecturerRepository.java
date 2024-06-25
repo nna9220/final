@@ -24,6 +24,6 @@ public interface RegistrationPeriodLecturerRepository extends JpaRepository<Regi
 
     @Modifying
     @Transactional
-    @Query("UPDATE RegistrationPeriodLectuer t SET t.status = true WHERE t.status = false AND t.registrationTimeEnd >= :currentDate and t.registrationTimeStart <= current date")
+    @Query("UPDATE RegistrationPeriodLectuer t SET t.status = true WHERE t.status = false AND t.registrationTimeEnd >= :currentDate and t.registrationTimeStart <= :currentDate ")
     void turnOnStatusOfStudent(LocalDateTime currentDate);
 }

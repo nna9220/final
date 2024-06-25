@@ -35,8 +35,10 @@ function DataTableTopicSuccess() {
         }
     };
 
+
     const loadCouncilDetails = async (subjectId) => {
         console.log("id", subjectId);
+        console.log(userToken);
         try {
             const response = await axiosInstance.get(`/head/council/detail/${subjectId}`, {
                 headers: {
@@ -50,11 +52,34 @@ function DataTableTopicSuccess() {
             setRole2(councilDetails.role2);
             setTime(councilDetails.time);
             setAddress(councilDetails.address);
-            console.log("Detaillllllllll: ", response.data);
+            console.log("Details: ", response.data);
         } catch (error) {
-            console.error('Error fetching council details:', error);
+            if (error.response) {
+                
+                console.error('Error fetching council details:', error.response.status);
+                switch (error.response.status) {
+                    case 404:
+                        console.log('Subject not found.');
+                        break;
+                    case 417:
+                        console.log('Expectation failed: Council not found for the subject.');
+                        break;
+                    case 500:
+                        console.log('Internal server error. Please try again later.');
+                        break;
+                    default:
+                        console.log('An error occurred. Please try again.');
+                }
+            } else if (error.request) {
+                console.error('No response received:', error.request);
+                console.log('No response from the server. Please check your network.');
+            } else {
+                console.error('Error setting up the request:', error.message);
+                console.log('An error occurred. Please try again.');
+            }
         }
     };
+
 
     function convertDateTime(dateTimeString) {
         const parts = dateTimeString.split('T');

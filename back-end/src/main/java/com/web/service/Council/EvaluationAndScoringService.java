@@ -134,21 +134,25 @@ public class EvaluationAndScoringService {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
-            Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            Council existedCouncil = councilRepository.findById(id).orElse(null);
-            if (existedCouncil!=null){
-                //Tìm list CouncilLecturer thông qua council:
-                List<CouncilLecturer> councilLecturers = councilLecturerRepository.getListCouncilLecturerByCouncil(existedCouncil);
-                List<Lecturer> lecturers = new ArrayList<>();
-                for (CouncilLecturer c:councilLecturers) {
-                    lecturers.add(c.getLecturer());
+            Subject existedSubject = subjectRepository.findById(id).orElse(null);
+            if (existedSubject!=null){
+                Council existedCouncil = councilRepository.getCouncilBySubject(existedSubject);
+                if (existedCouncil!=null){
+                    List<CouncilLecturer> councilLecturers = councilLecturerRepository.getListCouncilLecturerByCouncil(existedCouncil);
+                    Map<String,Object> response = new HashMap<>();
+                    response.put("subject",existedSubject);
+                    List<Lecturer> lecturers = new ArrayList<>();
+                    for (CouncilLecturer c:councilLecturers) {
+                        lecturers.add(c.getLecturer());
+                    }
+                    response.put("council",existedCouncil);
+                    response.put("councilLecturer",councilLecturers);
+                    response.put("listLecturerOfCouncil", lecturers);
+                    return new ResponseEntity<>(response,HttpStatus.OK);
+                }else {
+                    //mã 417
+                    return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
                 }
-                Map<String,Object> response = new HashMap<>();
-                response.put("council", existedCouncil);
-                response.put("listLecturer",lecturers);
-                response.put("subject",existedCouncil.getSubject());
-                response.put("criteria",existedCouncil.getSubject().getCriteria());
-                return new ResponseEntity<>(response,HttpStatus.OK);
             }else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }

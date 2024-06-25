@@ -4,7 +4,6 @@ import com.web.entity.TypeSubject;
 import com.web.exception.NotFoundException;
 import com.web.entity.Subject;
 import com.web.mapper.SubjectMapper;
-import com.web.dto.response.SubjectResponse;
 import com.web.repository.SubjectRepository;
 import com.web.repository.TypeSubjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;

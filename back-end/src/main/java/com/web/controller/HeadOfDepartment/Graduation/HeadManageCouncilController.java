@@ -40,7 +40,8 @@ public class HeadManageCouncilController {
     private CouncilRepository councilRepository;
     @Autowired
     private PersonRepository personRepository;
-    private final TokenUtils tokenUtils;
+    @Autowired
+    private TokenUtils tokenUtils;
     @Autowired
     public HeadManageCouncilController(TokenUtils tokenUtils){
         this.tokenUtils = tokenUtils;

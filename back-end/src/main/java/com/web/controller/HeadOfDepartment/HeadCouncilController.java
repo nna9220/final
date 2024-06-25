@@ -22,25 +22,21 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/head/council")
-@RequiredArgsConstructor
 public class HeadCouncilController {
     @Autowired
-    private UserUtils userUtils;
-    @Autowired
     private CouncilLecturerRepository councilLecturerRepository;
+
     @Autowired
-    private LecturerRepository lecturerRepository;
+    private SubjectRepository subjectRepository;
+
     @Autowired
     private CouncilRepository councilRepository;
-    @Autowired
-    private PersonRepository personRepository;
-    private final TokenUtils tokenUtils;
+
     @Autowired
     private EvaluationAndScoringService evaluationAndScoringService;
     @Autowired
     private TypeSubjectRepository typeSubjectRepository;
-    @Autowired
-    private SubjectRepository subjectRepository;
+
     @Autowired
     private ManageCouncilService manageCouncilService;
     @Autowired
@@ -136,14 +132,13 @@ public class HeadCouncilController {
         }
     }
 
-    @GetMapping("/detail/{subjectId}")
+
+
+    @GetMapping("/detailSubject/{subjectId}")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
     private ResponseEntity<Map<String,Object>> getDetailSubjectCouncilLecturer(@RequestHeader("Authorization") String authorizationHeader,
                                                                                @PathVariable int subjectId){
         try {
-            String token = tokenUtils.extractToken(authorizationHeader);
-            Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-            Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
             if (existedSubject!=null){
                 Council existedCouncil = councilRepository.getCouncilBySubject(existedSubject);

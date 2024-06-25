@@ -35,6 +35,7 @@ com\web\mapper\PersonMapperImpl.class
 com\web\config\TokenUtils.class
 com\web\controller\Student\Graduation\StudentAddTaskGraduationController.class
 com\web\controller\admin\TimeAddSubjectHeadController.class
+com\web\repository\ExpiredTokenRepository.class
 com\web\entity\Contact.class
 com\web\utils\FileFactory.class
 com\web\controller\Student\StudentManageEssayController.class
@@ -82,16 +83,19 @@ com\web\controller\admin\NotificationController.class
 com\web\entity\EvaluationCriteria.class
 com\web\entity\Task.class
 com\web\entity\Authority.class
+com\web\entity\ExpiredToken.class
 com\web\controller\HeadOfDepartment\HeadCouncilController.class
 com\web\dto\request\StudentRequest.class
 com\web\config\DatabaseConfiguration.class
 com\web\controller\admin\TypeSubjectController.class
 com\web\controller\Student\StudentRegisterTopic.class
 com\web\dto\TokenDto.class
+com\web\entity\ScoreEssay.class
 com\web\config\WebConfig.class
 com\web\controller\Lecturer\LecturerRegisterTopicController.class
 com\web\exception\SuccessMessage.class
 com\web\controller\HomeController.class
+com\web\repository\CouncilLecturerRepository.class
 com\web\service\Admin\SchoolYearService.class
 com\web\config\PasswordConfig.class
 com\web\dto\response\FileResponse.class
@@ -99,6 +103,7 @@ com\web\mapper\SchoolYearMapper.class
 com\web\controller\Lecturer\Graduation\LecturerRegisterGraduationTopicController.class
 com\web\dto\UserDto.class
 com\web\mapper\SchoolYearMapperImpl.class
+com\web\service\StatusUpdateService.class
 com\web\repository\TimeAddSubjectHeadRepository.class
 com\web\utils\CommonPage.class
 com\web\controller\HeadOfDepartment\Graduation\CRUDCriteriaGraduationController.class
@@ -117,6 +122,7 @@ com\web\controller\HeadOfDepartment\HomeHeadController.class
 com\web\mapper\LecturerMapperImpl.class
 com\web\controller\Lecturer\LecturerManageTutorialSubjectController.class
 com\web\controller\admin\LecturerController.class
+com\web\service\AuthService.class
 com\web\config\JwtUtils.class
 com\web\entity\ResultGraduation.class
 com\web\repository\TaskRepository.class
@@ -146,6 +152,7 @@ com\web\dto\response\SchoolYearResponse.class
 com\web\mapper\SubjectMapper.class
 com\web\exception\ErrorResponse$ErrorResponseBuilder.class
 com\web\controller\HeadOfDepartment\Graduation\HeadManagerTopicGraduationController.class
+com\web\service\Council\CouncilCreationService.class
 com\web\config\CorsConfig.class
 com\web\service\Admin\NotificationService.class
 com\web\entity\Council.class
@@ -162,10 +169,12 @@ com\web\service\Admin\StudentClassService.class
 com\web\repository\PersonRepository.class
 com\web\dto\request\NotificationRequest.class
 com\web\service\Lecturer\ThesisBrowseSubjectToCouncil.class
+com\web\repository\ScoreEssayRepository.class
 com\web\controller\admin\RegistrationPeriodController.class
 com\web\repository\TimeBrowseHeadRepository.class
 com\web\config\OAuth2AuthenticationSuccessHandler.class
 com\web\service\Student\ManageSubjectService.class
+com\web\entity\CouncilLecturer.class
 com\web\controller\ContactController.class
 com\web\mapper\LecturerMapper.class
 com\web\utils\CellConfig.class
@@ -178,6 +187,7 @@ com\web\entity\Comment.class
 com\web\repository\EvaluationCriteriaRepository.class
 com\web\KhungggApplication.class
 com\web\exception\BaseException.class
+com\web\service\Admin\ImportStudentCheckRegister.class
 com\web\utils\MailService.class
 com\web\entity\StudentClass.class
 com\web\service\MailServiceImpl.class

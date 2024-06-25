@@ -1,8 +1,6 @@
 package com.web.controller.Lecturer;
 
 import com.web.config.TokenUtils;
-import com.web.entity.Student;
-import com.web.entity.Subject;
 import com.web.entity.TypeSubject;
 import com.web.repository.LecturerRepository;
 import com.web.repository.SubjectRepository;
