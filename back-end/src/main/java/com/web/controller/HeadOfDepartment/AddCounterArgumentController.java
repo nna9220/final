@@ -374,9 +374,17 @@ public class AddCounterArgumentController {
                         //Gửi mail cho Hội đồng - SV
                         List<String> emailPerson = new ArrayList<>();
                         emailPerson.add(existLecturer.getPerson().getUsername());
+                        List<Person> personList = new ArrayList<>();
+                        for (String s:emailPerson) {
+                            Person p = personRepository.findUsername(s);
+                            if (p!=null){
+                                personList.add(p);
+                            }
+                        }
                         mailService.sendMailToPerson(emailPerson,subject,messenger);
                         Notification notification = new Notification();
                         LocalDateTime now = LocalDateTime.now();
+                        notification.setPersons(personList);
                         notification.setDateSubmit(now);
                         notification.setTitle(subject);
                         notification.setContent(messenger);

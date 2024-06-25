@@ -35,8 +35,11 @@ public class StatusUpdateService {
     public void updateExpiredStatuses() {
         LocalDateTime currentDate = LocalDateTime.now();
         timeBrowsOfHeadRepository.updateStatusOfPreviousRegistrations(currentDate);
+        timeBrowsOfHeadRepository.turnOnStatusOfPreviousRegistrations(currentDate);
         registrationPeriodRepository.updateStatusOfStudent(currentDate);
+        registrationPeriodRepository.turnOnStatusOfStudent(currentDate);
         registrationPeriodLecturerRepository.updateStatusOfLecturer(currentDate);
+        registrationPeriodLecturerRepository.turnOnStatusOfStudent(currentDate);
     }
 
 /*    @Transactional

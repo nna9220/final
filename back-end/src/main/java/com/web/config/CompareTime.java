@@ -6,7 +6,9 @@ import java.sql.Date;
 import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public class CompareTime {
@@ -102,22 +104,17 @@ public class CompareTime {
 
     public static boolean isCurrentTimeInCouncilTime(Council council) {
         if (council != null) {
-            LocalDateTime timeReport = council.getTimeReport();
-            if (timeReport != null) {
-                LocalDateTime currentTime = LocalDateTime.now(); // Lấy thời gian hiện tại
-                System.out.println("Current time: " + currentTime);
-                System.out.println("Council timeReport: " + timeReport);
+            LocalDate currentDate = LocalDate.now();
+            LocalTime currentTime = LocalTime.now();
 
-                // So sánh thời gian hiện tại với thời gian trong Council
-                return currentTime.isAfter(timeReport); // Trả về true nếu thời gian hiện tại sau thời gian trong Council
-            } else {
-                System.err.println("Council timeReport is null");
-                return false; // Hoặc có thể trả về giá trị mặc định khác
+            // Kiểm tra ngày hiện tại và thời gian hiện tại nằm trong khoảng thời gian của council
+            if (currentDate.equals(council.getDate())) {
+                return currentTime.isAfter(council.getStart()) && currentTime.isBefore(council.getEnd());
             }
         }
-        System.err.println("Council is null");
-        return false; // Trả về false nếu Council là null
+        return false;
     }
+
 
     //Check time của a nằm sau time của b - Admin - Quản lý đợt đăng ký đề taì (Thời gian SV sau GV, Thời gian Duyệt sau ĐK - Dành cho LocalDateTime)
     public static boolean isStartAfter(List<TimeBrowsOfHead> timeBrowsOfHeads, LocalDateTime start) {

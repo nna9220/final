@@ -53,6 +53,13 @@ public class Person {
     private String image;
 
 
+    public Person(String personId, String username, String password, Authority authorities) {
+        this.personId = personId;
+        this.username = username;
+        this.password = password;
+        this.authorities = authorities;
+    }
+
     @Column(name="gender")
     private boolean gender;
 
@@ -76,6 +83,14 @@ public class Person {
     @ManyToOne
     @JoinColumn(name = "authority_name")
     private Authority authorities;
+
+    @ManyToMany
+    @JoinTable(
+            name = "person_notification",
+            joinColumns = @JoinColumn(name = "person_id"),
+            inverseJoinColumns = @JoinColumn(name = "notification_id")
+    )
+    private List<Notification> notifications;
 
 }
 
