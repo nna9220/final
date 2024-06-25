@@ -22,21 +22,25 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/head/council")
+@RequiredArgsConstructor
 public class HeadCouncilController {
     @Autowired
-    private CouncilLecturerRepository councilLecturerRepository;
-
+    private UserUtils userUtils;
     @Autowired
-    private SubjectRepository subjectRepository;
-
+    private CouncilLecturerRepository councilLecturerRepository;
+    @Autowired
+    private LecturerRepository lecturerRepository;
     @Autowired
     private CouncilRepository councilRepository;
-
+    @Autowired
+    private PersonRepository personRepository;
+    private final TokenUtils tokenUtils;
     @Autowired
     private EvaluationAndScoringService evaluationAndScoringService;
     @Autowired
     private TypeSubjectRepository typeSubjectRepository;
-
+    @Autowired
+    private SubjectRepository subjectRepository;
     @Autowired
     private ManageCouncilService manageCouncilService;
     @Autowired
@@ -79,7 +83,18 @@ public class HeadCouncilController {
             throw new ExceptionInInitializerError(e);
         }
     }
-    @GetMapping("/detail/{id}")
+    @GetMapping("/detailSubject/{id}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
+    public ResponseEntity<?> detailSubject(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader){
+        try {
+            return new ResponseEntity<>(evaluationAndScoringService.detailSubjectLecturerCouncil(authorizationHeader,id),HttpStatus.OK);
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    @GetMapping("/detailCouncil/{id}")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> detailCouncil(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader){
         try {
@@ -92,28 +107,24 @@ public class HeadCouncilController {
 
     @PostMapping("/evaluation-scoring/{id}")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
-    public ResponseEntity<?> evaluationAndScoring(@PathVariable int id,
-                                                  @RequestHeader("Authorization") String authorizationHeader,
+    public ResponseEntity<?> evaluationAndScoring(@PathVariable int id,@RequestHeader("Authorization") String authorizationHeader,
                                                   @RequestParam("studentId1") String studentId1,
                                                   @RequestParam(value = "studentId2", required = false) String studentId2,
                                                   @RequestParam(value = "studentId3", required = false) String studentId3,
                                                   @RequestParam("scoreStudent1") Double score1,
-                                                  @RequestParam(value = "scoreStudent2", required = false) Double score2,
-                                                  @RequestParam(value = "scoreStudent3", required = false) Double score3,
+                                                  @RequestParam(value = "scoreStudent2",required = false) Double score2,
+                                                  @RequestParam(value = "scoreStudent3",required = false) Double score3,
                                                   @RequestParam("reviewStudent1") String review1,
-                                                  @RequestParam(value = "reviewStudent2", required = false) String review2,
-                                                  @RequestParam(value = "reviewStudent3", required = false) String review3) {
+                                                  @RequestParam(value = "reviewStudent2",required = false) String review2,
+                                                  @RequestParam(value = "reviewStudent3", required = false) String review3){
         try {
-            // Ensure score2 and score3 are handled properly
-            Double finalScore2 = (score2 != null) ? score2 : null;
-            Double finalScore3 = (score3 != null) ? score3 : null;
-
-            return new ResponseEntity<>(evaluationAndScoringService.evaluationAndScoringEssay(authorizationHeader, id, studentId1, studentId2, studentId3, review1, review2, review3, score1, finalScore2, finalScore3), HttpStatus.OK);
-        } catch (Exception e) {
-            System.err.println("Error during evaluation and scoring: " + e);
-            return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(evaluationAndScoringService.evaluationAndScoringEssay(authorizationHeader,id,studentId1,studentId2,studentId3,review1,review2,review3,score1,score2,score3),HttpStatus.OK);
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
         }
     }
+
 
     @PostMapping("/editCouncilEssay/{id}")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
