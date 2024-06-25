@@ -9,7 +9,7 @@ function Home() {
                 <title>Trang Chủ</title>
             </Helmet>
             <div class="card text-bg-white">
-                <img src="/assets/Home_logo.jpg" class="card-img" alt="..." style={{width:'100%', height:'50%'}}/>
+                <img src="/assets/Home_logo.jpg" class="card-img" alt="..." style={{ width: '100%', height: '50%' }} />
                 <hr></hr>
                 <div className='homecontainer' style={{ display: 'grid', placeItems: 'center', textAlign: 'center', alignItems: 'center' }}>
                     <div className='items' style={{ display: 'flex', marginBottom: '3vw', marginTop: '3vw', alignItems: 'center', justifyContent: 'space-between', }}>

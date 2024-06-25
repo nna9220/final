@@ -1,9 +1,7 @@
 package com.web.controller;
 
 import com.web.dto.response.LecturerResponse;
-import com.web.dto.response.SubjectResponse;
 import com.web.entity.Lecturer;
-import com.web.entity.Person;
 import com.web.entity.Subject;
 import com.web.entity.TypeSubject;
 import com.web.mapper.LecturerMapper;
@@ -18,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 

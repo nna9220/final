@@ -3,7 +3,6 @@ package com.web.controller.Lecturer;
 import com.web.entity.TypeSubject;
 import com.web.repository.SubjectRepository;
 import com.web.repository.TypeSubjectRepository;
-import com.web.service.HeaderOdDepartment.BrowseSubjectToThesisService;
 import com.web.service.Lecturer.ThesisBrowseSubjectToCouncil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

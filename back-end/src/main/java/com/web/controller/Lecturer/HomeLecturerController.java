@@ -1,32 +1,21 @@
 package com.web.controller.Lecturer;
 
 import com.web.config.CheckRole;
-import com.web.config.JwtUtils;
 import com.web.config.TokenUtils;
-import com.web.dto.request.PersonRequest;
 import com.web.entity.*;
-import com.web.exception.NotFoundException;
 import com.web.repository.LecturerRepository;
 import com.web.repository.PersonRepository;
 import com.web.repository.SubjectRepository;
 import com.web.repository.TypeSubjectRepository;
 import com.web.service.Admin.PersonService;
-import com.web.utils.Contains;
 import com.web.utils.UserUtils;
-import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
-import javax.persistence.Access;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController

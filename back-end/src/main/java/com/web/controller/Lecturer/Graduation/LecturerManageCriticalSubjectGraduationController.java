@@ -10,7 +10,6 @@ import com.web.repository.LecturerRepository;
 import com.web.repository.PersonRepository;
 import com.web.repository.SubjectRepository;
 import com.web.repository.TypeSubjectRepository;
-import com.web.service.HeaderOdDepartment.BrowseSubjectToThesisService;
 import com.web.service.Lecturer.ThesisBrowseSubjectToCouncil;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;

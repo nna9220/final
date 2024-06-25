@@ -20,10 +20,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -328,6 +325,32 @@ public class ManageCouncilService {
         String subjectMail = "CẬP NHẬT HỘI ĐỒNG PHẢN BIỆN ĐỀ TÀI " + council.getSubject().getSubjectName();
         String message = "Đã cập nhật hội đồng phản biện đề tài: " + council.getSubject().getSubjectName();
         mailService.sendMailToPerson(emailList, subjectMail, message);
+    }
+
+
+    public ResponseEntity<Map<String,Object>> getDetailSubject(int subjectId){
+        Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
+        if (existedSubject!=null){
+            Council existedCouncil = councilRepository.getCouncilBySubject(existedSubject);
+            if (existedCouncil!=null){
+                List<CouncilLecturer> councilLecturers = councilLecturerRepository.getListCouncilLecturerByCouncil(existedCouncil);
+                Map<String,Object> response = new HashMap<>();
+                response.put("subject",existedSubject);
+                List<Lecturer> lecturers = new ArrayList<>();
+                for (CouncilLecturer c:councilLecturers) {
+                    lecturers.add(c.getLecturer());
+                }
+                response.put("council",existedCouncil);
+                response.put("councilLecturer",councilLecturers);
+                response.put("listLecturerOfCouncil", lecturers);
+                return new ResponseEntity<>(response,HttpStatus.OK);
+            }else {
+                //mã 417
+                return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+            }
+        }else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
 }
