@@ -42,6 +42,18 @@ public class HeadCouncilController {
         }
     }
 
+    @GetMapping("/listCouncil")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
+    public ResponseEntity<?> getListSubject(@RequestHeader("Authorization") String authorizationHeader){
+        try {
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            return new ResponseEntity<>(manageCouncilService.getListSubject(authorizationHeader,typeSubject), HttpStatus.OK);
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
     @GetMapping("/listCriteria")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> getListCriteria(@RequestHeader("Authorization") String authorizationHeader){
@@ -66,24 +78,28 @@ public class HeadCouncilController {
 
     @PostMapping("/evaluation-scoring/{id}")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
-    public ResponseEntity<?> evaluationAndScoring(@PathVariable int id,@RequestHeader("Authorization") String authorizationHeader,
+    public ResponseEntity<?> evaluationAndScoring(@PathVariable int id,
+                                                  @RequestHeader("Authorization") String authorizationHeader,
                                                   @RequestParam("studentId1") String studentId1,
                                                   @RequestParam(value = "studentId2", required = false) String studentId2,
                                                   @RequestParam(value = "studentId3", required = false) String studentId3,
                                                   @RequestParam("scoreStudent1") Double score1,
-                                                  @RequestParam(value = "scoreStudent2",required = false) Double score2,
-                                                  @RequestParam(value = "scoreStudent3",required = false) Double score3,
+                                                  @RequestParam(value = "scoreStudent2", required = false) Double score2,
+                                                  @RequestParam(value = "scoreStudent3", required = false) Double score3,
                                                   @RequestParam("reviewStudent1") String review1,
-                                                  @RequestParam(value = "reviewStudent2",required = false) String review2,
-                                                  @RequestParam(value = "reviewStudent3", required = false) String review3){
+                                                  @RequestParam(value = "reviewStudent2", required = false) String review2,
+                                                  @RequestParam(value = "reviewStudent3", required = false) String review3) {
         try {
-            return new ResponseEntity<>(evaluationAndScoringService.evaluationAndScoringEssay(authorizationHeader,id,studentId1,studentId2,studentId3,review1,review2,review3,score1,score2,score3),HttpStatus.OK);
-        }catch (Exception e){
-            System.err.println("Initial SessionFactory creation failed." + e);
-            throw new ExceptionInInitializerError(e);
+            // Ensure score2 and score3 are handled properly
+            Double finalScore2 = (score2 != null) ? score2 : null;
+            Double finalScore3 = (score3 != null) ? score3 : null;
+
+            return new ResponseEntity<>(evaluationAndScoringService.evaluationAndScoringEssay(authorizationHeader, id, studentId1, studentId2, studentId3, review1, review2, review3, score1, finalScore2, finalScore3), HttpStatus.OK);
+        } catch (Exception e) {
+            System.err.println("Error during evaluation and scoring: " + e);
+            return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
     @PostMapping("/editCouncilEssay/{id}")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")

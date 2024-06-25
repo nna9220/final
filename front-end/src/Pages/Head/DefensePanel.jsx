@@ -8,13 +8,18 @@ import { NotificationContext } from './NotificationContext';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
 import { Navigate} from 'react-router-dom';
+import DataTableTopicSuccessKL from '../../components/TableOfHead/DefensePanel/DataTableTopicSuccessKL'
 
 function DefensePanel() {
     useEffect(() => {
         document.title = "Lập hội đồng";
     }, []);
     const { notifications, unreadCount } = useContext(NotificationContext);
-
+    const [selectedTitle, setSelectedTitle] = useState("Tiểu luận chuyên ngành");
+    const handleDropdownChange = (e) => {
+        setSelectedTitle(e.target.value);
+    };
+    <Navbar unreadCount={unreadCount} />
     const [authorized, setAuthorized] = useState(true);
 
     useEffect(() => {
@@ -64,13 +69,37 @@ function DefensePanel() {
         <div className='homeHead'>
             <SidebarHead />
             <div className='context'>
-            <Navbar unreadCount={unreadCount} />
+                <Navbar></Navbar>
                 <hr></hr>
                 <div className='context-menu'>
                     <div className='context-title'>
-                        <h3 className='title-re'>HỘI ĐỒNG BÁO CÁO</h3>
+                        <div className='title-re'>
+                            <h3>LẬP HỘI ĐỒNG</h3>
+                        </div>
                     </div>
-                    <DataTableTopicSuccess/>
+                    <div className='context-nd'>
+                        <div className='card-nd'>
+                            <label htmlFor="selectTitle" style={{ marginTop: '20px', marginLeft: '30px' }}>Chọn loại đề tài</label>
+                            <div className="dropdown">
+                                <select id="selectTitle" className="form-se" aria-label="Default select example" onChange={handleDropdownChange}>
+                                    <option className='optionSe' value="Tiểu luận chuyên ngành">Tiểu luận chuyên ngành</option>
+                                    <option className='optionSe' value="Khóa luận tốt nghiệp">Khóa luận tốt nghiệp</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className='context-nd' style={{ marginTop: '30px' }}>
+                        <div className="form-title">
+                            <span>{selectedTitle}</span>
+                            <hr className="line" />
+                        </div>
+                        <div className='card-nd-topicPB' style={{ display: 'block' }}>
+                            <div className='table-items-topicPB'>
+                                {selectedTitle === "Tiểu luận chuyên ngành" ? <DataTableTopicSuccess /> : <DataTableTopicSuccessKL />}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

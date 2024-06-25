@@ -31,6 +31,8 @@ public class ManageCouncilService {
     @Autowired
     private CouncilRepository councilRepository;
     @Autowired
+    private CouncilLecturerRepository councilLecturerRepository;
+    @Autowired
     private ResultGraduationRepository resultGraduationRepository;
     @Autowired
     private PersonRepository personRepository;

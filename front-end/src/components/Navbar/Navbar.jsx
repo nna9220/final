@@ -37,9 +37,6 @@ function Navbar({ unreadCount }) {
       <div className='navbarRe'>
         <div className='wrapper'>
           <div className='items'>
-            <div className='item' onClick={toggleDarkMode}>
-              {isDarkMode ? <Brightness7OutlinedIcon className='icon' /> : <DarkModeOutlinedIcon className='icon' />}
-            </div>
             <button className="btn position-relative item">
               <NotificationsNoneOutlinedIcon className='icon-noti' />
               {unreadCount > 0 && (
