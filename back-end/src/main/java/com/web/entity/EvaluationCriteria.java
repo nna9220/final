@@ -42,7 +42,7 @@ public class EvaluationCriteria {
     @JsonIgnore
     private List<ResultGraduation> resultGraduations;
 
-    @ManyToMany(mappedBy = "criteria")
+    @ManyToMany(mappedBy = "criteria", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonBackReference
     private Set<Subject> subjects = new HashSet<>();
 }
