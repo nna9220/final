@@ -157,6 +157,37 @@ public class EvaluationAndScoringService {
         }
     }
 
+    public ResponseEntity<Map<String,Object>> detailSubjectLecturerCouncil(String authorizationHeader, int id){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+            Subject existedSubject = subjectRepository.findById(id).orElse(null);
+            if (existedSubject!=null){
+                Council existedCouncil = councilRepository.getCouncilBySubject(existedSubject);
+                if (existedCouncil!=null){
+                    List<CouncilLecturer> councilLecturers = councilLecturerRepository.getListCouncilLecturerByCouncil(existedCouncil);
+                    Map<String,Object> response = new HashMap<>();
+                    response.put("subject",existedSubject);
+                    List<Lecturer> lecturers = new ArrayList<>();
+                    for (CouncilLecturer c:councilLecturers) {
+                        lecturers.add(c.getLecturer());
+                    }
+                    response.put("council",existedCouncil);
+                    response.put("councilLecturer",councilLecturers);
+                    response.put("listLecturerOfCouncil", lecturers);
+                    return new ResponseEntity<>(response,HttpStatus.OK);
+                }else {
+                    //mã 417
+                    return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+                }
+            }else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
 
     public ResponseEntity<Map<String,Object>> detailSubject(String authorizationHeader, int id){
         String token = tokenUtils.extractToken(authorizationHeader);

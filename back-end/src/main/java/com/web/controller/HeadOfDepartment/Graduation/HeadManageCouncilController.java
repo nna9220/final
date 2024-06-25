@@ -5,6 +5,7 @@ import com.web.config.TokenUtils;
 import com.web.entity.*;
 import com.web.repository.*;
 import com.web.service.Council.CouncilCreationService;
+import com.web.service.Council.EvaluationAndScoringService;
 import com.web.service.HeaderOdDepartment.ManageCouncilService;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ import java.util.Map;
 @CrossOrigin
 @RequestMapping("/api/head/manager/council")
 public class HeadManageCouncilController {
+    @Autowired
+    private EvaluationAndScoringService evaluationAndScoringService;
     @Autowired
     private ManageCouncilService manageCouncilService;
     @Autowired
@@ -76,28 +79,25 @@ public class HeadManageCouncilController {
         }
     }
 
-    @GetMapping("/detailCouncil/{subjectId}")
+    @GetMapping("/detailSubject/{id}")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
-    public ResponseEntity<Map<String,Object>> getDetailCouncil(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader){
-        String token = tokenUtils.extractToken(authorizationHeader);
-        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-        if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
-            Subject currentSubject = subjectRepository.findById(subjectId).orElse(null);
-            Council council = currentSubject.getCouncil();
-            System.out.println("detail council: " + council);
-            Map<String,Object> response = new HashMap<>();
-            response.put("council",council);
-            if ((council!=null)) {
-                List<CouncilLecturer> councilLecturers = councilLecturerRepository.getListCouncilLecturerByCouncil(council);
-                List<Lecturer> lecturers = new ArrayList<>();
-                for (CouncilLecturer c:councilLecturers) {
-                    lecturers.add(c.getLecturer());
-                }
-                response.put("listLecturerOfCouncil", lecturers);
-            }
-            return new ResponseEntity<>(response,HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    public ResponseEntity<?> detailSubject(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader){
+        try {
+            return new ResponseEntity<>(evaluationAndScoringService.detailSubjectLecturerCouncil(authorizationHeader,id),HttpStatus.OK);
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    @GetMapping("/detailCouncil/{id}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
+    public ResponseEntity<?> detailCouncil(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader){
+        try {
+            return new ResponseEntity<>(evaluationAndScoringService.detailCouncil(authorizationHeader,id),HttpStatus.OK);
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
         }
     }
 
