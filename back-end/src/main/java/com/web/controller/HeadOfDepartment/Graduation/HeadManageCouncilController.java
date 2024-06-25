@@ -37,6 +37,8 @@ public class HeadManageCouncilController {
     @Autowired
     private LecturerRepository lecturerRepository;
     @Autowired
+    private CouncilRepository councilRepository;
+    @Autowired
     private PersonRepository personRepository;
     private final TokenUtils tokenUtils;
     @Autowired
@@ -137,4 +139,42 @@ public class HeadManageCouncilController {
             throw new ExceptionInInitializerError(e);
         }
     }
+
+    //thông tin đề tài, council_lecturer
+    @GetMapping("/detail/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
+    private ResponseEntity<Map<String,Object>> getDetailSubjectCouncilLecturer(@RequestHeader("Authorization") String authorizationHeader,
+                                                                @PathVariable int subjectId){
+        try {
+            String token = tokenUtils.extractToken(authorizationHeader);
+            Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+            Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+            Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
+            if (existedSubject!=null){
+                Council existedCouncil = councilRepository.getCouncilBySubject(existedSubject);
+                if (existedCouncil!=null){
+                    List<CouncilLecturer> councilLecturers = councilLecturerRepository.getListCouncilLecturerByCouncil(existedCouncil);
+                    Map<String,Object> response = new HashMap<>();
+                    response.put("subject",existedSubject);
+                    List<Lecturer> lecturers = new ArrayList<>();
+                    for (CouncilLecturer c:councilLecturers) {
+                        lecturers.add(c.getLecturer());
+                    }
+                    response.put("council",existedCouncil);
+                    response.put("councilLecturer",councilLecturers);
+                    response.put("listLecturerOfCouncil", lecturers);
+                    return new ResponseEntity<>(response,HttpStatus.OK);
+                }else {
+                    //mã 417
+                    return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+                }
+            }else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
 }

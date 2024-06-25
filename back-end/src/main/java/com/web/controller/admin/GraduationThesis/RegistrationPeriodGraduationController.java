@@ -115,9 +115,17 @@ public class RegistrationPeriodGraduationController {
             String title = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI KLTN CHO SINH VIÊN";
             String content = "Thời gian bắt đầu: " + save.getRegistrationTimeStart()+"\n" +
                     "Thời gian kết thúc: " + save.getRegistrationTimeEnd() + "\n";
+            List<Person> personList = new ArrayList<>();
+            for (String s:emailLecturer) {
+                Person p = personRepository.findUsername(s);
+                if (p!=null){
+                    personList.add(p);
+                }
+            }
             Notification notification = new Notification();
             notification.setContent(content);
             notification.setTitle(title);
+            notification.setPersons(personList);
             LocalDateTime now = LocalDateTime.now();
             notification.setDateSubmit(now);
             notificationRepository.save(notification);
@@ -210,8 +218,16 @@ public class RegistrationPeriodGraduationController {
                 String title = "THÔNG BÁO CẬP NHẬT THỜI GIAN ĐĂNG KÝ ĐỀ TÀI KLTN CHO SINH VIÊN";
                 String content = "Thời gian bắt đầu: " + update.getRegistrationTimeStart()+"\n" +
                         "Thời gian kết thúc: " + update.getRegistrationTimeEnd() + "\n";
+                List<Person> personList = new ArrayList<>();
+                for (String s:emailLecturer) {
+                    Person p = personRepository.findUsername(s);
+                    if (p!=null){
+                        personList.add(p);
+                    }
+                }
                 Notification notification = new Notification();
                 notification.setContent(content);
+                notification.setPersons(personList);
                 notification.setTitle(title);
                 LocalDateTime now = LocalDateTime.now();
                 notification.setDateSubmit(now);

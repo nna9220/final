@@ -235,9 +235,17 @@ public class LecturerRegisterGraduationTopicController {
                     List<String> emailPerson = new ArrayList<>();
                     emailPerson.add(existLecturer.getPerson().getUsername());
                     mailService.sendMailToPerson(emailPerson,subject,messenger);
+                    List<Person> personList = new ArrayList<>();
+                    for (String s:emailPerson) {
+                        Person p = personRepository.findUsername(s);
+                        if (p!=null){
+                            personList.add(p);
+                        }
+                    }
                     Notification notification = new Notification();
                     LocalDateTime now = LocalDateTime.now();
                     notification.setDateSubmit(now);
+                    notification.setPersons(personList);
                     notification.setTitle(subject);
                     notification.setContent(messenger);
                     notificationRepository.save(notification);

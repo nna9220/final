@@ -17,11 +17,16 @@ public interface TimeBrowseHeadRepository extends JpaRepository<TimeBrowsOfHead,
     @Query("select p from TimeBrowsOfHead p where p.typeSubjectId=:typeSubject")
     public List<TimeBrowsOfHead> findAllPeriodEssay(TypeSubject typeSubject);
 
-    @Query("select p from TimeBrowsOfHead p where p.status=true and p.typeSubjectId=:type")
+    @Query("select p from TimeBrowsOfHead p where p.status =true and p.typeSubjectId = :type")
     public List<TimeBrowsOfHead> getListTimeBrowseByStatus(TypeSubject type);
 
     @Modifying
     @Transactional
     @Query("UPDATE TimeBrowsOfHead t SET t.status = false WHERE t.status = true AND t.timeEnd < :currentDate")
     void updateStatusOfPreviousRegistrations(LocalDateTime currentDate);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE TimeBrowsOfHead t SET t.status = true WHERE t.status = false AND t.timeStart <= :currentDate AND t.timeEnd >= :currentDate")
+    void turnOnStatusOfPreviousRegistrations(LocalDateTime currentDate);
 }

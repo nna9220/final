@@ -83,7 +83,40 @@ public class RegistrationPeriodGraduationLecturerController {
             registrationPeriod.setRegistrationName(periodName);
             registrationPeriod.setRegistrationTimeStart(convertToLocalDateTime(timeStart));
             registrationPeriod.setRegistrationTimeEnd(convertToLocalDateTime(timeEnd));
-            registrationPeriodRepository.save(registrationPeriod);
+            var update = registrationPeriodRepository.save(registrationPeriod);
+            //Dnah sách giảng viên
+            List<Lecturer> lecturers = lecturerRepository.findAll();
+            List<String> emailLecturer = new ArrayList<>();
+            for (Lecturer lecturer:lecturers) {
+                emailLecturer.add(lecturer.getPerson().getUsername());
+            }
+            MailStructure newMail = new MailStructure();
+            String subject = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI KHÓA LUẬN TỐT NGHIỆP CHO GIẢNG VIÊN " + update.getRegistrationName();
+            String messenger = "Thời gian bắt đầu: " + update.getRegistrationTimeStart()+"\n" +
+                    "Thời gian kết thúc: " + update.getRegistrationTimeEnd() + "\n";
+            newMail.setSubject(subject);
+            newMail.setSubject(messenger);
+            if (!lecturers.isEmpty()){
+                mailService.sendMailToLecturers(emailLecturer,subject,messenger);
+            }
+
+            String title = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI KHÓA LUẬN TỐT NGHIỆP CHO GIẢNG VIÊN";
+            String content = "Thời gian bắt đầu: " + update.getRegistrationTimeStart()+"\n" +
+                    "Thời gian kết thúc: " + update.getRegistrationTimeEnd() + "\n";
+            List<Person> personList = new ArrayList<>();
+            for (String s:emailLecturer) {
+                Person p = personRepository.findUsername(s);
+                if (p!=null){
+                    personList.add(p);
+                }
+            }
+            Notification notification = new Notification();
+            notification.setContent(content);
+            notification.setPersons(personList);
+            notification.setTitle(title);
+            LocalDateTime now = LocalDateTime.now();
+            notification.setDateSubmit(now);
+            notificationRepository.save(notification);
             return new ResponseEntity<>(registrationPeriod,HttpStatus.CREATED);
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -153,7 +186,7 @@ public class RegistrationPeriodGraduationLecturerController {
                     emailLecturer.add(lecturer.getPerson().getUsername());
                 }
                 MailStructure newMail = new MailStructure();
-                String subject = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI KHÓA LUẬN TỐT NGHIỆP CHO GIẢNG VIÊN " + update.getRegistrationName();
+                String subject = "THÔNG BÁO CẬP NHẬT THỜI GIAN ĐĂNG KÝ ĐỀ TÀI KHÓA LUẬN TỐT NGHIỆP CHO GIẢNG VIÊN " + update.getRegistrationName();
                 String messenger = "Thời gian bắt đầu: " + update.getRegistrationTimeStart()+"\n" +
                         "Thời gian kết thúc: " + update.getRegistrationTimeEnd() + "\n";
                 newMail.setSubject(subject);
@@ -162,11 +195,19 @@ public class RegistrationPeriodGraduationLecturerController {
                     mailService.sendMailToLecturers(emailLecturer,subject,messenger);
                 }
 
-                String title = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI KHÓA LUẬN TỐT NGHIỆP CHO GIẢNG VIÊN";
+                String title = "THÔNG BÁO CẬP NHẬT THỜI GIAN ĐĂNG KÝ ĐỀ TÀI KHÓA LUẬN TỐT NGHIỆP CHO GIẢNG VIÊN";
                 String content = "Thời gian bắt đầu: " + update.getRegistrationTimeStart()+"\n" +
                         "Thời gian kết thúc: " + update.getRegistrationTimeEnd() + "\n";
+                List<Person> personList = new ArrayList<>();
+                for (String s:emailLecturer) {
+                    Person p = personRepository.findUsername(s);
+                    if (p!=null){
+                        personList.add(p);
+                    }
+                }
                 Notification notification = new Notification();
                 notification.setContent(content);
+                notification.setPersons(personList);
                 notification.setTitle(title);
                 LocalDateTime now = LocalDateTime.now();
                 notification.setDateSubmit(now);

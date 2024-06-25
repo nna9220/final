@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,17 +26,25 @@ public class NotificationService {
     private PersonRepository personRepository;
     @Autowired
     private NotificationRepository notificationRepository;
-    public ResponseEntity<?> getListNotification(){
-            List<Notification> notifications = notificationRepository.findAll();
+    public ResponseEntity<?> getListNotification(Person person){
+            List<Notification> notifications = notificationRepository.findByPersons(person);
             return new ResponseEntity<>(notifications,HttpStatus.OK);
     }
 
-    public ResponseEntity<?> createNotification(String authorizationHeader, String content, String title){
+    public ResponseEntity<?> createNotification(List<String> emailPerson,String authorizationHeader, String content, String title){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_ADMIN")) {
+            List<Person> personList = new ArrayList<>();
+            for (String s:emailPerson) {
+                Person p = personRepository.findUsername(s);
+                if (p!=null){
+                    personList.add(p);
+                }
+            }
             Notification notification = new Notification();
             notification.setContent(content);
+            notification.setPersons(personList);
             notification.setTitle(title);
             LocalDateTime now = LocalDateTime.now();
             notification.setDateSubmit(now);

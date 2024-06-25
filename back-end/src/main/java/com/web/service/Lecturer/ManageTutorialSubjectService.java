@@ -48,6 +48,7 @@ public class ManageTutorialSubjectService {
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Subject existedSubject = subjectRepository.findById(id).orElse(null);
+            List<String> emailPerson = new ArrayList<>();
             if (existedSubject!=null){
                 existedSubject.setActive((byte)2);
                 var newSubject = subjectRepository.save(existedSubject);
@@ -58,7 +59,6 @@ public class ManageTutorialSubjectService {
                         "GVHD: " + personCurrent.getUsername() + "\n"
                         + "Sinh viên vui lòng truy cập website https://hcmute.workon.space/ để thực hiện nộp báo cáo 50% trong vòng 1 tuần kể từ ngày " + today + " đến ngày " + nextWeek;
 
-                List<String> emailPerson = new ArrayList<>();
                 if (newSubject.getStudent1()!=null) {
                     Student student1 = studentRepository.findById(newSubject.getStudent1()).orElse(null);
                     emailPerson.add(student1.getPerson().getUsername());
@@ -74,9 +74,17 @@ public class ManageTutorialSubjectService {
                 if (!emailPerson.isEmpty()){
                     mailService.sendMailToPerson(emailPerson,subject,messenger);
                 }
+                List<Person> personList = new ArrayList<>();
+                for (String s:emailPerson) {
+                    Person p = personRepository.findUsername(s);
+                    if (p!=null){
+                        personList.add(p);
+                    }
+                }
                 Notification notification = new Notification();
                 LocalDateTime now = LocalDateTime.now();
                 notification.setDateSubmit(now);
+                notification.setPersons(personList);
                 notification.setTitle(subject);
                 notification.setContent(messenger);
                 notificationRepository.save(notification);
@@ -90,70 +98,59 @@ public class ManageTutorialSubjectService {
     }
 
     //Thông báo nộp báo cáo 50% cho 1 list subject
-//Tìm danh sách tất cả đề tài của GVHD có type=a,active=1,status=true,
-    public ResponseEntity<?> NoticeOfFiftyReportSubmissionToListSubject(@RequestHeader("Authorization") String authorizationHeader, TypeSubject typeSubject) {
+    //Tìm danh sách tất cả đề tài của GVHD có type=a,active=1,status=true,
+    public ResponseEntity<?> NoticeOfFiftyReportSubmissionToListSubject(@RequestHeader("Authorization") String authorizationHeader, TypeSubject typeSubject){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            List<Subject> existedSubjects = subjectRepository.findSubjectByInstructorAndStatusAndActiveAndTypeSubject(existedLecturer, true, typeSubject, (byte) 1);
-
-            if (existedSubjects.isEmpty()) {
-                return new ResponseEntity<>("No subjects found for the lecturer.", HttpStatus.NOT_FOUND);
-            }
-
+            List<Subject> existedSubjects = subjectRepository.findSubjectByInstructorAndStatusAndActiveAndTypeSubject(existedLecturer,true,typeSubject,(byte)1);
+            List<String> emailPerson = new ArrayList<>();
             LocalDate today = LocalDate.now();
             LocalDate nextWeek = today.plusDays(7);
-            String subject = "ĐẾN THỜI GIAN NỘP BÁO CÁO 50%";
-            List<Notification> notifications = new ArrayList<>();
-
-            for (Subject existedSubject : existedSubjects) {
-                existedSubject.setActive((byte) 2);
+            for (Subject existedSubject:existedSubjects) {
+                existedSubject.setActive((byte)2);
                 var newSubject = subjectRepository.save(existedSubject);
-
-                String messenger = "Topic: " + existedSubject.getSubjectName() + "\n" +
-                        "GVHD: " + personCurrent.getUsername() + "\n" +
-                        "Sinh viên vui lòng truy cập website https://hcmute.workon.space/ để thực hiện nộp báo cáo 50% trong vòng 1 tuần kể từ ngày " + today + " đến ngày " + nextWeek;
-                List<String> emailPerson = new ArrayList<>();
-
-                if (newSubject.getStudent1() != null) {
+                String subject = "ĐẾN THỜI GIAN NỘP BÁO CÁO 50%";
+                String messenger = "Topic: " + existedSubject.getSubjectName()+"\n" +
+                        "GVHD: " + personCurrent.getUsername() + "\n"
+                        + "Sinh viên vui lòng truy cập website https://hcmute.workon.space/ để thực hiện nộp báo cáo 50% trong vòng 1 tuần kể từ ngày " + today + " đến ngày " + nextWeek;
+                if (newSubject.getStudent1()!=null) {
                     Student student1 = studentRepository.findById(newSubject.getStudent1()).orElse(null);
-                    if (student1 != null) {
-                        emailPerson.add(student1.getPerson().getUsername());
-                    }
+                    emailPerson.add(student1.getPerson().getUsername());
                 }
-                if (newSubject.getStudent2() != null) {
+                if (newSubject.getStudent2()!=null) {
                     Student student2 = studentRepository.findById(newSubject.getStudent2()).orElse(null);
-                    if (student2 != null) {
-                        emailPerson.add(student2.getPerson().getUsername());
-                    }
+                    emailPerson.add(student2.getPerson().getUsername());
                 }
-                if (newSubject.getStudent3() != null) {
+                if (newSubject.getStudent3()!=null) {
                     Student student3 = studentRepository.findById(newSubject.getStudent3()).orElse(null);
-                    if (student3 != null) {
-                        emailPerson.add(student3.getPerson().getUsername());
+                    emailPerson.add(student3.getPerson().getUsername());
+                }
+                if (!emailPerson.isEmpty()){
+                    mailService.sendMailToPerson(emailPerson,subject,messenger);
+                }
+                List<Person> personList = new ArrayList<>();
+                for (String s:emailPerson) {
+                    Person p = personRepository.findUsername(s);
+                    if (p!=null){
+                        personList.add(p);
                     }
                 }
-
-                if (!emailPerson.isEmpty()) {
-                    mailService.sendMailToPerson(emailPerson, subject, messenger);
-                }
-
                 Notification notification = new Notification();
+                notification.setPersons(personList);
                 LocalDateTime now = LocalDateTime.now();
                 notification.setDateSubmit(now);
                 notification.setTitle(subject);
                 notification.setContent(messenger);
-                notifications.add(notification);
+                notificationRepository.save(notification);
+                return new ResponseEntity<>(newSubject, HttpStatus.OK);
             }
-
-            notificationRepository.saveAll(notifications);
             return new ResponseEntity<>(HttpStatus.OK);
-        } else {
+        }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
-
     //Thông báo nộp 100%
     public ResponseEntity<?> NoticeOfOneHundredReportSubmission(int id,@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
@@ -188,6 +185,14 @@ public class ManageTutorialSubjectService {
                 }
                 Notification notification = new Notification();
                 LocalDateTime now = LocalDateTime.now();
+                List<Person> personList = new ArrayList<>();
+                for (String s:emailPerson) {
+                    Person p = personRepository.findUsername(s);
+                    if (p!=null){
+                        personList.add(p);
+                    }
+                }
+                notification.setPersons(personList);
                 notification.setDateSubmit(now);
                 notification.setTitle(subject);
                 notification.setContent(messenger);
@@ -201,65 +206,55 @@ public class ManageTutorialSubjectService {
         }
     }
 
-    public ResponseEntity<?> NoticeOfOneHundredReportSubmissionToListSubject(@RequestHeader("Authorization") String authorizationHeader, TypeSubject typeSubject) {
+    public ResponseEntity<?> NoticeOfOneHundredReportSubmissionToListSubject(@RequestHeader("Authorization") String authorizationHeader, TypeSubject typeSubject){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            List<Subject> existedSubjects = subjectRepository.findSubjectByInstructorAndStatusAndActiveAndTypeSubject(existedLecturer, true, typeSubject, (byte) 3);
-
-            if (existedSubjects.isEmpty()) {
-                return new ResponseEntity<>("No subjects found for the lecturer.", HttpStatus.NOT_FOUND);
-            }
-
-            LocalDate today = LocalDate.now();
-            LocalDate nextWeek = today.plusDays(7);
-            String subjectTitle = "ĐẾN THỜI GIAN NỘP BÁO CÁO 100%";
-            List<Notification> notifications = new ArrayList<>();
-
-            for (Subject existedSubject : existedSubjects) {
-                existedSubject.setActive((byte) 4);
+            List<Subject> existedSubjects = subjectRepository.findSubjectByInstructorAndStatusAndActiveAndTypeSubject(existedLecturer,true,typeSubject,(byte)3);
+            for (Subject existedSubject:existedSubjects) {
+                existedSubject.setActive((byte)4);
                 var newSubject = subjectRepository.save(existedSubject);
-
-                String messenger = "Topic: " + existedSubject.getSubjectName() + "\n" +
-                        "GVHD: " + personCurrent.getUsername() + "\n" +
-                        "Sinh viên vui lòng truy cập website https://hcmute.workon.space/ để thực hiện nộp báo cáo 100% trong vòng 1 tuần kể từ ngày " + today + " đến ngày " + nextWeek;
+                LocalDate today = LocalDate.now();
+                LocalDate nextWeek = today.plusDays(7);
+                String subject = "ĐẾN THỜI GIAN NỘP BÁO CÁO 100%";
+                String messenger = "Topic: " + existedSubject.getSubjectName()+"\n" +
+                        "GVHD: " + personCurrent.getUsername() + "\n"
+                        + "Sinh viên vui lòng truy cập website https://hcmute.workon.space/ để thực hiện nộp báo cáo 100% trong vòng 1 tuần kể từ ngày " + today + " đến ngày " + nextWeek;
                 List<String> emailPerson = new ArrayList<>();
-
-                if (newSubject.getStudent1() != null) {
+                if (newSubject.getStudent1()!=null) {
                     Student student1 = studentRepository.findById(newSubject.getStudent1()).orElse(null);
-                    if (student1 != null) {
-                        emailPerson.add(student1.getPerson().getUsername());
-                    }
+                    emailPerson.add(student1.getPerson().getUsername());
                 }
-                if (newSubject.getStudent2() != null) {
+                if (newSubject.getStudent2()!=null) {
                     Student student2 = studentRepository.findById(newSubject.getStudent2()).orElse(null);
-                    if (student2 != null) {
-                        emailPerson.add(student2.getPerson().getUsername());
-                    }
+                    emailPerson.add(student2.getPerson().getUsername());
                 }
-                if (newSubject.getStudent3() != null) {
+                if (newSubject.getStudent3()!=null) {
                     Student student3 = studentRepository.findById(newSubject.getStudent3()).orElse(null);
-                    if (student3 != null) {
-                        emailPerson.add(student3.getPerson().getUsername());
+                    emailPerson.add(student3.getPerson().getUsername());
+                }
+                if (!emailPerson.isEmpty()){
+                    mailService.sendMailToPerson(emailPerson,subject,messenger);
+                }
+                Notification notification = new Notification();
+                List<Person> personList = new ArrayList<>();
+                for (String s:emailPerson) {
+                    Person p = personRepository.findUsername(s);
+                    if (p!=null){
+                        personList.add(p);
                     }
                 }
-
-                if (!emailPerson.isEmpty()) {
-                    mailService.sendMailToPerson(emailPerson, subjectTitle, messenger);
-                }
-
-                Notification notification = new Notification();
+                notification.setPersons(personList);
                 LocalDateTime now = LocalDateTime.now();
                 notification.setDateSubmit(now);
-                notification.setTitle(subjectTitle);
+                notification.setTitle(subject);
                 notification.setContent(messenger);
-                notifications.add(notification);
+                notificationRepository.save(notification);
+                return new ResponseEntity<>(newSubject, HttpStatus.OK);
             }
-
-            notificationRepository.saveAll(notifications);
             return new ResponseEntity<>(HttpStatus.OK);
-        } else {
+        }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
@@ -382,6 +377,20 @@ public class ManageTutorialSubjectService {
                 if (!emailPerson.isEmpty()) {
                     mailService.sendMailToPerson(emailPerson, subject, messenger);
                 }
+                List<Person> personList = new ArrayList<>();
+                for (String s:emailPerson) {
+                    Person p = personRepository.findUsername(s);
+                    if (p!=null){
+                        personList.add(p);
+                    }
+                }
+                Notification notification = new Notification();
+                LocalDateTime now = LocalDateTime.now();
+                notification.setDateSubmit(now);
+                notification.setPersons(personList);
+                notification.setTitle(subject);
+                notification.setContent(messenger);
+                notificationRepository.save(notification);
                 return new ResponseEntity<>(existedSubject, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -431,6 +440,20 @@ public class ManageTutorialSubjectService {
                     if (!emailPerson.isEmpty()){
                         mailService.sendMailToPerson(emailPerson,subject,messenger);
                     }
+                    List<Person> personList = new ArrayList<>();
+                    for (String s:emailPerson) {
+                        Person p = personRepository.findUsername(s);
+                        if (p!=null){
+                            personList.add(p);
+                        }
+                    }
+                    Notification notification = new Notification();
+                    LocalDateTime now = LocalDateTime.now();
+                    notification.setDateSubmit(now);
+                    notification.setPersons(personList);
+                    notification.setTitle(subject);
+                    notification.setContent(messenger);
+                    notificationRepository.save(notification);
                     return new ResponseEntity<>(existedSubject, HttpStatus.OK);
                 }else {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
