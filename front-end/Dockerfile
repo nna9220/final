@@ -11,4 +11,5 @@ RUN npm install -g npm@latest
 COPY . .
 
 # Starting our application
+RUN npm run build
 CMD ["npm", "run", "build"]
