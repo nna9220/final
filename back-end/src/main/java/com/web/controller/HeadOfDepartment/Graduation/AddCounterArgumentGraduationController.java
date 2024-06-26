@@ -69,6 +69,7 @@ public class AddCounterArgumentGraduationController {
     @GetMapping("/export")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public void generateExcelReport(HttpServletResponse response, HttpSession session) throws Exception{
+        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
 
         response.setContentType("application/octet-stream");
         LocalDate nowDate = LocalDate.now();
@@ -78,7 +79,7 @@ public class AddCounterArgumentGraduationController {
 
         response.setHeader(headerKey, headerValue);
 
-        reportService.generateExcel(response, session);
+        reportService.generateExcel(response, session,typeSubject);
         response.flushBuffer();
     }
 
