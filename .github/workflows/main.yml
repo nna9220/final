@@ -21,7 +21,7 @@ jobs:
           password: ${{ secrets.HOST_PASSWORD }}
           port: ${{ secrets.HOST_PORT }}
           script: |
-            echo "Attempting SSH connection to ${{ secrets.HOST }} as ${{ secrets.HOST_USERNAME }} on port ${{ secrets.HOST_PORT }}..."
+            echo "Attempting s SSH connection to ${{ secrets.HOST }} as ${{ secrets.HOST_USERNAME }} on port ${{ secrets.HOST_PORT }}..."
             cd final
             git pull
             echo "${{ secrets.FRONT_END_ENV }}" > frontend/.env
