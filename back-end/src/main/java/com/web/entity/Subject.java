@@ -93,7 +93,7 @@ public class Subject implements Serializable {
     @JsonIgnore
     private List<ResultGraduation> resultGraduations;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "subject_criteria",
             joinColumns = @JoinColumn(name = "subject_id"),
@@ -101,4 +101,9 @@ public class Subject implements Serializable {
     )
     @JsonIgnore
     private Set<EvaluationCriteria> criteria = new HashSet<>();
+
+    public void removeCriteria(EvaluationCriteria evaluationCriteria) {
+        criteria.remove(evaluationCriteria);
+        evaluationCriteria.getSubjects().remove(this);
+    }
 }

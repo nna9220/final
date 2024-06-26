@@ -39,6 +39,8 @@ public class ManageCouncilService {
     @Autowired
     private TokenUtils tokenUtils;
     @Autowired
+    private CouncilLecturerRepository councilLecturerRepository;
+    @Autowired
     private SubjectRepository subjectRepository;
     @Autowired
     private TypeSubjectRepository typeSubjectRepository;
@@ -287,7 +289,7 @@ public class ManageCouncilService {
                 if (lecturer!=null){
                     lecturer.getCouncilLecturers().remove(councilLecturerToRemove);
                 }
-                councilLecturerToRemove.setCouncil(null); // Gán councilLecturer này về null để ngăn không cho nó bị xóa khỏi cơ sở dữ liệu
+                councilLecturerRepository.delete(councilLecturerToRemove); // Gán councilLecturer này về null để ngăn không cho nó bị xóa khỏi cơ sở dữ liệu
                 councilRepository.save(council); // Lưu lại council sau khi xóa councilLecturer
             }
         }
