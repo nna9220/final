@@ -216,55 +216,63 @@ public class ManageCouncilService {
     }
 
 
-    public ResponseEntity<?> updateCouncilEssay(int id,String authorizationHeader, String date,String timeStart, String timeEnd, String addressReport,
-                                           String lecturer1, String lecturer2){
+    public ResponseEntity<?> updateCouncilEssay(int id, String authorizationHeader, String date, String timeStart, String timeEnd, String addressReport,
+                                                String lecturer1, String lecturer2) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Subject subject = subjectRepository.findById(id).orElse(null);
-            if (subject!=null){
-                if (subject.getCouncil()!=null) {
+            if (subject != null) {
+                if (subject.getCouncil() != null) {
                     Council council = subject.getCouncil();
                     council.setAddress(addressReport);
+
                     // Kiểm tra xem có Council khác có cùng timeStart và timeEnd không
                     TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
-                    //Tìm các đề tài của TLCN
+                    // Tìm các đề tài của TLCN
                     List<Subject> subjects = subjectRepository.findSubjectByType(typeSubject);
-                    //Lấy danh sách council của các subject này ra
+                    // Lấy danh sách council của các subject này ra
                     List<Council> conflictCouncil = new ArrayList<>();
-                    for (Subject s:subjects) {
-                        //Kiểm tra các subject có council  và có time đã được set
-                        if (s.getCouncil()!=null) {
-                            if (s.getCouncil().getStart()!=null && s.getCouncil().getEnd()!=null) {
+                    for (Subject s : subjects) {
+                        // Kiểm tra các subject có council  và có time đã được set
+                        if (s.getCouncil() != null) {
+                            if (s.getCouncil().getStart() != null && s.getCouncil().getEnd() != null) {
                                 conflictCouncil.add(s.getCouncil());
                             }
                         }
                     }
-                    if (hasTimeConflict(council,conflictCouncil)) {
-                        return new ResponseEntity<>("Đã tồn tại hội đồng nằm trong khoản tời gian này.", HttpStatus.CONFLICT);
+
+                    if (hasTimeConflict(council, conflictCouncil)) {
+                        return new ResponseEntity<>("Đã tồn tại hội đồng nằm trong khoản thời gian này.", HttpStatus.CONFLICT);
                     }
+
                     council.setStart(convertToTime(timeStart));
                     council.setEnd(convertToTime(timeEnd));
                     council.setDate(convertStringToLocalDate(date));
+
                     // Xóa CouncilLecturer cũ của giảng viên nếu có sự thay đổi
                     removeCouncilLecturerIfNeeded(council, lecturer1);
                     removeCouncilLecturerIfNeeded(council, lecturer2);
-                    // Thêm giảng viên mới vào CouncilLecturer nếu có sự thay đổi
+
+                    // Thêm hoặc cập nhật CouncilLecturer cho giảng viên mới
                     addOrUpdateCouncilLecturer(council, lecturer1, "Chủ tịch");
                     addOrUpdateCouncilLecturer(council, lecturer2, "Ủy viên");
+
                     council.setSubject(subject);
                     councilRepository.save(council);
                     subject.setCouncil(council);
                     subjectRepository.save(subject);
+
                     sendEmailToCouncilLecturers(council);
-                    return new ResponseEntity<>(council,HttpStatus.CREATED);
-                }else{
+
+                    return new ResponseEntity<>(council, HttpStatus.CREATED);
+                } else {
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 }
-            }else {
+            } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-        }else {
+        } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
@@ -272,22 +280,18 @@ public class ManageCouncilService {
     // Phương thức xóa CouncilLecturer của giảng viên cũ
     private void removeCouncilLecturerIfNeeded(Council council, String lecturerId) {
         if (lecturerId != null) {
-            CouncilLecturer councilLecturerToRemove = null;
-            //tìm ra councillecturer của council và lecturer này
-            for (CouncilLecturer cl : council.getCouncilLecturers()) {
-                if (cl.getLecturer().getLecturerId().equals(lecturerId)) {
-                    councilLecturerToRemove = cl;
-                    break;
-                }
-            }
+            CouncilLecturer councilLecturerToRemove = council.getCouncilLecturers().stream()
+                    .filter(cl -> cl.getLecturer().getLecturerId().equals(lecturerId))
+                    .findFirst()
+                    .orElse(null);
             if (councilLecturerToRemove != null) {
                 council.getCouncilLecturers().remove(councilLecturerToRemove);
                 Lecturer lecturer = lecturerRepository.findById(lecturerId).orElse(null);
-                if (lecturer!=null){
+                if (lecturer != null) {
                     lecturer.getCouncilLecturers().remove(councilLecturerToRemove);
+                    lecturerRepository.save(lecturer);
                 }
-                councilLecturerToRemove.setCouncil(null); // Gán councilLecturer này về null để ngăn không cho nó bị xóa khỏi cơ sở dữ liệu
-                councilRepository.save(council); // Lưu lại council sau khi xóa councilLecturer
+                councilRepository.save(council);
             }
         }
     }
@@ -312,11 +316,12 @@ public class ManageCouncilService {
                     lecturerRepository.save(lecturer);
                 } else {
                     councilLecturer.setRole(role);
-                    councilRepository.save(council);
                 }
+                councilRepository.save(council);
             }
         }
     }
+
 
     private void sendEmailToCouncilLecturers(Council council) {
         List<String> emailList = council.getCouncilLecturers().stream()

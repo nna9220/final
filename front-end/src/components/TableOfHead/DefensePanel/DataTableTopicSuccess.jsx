@@ -1,19 +1,22 @@
+import React, { useState, useEffect } from 'react';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import axiosInstance from '../../../API/axios';
-import { useState, useEffect } from 'react';
 
 function DataTableTopicSuccess() {
     const [subjects, setSubjects] = useState([]);
-    const [time, setTime] = useState('');
-    const [address, setAddress] = useState('');
-    const [lecturer1, setLecturer1] = useState('');
-    const [lecturer2, setLecturer2] = useState('');
-    const [role1, setRole1] = useState('');
-    const [role2, setRole2] = useState('');
-    const [lecturerList, setLecturerList] = useState([]);
-    const [subjectId, setSubjectId] = useState(null);
-    const [defaultLecturerId, setDefaultLecturerId] = useState('');
     const userToken = getTokenFromUrlAndSaveToStorage();
+    const [council, setCouncil] = useState();
+    const [councilLecturers, setCouncilLecturers] = useState([]);
+    const [roles, setRoles] = useState({});
+    const [councilEdit, setCouncilEdit] = useState({
+        lecturer1: '',
+        lecturer2: '',
+        start: '',
+        end: '',
+        date: '',
+        address: '',
+    });
+    const [lecturers, setLecturers] = useState([]);
 
     useEffect(() => {
         if (userToken) {
@@ -29,96 +32,98 @@ function DataTableTopicSuccess() {
                 },
             });
             setSubjects(response.data.body || []);
-            console.log("Council: ", response.data);
         } catch (error) {
             console.error('Error fetching subjects:', error);
         }
     };
 
-
     const loadCouncilDetails = async (subjectId) => {
-        console.log("id", subjectId);
-        console.log(userToken);
         try {
-            const response = await axiosInstance.get(`/head/council/detail/${subjectId}`, {
+            const response = await axiosInstance.get(`/head/council/detailCouncil/${subjectId}`, {
                 headers: {
                     'Authorization': `Bearer ${userToken}`,
                 },
             });
-            const councilDetails = response.data;
-            setDefaultLecturerId(councilDetails.lecturer1);
-            setLecturer2(councilDetails.lecturer2);
-            setRole1(councilDetails.role1);
-            setRole2(councilDetails.role2);
-            setTime(councilDetails.time);
-            setAddress(councilDetails.address);
-            console.log("Details: ", response.data);
+            const councilDetails = response.data.body.council;
+            setCouncil(councilDetails);
+            setCouncilLecturers(response.data.body.councilLecturer);
+            setRoles(response.data.body.councilLecturer.reduce((acc, curr) => {
+                acc[curr.lecturer.person.personId] = curr.role;
+                return acc;
+            }, {}));
+            setLecturers (response.data.body.listLecturerOfCouncil);
+            setCouncilEdit({
+                lecturer1: councilDetails.lecturer1?.personId || '',
+                lecturer2: councilDetails.lecturer2?.personId || '',
+                start: councilDetails.start || '',
+                end: councilDetails.end || '',
+                date: councilDetails.date || '',
+                address: councilDetails.address || '',
+            });
+            console.log("Detail: ", response.data);
         } catch (error) {
-            if (error.response) {
-                
-                console.error('Error fetching council details:', error.response.status);
-                switch (error.response.status) {
-                    case 404:
-                        console.log('Subject not found.');
-                        break;
-                    case 417:
-                        console.log('Expectation failed: Council not found for the subject.');
-                        break;
-                    case 500:
-                        console.log('Internal server error. Please try again later.');
-                        break;
-                    default:
-                        console.log('An error occurred. Please try again.');
-                }
-            } else if (error.request) {
-                console.error('No response received:', error.request);
-                console.log('No response from the server. Please check your network.');
-            } else {
-                console.error('Error setting up the request:', error.message);
-                console.log('An error occurred. Please try again.');
+            handleCouncilDetailError(error);
+        }
+    };
+
+    const handleCouncilDetailError = (error) => {
+        if (error.response) {
+            switch (error.response.status) {
+                case 404:
+                    console.log('Subject not found.');
+                    break;
+                case 417:
+                    console.log('Expectation failed: Council not found for the subject.');
+                    break;
+                case 500:
+                    console.log('Internal server error. Please try again later.');
+                    break;
+                default:
+                    console.log('An error occurred. Please try again.');
             }
+        } else if (error.request) {
+            console.log('No response from the server. Please check your network.');
+        } else {
+            console.log('An error occurred. Please try again.');
         }
     };
 
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setCouncilEdit(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
 
-    function convertDateTime(dateTimeString) {
-        const parts = dateTimeString.split('T');
-        const datePart = parts[0];
-        const timePart = parts[1];
-        const timeParts = timePart.split(':');
-        const hour = timeParts[0];
-        const minute = timeParts[1];
-        const formattedDateTime = `${datePart} ${hour}:${minute}:00`;
-        return formattedDateTime;
-    }
+    const handleRoleChange = (e, lecturerId) => {
+        const { value } = e.target;
+        setRoles(prevRoles => ({
+            ...prevRoles,
+            [lecturerId]: value
+        }));
+    };
 
-    const handleFormSubmit = async () => {
+    const handleSaveChanges = async () => {
+        console.log("Send data: ", councilEdit);
         try {
-            const response = await axiosInstance.post(`/head/council/edit/${subjectId}`, {
-                time: convertDateTime(time),
-                address,
-                lecturer1,
-                lecturer2,
-                role1,
-                role2,
-            }, {
+            const response = await axiosInstance.post(`/head/council/editCouncilEssay/${council.subject.subjectId}`, null, {
                 headers: {
                     'Authorization': `Bearer ${userToken}`,
-                    'Content-Type': 'multipart/form-data',
+                },
+                params: {
+                    lecturer1: councilEdit.lecturer1,
+                    lecturer2: councilEdit.lecturer2,
+                    start: councilEdit.start,
+                    end: councilEdit.end,
+                    date: councilEdit.date,
+                    address: councilEdit.address,
                 },
             });
-            console.log(response.data);
+            console.log("Save response: ", response.data);
         } catch (error) {
-            console.error('Error submitting form:', error);
+            console.error('Error saving council details:', error);
         }
-    };
-
-    const handleLecturerChange = (e, setLecturer) => {
-        setLecturer(e.target.value);
-    };
-
-    const handleRoleChange = (e, setRole) => {
-        setRole(e.target.value);
     };
 
     return (
@@ -154,7 +159,6 @@ function DataTableTopicSuccess() {
                                     <td>{item.student3}</td>
                                     <td>
                                         <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => {
-                                            setSubjectId(item.subjectId);
                                             loadCouncilDetails(item.subjectId);
                                         }}>
                                             Lập hội đồng
@@ -176,13 +180,26 @@ function DataTableTopicSuccess() {
                         </div>
                         <div className="modal-body">
                             <div className="mb-3">
-                                <label htmlFor="time" className="form-label">Thời gian</label>
-                                <input type="datetime-local" className="form-control" id="time" value={time} onChange={(e) => setTime(e.target.value)} />
+                                <label htmlFor="date" className="form-label">Ngày</label>
+                                <input type="date" className="form-control" id="date" name="date" value={councilEdit.date} onChange={handleChange} />
                             </div>
+
+                            <div className="row mb-3">
+                                <div className="col">
+                                    <label htmlFor="start" className="form-label">Bắt đầu</label>
+                                    <input type="time" className="form-control" id="start" name="start" value={councilEdit.start} onChange={handleChange} />
+                                </div>
+                                <div className="col">
+                                    <label htmlFor="end" className="form-label">Kết thúc</label>
+                                    <input type="time" className="form-control" id="end" name="end" value={councilEdit.end} onChange={handleChange} />
+                                </div>
+                            </div>
+
                             <div className="mb-3">
                                 <label htmlFor="address" className="form-label">Địa chỉ</label>
-                                <input type="text" className="form-control" id="address" value={address} onChange={(e) => setAddress(e.target.value)} />
+                                <input type="text" className="form-control" id="address" name="address" value={councilEdit.address} onChange={handleChange} />
                             </div>
+
                             <h6>Danh sách thành viên hội đồng: </h6>
                             <div>
                                 <table className='table table-bordered'>
@@ -196,45 +213,38 @@ function DataTableTopicSuccess() {
                                     <tbody>
                                         <tr>
                                             <td>Thành viên 1</td>
-                                            <td>{defaultLecturerId}</td>
                                             <td>
-                                                <select
-                                                    className="form-select"
-                                                    onChange={(e) => handleRoleChange(e, setRole1)}
-                                                    value={role1}
-                                                >
-                                                    <option value="">Chọn vai trò</option>
-                                                    <option value="Chủ tịch">Chủ tịch</option>
-                                                    <option value="Ủy viên">Ủy viên</option>
-                                                </select>
+                                                <div className="mb-3">
+                                                    <select className="form-control" id="lecturer1" name="lecturer1" value={councilEdit.lecturer1} onChange={handleChange}>
+                                                        <option value="">Chọn giảng viên</option>
+                                                        {lecturers.map((lecturer, index) => (
+                                                            <option key={index} value={lecturer.lecturerId}>
+                                                                {lecturer.person.firstName} {lecturer.person.lastName}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                Chủ tịch
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>Thành viên 2</td>
                                             <td>
-                                                <select
-                                                    className="form-select"
-                                                    onChange={(e) => handleLecturerChange(e, setLecturer2)}
-                                                    value={lecturer2}
-                                                >
-                                                    <option value="">Chọn giảng viên</option>
-                                                    {lecturerList.map((lecturer) => (
-                                                        <option key={lecturer.lecturerId} value={lecturer.lecturerId}>
-                                                            {lecturer.person.firstName + ' ' + lecturer.person.lastName}
-                                                        </option>
-                                                    ))}
-                                                </select>
+                                                <div className="mb-3">
+                                                    <select className="form-control" id="lecturer2" name="lecturer2" value={councilEdit.lecturer2} onChange={handleChange}>
+                                                        <option value="">Chọn giảng viên</option>
+                                                        {lecturers.map((lecturer, index) => (
+                                                            <option key={index} value={lecturer.lecturerId}>
+                                                                {lecturer.person.firstName} {lecturer.person.lastName}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
                                             </td>
                                             <td>
-                                                <select
-                                                    className="form-select"
-                                                    onChange={(e) => handleRoleChange(e, setRole2)}
-                                                    value={role2}
-                                                >
-                                                    <option value="">Chọn vai trò</option>
-                                                    <option value="Chủ tịch">Chủ tịch</option>
-                                                    <option value="Ủy viên">Ủy viên</option>
-                                                </select>
+                                                Ủy viên
                                             </td>
                                         </tr>
                                     </tbody>
@@ -242,8 +252,8 @@ function DataTableTopicSuccess() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" className="btn btn-primary" onClick={handleFormSubmit}>Save changes</button>
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <button type="button" className="btn btn-primary" onClick={handleSaveChanges}>Lưu thay đổi</button>
                         </div>
                     </div>
                 </div>
