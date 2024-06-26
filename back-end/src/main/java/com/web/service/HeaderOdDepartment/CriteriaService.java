@@ -81,6 +81,14 @@ public class CriteriaService {
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             EvaluationCriteria existedCriteria = evaluationCriteriaRepository.findById(id).orElse(null);
             if (existedCriteria != null) {
+                List<Subject> subjects = subjectRepository.findAll();
+                for (Subject subject : subjects) {
+                    if (subject.getCriteria().contains(existedCriteria)) {
+                        // Xóa tiêu chí khỏi Subject
+                        subject.removeCriteria(existedCriteria);
+                        subjectRepository.save(subject); // Lưu Subject sau khi xóa tiêu chí
+                    }
+                }
                 evaluationCriteriaRepository.delete(existedCriteria);
                 return new ResponseEntity<>(HttpStatus.OK);
             }else {
