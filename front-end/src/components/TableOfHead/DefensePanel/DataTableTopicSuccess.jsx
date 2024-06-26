@@ -105,19 +105,32 @@ function DataTableTopicSuccess() {
     };
 
     const handleSaveChanges = async () => {
-        console.log("Send data: ", councilEdit);
+        // Chuyển đổi giá trị start và end thành định dạng HH:mm
+        const formattedCouncilEdit = {
+            ...councilEdit,
+            start: formatTime(councilEdit.start),
+            end: formatTime(councilEdit.end)
+        };
+    
+        // Kiểm tra xem start và end có giá trị hợp lệ sau khi format không
+        if (!formattedCouncilEdit.start || !formattedCouncilEdit.end) {
+            console.error('Invalid time format for start or end.');
+            return;
+        }
+    
+        console.log("Send data: ", formattedCouncilEdit);
         try {
             const response = await axiosInstance.post(`/head/council/editCouncilEssay/${council.subject.subjectId}`, null, {
                 headers: {
                     'Authorization': `Bearer ${userToken}`,
                 },
                 params: {
-                    lecturer1: councilEdit.lecturer1,
-                    lecturer2: councilEdit.lecturer2,
-                    start: councilEdit.start,
-                    end: councilEdit.end,
-                    date: councilEdit.date,
-                    address: councilEdit.address,
+                    lecturer1: formattedCouncilEdit.lecturer1,
+                    lecturer2: formattedCouncilEdit.lecturer2,
+                    start: formattedCouncilEdit.start,
+                    end: formattedCouncilEdit.end,
+                    date: formattedCouncilEdit.date,
+                    address: formattedCouncilEdit.address,
                 },
             });
             console.log("Save response: ", response.data);
@@ -125,6 +138,22 @@ function DataTableTopicSuccess() {
             console.error('Error saving council details:', error);
         }
     };
+    
+    
+    const formatTime = (time) => {
+        if (!time) return '';
+        
+        const [hours, minutes] = time.split(':');
+        
+        // Kiểm tra xem hours và minutes có phải là số hợp lệ không
+        if (isNaN(hours) || isNaN(minutes)) {
+            return '';
+        }
+        
+        return hours.padStart(2, '0') + ':' + minutes.padStart(2, '0');
+    };
+    
+    
 
     return (
         <div>

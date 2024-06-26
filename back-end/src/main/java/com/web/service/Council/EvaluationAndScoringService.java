@@ -394,12 +394,22 @@ public class EvaluationAndScoringService {
                                                             String studentId1,String studentId2,String studentId3,
                                                             String reviewStudent1, String reviewStudent2, String reviewStudent3,
                                                             Double scoreStudent1, Double scoreStudent2, Double scoreStudent3){
+        // Thêm logging để kiểm tra dữ liệu đầu vào
+        System.out.println("Received data: studentId1 = " + studentId1 + ", studentId2 = " + studentId2 +
+                ", studentId3 = " + studentId3 + ", scoreStudent1 = " + scoreStudent1 +
+                ", scoreStudent2 = " + scoreStudent2 + ", scoreStudent3 = " + scoreStudent3 +
+                ", reviewStudent1 = " + reviewStudent1 + ", reviewStudent2 = " + reviewStudent2 +
+                ", reviewStudent3 = " + reviewStudent3);
+
+        // Tiếp tục logic xử lý...
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
 
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
+            System.out.println("Council:  " + existedSubject.getCouncil().getAddress());
+            System.out.println("Check var compare: " + CompareTime.isCurrentTimeInCouncilTime(existedSubject.getCouncil()));
             if (CompareTime.isCurrentTimeInCouncilTime(existedSubject.getCouncil())) {
                 //Đếm số luượng giảng viên trong hội đồng - đếm số lượng councillecturer của council đó
                 List<CouncilLecturer> councilLecturerByCouncil = councilLecturerRepository.getListCouncilLecturerByCouncil(existedSubject.getCouncil());
@@ -473,13 +483,13 @@ public class EvaluationAndScoringService {
                                     //Sau khi lưu kết quả, check số lượng kết quả của subject và student này
                                     //Nếu bằng số lượng GV trong hội đồng và GVHD đã chấm điểm thì cho active = 9
                                     //Tìm Kết quả
-                                    /*ResultEssay resultEssay = resultEssayRepository.findResultEssayByStudentAndSubject(student1, existedSubject);
+                                    ResultEssay resultEssay = resultEssayRepository.findResultEssayByStudentAndSubject(student1, existedSubject);
                                     //Tìm ds điểm của kq đó
                                     List<ScoreEssay> scoreEssays = scoreEssayRepository.getScoreEssayByResultEssay(resultEssay);
                                     int countScore = scoreEssays.size();
-                                    if (countScore == countLecturers && resultEssay.getScoreInstructor() != null) {
+                                    if (countScore == countLecturers) {
                                         existedSubject.setActive((byte) 9);
-                                    }*/
+                                    }
                                     subjectRepository.save(existedSubject);
 
                                 } else {
@@ -722,13 +732,7 @@ public class EvaluationAndScoringService {
                                     existedResultGraduation.setScoreCouncil(scoreGraduationList);
                                     resultGraduationRepository.save(existedResultGraduation);
                                     //Tạo mới list result để gán cho subject
-                                    List<ResultGraduation> resultGraduations = new ArrayList<>();
-                                    resultGraduations.add(existedResultGraduation);
-                                    existedSubject.setResultGraduations(resultGraduations);
-                                    //đếm số lượng score của result student 1 rồi ó sánh với countLecturers
-                                    if (student1.getResultGraduation().getScoreCouncil().size() == countLecturers) {
-                                        existedSubject.setActive((byte) 9);
-                                    }
+                                   
 
                                     existedLecturer.setScoreGraduationList(scoreGraduationList);
                                     lecturerRepository.save(existedLecturer);

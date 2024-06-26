@@ -42,7 +42,7 @@ function CommitteTable() {
     };
 
     const detailTopic = () => {
-        axiosInstance.get(`/head/council/detail/${subjectIdDetail}`, {
+        axiosInstance.get(`/head/council/detailSubject/${subjectIdDetail}`, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             }
@@ -107,6 +107,7 @@ function CommitteTable() {
                 reviewStudent3: detail.subject.student3 ? (review[detail.subject.student3] || null) : null,
             };
 
+            console.log("Đánh giá: ", evaluationData);
             const response = await axiosInstance.post(`/head/council/evaluation-scoring/${subjectId}`, evaluationData, {
                 headers: {
                     'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
@@ -155,7 +156,7 @@ function CommitteTable() {
                                         <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
                                             onClick={() => {
                                                 setDetail(item.subject);
-                                                setSubjectIdDetail(item.councilId);
+                                                setSubjectIdDetail(item.subject.subjectId);
                                                 setSubjectId(item.subject.subjectId);
                                             }}>
                                             Đánh giá
@@ -297,4 +298,3 @@ function CommitteTable() {
 }
 
 export default CommitteTable;
-

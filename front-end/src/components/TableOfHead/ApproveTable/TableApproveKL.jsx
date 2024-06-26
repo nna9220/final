@@ -7,6 +7,8 @@ import PlaylistRemoveOutlinedIcon from '@mui/icons-material/PlaylistRemoveOutlin
 import PlaylistAddCheckOutlinedIcon from '@mui/icons-material/PlaylistAddCheckOutlined';
 import axiosInstance from '../../../API/axios';
 import RestoreOutlinedIcon from '@mui/icons-material/RestoreOutlined';
+import DoneOutlineOutlinedIcon from '@mui/icons-material/DoneOutlineOutlined';
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 import './TableApprove.scss';
 
 function TableApproveKL() {
@@ -20,29 +22,26 @@ function TableApproveKL() {
     const [isApprovalPeriod, setIsApprovalPeriod] = useState(true);
 
     useEffect(() => {
-        console.log("Token: " + userToken);
         if (userToken) {
-            const tokenSt = sessionStorage.getItem(userToken);
-            if (!tokenSt) {
-                loadTimeApprove();
-            }
+            loadTimeApprove();
         }
     }, [userToken]);
 
     const loadTopics = () => {
-        axiosInstance.get('/head/subject', {
+        axiosInstance.get('/head/subjectGraduation', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
         })
             .then(response => {
-                console.log("Topic: ", response.data);
                 const topicsWithId = response.data.listSubject.map((topic, index) => ({
                     ...topic,
                     id: topic.subjectId,
-                    instructorName: topic.instructorId.person.firstName + ' ' + topic.instructorId.person.lastName
+                    instructorName: `${topic.instructorId.person.firstName} ${topic.instructorId.person.lastName}`
                 }));
                 setTopics(topicsWithId);
+                console.log("Topic: ", response.data.listSubject);
+                setShowTable(true);
             })
             .catch(error => {
                 console.error(error);
@@ -50,19 +49,20 @@ function TableApproveKL() {
     };
 
     const loadListDelete = () => {
-        axiosInstance.get('/head/subject/delete', {
+        axiosInstance.get('/head/subjectGraduation/delete', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
         })
             .then(response => {
-                console.log("Topic deleted: ", response.data);
                 const topicsDeletedWithId = response.data.lstSubject.map((topic, index) => ({
                     ...topic,
                     id: topic.subjectId,
-                    instructorName: topic.instructorId.person.firstName + ' ' + topic.instructorId.person.lastName
+                    instructorName: `${topic.instructorId.person.firstName} ${topic.instructorId.person.lastName}`
                 }));
                 setTopicsDeleted(topicsDeletedWithId);
+                console.log("Topic đã xóa: ", response.data.lstSubject);
+                setShowTable(false);
             })
             .catch(error => {
                 console.error(error);
@@ -87,7 +87,7 @@ function TableApproveKL() {
     };
 
     const handleApprove = (id) => {
-        axiosInstance.post(`/head/subject/browse/${id}`, null, {
+        axiosInstance.post(`/head/subjectGraduation/browse/${id}`, null, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -95,26 +95,28 @@ function TableApproveKL() {
             .then(response => {
                 toast.success("Duyệt đề tài thành công!");
                 setIsApprovalPeriod(true);
+                loadTopics();
             })
             .catch(error => {
                 console.error("Lỗi khi duyệt đề tài: ", error);
                 if (error.response && error.response.status === 400 && error.response.data === "Không nằm trong thời gian duyệt") {
                     setIsApprovalPeriod(false);
+                    loadTopics();
                 } else {
+                    toast.error("Lỗi khi duyệt đề tài!");
                 }
-                toast.error(toastMessage);
             });
     };
 
     const handleDelete = (id) => {
-        axiosInstance.post(`/head/subject/delete/${id}`, null, {
+        axiosInstance.post(`/head/subjectGraduation/delete/${id}`, null, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
         })
             .then(response => {
-                toast.success("Xóa thành công");
-                console.log("Xóa thành công");
+                toast.success("Xóa đề tài thành công");
+                loadListDelete();
             })
             .catch(error => {
                 console.error("Lỗi khi xóa đề tài: ", error);
@@ -122,10 +124,27 @@ function TableApproveKL() {
             });
     };
 
+    const handleRestore = (id) => {
+        axiosInstance.post(`/head/subjectGraduation/restore/${id}`, null, {
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+            },
+        })
+            .then(response => {
+                toast.success("Khôi phục đề tài thành công");
+                loadListDelete();
+                loadTopics();
+            })
+            .catch(error => {
+                console.error("Lỗi khi khôi phục đề tài: ", error);
+                toast.error("Lỗi khi khôi phục đề tài!");
+            });
+    };
+
     const columns = [
         { field: 'id', headerName: '#', width: 60 },
-        { field: 'subjectName', headerName: 'Tên đề tài', width: 250 },
-        { field: 'instructorName', headerName: 'GVHD', width: 150 },
+        { field: 'subjectName', headerName: 'Tên đề tài', width: 200 },
+        { field: 'instructorName', headerName: 'GVHD', width: 180 },
         { field: 'student1', headerName: 'Sinh viên 1', width: 100 },
         { field: 'student2', headerName: 'Sinh viên 2', width: 100 },
         { field: 'student3', headerName: 'Sinh viên 3', width: 100 },
@@ -136,17 +155,17 @@ function TableApproveKL() {
             width: 150,
             renderCell: (params) => (
                 <>
-                    {!showTable ? (
+                    {showTable ? (
                         <div style={{ display: 'flex' }}>
                             <button type="button" className="btn button-res" data-bs-toggle="modal" data-bs-target="#approve" onClick={() => { setSubjectName(params.row.subjectName); setSubjectId(params.row.id) }}>
-                                <p className='text'>Duyệt</p>
+                                <p className='text'><DoneOutlineOutlinedIcon /></p>
                             </button>
                             <button type="button" className="btn button-res-de" data-bs-toggle="modal" data-bs-target="#delete" onClick={() => { setSubjectName(params.row.subjectName); setSubjectId(params.row.id) }}>
-                                <p className='text'>Xóa</p>
+                                <p className='text'><DeleteForeverOutlinedIcon /></p>
                             </button>
                         </div>
                     ) : (
-                        <button className='button-res'>
+                        <button className='button-res' data-bs-toggle="modal" data-bs-target="#restore" onClick={() => { setSubjectName(params.row.subjectName); setSubjectId(params.row.id) }}>
                             <p className='text'><RestoreOutlinedIcon /></p>
                         </button>
                     )}
@@ -159,58 +178,63 @@ function TableApproveKL() {
         <div className='body-table'>
             <ToastContainer />
             {isApprovalPeriod && (
-            <button className='button-listDelete-approve' onClick={() => setShowTable(!showTable)}>
-                {showTable ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách đề tài chưa duyệt</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách đề tài đã xóa</>}
-            </button>
+                <button className='button-listDelete-approve' onClick={() => setShowTable(!showTable)}>
+                    {showTable ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách đề tài đã xóa</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách đề tài chờ duyệt</>}
+                </button>
             )}
 
             {isApprovalPeriod ? (
-                !showTable ? (
-                    <div className='home-table table-approve'>
-                        <DataGrid
-                            rows={topicsDeleted}
-                            columns={columns}
-                            initialState={{
-                                ...topics.initialState,
-                                pagination: { paginationModel: { pageSize: 10 } },
-                            }}
-                            pageSizeOptions={[10, 25, 50]}
-                        />
-                    </div>
+                showTable ? (
+                    topics.length > 0 ? (
+                        <div className='home-table table-approve'>
+                            <DataGrid
+                                rows={topics}
+                                columns={columns}
+                                initialState={{
+                                    pagination: { paginationModel: { pageSize: 10 } },
+                                }}
+                                pageSizeOptions={[10, 25, 50]}
+                            />
+                        </div>
+                    ) : (
+                        <div className='no-data'>Không có dữ liệu</div>
+                    )
                 ) : (
-                    <div className='home-table table-approve'>
-                        <DataGrid
-                            rows={topics}
-                            columns={columns}
-                            initialState={{
-                                ...topics.initialState,
-                                pagination: { paginationModel: { pageSize: 10 } },
-                            }}
-                            pageSizeOptions={[10, 25, 50]}
-                        />
-                    </div>
+                    topicsDeleted.length > 0 ? (
+                        <div className='home-table table-approve'>
+                            <DataGrid
+                                rows={topicsDeleted}
+                                columns={columns}
+                                pageSize={10}
+                                initialState={{
+                                    pagination: { paginationModel: { pageSize: 10 } },
+                                }}
+                                pageSizeOptions={[10, 25, 50]}
+                            />
+                        </div>
+                    ) : (
+                        <div className='no-data'>Không có dữ liệu</div>
+                    )
                 )
             ) : (
-                <>
-                    <div className="alert alert-warning alert-head" role="alert" style={{backgroundColor:'white', border:'none'}}>
-                             {toastMessage}
-                        </div>
-                </>
+                <div className="alert alert-warning alert-head" role="alert" style={{ backgroundColor: 'white', border: 'none' }}>
+                    {toastMessage}
+                </div>
             )}
 
             <div className="modal fade" id="approve" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="exampleModalLabel">Duyệt dề tài</h1>
+                            <h1 className="modal-title fs-5" id="exampleModalLabel">Duyệt đề tài</h1>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                            Bạn chắn chắn muốn duyệt đề tài {subjectName}?
+                            Bạn chắc chắn muốn duyệt đề tài {subjectName}?
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => handleApprove(subjectId)}>Confirm</button>
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => handleApprove(subjectId)}>Xác nhận</button>
                         </div>
                     </div>
                 </div>
@@ -220,15 +244,33 @@ function TableApproveKL() {
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="exampleModalLabel">Xóa dề tài</h1>
+                            <h1 className="modal-title fs-5" id="exampleModalLabel">Xóa đề tài</h1>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                            Bạn chắn chắn muốn xóa đề tài {subjectName}?
+                            Bạn chắc chắn muốn xóa đề tài {subjectName}?
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => handleDelete(subjectId)}>Delete</button>
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => handleDelete(subjectId)}>Xác nhận</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="modal fade" id="restore" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h1 className="modal-title fs-5" id="exampleModalLabel">Khôi phục đề tài</h1>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            Bạn chắc chắn muốn khôi phục đề tài {subjectName}?
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => handleRestore(subjectId)}>Xác nhận</button>
                         </div>
                     </div>
                 </div>
