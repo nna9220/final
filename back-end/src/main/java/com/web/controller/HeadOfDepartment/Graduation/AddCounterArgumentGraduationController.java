@@ -207,16 +207,18 @@ public class AddCounterArgumentGraduationController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
-    public ResponseEntity<?> getDanhSachDeTai(@RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<Map<String,Object>> getDanhSachDeTai(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-        System.out.println("Before check role");
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
-            System.out.println("Aftẻ check role");
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
             List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) 0,typeSubject);
-            return new ResponseEntity<>(subjectByCurrentLecturer,HttpStatus.OK);
+
+            Map<String,Object> response = new HashMap<>();
+            response.put("person", personCurrent);
+            response.put("listSubject", subjectByCurrentLecturer);
+            return new ResponseEntity<>(response,HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -420,6 +422,25 @@ public class AddCounterArgumentGraduationController {
         }
     }
 
+    @PostMapping("/restore/{id}")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
+    public ResponseEntity<?> restoreSubject(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
+            Subject existSubject = subjectRepository.findById(id).orElse(null);
+            existSubject.setActive((byte) 1);
+            subjectRepository.save(existSubject);
+
+            String subject = "Topic: " + existSubject.getSubjectName() ;
+            String messenger = "Topic: " + existSubject.getSubjectName() + " đã bị xóa!!";
+            mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
+
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
     @PostMapping("/import")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> importSubject(@RequestParam("file") MultipartFile file,  @RequestHeader("Authorization") String authorizationHeader) throws IOException {

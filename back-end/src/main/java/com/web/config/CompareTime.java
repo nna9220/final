@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class CompareTime {
@@ -105,10 +106,18 @@ public class CompareTime {
     public static boolean isCurrentTimeInCouncilTime(Council council) {
         if (council != null) {
             LocalDate currentDate = LocalDate.now();
-            LocalTime currentTime = LocalTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            LocalTime currentTime = LocalTime.parse(LocalTime.now().format(formatter));
 
             // Kiểm tra ngày hiện tại và thời gian hiện tại nằm trong khoảng thời gian của council
             if (currentDate.equals(council.getDate())) {
+                System.out.println("Current date: " + currentDate);
+                System.out.println("Current time: " + currentTime);
+                System.out.println(" start: " + council.getStart());
+                System.out.println(" end: " + council.getEnd());
+                System.out.println("date: " + council.getDate());
+                System.out.println("Check start: " +currentTime.isAfter(council.getStart()));
+                System.out.println("Check end: " +currentTime.isBefore(council.getEnd()));
                 return currentTime.isAfter(council.getStart()) && currentTime.isBefore(council.getEnd());
             }
         }

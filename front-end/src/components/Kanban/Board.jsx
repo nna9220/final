@@ -32,6 +32,7 @@ const KanbanBoard = () => {
   const [report50, setReport50] = useState('');
   const [report100, setReport100] = useState('');
   const [currentDroppableId, setCurrentDroppableId] = useState('MustDo'); // State lưu trữ droppableId hiện tại
+  const [statusSubject, setStatusSubject] = useState(null);
   const handleChangeAdd = (e) => {
     const { name, value } = e.target;
     setFormNewTask(prevState => ({
@@ -66,6 +67,7 @@ const KanbanBoard = () => {
         })
           .then(response => {
             console.log("list: ", response.data);
+            setStatusSubject(response.data.subject.status)
             setSubject(response.data.subject.subjectName)
             setData(response.data.listTask);
             SetStatusActive(response.data.subject.active);
@@ -230,7 +232,11 @@ const KanbanBoard = () => {
 
   return (
     <div>
-      {statusActive != 0 ? (
+      {statusActive === 0 || statusActive === 8 || statusActive === 9 ? (
+        <div class="alert alert-warning" role="alert">
+          Bạn không thể truy cập vào đề tài!!!
+        </div>
+      ) : (
         <>
           <div>
             <ToastContainer />
@@ -393,10 +399,7 @@ const KanbanBoard = () => {
             )}
           </div>
         </>
-      ) : (
-        <div class="alert alert-warning" role="alert">
-          Đề tài chưa được duyệt
-        </div>)}
+        )}
     </div>
   );
 };

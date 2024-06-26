@@ -106,21 +106,54 @@ function CommitteTable() {
                 reviewStudent2: detail.subject.student2 ? (review[detail.subject.student2] || '') : null,
                 reviewStudent3: detail.subject.student3 ? (review[detail.subject.student3] || '') : null,
             };
-
+    
             console.log("Sending evaluation data: ", evaluationData);
-
+    
             const response = await axiosInstance.post(`/lecturer/council/evaluation-scoring/${subjectId}`, evaluationData, {
                 headers: {
                     'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
                     'Content-Type': 'multipart/form-data', // Ensure the correct content type
                 }
             });
-
+    
             console.log("Đánh giá và tính điểm thành công: ", response.data);
+    
+            // Xử lý khi trả về HTTP status code là 302
+            if (response.statusCodeValue === 302) {
+                alert("Đã được chấm điểm");
+                // Thực hiện các hành động khác nếu cần
+            }
+    
         } catch (error) {
-            console.error("Lỗi khi đánh giá và tính điểm: ", error.response?.data || error.message);
+            if (error.response) {
+                // Xử lý lỗi từ phía server (có response từ server)
+                console.error("Lỗi khi đánh giá và tính điểm: ", error.response.data || error.message);
+                
+                if (error.response.status === 404) {
+                    // Xử lý lỗi 404 - Not Found (ví dụ: hiển thị thông báo đề tài không tồn tại)
+                    alert("Đề tài không tồn tại");
+                } else if (error.response.status === 403) {
+                    // Xử lý lỗi 403 - Forbidden (ví dụ: hiển thị thông báo người dùng không có quyền)
+                    alert("Bạn không có quyền thực hiện thao tác này");
+                } else if (error.response.status === 400) {
+                    // Xử lý lỗi 400 - Bad Request (ví dụ: hiển thị thông báo lỗi nhập liệu không hợp lệ)
+                    alert("Dữ liệu không hợp lệ");
+                } else {
+                    // Xử lý các trường hợp lỗi khác
+                    alert("Đã xảy ra lỗi khi đánh giá và tính điểm");
+                }
+            } else if (error.request) {
+                // Xử lý khi request được gửi đi nhưng không nhận được response (không có response từ server)
+                console.error("Lỗi khi gửi yêu cầu đánh giá và tính điểm: ", error.request);
+                alert("Không thể kết nối đến server");
+            } else {
+                // Xử lý lỗi khác
+                console.error("Lỗi khi đánh giá và tính điểm: ", error.message);
+                alert("Đã xảy ra lỗi khi đánh giá và tính điểm");
+            }
         }
     };
+    
 
 
     return (
@@ -158,8 +191,8 @@ function CommitteTable() {
                                         <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
                                             onClick={() => {
                                                 setDetail(item.subject);
-                                                setSubjectIdDetail(item.councilId);
-                                                setSubjectId(item.councilId);
+                                                setSubjectIdDetail(item.subject.subjectId);
+                                                setSubjectId(item.subject.subjectId);
                                             }}>
                                             Đánh giá
                                         </button>

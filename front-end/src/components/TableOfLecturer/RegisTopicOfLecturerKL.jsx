@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './RegisTopicOfLecturer.scss'
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import { Toast } from 'react-bootstrap';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import axiosInstance from "../../API/axios";
+import WarningOutlinedIcon from '@mui/icons-material/WarningOutlined';
 import AlarmOnOutlinedIcon from '@mui/icons-material/AlarmOnOutlined';
 import HourglassEmptyOutlinedIcon from '@mui/icons-material/HourglassEmptyOutlined';
-import WarningOutlinedIcon from '@mui/icons-material/WarningOutlined';
 import Select from 'react-select';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function RegisTopicOfLecturerKL() {
     const [isLoading, setIsLoading] = useState(false);
@@ -118,26 +121,27 @@ function RegisTopicOfLecturerKL() {
             })
             .then(response => {
                 console.log('Đề tài đã được tạo thành công:', response.data);
-                setShowAddToast(true);
+                toast.success("Đăng ký đề tài thành công. Vui lòng chờ duyệt!")
+                reloadForm();
             })
             .catch(error => {
                 console.error(error);
                 console.log("Lỗi");
+                toast.error("Đăng ký đề tài thất bại!");
                 setShowErrorToastAdd(true);
             });
     };
-    const handleChange = (e) => {
-        const { name, value } = e.target;
+
+    const handleChange = (name, selectedOption) => {
         setFormData(prevState => ({
             ...prevState,
-            [name]: value
+            [name]: selectedOption ? selectedOption.value : null
         }));
     };
 
-
-
     return (
         <div className='homeRegis'>
+            <ToastContainer />
             {currentPeriod ? (
                 <div className='informationPeriod'>
                     <h5 className='namePeriod'>Đợt đăng ký: {currentPeriod.registrationName}</h5>
@@ -145,13 +149,10 @@ function RegisTopicOfLecturerKL() {
                     <p className='timePeriod'><HourglassEmptyOutlinedIcon /> Kết thúc: {currentPeriod.registrationTimeEnd}</p>
                 </div>
             ) : (
-                <>
-                    <div className="alert alert-warning alert-lecturer" role="alert">
-                        <WarningOutlinedIcon /> Hiện tại không nằm trong thời gian đăng ký đề tài !!!
-                    </div>
-                </>
+                <div className="alert alert-warning alert-lecturer" role="alert">
+                    <WarningOutlinedIcon /> Hiện tại không nằm trong thời gian đăng ký đề tài !!!
+                </div>
             )}
-
             <div className='menuItems'>
                 {currentPeriod && (
                     <>
@@ -232,4 +233,4 @@ function RegisTopicOfLecturerKL() {
     );
 }
 
-export default RegisTopicOfLecturerKL
+export default RegisTopicOfLecturerKL;
