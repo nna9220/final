@@ -23,6 +23,6 @@ jobs:
         script: |
           cd final
           git pull
-          echo "${{ secrets.FRONT_END_ADMIN_ENV }}" > frontend/admin/.env
+          echo "${{ secrets.FRONT_END_ENV }}" > frontend/.env
           echo "${{ secrets.APPLICATION_PROPERTIES }}" > backend/src/main/resources/application.properties
           docker-compose up -d --build
