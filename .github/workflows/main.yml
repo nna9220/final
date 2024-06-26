@@ -1,0 +1,29 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: SSH into server and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.HOST_USERNAME }}
+          password: ${{ secrets.HOST_PASSWORD }}
+          port: ${{ secrets.HOST_PORT }}
+          script: |
+            echo "Attempting s SSH connection to ${{ secrets.HOST }} as ${{ secrets.HOST_USERNAME }} on port ${{ secrets.HOST_PORT }}..."
+            cd final
+            git pull
+            echo "${{ secrets.FRONT_END_ENV }}" > frontend/.env
+            echo "${{ secrets.APPLICATION_PROPERTIES }}" > backend/src/main/resources/application.properties
+            docker-compose up -d --build
