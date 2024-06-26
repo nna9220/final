@@ -953,7 +953,8 @@ public class EvaluationAndScoringService {
             //Tìm ds điểm của kq đó
             List<ScoreGraduation> scoreGraduations = scoreGraduationRepository.getScoreGraduationByResultGraduation(resultGraduation);
             int countScore = scoreGraduations.size();
-            int countLecturers = 0;//existedSubject.getCouncil().getLecturers().size();
+            List<CouncilLecturer> councilLecturerByCouncil = councilLecturerRepository.getListCouncilLecturerByCouncil(existedSubject.getCouncil());
+            int countLecturers = councilLecturerByCouncil.size();
             if (countScore==countLecturers && resultGraduation.getScoreInstructor()!=null){
                 existedSubject.setActive((byte)9);
             }
