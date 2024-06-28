@@ -64,9 +64,8 @@ public class HeadAddCommentGraduationController {
     @PostMapping("/create/{taskId}")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> createComment(@PathVariable int taskId,
-                                           @RequestParam("content") String content,
-                                           @RequestParam("fileInput") List<MultipartFile> files,
-                                           @RequestHeader("Authorization") String authorizationHeader){
+                                      @RequestParam("content") String content,
+                                      @RequestParam(value = "fileInput",required = false) List<MultipartFile> files, @RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
@@ -133,7 +132,7 @@ public class HeadAddCommentGraduationController {
             if (!emailPerson.isEmpty()){
                 mailService.sendMailToPerson(emailPerson,subject,messenger);
             }
-            return new ResponseEntity<>(comment, HttpStatus.CREATED);
+            return new ResponseEntity<>(existSubject, HttpStatus.OK);
         }else{
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
