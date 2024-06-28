@@ -147,7 +147,8 @@ public class HeadManageTutorialSubjectGraduationController {
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> getDetailSubjectSuccessful(@PathVariable int id,@RequestHeader("Authorization") String authorizationHeader){
         try {
-            return new ResponseEntity<>(manageTutorialSubjectService.getDetailSubjectSuccessful(id,authorizationHeader),HttpStatus.OK);
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
+            return new ResponseEntity<>(manageTutorialSubjectService.getDetailSubjectSuccessful(id,authorizationHeader,typeSubject),HttpStatus.OK);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);

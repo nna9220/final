@@ -52,7 +52,18 @@ public class LecturerCouncilGraduationController {
         }
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("/detailSubject/{id}")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
+    public ResponseEntity<?> detailSubject(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader){
+        try {
+            return new ResponseEntity<>(evaluationAndScoringService.detailSubjectLecturerCouncil(authorizationHeader,id),HttpStatus.OK);
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    @GetMapping("/detailCouncil/{id}")
     @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<?> detailCouncil(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader){
         try {
