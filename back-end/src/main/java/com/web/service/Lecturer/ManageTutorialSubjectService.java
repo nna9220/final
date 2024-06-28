@@ -26,6 +26,10 @@ public class ManageTutorialSubjectService {
     @Autowired
     private StudentRepository studentRepository;
     @Autowired
+    private ResultGraduationRepository resultGraduationRepository;
+    @Autowired
+    private ResultEssayRepository resultEssayRepository;
+    @Autowired
     private SubjectRepository subjectRepository;
     @Autowired
     private UserUtils userUtils;
@@ -34,13 +38,15 @@ public class ManageTutorialSubjectService {
     @Autowired
     private PersonRepository personRepository;
     @Autowired
+    private ScoreEssayRepository scoreEssayRepository;
+    @Autowired
+    private ScoreGraduationRepository scoreGraduationRepository;
+    @Autowired
     private MailServiceImpl mailService;
     @Autowired
     private NotificationRepository notificationRepository;
     @Autowired
     private EvaluationCriteriaRepository evaluationCriteriaRepository;
-    @Autowired
-    private ResultGraduationRepository resultGraduationRepository;
 
     //Thông báo nộp 50%
     public ResponseEntity<?> NoticeOfFiftyReportSubmission(int id,@RequestHeader("Authorization") String authorizationHeader){
@@ -485,17 +491,100 @@ public class ManageTutorialSubjectService {
     }
 
     //Chi tiết đề tài đã hoàn thành
-    public ResponseEntity<?> getDetailSubjectSuccessful(int id, @RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<Map<String,Object>> getDetailSubjectSuccessful(int id, @RequestHeader("Authorization") String authorizationHeader,TypeSubject typeSubject){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        double score1 = 0;
+        double score2 = 0;
+        double score3 = 0;
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             Subject existedSubject = subjectRepository.findById(id).orElse(null);
-            return new ResponseEntity<>(existedSubject,HttpStatus.OK);
+            Map<String,Object> response = new HashMap<>();
+            if (existedSubject!=null) {
+                response.put("subject",existedSubject);
+                if (existedSubject.getStudent1() != null) {
+                    Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
+                    if (Objects.equals(typeSubject.getTypeName(), "Tiểu luận chuyên ngành")) {
+                        ResultEssay resultEssay = resultEssayRepository.findResultEssayByStudentAndSubject(student1, existedSubject);
+                        List<ScoreEssay> scoreEssays = scoreEssayRepository.getScoreEssayByResultEssay(resultEssay);
+                        int countLecturer = scoreEssays.size();
+                        for (ScoreEssay s : scoreEssays) {
+                            score1 = score1 + s.getScore();
+                        }
+                        score1 = score1 / countLecturer;
+                    } else if (Objects.equals(typeSubject.getTypeName(), "Khóa luận tốt nghiệp")) {
+                        ResultGraduation resultGraduation = resultGraduationRepository.findResultGraduationByStudentAndSubject(student1, existedSubject);
+                        List<ScoreGraduation> scoreGraduations = scoreGraduationRepository.getScoreGraduationByResultGraduation(resultGraduation);
+                        int countLecturer = scoreGraduations.size();
+                        double scoreCouncil = 0;
+                        for (ScoreGraduation s : scoreGraduations) {
+                            scoreCouncil = scoreCouncil + s.getScore();
+                        }
+                        scoreCouncil = scoreCouncil / countLecturer;
+                        score1 = scoreCouncil + resultGraduation.getScoreInstructor() / 2;
+                    }
+                    response.put("student1",student1);
+                    response.put("scoreStudent1",score1);
+
+                }
+                if (existedSubject.getStudent2() != null) {
+                    Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
+                    if (Objects.equals(typeSubject.getTypeName(), "Tiểu luận chuyên ngành")) {
+                        ResultEssay resultEssay = resultEssayRepository.findResultEssayByStudentAndSubject(student2, existedSubject);
+                        List<ScoreEssay> scoreEssays = scoreEssayRepository.getScoreEssayByResultEssay(resultEssay);
+                        int countLecturer = scoreEssays.size();
+                        for (ScoreEssay s : scoreEssays) {
+                            score2 = score2 + s.getScore();
+                        }
+                        score2 = score2 / countLecturer;
+                    } else if (Objects.equals(typeSubject.getTypeName(), "Khóa luận tốt nghiệp")) {
+                        ResultGraduation resultGraduation = resultGraduationRepository.findResultGraduationByStudentAndSubject(student2, existedSubject);
+                        List<ScoreGraduation> scoreGraduations = scoreGraduationRepository.getScoreGraduationByResultGraduation(resultGraduation);
+                        int countLecturer = scoreGraduations.size();
+                        double scoreCouncil = 0;
+                        for (ScoreGraduation s : scoreGraduations) {
+                            scoreCouncil = scoreCouncil + s.getScore();
+                        }
+                        scoreCouncil = scoreCouncil / countLecturer;
+                        score2 = scoreCouncil + resultGraduation.getScoreInstructor() / 2;
+                    }
+                    response.put("student2",student2);
+                    response.put("scoreStudent2",score2);
+
+                }
+                if (existedSubject.getStudent3() != null) {
+                    Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
+                    if (Objects.equals(typeSubject.getTypeName(), "Tiểu luận chuyên ngành")) {
+                        ResultEssay resultEssay = resultEssayRepository.findResultEssayByStudentAndSubject(student3, existedSubject);
+                        List<ScoreEssay> scoreEssays = scoreEssayRepository.getScoreEssayByResultEssay(resultEssay);
+                        int countLecturer = scoreEssays.size();
+                        for (ScoreEssay s : scoreEssays) {
+                            score3 = score3 + s.getScore();
+                        }
+                        score3 = score3 / countLecturer;
+                    } else if (Objects.equals(typeSubject.getTypeName(), "Khóa luận tốt nghiệp")) {
+                        ResultGraduation resultGraduation = resultGraduationRepository.findResultGraduationByStudentAndSubject(student3, existedSubject);
+                        List<ScoreGraduation> scoreGraduations = scoreGraduationRepository.getScoreGraduationByResultGraduation(resultGraduation);
+                        int countLecturer = scoreGraduations.size();
+                        double scoreCouncil = 0;
+                        for (ScoreGraduation s : scoreGraduations) {
+                            scoreCouncil = scoreCouncil + s.getScore();
+                        }
+                        scoreCouncil = scoreCouncil / countLecturer;
+                        score3 = scoreCouncil + resultGraduation.getScoreInstructor() / 2;
+                    }
+                    response.put("student3",student3);
+                    response.put("scoreStudent3",score3);
+
+                }
+
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
-    
-
 }
