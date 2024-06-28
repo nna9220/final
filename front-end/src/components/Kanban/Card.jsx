@@ -8,6 +8,7 @@ import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurned
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import './scroll.scss'
 import axiosInstance from '../../API/axios';
+import { toast } from 'react-toastify';
 
 const Card = ({ task, index }) => {
   const [selectedTask, setSelectedTask] = useState(null);
@@ -35,6 +36,11 @@ const Card = ({ task, index }) => {
             'Authorization': `Bearer ${userToken}`,
           },
         });
+        const sortedComments = response.data.listComment.reverse(); // Sắp xếp comment từ mới nhất đến cũ nhất
+        setDetail(prevDetail => ({
+          ...prevDetail,
+          listComment: sortedComments
+        }));
         console.log("detailTask: ", response.data);
         setDetail(response.data);
         setFile(response.data.listFile);
@@ -47,6 +53,10 @@ const Card = ({ task, index }) => {
   const handleSubmitComment = async (e) => {
     e.preventDefault();
     const userToken = getTokenFromUrlAndSaveToStorage();
+    if (commentContent.trim() === '' && commentFiles.length === 0) {
+      toast.warning('Vui lòng nhập nội dung comment hoặc chọn ít nhất một file.');
+      return;
+    }
     try {
       const formData = new FormData();
       formData.append('content', commentContent);
@@ -127,10 +137,10 @@ const Card = ({ task, index }) => {
                     <form onSubmit={handleSubmitComment}>
                       <div className="mb-3">
                         <label htmlFor="commentContent" className="form-label">Comment</label>
-                        <textarea className="form-control" id="commentContent" rows="3" value={commentContent} onChange={handleCommentChange}></textarea>
+                        <textarea required className="form-control" id="commentContent" rows="3" value={commentContent} onChange={handleCommentChange}></textarea>
                       </div>
                       <div className="mb-3">
-                        <input type="file" className="form-control" id="commentFile" onChange={handleFileChange} multiple />
+                        <input key={commentFiles.length} type="file" className="form-control" id="commentFile" onChange={handleFileChange} multiple />
                       </div>
                       <div className="mb-3">
                         <button type="submit" className="btn btn-primary" style={{ marginBottom: '10px', display:'flex', justifyContent:'right'}}>Post Comment</button>

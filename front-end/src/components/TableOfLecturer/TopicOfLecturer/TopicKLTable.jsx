@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import ViewComfyAltOutlinedIcon from '@mui/icons-material/ViewComfyAltOutlined';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
+import ViewComfyAltOutlinedIcon from '@mui/icons-material/ViewComfyAltOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import axiosInstance from '../../../API/axios';
 import Booard from '../../KanbanOfLecturer/Booard';
+import ChevronLeftOutlinedIcon from '@mui/icons-material/ChevronLeftOutlined';
+import './TopicTable.scss'
+import BoardKL from '../../KanbanOfLecturer/Graduation/BoardKL';
 
-function TopicKLTable() {
+export default function TopicKLTable() {
     const [topics, setTopics] = useState([]);
     const [activeTLChuyenNganh, setActiveTLChuyenNganh] = useState(false);
     const [activeKhoaLuan, setActiveKhoaLuan] = useState(false);
@@ -24,7 +27,7 @@ function TopicKLTable() {
     const [subjectIdForRefuse, setSubjectIdForRefuse] = useState(null);
     const [subjectName, setSubjectName] = useState('');
     const [refusalReason, setRefusalReason] = useState("");
-
+    const [activeSubject, setActiveSubject] = useState(null);
     useEffect(() => {
         listTopic();
     }, [userToken]);
@@ -36,7 +39,7 @@ function TopicKLTable() {
             }
         })
             .then(response => {
-                console.log("TopicKL: ", response.data);
+                console.log("TopicTL: ", response.data);
                 setTopics(response.data.listSubject);
                 setActiveTLChuyenNganh(true);
                 setActiveKhoaLuan(false);
@@ -142,12 +145,12 @@ function TopicKLTable() {
                 }
             })
                 .then(response => {
-                    console.log('Duyệt đề tài thành công:', response.data);
-                    toast.success("Duyệt đề tài thành công!")
+                    console.log('Xác nhận hoàn thành đề tài. Vui lòng chờ TBM duyệt qua phản biện!', response.data);
+                    toast.success("Xác nhận hoàn thành đề tài. Vui lòng chờ TBM duyệt qua phản biện!")
                 })
                 .catch(error => {
-                    console.error('Lỗi khi duyệt đề tài qua phản biện:', error);
-                    toast.error("Lỗi khi duyệt đề tài qua phản biện!")
+                    console.error('Lỗi khi Xác nhận hoàn thành', error);
+                    toast.error("Xác nhận hoàn thành thất bại!")
                 });
         }
     };
@@ -164,7 +167,7 @@ function TopicKLTable() {
                 }
             })
                 .then(response => {
-                    console.log('Đề tài đã bị từ chối thành công:', response.data);
+                    console.log('Đề tài đã bị từ chối thành công!', response.data);
                     toast.success("Đề tài đã bị từ chối thành công!")
                 })
                 .catch(error => {
@@ -174,47 +177,74 @@ function TopicKLTable() {
         }
     };
 
+
     return (
         <div className='home-table-myTopicLec'>
             <ToastContainer />
             {showSubmitButton && (
                 <div>
-                {topics.length > 0 ? (
-                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                        <button className="submit50-all" style={{ marginRight: '10px' }} type="button" data-bs-toggle="modal" data-bs-target="#submit50">
-                            Nộp báo cáo 50%
-                        </button>
-                        <button className="submit100-all" type="button" data-bs-toggle="modal" data-bs-target="#submit100">
-                            Nộp báo cáo 100%
-                        </button>
-                    </div>
-                ) : (
-                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                        <button className="submit50-all" style={{ marginRight: '10px' }} type="button" data-bs-toggle="modal" data-bs-target="#submit50" disabled>
-                            Nộp báo cáo 50%
-                        </button>
-                        <button className="submit100-all" type="button" data-bs-toggle="modal" data-bs-target="#submit100" disabled>
-                            Nộp báo cáo 100%
-                        </button>
-                    </div>
-                )}
-            </div>
+                    {topics.length > 0 ? (
+                        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <button
+                                className="submit50-all"
+                                style={{ marginRight: '10px' }}
+                                type="button"
+                                data-bs-toggle="modal"
+                                data-bs-target="#submit50"
+                                disabled={topics.every((item) => item.active == 9)}
+                            >
+                                Nộp báo cáo 50%
+                            </button>
+                            <button
+                                className="submit100-all"
+                                type="button"
+                                data-bs-toggle="modal"
+                                data-bs-target="#submit100"
+                                disabled={topics.every((item) => item.active == 9)}
+                            >
+                                Nộp báo cáo 100%
+                            </button>
+                        </div>
+                    ) : (
+                        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <button
+                                className="submit50-all"
+                                style={{ marginRight: '10px' }}
+                                type="button"
+                                data-bs-toggle="modal"
+                                data-bs-target="#submit50"
+                                disabled
+                            >
+                                Nộp báo cáo 50%
+                            </button>
+                            <button
+                                className="submit100-all"
+                                type="button"
+                                data-bs-toggle="modal"
+                                data-bs-target="#submit100"
+                                disabled
+                            >
+                                Nộp báo cáo 100%
+                            </button>
+                        </div>
+                    )}
+                </div>
             )}
             {showBackButton && (
                 <>
                     <div className='group-lecturer'>
                         <nav aria-label="breadcrumb">
                             <ol className="breadcrumb">
-                                <li className="breadcrumb-item"><a href="#" onClick={handleGoBack}>Danh sách đề tài</a></li>
+                                <li className="breadcrumb-item"><a href="#" onClick={handleGoBack}> <ChevronLeftOutlinedIcon /> Danh sách đề tài</a></li>
                                 <li className="breadcrumb-item active" aria-current="page">{selectedSubjectName}</li>
                             </ol>
                         </nav>
-                        <button data-bs-toggle="modal" data-bs-target="#confirmSuccess">Hoàn thành đề tài</button>
+                        <button data-bs-toggle="modal" data-bs-target="#modalApproval2">Hoàn thành đề tài</button>
                     </div>
                 </>
             )}
             {showManagementTask ? (
-                <Booard subjectId={selectedSubjectId} />
+                <BoardKL subjectId={selectedSubjectId} />
             ) : (
                 <table className="table table-hover table-lec-topic">
                     <thead>
@@ -225,43 +255,52 @@ function TopicKLTable() {
                             <th scope="col">Sinh viên 1</th>
                             <th scope="col">Sinh viên 2</th>
                             <th scope="col">Sinh viên 3</th>
+                            <th scope='col'>Loại đề tài</th>
                             <th scope="col">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {topics.length > 0 ? (
-                            topics.map((item, index) => (
-                                <tr key={index}>
-                                    <th scope='row'>{index + 1}</th>
-                                    <td>{item.subjectName}</td>
-                                    <td>{item.thesisAdvisorId?.person?.firstName + ' ' + item.thesisAdvisorId?.person?.lastName}</td>
-                                    <td>{item.student1 || ''}</td>
-                                    <td>{item.student2 || ''}</td>
-                                    <td>{item.student3 || ''}</td>
-                                    <td>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                            <button className="management" type="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Đi đến chi tiết để quản lý đề tài" onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}><ViewComfyAltOutlinedIcon /></button>
-                                            <div class="dropdown">
-                                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <MenuOutlinedIcon />
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-placement="bottom" onClick={() => { setSubjectIdForSubmit50(item.subjectId); setSubjectName(item.subjectName) }}>Yêu cầu nộp báo cáo 50%</button></li>
-                                                    <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal1" data-bs-placement="bottom" onClick={() => { setSubjectIdForSubmit100(item.subjectId); setSubjectName(item.subjectName) }}>Yêu cầu nộp báo cáo 100%</button></li>
-                                                    <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#modalApproval" data-bs-placement="bottom" onClick={() => { setSubjectIdForApproval(item.subjectId); setSubjectName(item.subjectName) }}>Hoàn thành đề tài</button></li>
-                                                    <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#modalRefuse" data-bs-placement="bottom" onClick={() => { setSubjectIdForRefuse(item.subjectId); setSubjectName(item.subjectName) }}>Từ chối đề tài</button></li>
-                                                </ul>
+                            topics.filter((item) => item.active != 9).length > 0 ? (
+                                topics.filter((item) => item.active != 9).map((item, index) => (
+                                    <tr key={index}>
+                                        <th scope='row'>{index + 1}</th>
+                                        <td>{item.subjectName}</td>
+                                        <td>{item.thesisAdvisorId?.person?.firstName ? `${item.thesisAdvisorId?.person?.firstName} ${item.thesisAdvisorId?.person?.lastName}` : 'Chưa có'}</td>
+                                        <td>{item.student1 || ''}</td>
+                                        <td>{item.student2 || ''}</td>
+                                        <td>{item.student3 || ''}</td>
+                                        <td>{item.typeSubject?.typeName || ''}</td>
+                                        <td>
+                                            <div style={{ display: 'flex' }}>
+                                                <button className="management" type="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Đi đến chi tiết để quản lý đề tài" onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}><ViewComfyAltOutlinedIcon /></button>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <MenuOutlinedIcon />
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-placement="bottom" onClick={() => { setSubjectIdForSubmit50(item.subjectId); setSubjectName(item.subjectName) }}>Yêu cầu nộp báo cáo 50%</button></li>
+                                                        <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal1" data-bs-placement="bottom" onClick={() => { setSubjectIdForSubmit100(item.subjectId); setSubjectName(item.subjectName) }}>Yêu cầu nộp báo cáo 100%</button></li>
+                                                        <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#modalApproval" data-bs-placement="bottom" onClick={() => { setSubjectIdForApproval(item.subjectId); setSubjectName(item.subjectName) }}>Hoàn thành đề tài</button></li>
+                                                        <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#modalRefuse" data-bs-placement="bottom" onClick={() => { setSubjectIdForRefuse(item.subjectId); setSubjectName(item.subjectName) }}>Từ chối đề tài</button></li>
+                                                    </ul>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </td>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="8" className="text-center">Không có dữ liệu</td>
                                 </tr>
-                            ))
+                            )
                         ) : (
                             <tr>
-                                <td colSpan="8" className="text-center">No data</td>
+                                <td colSpan="8" className="text-center">Không có dữ liệu</td>
                             </tr>
                         )}
                     </tbody>
+
                 </table>
             )}
             <div>
@@ -276,8 +315,8 @@ function TopicKLTable() {
                                 Yêu cầu nộp báo cáo 50% cho đề tài {subjectName} này?
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmit50}>Confirm</button>
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmit50}>Xác nhận</button>
                             </div>
                         </div>
                     </div>
@@ -294,8 +333,8 @@ function TopicKLTable() {
                                 Yêu cầu nộp báo cáo 100% cho đề tài {subjectName} này?
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmit100}>Confirm</button>
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmit100}>Xác nhận</button>
                             </div>
                         </div>
                     </div>
@@ -312,8 +351,8 @@ function TopicKLTable() {
                                 Yêu cầu nôp báo cáo 50% cho toàn bộ đề tài?
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitAll50}>Confirm</button>
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitAll50}>Xác nhận</button>
                             </div>
                         </div>
                     </div>
@@ -330,8 +369,8 @@ function TopicKLTable() {
                                 Yêu cầu nôp báo cáo 100% cho toàn bộ đề tài?
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitAll100}>Confirm</button>
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitAll100}>Xác nhận</button>
                             </div>
                         </div>
                     </div>
@@ -341,15 +380,15 @@ function TopicKLTable() {
                     <div className="modal-dialog">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h1 className="modal-title fs-5" id="exampleModalApproval">Duyệt đề tài</h1>
+                                <h1 className="modal-title fs-5" id="exampleModalApproval">Hoàn thành đề tài</h1>
                                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div className="modal-body">
-                                Xác nhận duyệt đề tài {subjectName} qua phản biện
+                                Xác nhận hoàn thành đề tài {subjectName} và chờ duyệt qua phản biện!
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitApproval}>Confirm</button>
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitApproval}>Xác nhận</button>
                             </div>
                         </div>
                     </div>
@@ -370,8 +409,8 @@ function TopicKLTable() {
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitRefuse}>Confirm</button>
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitRefuse}>Xác nhận</button>
                             </div>
                         </div>
                     </div>
@@ -388,8 +427,8 @@ function TopicKLTable() {
                                 Bạn chắc chắn muốn hoàn thành đề tài này không?
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary">Confirm</button>
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" className="btn btn-primary">Xác nhận</button>
                             </div>
                         </div>
                     </div>
@@ -398,5 +437,3 @@ function TopicKLTable() {
         </div>
     )
 }
-
-export default TopicKLTable

@@ -1,0 +1,35 @@
+.drawer-content {
+    padding: 16px;
+    width: 100%; /* Chiều rộng cố định */
+    background-color: #ffffff; /* Màu nền */
+    color: #333333; /* Màu chữ */
+    font-size: 14px; /* Cỡ chữ */
+}
+
+.detail-item {
+    margin-bottom: 16px;
+}
+
+.detail-item strong {
+    display: inline-block;
+    width: 200px; /* Độ rộng của nhãn */
+    font-weight: bold;
+}
+
+.student-list {
+    margin-top: 8px;
+    margin-left: 16px;
+}
+
+.student-list div {
+    margin-bottom: 4px;
+}
+
+.content-link {
+    color: #007bff; /* Màu chữ link */
+    text-decoration: none;
+}
+
+.content-link:hover {
+    text-decoration: underline;
+}

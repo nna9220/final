@@ -63,6 +63,10 @@ public class StudentAddTaskGraduationController {
                 Student studen2 = studentRepository.findById(currentSubject.getStudent2()).orElse(null);
                 studentList.add(studen2);
             }
+            if (currentSubject.getStudent3() != null) {
+                Student studen3 = studentRepository.findById(currentSubject.getStudent3()).orElse(null);
+                studentList.add(studen3);
+            }
             Map<String,Object> response = new HashMap<>();
             response.put("student", currentStudent);
             response.put("subject", currentSubject);

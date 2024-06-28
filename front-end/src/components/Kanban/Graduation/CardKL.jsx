@@ -8,180 +8,198 @@ import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurned
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import './scroll.scss'
 import axiosInstance from '../../../API/axios';
+
 const CardKL = ({ task, index }) => {
-    const [selectedTask, setSelectedTask] = useState(null);
-    const [detail, setDetail] = useState([]);
-    const [file, setFile] = useState([]);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [detail, setDetail] = useState({});
+  const [file, setFile] = useState([]);
+  const [commentContent, setCommentContent] = useState('');
+  const [commentFiles, setCommentFiles] = useState([]);
+
+  const isImageFile = (fileName) => {
+    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
+    const extension = fileName.split('.').pop().toLowerCase();
+    return imageExtensions.includes(extension);
+  };
   
-    const [commentContent, setCommentContent] = useState('');
-    const [commentFiles, setCommentFiles] = useState([]);
-  
-    const handleCommentChange = (e) => {
-      setCommentContent(e.target.value);
-    };
-  
-    const handleFileChange = (e) => {
-      setCommentFiles(e.target.files);
-    };
-  
-    useEffect(() => {
-      handleViewTask(task.taskId);
-    }, [task.taskId]);
-  
-    const handleSubmitComment = async (e) => {
-      const userToken = getTokenFromUrlAndSaveToStorage();
-      e.preventDefault();
-      console.log("taskID-post: ", task.taskId);
+
+  const handleCommentChange = (e) => {
+    setCommentContent(e.target.value);
+  };
+
+  const handleFileChange = (e) => {
+    setCommentFiles(e.target.files);
+  };
+
+  const handleViewTask = async (taskId) => {
+    setSelectedTask(taskId);
+    const userToken = getTokenFromUrlAndSaveToStorage();
+    if (userToken) {
       try {
-        const formData = new FormData();
-        formData.append('content', commentContent);
-        for (const file of commentFiles) {
-          formData.append('fileInput', file);
-        }
-  
-        console.log("Comment-post: ", formData);
-        const response = await axiosInstance.post(`graduation/student/comment/create/${task.taskId}`, formData, {
+        const response = await axiosInstance.get(`/graduation/student/task/detail/${taskId}`, {
           headers: {
-            'Content-Type': 'multipart/form-data',
             'Authorization': `Bearer ${userToken}`,
           },
         });
-        console.log('Comment created successfully:', response.data);
-        const newComment = response.data;
-        setDetail((prevDetail) => ({
+        // Lấy danh sách comment từ phản hồi của API và sắp xếp lại để đưa comment gần nhất lên trên cùng
+        const sortedComments = response.data.listComment.reverse(); // Sắp xếp comment từ mới nhất đến cũ nhất
+        setDetail(prevDetail => ({
           ...prevDetail,
-          listComment: [...prevDetail.listComment, newComment],
+          listComment: sortedComments
         }));
-        setCommentContent('');
-        setCommentFiles([]);
+        setFile(response.data.listFile);
       } catch (error) {
-        console.error('Error creating comment:', error);
+        console.error('Error fetching task detail:', error);
       }
-    };
+    }
+  };
   
-    const handleViewTask = (taskId) => {
-      setSelectedTask(taskId);
-      const userToken = getTokenFromUrlAndSaveToStorage();
-      if (userToken) {
-        const tokenSt = sessionStorage.getItem(userToken);
-        if (!tokenSt) {
-          axiosInstance.get(`graduation/student/task/detail/${taskId}`, {
-            headers: {
-              'Authorization': `Bearer ${userToken}`,
-            },
-          })
-            .then(response => {
-              console.log("detailTask: ", response.data);
-              setDetail(response.data);
-              setFile(response.data.listFile);
-            })
-            .catch(error => {
-              console.error(error);
-            });
-        }
+
+  const handleSubmitComment = async (e) => {
+    e.preventDefault();
+    const userToken = getTokenFromUrlAndSaveToStorage();
+    if (commentContent.trim() === '' && commentFiles.length === 0) {
+      toast.warning('Vui lòng nhập nội dung comment hoặc chọn ít nhất một file.');
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append('content', commentContent);
+      for (const file of commentFiles) {
+        formData.append('fileInput', file);
       }
-    };
   
-    const modalId = `exampleModal-${task.taskId}`;
+      const response = await axiosInstance.post(`/graduation/student/comment/create/${task.taskId}`, formData, {
+        headers: {
+          'Authorization': `Bearer ${userToken}`,
+        },
+      });
   
-    return (
-      <Draggable draggableId={task?.taskId?.toString()} index={index}>
-        {(provided) => (
-          <div className="card-items" ref={provided.innerRef}{...provided.draggableProps}{...provided.dragHandleProps}>
-            <div class="dropdown">
-              <label className='title-task-st'>{task.requirement}</label>
-              <button class="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{ border: 'none', backgroundColor: 'white' }} >
-                <MoreHorizTwoToneIcon />
-              </button>
-              <ul class="dropdown-menu">
-                <li><a className="dropdown-item" data-bs-toggle="modal" data-bs-target={`#${modalId}`} href="#" onClick={() => handleViewTask(task.taskId)}>View</a></li>
-                <li><a class="dropdown-item" href="#">Delete</a></li>
-              </ul>
-            </div>
-            <div class="modal fade" id={modalId} tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-scrollable modal-xl">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">{task.requirement}</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <div className='info-modal'>
-                      <div>
-                        <div className='lable-items'>
-                          <AddAlarmOutlinedIcon />
-                          <label className='name-label'>Thời gian bắt đầu:
-                            <label className='name'>{task.timeStart}</label>
-                          </label>
-                        </div>
-                        <div className='lable-items'>
-                          <AlarmOnTwoToneIcon />
-                          <label className='name-label'>Thời gian kết thúc: {task?.timeEnd}</label>
-                        </div>
+      const newComment = response.data;
+  
+      // Sắp xếp lại listComment để đưa comment mới lên đầu
+      setDetail(prevDetail => ({
+        ...prevDetail,
+        listComment: [newComment, ...prevDetail.listComment] // Đưa comment mới lên đầu mảng
+      }));
+  
+      setCommentContent('');
+      setCommentFiles([]);
+      handleViewTask(task.taskId);
+    } catch (error) {
+      console.error('Error creating comment:', error);
+    }
+  };
+  
+
+  const modalId = `exampleModal-${task.taskId}`;
+
+  return (
+    <Draggable draggableId={task?.taskId?.toString()} index={index}>
+      {(provided) => (
+        <div className="card-items" ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+          <div className="dropdown">
+            <label className='title-task-st'>{task.requirement}</label>
+            <button className="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{ border: 'none', backgroundColor: 'white' }}>
+              <MoreHorizTwoToneIcon />
+            </button>
+            <ul className="dropdown-menu">
+              <li><a className="dropdown-item" data-bs-toggle="modal" data-bs-target={`#${modalId}`} href="#" onClick={() => handleViewTask(task.taskId)}>View</a></li>
+              <li><a className="dropdown-item" href="#">Delete</a></li>
+            </ul>
+          </div>
+          <div className="modal fade" id={modalId} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div className="modal-dialog modal-dialog-scrollable modal-xl">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h1 className="modal-title fs-5" id="exampleModalLabel">{task.requirement}</h1>
+                  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div className="modal-body">
+                  <div className='info-modal'>
+                    <div>
+                      <div className='lable-items'>
+                        <AddAlarmOutlinedIcon />
+                        <label className='name-label'>Thời gian bắt đầu:
+                          <label className='name'>{task.timeStart}</label>
+                        </label>
                       </div>
-                      <div>
-                        <div className='lable-items'>
-                          <AssignmentIndOutlinedIcon />
-                          <label className='name-label'>Người tạo task: {task?.createBy?.firstName + ' ' + task?.createBy?.lastName}</label>
-                        </div>
-                        <div className='lable-items'>
-                          <AssignmentTurnedInOutlinedIcon />
-                          <label className='name-label'>Người thực hiện: {task?.assignTo?.person?.firstName + ' ' + task?.assignTo?.person?.lastName}</label>
-                        </div>
+                      <div className='lable-items'>
+                        <AlarmOnTwoToneIcon />
+                        <label className='name-label'>Thời gian kết thúc: {task?.timeEnd}</label>
                       </div>
                     </div>
                     <div>
-                      <form onSubmit={handleSubmitComment}>
-                        <div class="mb-3">
-                          <label for="commentContent" class="form-label">Comment</label>
-                          <textarea class="form-control" id="commentContent" rows="3" value={commentContent} onChange={handleCommentChange}></textarea>
-                        </div>
-                        <div class="mb-3">
-                          <input type="file" class="form-control" id="commentFile" onChange={handleFileChange} multiple />
-                        </div>
-                        <button type="submit" class="btn btn-primary">Post Comment</button>
-                      </form>
+                      <div className='lable-items'>
+                        <AssignmentIndOutlinedIcon />
+                        <label className='name-label'>Người tạo task: {task?.createBy?.firstName + ' ' + task?.createBy?.lastName}</label>
+                      </div>
+                      <div className='lable-items'>
+                        <AssignmentTurnedInOutlinedIcon />
+                        <label className='name-label'>Người thực hiện: {task?.assignTo?.person?.firstName + ' ' + task?.assignTo?.person?.lastName}</label>
+                      </div>
                     </div>
-                    <div className='comment-items'>
-                      {detail.listComment && detail.listComment.map((comment, commentIndex) => (
-                        <div key={commentIndex}>
-                          <div className='comment-item'>
-                            <div className='header-comment'>
-                              <label className='name-post'>{comment.poster?.firstName + ' ' + comment.poster?.lastName}</label>
-                              <label className='time-post'>{comment.dateSubmit}</label>
-                            </div>
-                            <div className='body-comment'>
-                              <label className='content'>{comment.content}</label><br />
-                              {file && file.map((files, fileIndex) => {
-                                if (files.commentId?.commentId === comment.commentId) {
-                                  return (
-                                    <div key={fileIndex}>
-                                      <a href={files.url}><p>{files.url}</p></a>
-                                    </div>
-                                  );
-                                } else {
-                                  return null;
-                                }
-                              })}
-                            </div>
+                  </div>
+                  <div>
+                    <form onSubmit={handleSubmitComment}>
+                      <div className="mb-3">
+                        <label htmlFor="commentContent" className="form-label">Comment</label>
+                        <textarea className="form-control" id="commentContent" rows="3" value={commentContent} onChange={handleCommentChange}></textarea>
+                      </div>
+                      <div className="mb-3">
+                        <input type="file" className="form-control" id="commentFile" onChange={handleFileChange} multiple />
+                      </div>
+                      <div className="mb-3">
+                        <button type="submit" className="btn btn-primary" style={{ marginBottom: '10px', display:'flex', justifyContent:'right'}}>Post Comment</button>
+                      </div>
+                    </form>
+                  </div>
+                  <div className='comment-items'>
+                    {detail.listComment && detail.listComment.map((comment, commentIndex) => (
+                      <div key={commentIndex}>
+                        <div className='comment-item'>
+                          <div className='header-comment'>
+                            <label className='name-post'>{comment.poster?.firstName + ' ' + comment.poster?.lastName}</label>
+                            <label className='time-post'>{comment.dateSubmit}</label>
+                          </div>
+                          <div className='body-comment'>
+                            <label className='content'>{comment.content}</label><br />
+                            {file && file.map((files, fileIndex) => {
+                              if (files.commentId?.commentId === comment.commentId) {
+                                return (
+                                  <div key={fileIndex}>
+                                    {isImageFile(files.name) ? (
+                                      <img src={files.url} alt={files.name} className='content-image' />
+                                    ) : (
+                                      <a href={files.url} target="_blank" rel="noopener noreferrer" download="" className='content-name'>
+                                        {files.name}
+                                      </a>
+                                    )}
+                                  </div>
+                                );
+                              } else {
+                                return null;
+                              }
+                            })}
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
               </div>
             </div>
-            <div style={{ justifyItems: 'flex-end' }}>
-            </div>
           </div>
-        )}
-      </Draggable>
-    );
+          <div style={{ justifyItems: 'flex-end' }}>
+          </div>
+        </div>
+      )}
+    </Draggable>
+  );
 }
 
-export default CardKL
+export default CardKL;
+

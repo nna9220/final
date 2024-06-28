@@ -3,11 +3,14 @@ import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import axiosInstance from '../../../API/axios';
 import { DataGrid } from '@mui/x-data-grid';
 import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
+import Drawer from '@mui/material/Drawer';
+import './CompleteTopic.scss';
 
 function CompleteTopic() {
     const [topics, setTopics] = useState([]);
     const userToken = getTokenFromUrlAndSaveToStorage();
     const [detail, setDetail] = useState();
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     useEffect(() => {
         if (userToken) {
@@ -40,6 +43,7 @@ function CompleteTopic() {
             .then(response => {
                 console.log("Detail", response.data);
                 setDetail(response.data.body);
+                setIsDrawerOpen(true);
             })
             .catch(error => {
                 console.error("Lỗi khi lấy thông tin sinh viên:", error);
@@ -55,7 +59,7 @@ function CompleteTopic() {
         {
             field: 'action', headerName: 'Action', width: 100, renderCell: (params) => (
                 <div>
-                    <button className="btnView" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleDetail(params.row.subjectId)}>
+                    <button className="btnView" onClick={() => handleDetail(params.row.subjectId)}>
                         <NoteAltOutlinedIcon />
                     </button>
                 </div>
@@ -66,12 +70,13 @@ function CompleteTopic() {
     return (
         <>
             <DataGrid
-                rows={topics.map((topic)=> (
+                rows={topics.map((topic) => (
                     {
+                        id: topic.subjectId,
                         subjectId: topic.subjectId,
                         subjectName: topic.subjectName,
-                        instructor: topic.instructorId?.person?.firstName + ' ' +topic.instructorId?.person?.lastName,
-                        thesisAdvisor: topic.thesisAdvisorId?.person?.firstName + ' ' +topic.thesisAdvisorId?.person?.lastName,
+                        instructor: topic.instructorId?.person?.firstName + ' ' + topic.instructorId?.person?.lastName,
+                        thesisAdvisor: topic.thesisAdvisorId?.person?.firstName + ' ' + topic.thesisAdvisorId?.person?.lastName,
                         requirement: topic.requirement
                     }
                 ))}
@@ -82,47 +87,64 @@ function CompleteTopic() {
                     pagination: { paginationModel: { pageSize: 10 } },
                 }}
                 pageSizeOptions={[10, 25, 50]}
-                getRowId={(row) => row.subjectId}
+                getRowId={(row) => row.id}
             />
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-xl modal-dialog-scrollable">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Chi tiết đề tài</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <Drawer
+                anchor="right"
+                open={isDrawerOpen}
+                onClose={() => setIsDrawerOpen(false)}
+                PaperProps={{
+                    style: {
+                        width: '50%', // Chiều rộng cố định
+                        padding: '16px'
+                    }
+                }}
+            >
+                <div className="drawer-content">
+                    <h4>Chi tiết đề tài</h4>
+                    <div className="detail-item">
+                        <strong>1. Tên đề tài:</strong>
+                        <span>{detail?.subjectName}</span>
+                    </div>
+                    <div className="detail-item">
+                        <strong>2. Loại đề tài:</strong>
+                        <span>{detail?.typeSubject?.typeName}</span>
+                    </div>
+                    <div className="detail-item">
+                        <strong>3. Giảng viên hướng dẫn:</strong>
+                        <span>{detail?.instructorId?.person?.firstName} {detail?.instructorId?.person?.lastName}</span>
+                    </div>
+                    <div className="detail-item">
+                        <strong>4. Giảng viên phản biện:</strong>
+                        <span>{detail?.thesisAdvisorId?.person ? `${detail?.thesisAdvisorId?.person?.firstName} ${detail?.thesisAdvisorId?.person?.lastName}` : 'Chưa có'}</span>
+                    </div>
+                    <div className="detail-item">
+                        <strong>5. Nhóm sinh viên thực hiện:</strong>
+                        <div className="student-list">
+                            <div><strong>Sinh viên 1:</strong> {detail?.student1}</div>
+                            <div><strong>Sinh viên 2:</strong> {detail?.student2}</div>
+                            <div><strong>Sinh viên 3:</strong> {detail?.student3}</div>
                         </div>
-                        <div class="modal-body">
-                            <div className='items-content-topic'>
-                                <label>Tên đề tài: <label className='content-name'>{detail?.subjectName}</label></label><br />
-                                <label>Loại đề tài: <label className='content-name'>{detail?.typeSubject?.typeName}</label></label><br />
-                                <label>Giảng viên hướng dẫn: <label className='content-name'>{detail?.instructorId?.person?.firstName + ' ' + detail?.instructorId?.person?.lastName}</label></label><br />
-                                <label>
-                                    Giảng viên phản biện:
-                                    <label className='content-name'>
-                                        {detail?.thesisAdvisorId && detail?.thesisAdvisorId?.person
-                                            ? detail?.thesisAdvisorId?.person?.firstName + ' ' + detail?.thesisAdvisorId?.person?.lastName
-                                            : 'Chưa có'}
-                                    </label>
-                                </label><br />
-                                <a>Nhóm sinh viên thực hiện</a><br />
-                                <label>Sinh viên 1: <label className='content-name'>{detail?.student1}</label></label><br />
-                                <label>Sinh viên 2: <label className='content-name'>{detail?.student2}</label></label><br />
-                                <label>Sinh viên 3: <label className='content-name'>{detail?.student3}</label></label><br />
-                                <label>Yêu cầu: <label className='content-name'>{detail?.requirement}</label></label><br />
-                                <label> Báo cáo: 
-                                    <a href={detail?.oneHundredPercent?.url} target="_blank" rel="noopener noreferrer" download="" className='content-name'>
-                                        {detail?.oneHundredPercent?.name}
-                                    </a>
-                                </label>
-
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                    <div className="detail-item">
+                        <strong>6. Yêu cầu:</strong>
+                        <span>{detail?.requirement}</span>
+                    </div>
+                    <div className="detail-item">
+                        <strong>7. Báo cáo:</strong>
+                        <a href={detail?.oneHundredPercent?.url} target="_blank" rel="noopener noreferrer" download className="content-link">
+                            {detail?.oneHundredPercent?.name}
+                        </a>
+                    </div>
+                    <div className="detail-item">
+                        <strong>8. Kết quả báo cáo:</strong>
+                        <div className="student-list">
+                            <div><strong>Điểm của GVHD</strong> {detail?.student1}</div>
+                            <div><strong>Điểm của GVPB</strong> {detail?.student2}</div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </Drawer>
         </>
     );
 }

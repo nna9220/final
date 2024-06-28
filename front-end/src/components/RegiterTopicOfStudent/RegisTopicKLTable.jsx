@@ -23,14 +23,14 @@ function RegisTopicKLTable() {
                 if (!tokenSt) {
                     sessionStorage.setItem('userToken', userToken);
                 }
-
+    
                 try {
                     const response = await axiosInstance.get('/student/subjectGraduation', {
                         headers: {
                             'Authorization': `Bearer ${userToken}`,
                         },
                     });
-
+    
                     const result = response.data;
                     if (result.person) {
                         if (result.subjectList) {
@@ -60,10 +60,10 @@ function RegisTopicKLTable() {
                 }
             }
         };
-
+    
         fetchTopics();
     }, []);
-
+    
 
     const registerTopic = async (subjectId) => {
         const userToken = getTokenFromUrlAndSaveToStorage();
@@ -175,7 +175,7 @@ function RegisTopicKLTable() {
                                         </div>
                                         {topic.active !== 0 && (
                                             <div style={{ float: 'right' }}>
-                                                <NavLink to="/managermentTopicStudent">
+                                                <NavLink to="/managermentTopicGraduationStudent">
                                                     <button type="button" className="btn btn-mana btn-success" style={{ backgroundColor: '#4eb09b', fontSize: 'medium', border: 'none' }}>Quản lý đề tài</button>
                                                 </NavLink>
                                             </div>

@@ -107,10 +107,10 @@ function SidebarHead() {
                                     <a style={{ marginLeft: '10px' }} href="/managermentHead/approve" className="sidebar-link">Duyệt đề tài</a>
                                 </li>
                                 <li className="sidebar-item">
-                                    <a style={{ marginLeft: '10px' }} href="/managermentHead/approvebefore" className="sidebar-link">Duyệt đề tài trước phản biện</a>
+                                    <a style={{ marginLeft: '10px' }} href="/managementHead/assign" className="sidebar-link">Phân giảng viên phản biện</a>
                                 </li>
                                 <li className="sidebar-item">
-                                    <a style={{ marginLeft: '10px' }} href="/managementHead/assign" className="sidebar-link">Phân giảng viên phản biện</a>
+                                    <a style={{ marginLeft: '10px' }} href="/managermentHead/approvebefore" className="sidebar-link">Duyệt đề tài trước phản biện</a>
                                 </li>
                                 <li className="sidebar-item">
                                     <a style={{ marginLeft: '10px' }} href="/managementHead/criteria" className="sidebar-link">Tiêu chí phản biện</a>

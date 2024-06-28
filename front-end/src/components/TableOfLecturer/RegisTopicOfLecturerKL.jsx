@@ -125,12 +125,33 @@ function RegisTopicOfLecturerKL() {
                 reloadForm();
             })
             .catch(error => {
-                console.error(error);
-                console.log("Lỗi");
-                toast.error("Đăng ký đề tài thất bại!");
+                console.error("Lỗi:", error);
+                if (error.response) {
+                    // Các lỗi từ BE
+                    if (error.response.status === 400) {
+                        toast.error("Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.");
+                    } else if (error.response.status === 403) {
+                        toast.error("Bạn không có quyền thực hiện hành động này.");
+                    } else if (error.response.status === 409) {
+                        toast.error("Sinh viên bị trùng. Vui lòng kiểm tra lại thông tin sinh viên.");
+                    } else if (error.response.status === 500) {
+                        toast.error("Lỗi máy chủ. Vui lòng thử lại sau.");
+                    } else if (error.response.status === 417) {
+                        toast.error("Đăng ký đề tài thất bại. Vui lòng kiểm tra lại thông tin.");
+                    } else {
+                        toast.error("Đã xảy ra lỗi. Vui lòng thử lại.");
+                    }
+                } else if (error.request) {
+                    // Các lỗi liên quan đến request nhưng không nhận được response
+                    toast.error("Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng.");
+                } else {
+                    // Các lỗi khác
+                    toast.error("Đã xảy ra lỗi. Vui lòng thử lại.");
+                }
                 setShowErrorToastAdd(true);
             });
     };
+    
 
     const handleChange = (name, selectedOption) => {
         setFormData(prevState => ({

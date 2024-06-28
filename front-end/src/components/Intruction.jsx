@@ -1,27 +1,12 @@
-import React, { useState } from 'react';
-import { Document, Page, pdfjs } from 'react-pdf';
+import React from 'react';
+import { Worker, Viewer } from '@react-pdf-viewer/core';
+import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/core/lib/styles/index.css';
+import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import './Intruction.scss';
 
-// Cấu hình worker của PDF.js
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-
-function Instruction() {
-    const [numPages, setNumPages] = useState(null);
-    const [pageNumber, setPageNumber] = useState(1);
-
-    function onDocumentLoadSuccess({ numPages }) {
-        setNumPages(numPages);
-        setPageNumber(1);
-    }
-
-    function goToPrevPage() {
-        setPageNumber((prevPageNumber) => prevPageNumber - 1);
-    }
-
-    function goToNextPage() {
-        setPageNumber((prevPageNumber) => prevPageNumber + 1);
-    }
+function Intruction() {
+    const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
     return (
         <div className="container">
@@ -36,35 +21,18 @@ function Instruction() {
             </div>
             <hr />
             <div className="pdf-viewer">
-                <div className="button-group">
-                    <button className="navigation-button" onClick={goToPrevPage} disabled={pageNumber <= 1}>
-                        Trang trước
-                    </button>
-                    <button className="navigation-button" onClick={goToNextPage} disabled={pageNumber >= numPages}>
-                        Trang sau
-                    </button>
-                </div>
-                <div className="document">
-                    <Document
-                        file="/assets/HDSD_SauDaiHoc_HocVien.pdf"
-                        onLoadSuccess={onDocumentLoadSuccess}
-                    >
-                        <Page pageNumber={pageNumber}
-                            className="custom-pdf-page"
-                            renderTextLayer={false} // Không render textContent
-                            renderAnnotationLayer={false} // Không render annotations
-
+                <Worker workerUrl="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js">
+                    <div style={{ height: '750px' }}>
+                        <Viewer
+                            fileUrl="/assets/HDSD_SauDaiHoc_HocVien.pdf"
+                            plugins={[defaultLayoutPluginInstance]}
                         />
-                    </Document>
-                    {numPages && (
-                        <p className="page-info">
-                            Trang {pageNumber} / {numPages}
-                        </p>
-                    )}
-                </div>
+                    </div>
+                </Worker>
             </div>
         </div>
     );
 }
 
-export default Instruction;
+
+export default Intruction;
