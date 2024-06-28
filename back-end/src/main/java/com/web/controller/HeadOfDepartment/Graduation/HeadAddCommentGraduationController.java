@@ -65,7 +65,7 @@ public class HeadAddCommentGraduationController {
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> createComment(@PathVariable int taskId,
                                       @RequestParam("content") String content,
-                                      @RequestParam("fileInput") List<MultipartFile> files, @RequestHeader("Authorization") String authorizationHeader){
+                                      @RequestParam(value = "fileInput",required = false) List<MultipartFile> files, @RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
