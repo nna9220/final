@@ -22,4 +22,15 @@ public interface ReportSubmissionTimeRepository extends JpaRepository<ReportSubm
     // Tìm kiếm ReportSubmissionTime theo TypeSubject và Status
     @Query("select p from ReportSubmissionTime p where p.typeSubjectId=:typeSubject and p.status=:status")
     List<ReportSubmissionTime> findReportTimeTypeSubjectAndStatus(TypeSubject typeSubject, boolean status);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE ReportSubmissionTime t SET t.status = false WHERE t.status = true AND t.reportTimeEnd < :currentDate")
+    void updateStatusOfReportTime(LocalDateTime currentDate);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE ReportSubmissionTime t SET t.status = true WHERE t.status = false AND t.reportTimeEnd >= :currentDate and t.reportTimeStart <= :currentDate")
+    void turnOnStatusOfReportTime(LocalDateTime currentDate);
+
 }

@@ -40,12 +40,12 @@ public class RegistrationPeriodLectuer implements Serializable {
     @Column(name="status")
     private Boolean status;
 
+
     @ManyToOne
     @JoinColumn(name="type_subject_id")
     private TypeSubject typeSubjectId;
 
-    @OneToOne(mappedBy = "registrationPeriodLectuer", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @OneToOne(mappedBy = "registrationPeriodLecturer", cascade = CascadeType.ALL, orphanRemoval = true)
     private TimeBrowsOfHead timeBrowsOfHead;
 
 }

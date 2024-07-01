@@ -204,7 +204,7 @@ public class TimeService {
         registrationPeriod.setTimeBrowsOfHead(timeBrowsOfHead);
 
         timeBrowsOfHead.setRegistrationPeriod(registrationPeriod);
-        timeBrowsOfHead.setRegistrationPeriodLectuer(registrationPeriodLectuer);
+        timeBrowsOfHead.setRegistrationPeriodLecturer(registrationPeriodLectuer);
 
         registrationPeriodLectuer.setTimeBrowsOfHead(timeBrowsOfHead);
 
