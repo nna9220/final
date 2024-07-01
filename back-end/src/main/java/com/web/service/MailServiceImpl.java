@@ -3,8 +3,11 @@ package com.web.service;
 import com.web.entity.MailStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -94,5 +97,19 @@ public class MailServiceImpl {
         }catch (Exception e){
             System.out.println("Lỗi: " + e);
         }
+    }
+
+
+    public void sendMailWithAttachment(List<String> to, String subject, String text, String pathToAttachment) {
+        MimeMessagePreparator preparator = mimeMessage -> {
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
+            messageHelper.setSubject(subject);
+            messageHelper.setText(text);
+            messageHelper.setTo(to.toArray(new String[0]));
+
+            FileSystemResource file = new FileSystemResource(pathToAttachment);
+            messageHelper.addAttachment(file.getFilename(), file);
+        };
+        mailSender.send(preparator);
     }
 }

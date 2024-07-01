@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,6 +47,19 @@ public class ReportService {
         Person current = CheckRole.getRoleCurrent(session,userUtils,personRepository);
         Lecturer lec = lecturerRepository.findById(current.getPersonId()).orElse(null);
         List<Subject> subjects  = subjectRepository.getSubjectByMajor(lec.getMajor(),typeSubject,(byte)9);
+        List<Subject> filteredSubjects = new ArrayList<>();
+        for (Subject subject : subjects) {
+            // Kiểm tra xem có sinh viên nào trong đề tài này có trạng thái true không
+            boolean hasActiveStudent = false;
+            Student student1 = studentRepository.findById(subject.getStudent1()).orElse(null);
+            if (student1.getStatus() == true) {
+                hasActiveStudent = true;
+            }
+            // Nếu có sinh viên với trạng thái true, thêm đề tài này vào danh sách đã lọc
+            if (hasActiveStudent) {
+                filteredSubjects.add(subject);
+            }
+        }
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet(typeSubject.getTypeName());
         HSSFRow row = sheet.createRow(0);
@@ -72,7 +86,7 @@ public class ReportService {
         double score3 = 0;
         int dataRowIndex= 1;
 
-        for (Subject subject:subjects){
+        for (Subject subject:filteredSubjects){
             Lecturer instructor = lecturerRepository.findById(subject.getInstructorId().getLecturerId()).orElse(null);
             Lecturer thesis = lecturerRepository.findById(subject.getInstructorId().getLecturerId()).orElse(null);
             HSSFRow dataRow =  sheet.createRow(dataRowIndex);
