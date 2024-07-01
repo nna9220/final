@@ -1,6 +1,7 @@
 package com.web.repository;
 
 import com.web.entity.RegistrationPeriod;
+import com.web.entity.TimeBrowsOfHead;
 import com.web.entity.TypeSubject;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -21,6 +22,9 @@ public interface RegistrationPeriodRepository extends JpaRepository<Registration
 
     @Query("select p from RegistrationPeriod p where p.typeSubjectId=:typeSubject")
     public List<RegistrationPeriod> findAllByTypeSubject(TypeSubject typeSubject);
+
+    @Query("select p from RegistrationPeriod p where p.timeBrowsOfHead=:timeBrowsOfHead")
+    public RegistrationPeriod findRegistrationStudentByTimeBrowseOfHead(TimeBrowsOfHead timeBrowsOfHead);
 
     @Modifying
     @Transactional

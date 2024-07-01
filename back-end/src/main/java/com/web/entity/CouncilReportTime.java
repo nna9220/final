@@ -1,5 +1,6 @@
 package com.web.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -44,4 +45,13 @@ public class CouncilReportTime implements Serializable {
 
     @Column(name="status")
     private Boolean status;
+
+    @ManyToOne
+    @JoinColumn(name="type_subject_id")
+    private TypeSubject typeSubjectId;
+
+    @OneToOne
+    @JoinColumn(name="report_submission_time_id", nullable = false)
+    @JsonBackReference
+    private ReportSubmissionTime reportSubmissionTime;
 }
