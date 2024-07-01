@@ -1,21 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './navbar.scss';
-import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
-import Brightness7OutlinedIcon from '@mui/icons-material/Brightness7Outlined';
-import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
 import { SiGravatar } from "react-icons/si";
 import axiosInstance from '../../API/axios';
-import { useNavigate } from 'react-router-dom';
 
-function Navbar({ unreadCount }) {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const navigate = useNavigate();
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    document.body.classList.toggle('dark-mode');
-  };
-
+function Navbar() {
   const handleLogout = () => {
     const token = sessionStorage.getItem('userToken');
     axiosInstance.post('/logout', {}, {
@@ -33,19 +21,10 @@ function Navbar({ unreadCount }) {
   };
 
   return (
-    <div className={`app ${isDarkMode ? 'dark-mode' : ''}`}>
+    <div>
       <div className='navbarRe'>
         <div className='wrapper'>
           <div className='items'>
-            <button className="btn position-relative item">
-              <NotificationsNoneOutlinedIcon className='icon-noti' />
-              {unreadCount > 0 && (
-                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  {unreadCount > 99 ? '99+' : unreadCount}
-                  <span className="visually-hidden">unread messages</span>
-                </span>
-              )}
-            </button>
             <div className="dropdown-center">
               <a href="#" className="p-3 link-dark dropdown-toggle" id="dropdownUser3" data-bs-toggle="dropdown" aria-expanded="false">
                 <SiGravatar size={20} style={{color:'darkcyan'}}/>

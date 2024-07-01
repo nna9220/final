@@ -76,14 +76,14 @@ function RegisterHead() {
                 <Navbar unreadCount={unreadCount} />
                 <hr />
                 <div className='context-menu'>
-                    <div className='context-title'>
-                        <div className='title-re'>
-                            <h3>ĐĂNG KÝ ĐỀ TÀI</h3>
+                    <div className='home-head'>
+                        <div className='title-head'>
+                            <h5>ĐĂNG KÝ ĐỀ TÀI</h5>
                         </div>
                     </div>
                     <div className='context-nd'>
                         <div className='card-nd'>
-                            <label htmlFor="selectTitle" style={{ marginTop: '20px', marginLeft: '30px' }}>Chọn loại đề tài</label>
+                            <label htmlFor="selectTitle" style={{ marginTop: '10px', marginLeft: '30px' }}>Chọn loại đề tài</label>
                             <div className="dropdown">
                                 <select id="selectTitle" className="form-se" aria-label="Default select example" onChange={handleDropdownChange}>
                                     <option className='optionSe' value="Tiểu luận chuyên ngành">Tiểu luận chuyên ngành</option>

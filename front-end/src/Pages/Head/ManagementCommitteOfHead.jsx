@@ -73,9 +73,9 @@ function ManagementCommitteOfHead() {
                 <Navbar></Navbar>
                 <hr></hr>
                 <div className='context-menu'>
-                    <div className='context-title'>
-                        <div className='title-re'>
-                            <h3>HỘI ĐỒNG BÁO CÁO</h3>
+                <div className='home-head'>
+                        <div className='title-head'>
+                            <h5>HỘI ĐỒNG BÁO CÁO</h5>
                         </div>
                     </div>
                     <div className='context-nd'>

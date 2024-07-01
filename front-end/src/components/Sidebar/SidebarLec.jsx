@@ -80,8 +80,13 @@ function SidebarLec() {
                     <ul className="sidebar-nav">
                         <li className="sidebar-item">
                             <a href="/homeLecturer" className="sidebar-link">
-                                <i className="lni lni-user"><HomeOutlinedIcon /></i>
+                                <i className="lni lni-user">
+                                    <HomeOutlinedIcon />
+                                </i>
                                 <span>Trang chủ</span>
+                                <span className="position-absolute top-0 start-50 badge rounded-pill bg-danger">
+                                    99+
+                                </span>
                             </a>
                         </li>
                         <li className="sidebar-item">

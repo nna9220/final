@@ -1,60 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import './notification.scss';
+import axiosInstance from '../../API/axios';
+import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 
-function NotificationOfHeader({ notifications, onReadNotification }) {
-    const [readNotifications, setReadNotifications] = useState(new Set(JSON.parse(localStorage.getItem('readNotificationsHead')) || []));
-    const [visibleContent, setVisibleContent] = useState(null);
+function NotificationOfHeader() {
+    const [notifications, setNotifications] = useState([]);
+    const userToken = getTokenFromUrlAndSaveToStorage();
 
-    useEffect(() => {
-        const storedReadNotifications = JSON.parse(localStorage.getItem('readNotificationsHead')) || [];
-        setReadNotifications(new Set(storedReadNotifications));
-    }, []);
+  useEffect(() => {
+    document.title = "Trang chủ Trưởng bộ môn";
 
-    const handleReadNotification = (id) => {
-        if (!readNotifications.has(id)) {
-            setReadNotifications(prevState => {
-                const newReadNotifications = new Set(prevState).add(id);
-                localStorage.setItem('readNotificationsHead', JSON.stringify(Array.from(newReadNotifications)));
-                onReadNotification(id);
-                return newReadNotifications;
-            });
+    if (userToken) {
+      axiosInstance.get('/head/notification', {
+        headers: {
+          'Authorization': `Bearer ${userToken}`,
         }
-    };
-
-    const handleTitleClick = (index, id) => {
-        setVisibleContent(visibleContent === index ? null : index);
-        handleReadNotification(id);
-    };
-
-    const formatContent = (content) => {
-        return content.split('\n').map((line, index) => (
-            <React.Fragment key={index}>
-                {line}
-                <br />
-            </React.Fragment>
-        ));
-    };
-
-    // Đảo ngược thứ tự mảng notifications
-    const reversedNotifications = [...notifications].reverse();
+      })
+        .then(response => {
+            console.log("Ntification: ", response.data);
+          setNotifications(response.data)
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  }, [userToken]);
 
     return (
         <div className='notification-list'>
-            {reversedNotifications.map((item, index) => (
-                <div key={item.notificationId} className="notification-item">
-                    <h3 
-                        className={`notification-title ${readNotifications.has(item.notificationId) ? 'read-notification' : ''}`} 
-                        onClick={() => handleTitleClick(index, item.notificationId)}
-                    >
-                        {item.title}
-                    </h3>
-                    {visibleContent === index && (
-                        <div className="notification-content">
-                            {formatContent(item.content)}
-                        </div>
-                    )}
-                </div>
-            ))}
+            
         </div>
     );
 }

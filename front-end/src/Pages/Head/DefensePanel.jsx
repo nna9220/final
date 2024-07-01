@@ -72,9 +72,9 @@ function DefensePanel() {
                 <Navbar></Navbar>
                 <hr></hr>
                 <div className='context-menu'>
-                    <div className='context-title'>
-                        <div className='title-re'>
-                            <h3>LẬP HỘI ĐỒNG</h3>
+                <div className='home-head'>
+                        <div className='title-head'>
+                            <h5>LẬP HỘI ĐỒNG</h5>
                         </div>
                     </div>
                     <div className='context-nd'>

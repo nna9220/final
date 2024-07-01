@@ -73,9 +73,9 @@ function ManagementProjects() {
             <Navbar unreadCount={unreadCount} />
                 <hr></hr>
                 <div className='context-menu'>
-                    <div className='context-title'>
-                        <div className='title-re'>
-                            <h3>ĐỀ TÀI CỦA TÔI</h3>
+                <div className='home-head'>
+                        <div className='title-head'>
+                            <h5>ĐỀ TÀI CỦA TÔI</h5>
                         </div>
                     </div>
                     <div className='context-nd'>

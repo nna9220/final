@@ -73,11 +73,11 @@ if (!authorized) {
       <Navbar unreadCount={unreadCount} />
         <hr></hr>
         <div className='context-menu'>
-          <div className='context-title'>
-            <div className='title-re'>
-              <h3>QUẢN LÝ ĐỀ TÀI PHẢN BIỆN</h3>
-            </div>
-          </div>
+        <div className='home-head'>
+                        <div className='title-head'>
+                            <h5>ĐỀ TÀI PHẢN BIỆN</h5>
+                        </div>
+                    </div>
           <div className='context-nd'>
             <div className='card-nd'>
               <label htmlFor="selectTitle" style={{ marginTop: '20px', marginLeft: '30px' }}>Chọn loại đề tài</label>

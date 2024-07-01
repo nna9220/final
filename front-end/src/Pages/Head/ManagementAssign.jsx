@@ -73,9 +73,9 @@ function ManagementAssign() {
         <Navbar unreadCount={unreadCount} />
         <hr></hr>
         <div className='context-menu'>
-          <div className='context-title'>
-            <div className='title-re'>
-              <h3>PHÂN GIẢNG VIÊN PHẢN BIỆN</h3>
+          <div className='home-head'>
+            <div className='title-head'>
+              <h5>PHÂN GIẢNG VIÊN PHẢN BIỆN</h5>
             </div>
           </div>
           <div className='context-nd'>
