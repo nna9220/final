@@ -291,16 +291,17 @@ public class AddCounterArgumentGraduationController {
                         studentId3.setSubjectGraduationId(newSubject);
                         studentList.add(studentId3);
                     }
-                    if (student1==null && student2==null && student3==null){
-                        newSubject.setCheckStudent(false);
-                    }else {
-                        newSubject.setCheckStudent(true);
-                    }
-                    Set<EvaluationCriteria> evaluationCriteria = evaluationCriteriaRepository.getEvaluationCriteriaByTypeSubject(typeSubject);
-                    if (evaluationCriteria!=null){
-                        newSubject.setCriteria(evaluationCriteria);
-                    }
+                    newSubject.setCheckStudent(student1 != null || student2 != null || student3 != null);
                     LocalDate nowDate = LocalDate.now();
+                    String year = String.valueOf(nowDate.getYear());
+                    Set<EvaluationCriteria> evaluationCriteria = evaluationCriteriaRepository.getEvaluationCriteriaByTypeSubject(typeSubject);
+                    Set<EvaluationCriteria> evaluationCriteriaFill = new HashSet<>();
+                    for (EvaluationCriteria e:evaluationCriteria) {
+                        if (Objects.equals(e.getYear(), year)){
+                            evaluationCriteriaFill.add(e);
+                        }
+                    }
+                    newSubject.setCriteria(evaluationCriteriaFill);
                     newSubject.setYear(String.valueOf(nowDate));
                     newSubject.setTypeSubject(typeSubject);
                     subjectRepository.save(newSubject);

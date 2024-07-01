@@ -45,4 +45,8 @@ public class EvaluationCriteria {
     @ManyToMany(mappedBy = "criteria", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonBackReference
     private Set<Subject> subjects = new HashSet<>();
+
+    @Column(name="year")
+    private String year;
+
 }
