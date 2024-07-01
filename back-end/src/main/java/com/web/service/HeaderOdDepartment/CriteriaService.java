@@ -11,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestHeader;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -33,9 +36,21 @@ public class CriteriaService {
     @Autowired
     private SubjectRepository subjectRepository;
 
+    public static LocalDate convertStringToLocalDate(String dateString) {
+        String pattern = "yyyy/MM/dd";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        try {
+            return LocalDate.parse(dateString, formatter);
+        } catch (DateTimeParseException e) {
+            System.out.println("Invalid date format: " + e.getMessage());
+            return null;
+        }
+    }
+
     public ResponseEntity<?> saveCriteria(@RequestHeader("Authorization") String authorizationHeader, TypeSubject typeSubject, String nameCriteria, Double scoreCriteria){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        LocalDate nowDate = LocalDate.now();
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             //Tìm kiếm tất cả Đề tài theo chuyên ngành, loại đề tài và set tiêu chí là cái này
@@ -44,10 +59,14 @@ public class CriteriaService {
             evaluationCriteria.setMajor(existedLecturer.getMajor());
             evaluationCriteria.setCriteriaName(nameCriteria);
             evaluationCriteria.setTypeSubject(typeSubject);
+            evaluationCriteria.setYear(String.valueOf(nowDate.getYear()));
             evaluationCriteria.setCriteriaScore(scoreCriteria);
             evaluationCriteriaRepository.save(evaluationCriteria);
             for (Subject subject : subjects) {
-                subject.getCriteria().add(evaluationCriteria);
+                LocalDate localDate = convertStringToLocalDate(subject.getYear());
+                if (localDate.getYear()==nowDate.getYear()) {
+                    subject.getCriteria().add(evaluationCriteria);
+                }
             }
             subjectRepository.saveAll(subjects);
             return new ResponseEntity<>(HttpStatus.CREATED);
@@ -59,12 +78,14 @@ public class CriteriaService {
 
     public ResponseEntity<?> updateCriteria(int id, @RequestHeader("Authorization") String authorizationHeader, String nameCriteria, Double scoreCriteria){
         String token = tokenUtils.extractToken(authorizationHeader);
+        LocalDate nowDate = LocalDate.now();
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             EvaluationCriteria existedCriteria = evaluationCriteriaRepository.findById(id).orElse(null);
             if (existedCriteria != null) {
                 existedCriteria.setCriteriaName(nameCriteria);
                 existedCriteria.setCriteriaScore(scoreCriteria);
+                existedCriteria.setYear(String.valueOf(nowDate.getYear()));
                 evaluationCriteriaRepository.save(existedCriteria);
                 return new ResponseEntity<>(existedCriteria, HttpStatus.OK);
             }else {

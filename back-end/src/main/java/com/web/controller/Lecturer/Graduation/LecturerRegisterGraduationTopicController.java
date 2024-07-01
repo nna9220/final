@@ -103,20 +103,18 @@ public class LecturerRegisterGraduationTopicController {
     //Danh sách đề tài
     @GetMapping("/listStudent")
     @PreAuthorize("hasAuthority('ROLE_LECTURER')")
-    public ResponseEntity<?> getStudentsSameMajor(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<?> getListStudent(@RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
-            Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            if (existedLecturer != null) {
-                Major major = existedLecturer.getMajor();
-                List<Student> studentsSameMajor = studentRepository.findStudentsByMajorAndNoSubjectForKL(major);
-                return new ResponseEntity<>(studentsSameMajor, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Lecturer không tồn tại
+        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
+            List<Subject> subjectList = subjectRepository.findSubjectByActive((byte)8);
+            List<Student> studentList = studentRepository.getStudentSubjectGraduationNull();
+            for (int i =0;i<studentList.size();i++){
+                System.out.println(studentList.get(i));
             }
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN); // Không đủ quyền
+            return new ResponseEntity<>(studentList, HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
 
@@ -156,13 +154,13 @@ public class LecturerRegisterGraduationTopicController {
     @PostMapping("/register")
     @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<?> lecturerRegisterTopic(@RequestParam("subjectName") String name,
-                                                   @RequestParam("requirement") String requirement,
-                                                   @RequestParam("expected") String expected,
-                                                   @RequestParam(value = "student1", required = false) String student1,
-                                                   @RequestParam(value = "student2", required = false) String student2,
+                                              @RequestParam("requirement") String requirement,
+                                              @RequestParam("expected") String expected,
+                                              @RequestParam(value = "student1", required = false) String student1,
+                                              @RequestParam(value = "student2", required = false) String student2,
                                                    @RequestParam(value = "student3", required = false) String student3,
-                                                   @RequestHeader("Authorization") String authorizationHeader,
-                                                   HttpServletRequest request) {
+                                              @RequestHeader("Authorization") String authorizationHeader,
+                                              HttpServletRequest request) {
         try {
             LocalDateTime current = LocalDateTime.now();
             System.out.println(current);
@@ -177,36 +175,18 @@ public class LecturerRegisterGraduationTopicController {
                 System.out.println("period 1: " + periodList);
                 if (CompareTime.isCurrentTimeInPeriodSLecturer(periodList)) {
                     System.out.println("Sau if check time");
-                    // Kiểm tra sinh viên trùng
-                    Set<String> studentSet = new HashSet<>();
-                    if (student1 != null) {
-                        if (!studentSet.add(student1)) {
-                            return new ResponseEntity<>("Sinh viên 1 đã đăng ký", HttpStatus.BAD_REQUEST);
-                        }
-                    }
-                    if (student2 != null) {
-                        if (!studentSet.add(student2)) {
-                            return new ResponseEntity<>("Sinh viên 2 đã đăng ký", HttpStatus.BAD_REQUEST);
-                        }
-                    }
-                    if (student3 != null) {
-                        if (!studentSet.add(student3)) {
-                            return new ResponseEntity<>("Sinh viên 3 đã đăng ký", HttpStatus.BAD_REQUEST);
-                        }
-                    }
-
                     Subject newSubject = new Subject();
                     newSubject.setSubjectName(name);
                     newSubject.setRequirement(requirement);
                     newSubject.setExpected(expected);
                     newSubject.setActive((byte) 0);
                     newSubject.setStatus(false);
-                    // Tìm kiếm giảng viên hiện tại
+                    //Tìm kiếm giảng viên hiện tại
                     System.out.println("Trước tìm gv");
                     Lecturer existLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
                     newSubject.setInstructorId(existLecturer);
                     newSubject.setMajor(existLecturer.getMajor());
-                    // Tìm sinh viên qua mã sinh viên
+                    //Tìm sinh viên qua mã sinh viên\\
                     List<Student> studentList = new ArrayList<>();
                     System.out.println("Trước if check sv1");
                     if (student1 != null) {
@@ -231,31 +211,37 @@ public class LecturerRegisterGraduationTopicController {
                         studentId3.setSubjectGraduationId(newSubject);
                         System.out.println("Sau if check sv3");
                         studentList.add(studentId3);
+
                     }
-                    if (student1 == null && student2 == null && student3 == null) {
+                    if (student1==null && student2==null && student3==null){
                         newSubject.setCheckStudent(false);
-                    } else {
+                    }else {
                         newSubject.setCheckStudent(true);
                     }
-                    Set<EvaluationCriteria> evaluationCriteria = evaluationCriteriaRepository.getEvaluationCriteriaByTypeSubject(typeSubject);
-                    if (evaluationCriteria != null) {
-                        newSubject.setCriteria(evaluationCriteria);
-                    }
                     LocalDate nowDate = LocalDate.now();
+                    String year = String.valueOf(nowDate.getYear());
+                    Set<EvaluationCriteria> evaluationCriteria = evaluationCriteriaRepository.getEvaluationCriteriaByTypeSubject(typeSubject);
+                    Set<EvaluationCriteria> evaluationCriteriaFill = new HashSet<>();
+                    for (EvaluationCriteria e:evaluationCriteria) {
+                        if (Objects.equals(e.getYear(), year)){
+                            evaluationCriteriaFill.add(e);
+                        }
+                    }
+                    newSubject.setCriteria(evaluationCriteriaFill);
                     newSubject.setYear(String.valueOf(nowDate));
                     newSubject.setTypeSubject(typeSubject);
                     subjectRepository.save(newSubject);
                     studentRepository.saveAll(studentList);
                     String subject = "ĐĂNG KÝ ĐỀ TÀI THÀNH CÔNG";
                     String messenger = "Topic: " + newSubject.getSubjectName() + " đăng ký thành công - VUi lòng chờ TBM duyệt đề tài";
-                    // Gửi mail cho Hội đồng - SV
+                    //Gửi mail cho Hội đồng - SV
                     List<String> emailPerson = new ArrayList<>();
                     emailPerson.add(existLecturer.getPerson().getUsername());
-                    mailService.sendMailToPerson(emailPerson, subject, messenger);
+                    mailService.sendMailToPerson(emailPerson,subject,messenger);
                     List<Person> personList = new ArrayList<>();
-                    for (String s : emailPerson) {
+                    for (String s:emailPerson) {
                         Person p = personRepository.findUsername(s);
-                        if (p != null) {
+                        if (p!=null){
                             personList.add(p);
                         }
                     }
@@ -266,17 +252,19 @@ public class LecturerRegisterGraduationTopicController {
                     notification.setTitle(subject);
                     notification.setContent(messenger);
                     notificationRepository.save(notification);
-                    return new ResponseEntity<>(newSubject, HttpStatus.CREATED);
-                } else {
-                    return new ResponseEntity<>(personCurrent, HttpStatus.OK);
+                    return new ResponseEntity<>(newSubject,HttpStatus.CREATED);
+                }else {
+                    return new ResponseEntity<>(personCurrent,HttpStatus.OK);
                 }
-            } else {
+            }
+            else {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
-        } catch (Exception e) {
+        }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
     }
+
 
     //Quản lý đề tài
     @GetMapping("/listTask/{subjectId}")
