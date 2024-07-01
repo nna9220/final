@@ -106,6 +106,9 @@ public class RegistrationPeriodController {
             var save = registrationPeriodRepository.save(registrationPeriod);
             List<Student> studentList = studentRepository.getListStudentActiveTrue();
             List<String> emailLecturer = new ArrayList<>();
+            for (Student student:studentList) {
+                emailLecturer.add(student.getPerson().getUsername());
+            }
             String subject = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI TIỂU LUẬN CHUYÊN NGÀNH CHO SINH VIÊN " + save.getRegistrationName();
             String messenger = "Thời gian bắt đầu: " + save.getRegistrationTimeStart()+"\n" +
                     "Thời gian kết thúc: " + save.getRegistrationTimeEnd() + "\n";

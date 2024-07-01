@@ -10,8 +10,8 @@ import java.util.Set;
 
 @Repository
 public interface SubjectRepository extends JpaRepository<Subject, Integer> {
-    @Query("select s from Subject s where s.major =:major and s.typeSubject=:typeSubject and s.active=:active")
-    public List<Subject> getSubjectByMajor(Major major, TypeSubject typeSubject,byte active);
+        @Query("select s from Subject s where s.major =:major and s.typeSubject=:typeSubject and s.active=:active")
+        public List<Subject> getSubjectByMajor(Major major, TypeSubject typeSubject,byte active);
 
     @Query("select s from Subject s where s.major =:major and s.typeSubject=:typeSubject")
     public Set<Subject> getSubjectByMajorAnType(Major major, TypeSubject typeSubject);
