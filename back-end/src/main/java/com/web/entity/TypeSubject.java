@@ -36,4 +36,20 @@ public class TypeSubject implements Serializable {
     @JsonIgnore
     private List<EvaluationCriteria> evaluationCriteria;
 
+    @OneToMany(mappedBy = "typeSubjectId",orphanRemoval = true)
+    @JsonIgnore
+    private List<RegistrationPeriodLectuer> registrationLecturerPeriods;
+
+    @OneToMany(mappedBy = "typeSubjectId",orphanRemoval = true)
+    @JsonIgnore
+    private List<CouncilReportTime> councilReportTimes;
+
+    @OneToMany(mappedBy = "typeSubjectId",orphanRemoval = true)
+    @JsonIgnore
+    private List<ReportSubmissionTime> reportSubmissionTimes;
+
+    @OneToMany(mappedBy = "typeSubjectId",orphanRemoval = true)
+    @JsonIgnore
+    private List<TimeBrowsOfHead> timeBrowsOfHeads;
+
 }

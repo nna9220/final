@@ -1,6 +1,7 @@
 package com.web.service.Student;
 
 import com.web.config.CheckRole;
+import com.web.config.CompareTime;
 import com.web.config.TokenUtils;
 import com.web.entity.*;
 import com.web.repository.*;
@@ -42,14 +43,21 @@ public class ManageSubjectService {
     private FileMaterialService fileMaterialService;
     @Autowired
     private NotificationRepository notificationRepository;
+    @Autowired
+    private ReportSubmissionTimeRepository reportSubmissionTimeRepository;
 
-    public ResponseEntity<?> SubmitReportFifty(int id,@RequestHeader("Authorization") String authorizationHeader,@RequestParam(value = "fileInput", required = true) MultipartFile files){
+    public ResponseEntity<?> SubmitReportFifty(int id,@RequestHeader("Authorization") String authorizationHeader,@RequestParam(value = "fileInput", required = true) MultipartFile files, TypeSubject typeSubject){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_STUDENT")) {
             Subject existedSubject = subjectRepository.findById(id).orElse(null);
             Student existedStudent = studentRepository.findById(personCurrent.getPersonId()).orElse(null);
             if (existedSubject!=null){
+                List<ReportSubmissionTime> reportSubmissionTimes = reportSubmissionTimeRepository.findReportTimeTypeSubjectAndStatus(typeSubject, true);
+
+                if (!CompareTime.isCurrentTimeOutsideReportSubmissionTimes(reportSubmissionTimes)) {
+                    return new ResponseEntity<>("Outside of report submission time window", HttpStatus.FORBIDDEN);
+                }
                 if (existedSubject.getActive()==2) {
                     if (existedSubject.getFiftyPercent() == null) {
                         existedSubject.setActive((byte) 3);
@@ -135,13 +143,18 @@ public class ManageSubjectService {
         }
     }
 
-    public ResponseEntity<?> SubmitReportOneHundred(int id,@RequestHeader("Authorization") String authorizationHeader,MultipartFile files){
+    public ResponseEntity<?> SubmitReportOneHundred(int id,@RequestHeader("Authorization") String authorizationHeader,MultipartFile files,TypeSubject typeSubject){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_STUDENT")) {
             Subject existedSubject = subjectRepository.findById(id).orElse(null);
             Student existedStudent = studentRepository.findById(personCurrent.getPersonId()).orElse(null);
             if (existedSubject!=null){
+                List<ReportSubmissionTime> reportSubmissionTimes = reportSubmissionTimeRepository.findReportTimeTypeSubjectAndStatus(typeSubject, true);
+
+                if (!CompareTime.isCurrentTimeOutsideReportSubmissionTimes(reportSubmissionTimes)) {
+                    return new ResponseEntity<>("Outside of report submission time window", HttpStatus.FORBIDDEN);
+                }
                 if (existedSubject.getActive()==4) {
                     if (existedSubject.getOneHundredPercent() == null) {
                         existedSubject.setActive((byte) 5);

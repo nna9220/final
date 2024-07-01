@@ -1,6 +1,7 @@
 package com.web.service.HeaderOdDepartment;
 
 import com.web.config.CheckRole;
+import com.web.config.CompareTime;
 import com.web.config.TokenUtils;
 import com.web.entity.*;
 import com.web.repository.*;
@@ -32,6 +33,8 @@ public class ManageCouncilService {
     private CouncilRepository councilRepository;
     @Autowired
     private ResultGraduationRepository resultGraduationRepository;
+    @Autowired
+    private CouncilReportTimeRepository councilReportTimeRepository;
     @Autowired
     private PersonRepository personRepository;
     @Autowired
@@ -93,7 +96,6 @@ public class ManageCouncilService {
                 if (subject.getCouncil()!=null) {
                     Council council = subject.getCouncil();
                     council.setAddress(addressReport);
-                    council.setTimeReport(convertToLocalDateTime(timeReport));
                     List<Lecturer> lecturers = new ArrayList<>();
                     for (String lecturerId:lecturer) {
                         Lecturer existedLecturer = lecturerRepository.findById(lecturerId).orElse(null);
@@ -166,6 +168,11 @@ public class ManageCouncilService {
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Subject subject = subjectRepository.findById(id).orElse(null);
             if (subject!=null){
+                List<CouncilReportTime> councilReportTimes = councilReportTimeRepository.findCouncilReportTimeByTypeSubjectAndStatus(subject.getTypeSubject(),true);
+
+                if (!CompareTime.isCouncilTimeWithinAnyCouncilReportTime(councilReportTimes)) {
+                    return new ResponseEntity<>("Không nằm trong khoảng thời gian tạo hội đồng", HttpStatus.BAD_GATEWAY);
+                }
                 if (subject.getCouncil()!=null) {
                     Council council = subject.getCouncil();
                     council.setAddress(addressReport);
@@ -183,12 +190,13 @@ public class ManageCouncilService {
                             }
                         }
                     }
-                    if (hasTimeConflict(council,conflictCouncil)) {
-                        return new ResponseEntity<>("Đã tồn tại hội đồng nằm trong khoản tời gian này.", HttpStatus.CONFLICT);
-                    }
+
                     council.setStart(convertToTime(timeStart));
                     council.setEnd(convertToTime(timeEnd));
                     council.setDate(convertStringToLocalDate(date));
+                    if (hasTimeConflict(council,conflictCouncil)) {
+                        return new ResponseEntity<>("Đã tồn tại hội đồng nằm trong khoản tời gian này.", HttpStatus.CONFLICT);
+                    }
                     // Xóa CouncilLecturer cũ của giảng viên nếu có sự thay đổi
                     removeCouncilLecturerIfNeeded(council, lecturer1);
                     removeCouncilLecturerIfNeeded(council, lecturer2);
@@ -226,6 +234,10 @@ public class ManageCouncilService {
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Subject subject = subjectRepository.findById(id).orElse(null);
             if (subject!=null){
+                List<CouncilReportTime> councilReportTimes = councilReportTimeRepository.findCouncilReportTimeByTypeSubjectAndStatus(subject.getTypeSubject(),true);
+                if (!CompareTime.isCouncilTimeWithinAnyCouncilReportTime(councilReportTimes)) {
+                    return new ResponseEntity<>("Không nằm trong khoảng thời gian hội đồng được tổ chức.", HttpStatus.BAD_GATEWAY);
+                }
                 if (subject.getCouncil()!=null) {
                     Council council = subject.getCouncil();
                     council.setAddress(addressReport);
@@ -243,12 +255,12 @@ public class ManageCouncilService {
                             }
                         }
                     }
-                    if (hasTimeConflict(council,conflictCouncil)) {
-                        return new ResponseEntity<>("Đã tồn tại hội đồng nằm trong khoản tời gian này.", HttpStatus.CONFLICT);
-                    }
                     council.setStart(convertToTime(timeStart));
                     council.setEnd(convertToTime(timeEnd));
                     council.setDate(convertStringToLocalDate(date));
+                    if (hasTimeConflict(council,conflictCouncil)) {
+                        return new ResponseEntity<>("Đã tồn tại hội đồng nằm trong khoản tời gian này.", HttpStatus.CONFLICT);
+                    }
                     // Xóa CouncilLecturer cũ của giảng viên nếu có sự thay đổi
                     removeCouncilLecturerIfNeeded(council, lecturer1);
                     removeCouncilLecturerIfNeeded(council, lecturer2);

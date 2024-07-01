@@ -26,9 +26,6 @@ public class Council {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "date_time")
-    private LocalDateTime timeReport;
-
     @Column(name = "date")
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate date;

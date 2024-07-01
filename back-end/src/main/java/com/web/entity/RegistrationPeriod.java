@@ -3,6 +3,8 @@ package com.web.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -41,4 +43,13 @@ public class RegistrationPeriod implements Serializable {
     @ManyToOne
     @JoinColumn(name="type_subject_id")
     private TypeSubject typeSubjectId;
+
+    @OneToOne
+    @JoinColumn(name="time_brows_of_head_id", nullable = false)
+    @JsonBackReference
+    private TimeBrowsOfHead timeBrowsOfHead;
+
+    @OneToOne(mappedBy = "registrationPeriod", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private ReportSubmissionTime reportSubmissionTime;
 }
