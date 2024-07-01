@@ -28,6 +28,10 @@ public class StatusUpdateService {
     private ScoreEssayRepository scoreEssayRepository;
     @Autowired
     private ScoreGraduationRepository scoreGraduationRepository;
+    @Autowired
+    private ReportSubmissionTimeRepository reportSubmissionTimeRepository;
+    @Autowired
+    private CouncilReportTimeRepository councilReportTimeRepository;
 
 
     @Transactional
@@ -36,10 +40,18 @@ public class StatusUpdateService {
         LocalDateTime currentDate = LocalDateTime.now();
         timeBrowsOfHeadRepository.updateStatusOfPreviousRegistrations(currentDate);
         timeBrowsOfHeadRepository.turnOnStatusOfPreviousRegistrations(currentDate);
+
         registrationPeriodRepository.updateStatusOfStudent(currentDate);
         registrationPeriodRepository.turnOnStatusOfStudent(currentDate);
+
         registrationPeriodLecturerRepository.updateStatusOfLecturer(currentDate);
         registrationPeriodLecturerRepository.turnOnStatusOfStudent(currentDate);
+
+        reportSubmissionTimeRepository.turnOnStatusOfReportTime(currentDate);
+        reportSubmissionTimeRepository.updateStatusOfReportTime(currentDate);
+
+        councilReportTimeRepository.turnOnStatusOfCouncilReportTime(currentDate);
+        councilReportTimeRepository.updateStatusOfCouncilReportTime(currentDate);
     }
 
 /*    @Transactional

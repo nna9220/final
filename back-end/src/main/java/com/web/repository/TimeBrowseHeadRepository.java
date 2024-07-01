@@ -17,7 +17,7 @@ public interface TimeBrowseHeadRepository extends JpaRepository<TimeBrowsOfHead,
     @Query("select p from TimeBrowsOfHead p where p.typeSubjectId=:typeSubject")
     public List<TimeBrowsOfHead> findAllPeriodEssay(TypeSubject typeSubject);
 
-    @Query("select t from TimeBrowsOfHead t where t.registrationPeriodLectuer=:registrationPeriodLectuer")
+    @Query("select t from TimeBrowsOfHead t where t.registrationPeriodLecturer=:registrationPeriodLectuer")
     public TimeBrowsOfHead findTimeBrowseOfHeadByRegistrationLecturer(RegistrationPeriodLectuer registrationPeriodLectuer);
 
     @Query("select p from TimeBrowsOfHead p where p.status =true and p.typeSubjectId = :type")

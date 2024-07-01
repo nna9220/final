@@ -41,12 +41,10 @@ public class TimeBrowsOfHead implements Serializable {
     private Boolean status;
 
     @OneToOne
-    @JoinColumn(name="registration_period_lectuer_id", nullable = false)
-    @JsonBackReference
-    private RegistrationPeriodLectuer registrationPeriodLectuer;
+    @JoinColumn(name="period_id")
+    private RegistrationPeriodLectuer registrationPeriodLecturer;
 
     @OneToOne(mappedBy = "timeBrowsOfHead", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private RegistrationPeriod registrationPeriod;
 
 }

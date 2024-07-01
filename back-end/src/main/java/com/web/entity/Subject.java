@@ -85,6 +85,7 @@ public class Subject implements Serializable {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "reportOneHundredPercent", referencedColumnName = "file_id")
     private FileComment oneHundredPercent;
+
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<ResultEssay> resultEssays;
