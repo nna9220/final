@@ -26,7 +26,6 @@ import ManageLec from './Pages/Teacher/ManageLec';
 import RegisterHead from './Pages/Head/RegisterHead';
 import TopicOfHead from './Pages/Head/TopicOfHead';
 import Team from './components/Team';
-import Intruction from './components/Intruction';
 import ManagementTopics from './Pages/Admin/ManagementTopics';
 import ManagementType from './Pages/Admin/ManagementType';
 import ManageTopicPB from './Pages/Teacher/ManageTopicPB';
@@ -47,9 +46,9 @@ import ManagementComplete from './Pages/Head/ManagementComplete';
 import ManagementGuest from './Pages/Admin/ManagementGuest';
 import ManagementClass from './Pages/Admin/ManagementClass';
 import ProtectedRoute from './components/AuthorizationURL/ProtectedRoute';
-import ReferTLCN from './components/ReferTLCN';
-import ReferKLTN from './components/ReferKLTN';
 import ManagementContact from './Pages/Admin/ManagementContact';
+import ManagermentPeroid from './Pages/Admin/ManagermentPeroid';
+import ManagermentPeroidGraduation from './Pages/Admin/ManagermentPeroidGraduation';
 
 function App() {
   return (
@@ -66,12 +65,9 @@ function App() {
           }
         >
           <Route index element={<Home />} />
-          <Route path="/intruction" element={<Intruction />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/info-teacher" element={<Team />} />
           <Route path="/info-teacher/:lecturerId" element={<InforTeacher />} />
-          <Route path="/referTL" element={<ReferTLCN/>}/>
-          <Route path="/referKL" element={<ReferKLTN/>}/>
         </Route>
 
         {/* Tách riêng trang Login không hiển thị Header và Footer */}
@@ -80,7 +76,8 @@ function App() {
         <Route path="/profileAdmin" element={<Profile/>} />
         <Route path="/managermentStudent" element={<ManagementStudent/>} />
         <Route path="/managermentLec" element={<ManagementLec/>} />
-        <Route path="/managermentPeriod" element={<ManagementPeriod />} />
+        <Route path="/managermentPeriodEssay" element={<ManagermentPeroid />} />
+        <Route path="/managermentPeriodGraduation" element={<ManagermentPeroidGraduation />} />
         <Route path="/managermentApproveTime" element={<ManagementTimeApprove />} /> 
         <Route path="/managermentRegisterTime" element={<ManagementTimeRegister />} /> 
         <Route path="/managermentYears" element={<ManagementYears />} />

@@ -1,0 +1,75 @@
+.hero {
+    background-color: #f5f5f5;
+    padding: 20px;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.card-img {
+    object-fit: cover;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.col-lg-4 {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.rounded-circle {
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+
+.rounded-circle:hover {
+    transform: scale(1.1);
+}
+
+.btn-secondary {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.btn-secondary:hover {
+    background-color: #0056b3;
+}
+
+.breadcrumbs {
+    margin: 20px 0;
+}
+
+.pdf-viewer {
+    margin-top: 20px;
+}
+
+.sidebar {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.sidebar button {
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.sidebar button:hover {
+    background-color: #f0f0f0;
+}
+
+.content {
+    padding: 20px;
+}

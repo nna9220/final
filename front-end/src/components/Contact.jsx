@@ -36,6 +36,13 @@ function Contact() {
             .then(response => {
                 console.log("Đã gửi thắc mắc thành công");
                 toast.success("Đã gửi thắc mắc thành công!");
+                setFormData({
+                    name: '',
+                    phone: '',
+                    email: '',
+                    content: ''
+                });
+                
             })
             .catch(error => {
                 if (error.response) {
@@ -96,7 +103,7 @@ function Contact() {
                                                             <label htmlFor="content">Nội dung</label>
                                                         </div>
                                                         <div className="d-grid">
-                                                            <button className="btn btn-primary btn-lg" id="submitButton" type="submit">Submit</button>
+                                                            <button className="btn btn-primary btn-lg" id="submitButton" type="submit">Gửi liên hệ</button>
                                                         </div>
                                                     </form>
                                                 </div>

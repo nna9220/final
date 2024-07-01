@@ -70,8 +70,21 @@ function ManagementLec() {
                                 <h5>Quản lý giảng viên</h5>
                             </div>
                         </div>
-                        <div className='homeMana-class'>
+                        <div style={{
+                            marginTop: '20px',
+                            marginRight: '20px',
+                            marginBottom: '20px',
+                            backgroundColor: 'white',
+                            width: '100%',
+                            height: '100%',
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            overflow: 'hidden'
+                        }}>
+                            <div style={{ flex: 1, overflow: 'auto' }}>
                             <DatatableLec />
+                            </div>
                         </div>
                     </div>
                 </div>

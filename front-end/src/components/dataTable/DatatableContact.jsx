@@ -3,7 +3,6 @@ import axiosInstance from '../../API/axios';
 import { DataGrid } from '@mui/x-data-grid';
 import './DatatableContact.scss'
 import MarkEmailReadOutlinedIcon from '@mui/icons-material/MarkEmailReadOutlined';
-import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -124,7 +123,7 @@ function DatatableContact() {
         { field: 'phone', headerName: 'Số điện thoại', width: 150 },
         { field: 'content', headerName: 'Nội dung', width: 300 },
         {
-            field: 'status', headerName: 'Trạng thái', width: 150, renderCell: (params) => {
+            field: 'status', headerName: 'Trạng thái', width: 130, renderCell: (params) => {
                 return (
                     <span className={params.value === 'Đã phản hồi' ? 'status-responded' : 'status-pending'}>
                         {params.value}
@@ -133,10 +132,10 @@ function DatatableContact() {
             }
         },
         {
-            field: 'action', headerName: 'Action', width: 120, renderCell: (params) => {
+            field: 'action', headerName: 'Action', width: 80, renderCell: (params) => {
                 return (
                     <div>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => getDetailContact(params.row.id)}>
+                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => getDetailContact(params.row.id)}>
                             <MarkEmailReadOutlinedIcon />
                         </button>
                     </div>
@@ -144,7 +143,6 @@ function DatatableContact() {
             }
         }
     ];
-
 
     const rows = contacts
         .sort((a, b) => new Date(b.time) - new Date(a.time)) // Sắp xếp dữ liệu theo thời gian tạo giảm dần
@@ -162,28 +160,28 @@ function DatatableContact() {
     return (
         <div className='table-contact'>
             <ToastContainer />
-            <DataGrid
-                rows={rows}
-                columns={columns}
-                initialState={{
-                    pagination: { paginationModel: { pageSize: 10 } },
-                }}
-                pageSizeOptions={[10, 25, 50]}
-            />
-
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                    <form class="modal-content" onSubmit={(e) => {
+            <h6 style={{ color: '#1597BB' }}>DANH SÁCH LIÊN HỆ</h6>
+            <div style={{ height: 'calc(100vh - 100px)', width: '100%' }}>
+                <DataGrid
+                    rows={rows}
+                    columns={columns}
+                    autoHeight
+                    pageSizeOptions={[10, 25, 50]}
+                />
+            </div>
+            <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div className="modal-dialog modal-lg modal-dialog-scrollable">
+                    <form className="modal-content" onSubmit={(e) => {
                         e.preventDefault();
                         const title = e.target.title.value;
                         const content = e.target.content.value;
                         replyContact(selectedContact.contactId, title, content);
                     }}>
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Giải đáp thắc mắc</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div className="modal-header">
+                            <h1 className="modal-title fs-5" id="exampleModalLabel">Giải đáp thắc mắc</h1>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body">
+                        <div className="modal-body">
                             <div className='contact-detail'>
                                 <h5 className='title-contact'>Chi tiết liên hệ</h5>
                                 <table className="table table-bordered">
@@ -217,26 +215,25 @@ function DatatableContact() {
                                 {selectedContact && !selectedContact.status && (
                                     <>
                                         <h5 className='title-contact'>Phản hồi liên hệ</h5>
-                                        <div class="mb-3">
-                                            <label for="exampleFormControlInput1" class="form-label">Tiêu đề</label>
-                                            <input name="title" required type="text" class="form-control" id="exampleFormControlInput1" value={replyTitle} onChange={(e) => setReplyTitle(e.target.value)} />
+                                        <div className="mb-3">
+                                            <label htmlFor="exampleFormControlInput1" className="form-label">Tiêu đề</label>
+                                            <input name="title" required type="text" className="form-control" id="exampleFormControlInput1" value={replyTitle} onChange={(e) => setReplyTitle(e.target.value)} />
                                         </div>
-                                        <div class="mb-3">
-                                            <label for="exampleFormControlTextarea1" class="form-label">Nội dung</label>
-                                            <textarea name="content" required class="form-control" id="exampleFormControlTextarea1" rows="3" value={replyContent} onChange={(e) => setReplyContent(e.target.value)}></textarea>
+                                        <div className="mb-3">
+                                            <label htmlFor="exampleFormControlTextarea1" className="form-label">Nội dung</label>
+                                            <textarea name="content" required className="form-control" id="exampleFormControlTextarea1" rows="3" value={replyContent} onChange={(e) => setReplyContent(e.target.value)}></textarea>
                                         </div>
                                     </>
                                 )}
                             </div>
                         </div>
-                        <div class="modal-footer">
+                        <div className="modal-footer">
                             {selectedContact && !selectedContact.status && (
                                 <>
                                     <button className='buttonContact' type="submit" data-bs-dismiss="modal">Gửi liên hệ</button>
-
                                 </>
                             )}
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         </div>
                     </form>
                 </div>
@@ -246,4 +243,3 @@ function DatatableContact() {
 }
 
 export default DatatableContact;
-

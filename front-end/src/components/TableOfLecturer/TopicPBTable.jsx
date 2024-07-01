@@ -96,7 +96,7 @@ function TopicPBTable() {
                         </thead>
                         <tbody>
                             {topics.length > 0 ? (
-                                topics.map((item, index) => (
+                                topics.filter((item) => item.active != 9).map((item, index) => (
                                     <tr key={index}>
                                         <th scope="row">{index + 1}</th>
                                         <td>{item.subjectName}</td>

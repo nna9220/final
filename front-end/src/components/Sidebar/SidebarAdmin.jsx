@@ -104,33 +104,24 @@ const SidebarAdmin = () => {
               </a>
             </li>
             <li className="sidebar-item">
-              <a href="/managermentType" className="sidebar-link">
-                <i className="lni lni-cog"><ListAltOutlinedIcon /></i>
-                <span>Quản lý loại đề tài</span>
-              </a>
-            </li>
-            <li className="sidebar-item">
-              <a href="/managermentPeriod" className="sidebar-link">
-                <i className="lni lni-cog"><AppRegistrationOutlinedIcon /></i>
+              <a href="#" className="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth1"
+                aria-expanded="false" aria-controls="auth">
+                <i className="lni lni-protection"><FactCheckOutlinedIcon /></i>
                 <span>Quản lý đợt đăng ký</span>
               </a>
-            </li>
-            <li className="sidebar-item">
-              <a href="/managermentApproveTime" className="sidebar-link">
-                <i className="lni lni-cog"><AppRegistrationOutlinedIcon /></i>
-                <span>Quản lý duyệt đề tài</span>
-              </a>
-            </li>
-            <li className="sidebar-item">
-              <a href="/managermentRegisterTime" className="sidebar-link">
-                <i className="lni lni-cog"><AppRegistrationOutlinedIcon /></i>
-                <span>Quản lý thời gian đăng kí</span>
-              </a>
+              <ul id="auth1" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                <li className="sidebar-item">
+                  <a style={{ marginLeft: '10px' }} href="/managermentPeriodEssay" className="sidebar-link">Tiểu luận chuyên ngành</a>
+                </li>
+                <li className="sidebar-item">
+                  <a style={{ marginLeft: '10px' }} href="/managermentPeriodGraduation" className="sidebar-link">Khóa luận tốt nghiệp</a>
+                </li>
+              </ul>
             </li>
             <li className="sidebar-item">
               <a href="#" className="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth"
                 aria-expanded="false" aria-controls="auth">
-                <i className="lni lni-protection"><FactCheckOutlinedIcon /></i>
+                <i className="lni lni-protection"><AppRegistrationOutlinedIcon /></i>
                 <span>Quản lý niên khóa - lớp</span>
               </a>
               <ul id="auth" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
@@ -141,12 +132,6 @@ const SidebarAdmin = () => {
                   <a style={{ marginLeft: '10px' }} href="/managermentClass" className="sidebar-link">Quản lý lớp</a>
                 </li>
               </ul>
-            </li>
-            <li className="sidebar-item">
-              <a href="/managermentGuest" className="sidebar-link">
-                <i className="lni lni-cog"><DvrOutlinedIcon /></i>
-                <span>Quản lý khách</span>
-              </a>
             </li>
             <li className="sidebar-item">
               <a href="/managermentContact" className="sidebar-link">

@@ -1,7 +1,7 @@
-import React, {useEffect} from 'react'
-import SidebarAdmin from '../../components/Sidebar/SidebarAdmin';
+import React, { useEffect } from 'react'
 import Navbar from '../../components/Navbar/Navbar';
 import DatatableContact from '../../components/dataTable/DatatableContact';
+import Sidebar from '../../components/Sidebar/SidebarAdmin';
 
 export default function ManagementContact() {
     useEffect(() => {
@@ -9,19 +9,38 @@ export default function ManagementContact() {
     }, []);
     return (
         <div>
-            <div className='manaStudentOfAdmin'>
-                <SidebarAdmin />
+            <div style={{
+                backgroundImage: `url(${process.env.PUBLIC_URL}/assets/bg-admin.png)`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                minHeight: '100vh'
+            }} className='manaStudentOfAdmin'>
+                <Sidebar style={{ backgroundColor: 'white' }} />
                 <div className="homeContainer">
                     <Navbar />
                     <hr />
-                    <div className="widgets-class">
+                    <div className="widgets">
                         <div className='headMana-class'>
                             <div className='titleMana-class'>
-                                <h5>Thắc mắc - Liên hệ</h5>
+                                <h5>Quản lý giảng viên</h5>
                             </div>
                         </div>
-                        <div className='homeMana-class'>
-                            <DatatableContact/>
+                        <div style={{
+                            marginTop: '20px',
+                            marginRight: '20px',
+                            marginBottom: '20px',
+                            backgroundColor: 'white',
+                            width: '100%',
+                            height: '100%',
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            overflow: 'hidden'
+                        }}>
+                            <div style={{ flex: 1, overflow: 'auto' }}>
+                                <DatatableContact />
+                            </div>
                         </div>
                     </div>
                 </div>

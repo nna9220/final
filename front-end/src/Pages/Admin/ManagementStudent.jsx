@@ -61,19 +61,38 @@ function ManagementStudent() {
 
 
   return (
-    <div className='manaStudentOfAdmin'>
-      <Sidebar />
+    <div style={{
+      backgroundImage: `url(${process.env.PUBLIC_URL}/assets/bg-admin.png)`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      minHeight: '100vh'
+    }} className='manaStudentOfAdmin'>
+      <Sidebar style={{ backgroundColor: 'white' }} />
       <div className="homeContainer">
         <Navbar />
         <hr />
-        <div className='widgets'>
+        <div className="widgets">
           <div className='headMana-class'>
             <div className='titleMana-class'>
-              <h5>quản lý sinh viên</h5>
+              <h5>QUẢN LÝ SINH VIÊN</h5>
             </div>
-          </div>
-          <div className='homeMana-class'>
-            <Datatable />
+            <div style={{
+              marginTop: '20px',
+              marginRight: '20px',
+              marginBottom: '20px',
+              backgroundColor: 'white',
+              width: '100%',
+              height: '100%',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden'
+            }}>
+              <div style={{ flex: 1, overflow: 'auto' }}>
+                <Datatable />
+              </div>
+            </div>
           </div>
         </div>
       </div>

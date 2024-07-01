@@ -323,6 +323,50 @@ function DataTableRegistrationPeroidSt() {
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddTimeApprove">
                         Add
                     </button>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddTimeApproveDemo">
+                        Thêm
+                    </button>
+                    <div className="modal fade" id="AddTimeApproveDemo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div className="modal-dialog modal-dialog-scrollable modal-xl">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h1 className="modal-title fs-5" id="exampleModalLabel">Thêm thời đợt đăng ký đề tài Demo </h1>
+                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div className="modal-body">
+                                    <div className="form-floating mb-3 mt-3">
+                                        <input type="text" className="form-control" id="periodName" placeholder="Enter email" name="periodName" />
+                                        <label for="periodName">Tên đợt</label>
+                                    </div>
+                                    <label>Đợt đăng ký của Giảng viên</label>
+                                    <div className="form-floating mb-3 mt-3">
+                                        <input type="datetime-local" className="form-control" id="timeStart" placeholder="Enter email" name="timeStart" min={minDateTime}/>
+                                        <label for="timeStart">Thời gian bắt đầu</label>
+                                    </div>
+                                    <div className="form-floating mb-3 mt-3">
+                                        <input type="datetime-local" className="form-control" id="timeEnd" placeholder="Enter email" name="timeEnd" min={minDateTime} />
+                                        <label for="timeStart">Thời gian kết thúc</label>
+                                    </div>
+                                    <label>Đợt đăng ký của Sinh viên</label>
+                                    <div className="form-floating mb-3 mt-3">
+                                        <input type="datetime-local" className="form-control" id="timeStart" placeholder="Enter email" name="timeStart" min={minDateTime}/>
+                                        <label for="timeStart">Thời gian bắt đầu</label>
+                                    </div>
+                                    <div className="form-floating mb-3 mt-3">
+                                        <input type="datetime-local" className="form-control" id="timeEnd" placeholder="Enter email" name="timeEnd" min={minDateTime} />
+                                        <label for="timeStart">Thời gian kết thúc</label>
+                                    </div>
+                                    <label>Danh sách sinh viên:</label>
+                                    <input>Import danh sách</input>
+                                    <label>Thời gian duyệt đề tài cho TBM: </label>
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" className="btn btn-primary" data-bs-dismiss="modal">Add</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div className="modal fade" id="AddTimeApprove" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div className="modal-dialog">
                             <div className="modal-content">

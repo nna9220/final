@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import Sidebar from '../../components/Sidebar/SidebarAdmin';
-import './ManagementClass.scss';
-import DataClass from '../../components/dataTable/DataClass';
-import { useEffect } from 'react';
+import './ManagermentPeroid.scss';
+import DataTablePeroid from '../../components/dataTable/DataTablePeroid';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
-import { Navigate} from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
+import DataTablePeroidGraduation from '../../components/dataTable/DataTablePeroidGraduation';
 
-function ManagementClass() {
+function ManagermentPeroidGraduation() {
     useEffect(() => {
-        document.title = "Quản lý Lớp";
+        document.title = "Quản lý đợt đăng ký đề tài";
     }, []);
 
     const [authorized, setAuthorized] = useState(true);
@@ -20,13 +20,13 @@ function ManagementClass() {
             const userToken = getTokenFromUrlAndSaveToStorage(); // Lấy token từ URL hoặc từ bất kỳ nguồn nào khác
             if (userToken) {
                 try {
-                    const response = await axiosInstance.post('/check-authorization/admin',null, {
+                    const response = await axiosInstance.post('/check-authorization/admin', null, {
                         headers: {
                             'Authorization': `Bearer ${userToken}`,
                         },
-                });
+                    });
                     console.log("Nhận : ", response.data);
-                    if (response.data == "Authorized") {
+                    if (response.data === "Authorized") {
                         setAuthorized(true);
                     } else {
                         setAuthorized(false);
@@ -46,11 +46,10 @@ function ManagementClass() {
                     }
                 }
             } else {
-                // Nếu không có token, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
                 setAuthorized(false);
             }
         };
-    
+
         checkAuthorization();
     }, []);
 
@@ -59,33 +58,24 @@ function ManagementClass() {
     }
 
     return (
-        <div>
-            <div className='manaStudentOfAdmin'>
-                <Sidebar />
-                <div className="homeContainer">
-                    <Navbar />
-                    <hr />
-                    <div className="widgets-class">
-                        <div className='headMana-class'>
-                            <div className='titleMana-class'>
-                                <h5>Quản lý lớp</h5>
-                            </div>
+        <div style={{ 
+            backgroundImage: `url(${process.env.PUBLIC_URL}/assets/bg-admin.png)`, 
+            backgroundSize: 'cover', 
+            backgroundPosition: 'center', 
+            backgroundRepeat: 'no-repeat', 
+            minHeight: '100vh' 
+        }} className='manaStudentOfAdmin'>
+            <Sidebar style={{backgroundColor: 'white'}}/>
+            <div className="homeContainer">
+                <Navbar />
+                <hr />
+                <div className="widgets">
+                    <div className='headMana-class'>
+                        <div className='titleMana-class'>
+                            <h5>Quản lý đợt đăng ký - khóa luận tốt nghiệp</h5>
                         </div>
-                        <div style={{
-                            marginTop: '20px',
-                            marginRight: '20px',
-                            marginBottom: '20px',
-                            backgroundColor: 'white',
-                            width: '100%',
-                            height: '100%',
-                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            overflow: 'hidden'
-                        }}>
-                            <div style={{ flex: 1, overflow: 'auto' }}>
-                            <DataClass />
-                            </div>
+                        <div style={{marginTop:'20px',marginRight:'20px',marginBottom:'20px', backgroundColor:'white', width:'100%', height:'125vh', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)'}}>
+                            <DataTablePeroidGraduation/>
                         </div>
                     </div>
                 </div>
@@ -94,4 +84,4 @@ function ManagementClass() {
     );
 }
 
-export default ManagementClass
+export default ManagermentPeroidGraduation;

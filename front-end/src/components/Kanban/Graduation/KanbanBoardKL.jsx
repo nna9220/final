@@ -60,7 +60,7 @@ const KanbanBoardKL = () => {
     if (userToken) {
       const tokenSt = sessionStorage.getItem(userToken);
       if (!tokenSt) {
-        axiosInstance.get('graduation/student/task/list', {
+        axiosInstance.get('/graduation/student/task/list', {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },
@@ -84,7 +84,7 @@ const KanbanBoardKL = () => {
 
   const handleNewTask = () => {
     const userToken = getTokenFromUrlAndSaveToStorage();
-    axiosInstance.get('graduation/student/task/new', {
+    axiosInstance.get('/graduation/student/task/new', {
       headers: {
         'Authorization': `Bearer ${userToken}`,
       },
@@ -103,7 +103,7 @@ const KanbanBoardKL = () => {
   const handleAddNewTask = () => {
     const userToken = getTokenFromUrlAndSaveToStorage();
 
-    axiosInstance.post('graduation/student/task/create', formNewTask, {
+    axiosInstance.post('/graduation/student/task/create', formNewTask, {
       headers: {
         'Authorization': `Bearer ${userToken}`,
         'Content-Type': 'multipart/form-data',

@@ -177,7 +177,7 @@ function DataTableTopicSuccess() {
                                 <td colSpan="8" className="text-center">Không có dữ liệu</td>
                             </tr>
                         ) : (
-                            subjects.map((item, index) => (
+                            subjects.filter((item) => item.active === 8).map((item, index) => (
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>{item.subjectName}</td>

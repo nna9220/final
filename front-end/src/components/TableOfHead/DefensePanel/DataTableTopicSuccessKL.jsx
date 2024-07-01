@@ -4,31 +4,25 @@ import { useState, useEffect } from 'react';
 
 function DataTableTopicSuccessKL() {
     const [subjects, setSubjects] = useState([]);
-    const [time, setTime] = useState('');
-    const [address, setAddress] = useState('');
-    const [lecturer1, setLecturer1] = useState('');
-    const [lecturer2, setLecturer2] = useState('');
-    const [lecturer3, setLecturer3] = useState('');
-    const [lecturer4, setLecturer4] = useState('');
-    const [lecturers, setLecturers] = useState([]);
-    const [subjectId, setSubjectId] = useState(null);
-    const [council, setCouncil] = useState([]);
-    const [defaultLecturerId, setDefaultLecturerId] = useState('');
-    const [lecturerList, setLecturerList] = useState([]);
     const userToken = getTokenFromUrlAndSaveToStorage();
+    const [council, setCouncil] = useState();
+    const [councilLecturers, setCouncilLecturers] = useState([]);
+    const [roles, setRoles] = useState({});
+    const [councilEdit, setCouncilEdit] = useState({
+        lecturer1: '',
+        lecturer2: '',
+        start: '',
+        end: '',
+        date: '',
+        address: '',
+    });
+    const [lecturers, setLecturers] = useState([]);
 
     useEffect(() => {
         if (userToken) {
             loadData();
-            console.log("ID sau f5: ", defaultLecturerId);
-            if (defaultLecturerId !== undefined) {
-                // Thiết lập giá trị mặc định cho Thành viên 1 nếu chưa có giá trị được chọn
-                const updatedLecturers = lecturers.map((lecturer, index) => index === 0 && !lecturer ? defaultLecturerId : lecturer);
-                // Cập nhật giá trị cho state lecturers
-                setLecturers(updatedLecturers);
-            }
         }
-    }, [userToken, defaultLecturerId]);
+    }, [userToken]);
 
     const loadData = async () => {
         try {
@@ -37,111 +31,151 @@ function DataTableTopicSuccessKL() {
                     'Authorization': `Bearer ${userToken}`,
                 },
             });
-            console.log("Topic: ", response.data.body);
-            setSubjects(response.data.body);
+            setSubjects(response.data.body || []);
         } catch (error) {
             console.error('Error fetching subjects:', error);
         }
     };
 
-
-    // Hàm chuyển đổi từ xâu kí tự sang đối tượng Date
-    function convertStringToDate(dateTimeString) {
-        const [datePart, timePart] = dateTimeString.split(' ');
-        const [day, month, year] = datePart.split('/');
-        const [hour, minute, second] = timePart.split(':');
-        // Chú ý rằng month - 1 vì tháng trong JavaScript bắt đầu từ 0
-        return new Date(year, month - 1, day, hour, minute, second);
-    }
-
-    function convertDateTime(dateTimeString) {
-        // Phân tích chuỗi thành các phần riêng biệt
-        const parts = dateTimeString.split('T');
-        const datePart = parts[0]; // Ngày/tháng/năm
-        const timePart = parts[1]; // Giờ/phút
-
-        // Phân tích phần thời gian thành giờ và phút
-        const timeParts = timePart.split(':');
-        const hour = timeParts[0]; // Giờ
-        const minute = timeParts[1]; // Phút
-
-        // Định dạng lại chuỗi thành "yyyy-MM-dd HH:mm:ss"
-        const formattedDateTime = `${datePart} ${hour}:${minute}:00`;
-
-        return formattedDateTime;
-    }
-
-    const handleFormSubmit = async () => {
-        try {
-            console.log("dt: ", lecturer1+lecturer2+lecturer3+lecturer4);
-            const response = await axiosInstance.post(`/head/manager/council/edit/${subjectId}`, {
-                time:convertDateTime(time),
-                address,
-                lecturer1,
-                lecturer2,
-                lecturer3,
-                lecturer4,
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${userToken}`,
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            console.log(response.data);
-        } catch (error) {
-            console.error('Error submitting form:', error);
-        }
-    };
-    
-    
-    const loadLecturers = async (subjectId) => {
-        try {
-            const response = await axiosInstance.get(`/head/manager/council/listLecturer/${subjectId}`, {
-                headers: {
-                    'Authorization': `Bearer ${userToken}`,
-                },
-            });
-            setLecturerList(response.data.listLecturer);
-        } catch (error) {
-            console.error('Error fetching lecturers:', error);
-        }
-    };
-
-    const loadCouncil = async (subjectId) => {
+    const loadCouncilDetails = async (subjectId) => {
         try {
             const response = await axiosInstance.get(`/head/manager/council/detailCouncil/${subjectId}`, {
                 headers: {
                     'Authorization': `Bearer ${userToken}`,
                 },
             });
-            console.log("Council", response.data);
-            setCouncil(response.data.listLecturerOfCouncil);
-            // Thiết lập giá trị mặc định cho Thành viên 1
-            if (response.data.listLecturerOfCouncil.length > 0) {
-                setDefaultLecturerId(response.data.listLecturerOfCouncil[0].person.firstName + ' ' + response.data.listLecturerOfCouncil[0].person.lastName);
-                console.log("ID: ", defaultLecturerId);
-                console.log(response.data.listLecturerOfCouncil[0].person.personId)
-            }
+            const councilDetails = response.data.body.council;
+            setCouncil(councilDetails);
+            setCouncilLecturers(response.data.body.councilLecturer);
+            setRoles(response.data.body.councilLecturer.reduce((acc, curr) => {
+                acc[curr.lecturer.person.personId] = curr.role;
+                return acc;
+            }, {}));
+            setLecturers (response.data.body.listLecturerOfCouncil);
+            setCouncilEdit({
+                lecturer1: councilDetails.lecturer1?.personId || '',
+                lecturer2: councilDetails.lecturer2?.personId || '',
+                start: councilDetails.start || '',
+                end: councilDetails.end || '',
+                date: councilDetails.date || '',
+                address: councilDetails.address || '',
+            });
+            console.log("Detail: ", response.data);
         } catch (error) {
-            console.error('Error fetching lecturers:', error);
+            handleCouncilDetailError(error);
         }
     };
 
-
-    const handleLecturerChange = (e, setLecturer) => {
-        setLecturer(e.target.value);
-    };
-    const getDefaultLecturerId = (index) => {
-        if (lecturerList.length > index) {
-            return lecturerList[index].id;
+    const handleCouncilDetailError = (error) => {
+        if (error.response) {
+            switch (error.response.status) {
+                case 404:
+                    console.log('Subject not found.');
+                    break;
+                case 417:
+                    console.log('Expectation failed: Council not found for the subject.');
+                    break;
+                case 500:
+                    console.log('Internal server error. Please try again later.');
+                    break;
+                default:
+                    console.log('An error occurred. Please try again.');
+            }
+        } else if (error.request) {
+            console.log('No response from the server. Please check your network.');
+        } else {
+            console.log('An error occurred. Please try again.');
         }
-        return '';
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setCouncilEdit(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    const handleRoleChange = (e, lecturerId) => {
+        const { value } = e.target;
+        setRoles(prevRoles => ({
+            ...prevRoles,
+            [lecturerId]: value
+        }));
+    };
+
+    const handleSaveChanges = async () => {
+        // Chuyển đổi giá trị start và end thành định dạng HH:mm
+        const formattedCouncilEdit = {
+            ...councilEdit,
+            start: formatTime(councilEdit.start),
+            end: formatTime(councilEdit.end)
+        };
+    
+        // Kiểm tra xem start và end có giá trị hợp lệ sau khi format không
+        if (!formattedCouncilEdit.start || !formattedCouncilEdit.end) {
+            console.error('Invalid time format for start or end.');
+            return;
+        }
+    
+        console.log("Send data: ", formattedCouncilEdit);
+        try {
+            const response = await axiosInstance.post(`/head/manager/council/edit/${council.subject.subjectId}`, null, {
+                headers: {
+                    'Authorization': `Bearer ${userToken}`,
+                },
+                params: {
+                    lecturer1: formattedCouncilEdit.lecturer1,
+                    lecturer2: formattedCouncilEdit.lecturer2,
+                    start: formattedCouncilEdit.start,
+                    end: formattedCouncilEdit.end,
+                    date: formattedCouncilEdit.date,
+                    address: formattedCouncilEdit.address,
+                },
+            });
+            console.log("Save response: ", response.data);
+        } catch (error) {
+            console.error('Error saving council details:', error);
+        }
+    };
+    
+    
+    const formatTime = (time) => {
+        if (!time) return '';
+        
+        const [hours, minutes] = time.split(':');
+        
+        // Kiểm tra xem hours và minutes có phải là số hợp lệ không
+        if (isNaN(hours) || isNaN(minutes)) {
+            return '';
+        }
+        
+        return hours.padStart(2, '0') + ':' + minutes.padStart(2, '0');
+    };
+    
+    const handleAutomationCouncil = async () => {
+        try {
+            const response = await axiosInstance.post('/head/manager/council/automationCouncil', null, {
+                headers: {
+                    'Authorization': `Bearer ${userToken}`,
+                },
+                params: {
+                    address: councilEdit.address,
+                    date: councilEdit.date,
+                },
+            });
+            console.log('Automation response:', response.data);
+            // Thực hiện các thay đổi hoặc xử lý sau khi lập hội đồng tự động thành công
+        } catch (error) {
+            console.error('Error automating council:', error);
+        }
     };
 
     return (
         <div>
-            <div  style = {{padding:'16px'}} className='body-table-topic'>
-                <table className="table table-hover">
+            <div style={{ padding: '16px' }} className='body-table-topic'>
+            <button type="button" className="btn btn-primary" onClick={handleAutomationCouncil}>Lập hội đồng tự động</button>
+                <table  className="table table-hover">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
@@ -151,36 +185,40 @@ function DataTableTopicSuccessKL() {
                             <th scope='col'>SV 1</th>
                             <th scope='col'>SV 2</th>
                             <th scope='col'>SV 3</th>
-                            <th scope='col'>Action</th>
+                            <th scope='col'>Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {subjects.map((subject, index) => (
-                            <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>{subject.subjectName}</td>
-                                <td>{`${subject.instructorId.person.firstName} ${subject.instructorId.person.lastName}`}</td>
-                                <td>{subject.thesisAdvisorId?.person ? `${subject.thesisAdvisorId.person.firstName} ${subject.thesisAdvisorId.person.lastName}` : 'Chưa có'}</td>
-                                <td>{subject.student1}</td>
-                                <td>{subject.student2}</td>
-                                <td>{subject.student3}</td>
-                                <td>
-                                    <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => {
-                                        setSubjectId(subject.subjectId);
-                                        loadLecturers(subject.subjectId);
-                                        loadCouncil(subject.subjectId);
-                                    }}>
-                                        Lập hội đồng
-                                    </button>
-                                </td>
+                        {subjects.length === 0 ? (
+                            <tr>
+                                <td colSpan="8" className="text-center">Không có dữ liệu</td>
                             </tr>
-                        ))}
+                        ) : (
+                            subjects.filter((item) => item.active === 8).map((item, index) => (
+                                <tr key={index}>
+                                    <td>{index + 1}</td>
+                                    <td>{item.subjectName}</td>
+                                    <td>{item.instructorId?.person?.firstName} {item.instructorId?.person?.lastName}</td>
+                                    <td>{item.thesisAdvisorId?.person?.firstName} {item.thesisAdvisorId?.person?.lastName}</td>
+                                    <td>{item.student1}</td>
+                                    <td>{item.student2}</td>
+                                    <td>{item.student3}</td>
+                                    <td>
+                                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => {
+                                            loadCouncilDetails(item.subjectId);
+                                        }}>
+                                            Lập hội đồng
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
             </div>
 
             <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div className="modal-dialog modal-lg">
+                <div className="modal-dialog modal-lg modal-dialog-scrollable">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h1 className="modal-title fs-5" id="exampleModalLabel">Lập hội đồng</h1>
@@ -188,13 +226,26 @@ function DataTableTopicSuccessKL() {
                         </div>
                         <div className="modal-body">
                             <div className="mb-3">
-                                <label htmlFor="time" className="form-label">Thời gian</label>
-                                <input type="datetime-local" className="form-control" id="time" value={time} onChange={(e) => setTime(e.target.value)} />
+                                <label htmlFor="date" className="form-label">Ngày</label>
+                                <input type="date" className="form-control" id="date" name="date" value={councilEdit.date} onChange={handleChange} />
                             </div>
+
+                            <div className="row mb-3">
+                                <div className="col">
+                                    <label htmlFor="start" className="form-label">Bắt đầu</label>
+                                    <input type="time" className="form-control" id="start" name="start" value={councilEdit.start} onChange={handleChange} />
+                                </div>
+                                <div className="col">
+                                    <label htmlFor="end" className="form-label">Kết thúc</label>
+                                    <input type="time" className="form-control" id="end" name="end" value={councilEdit.end} onChange={handleChange} />
+                                </div>
+                            </div>
+
                             <div className="mb-3">
                                 <label htmlFor="address" className="form-label">Địa chỉ</label>
-                                <input type="text" className="form-control" id="address" value={address} onChange={(e) => setAddress(e.target.value)} />
+                                <input type="text" className="form-control" id="address" name="address" value={councilEdit.address} onChange={handleChange} />
                             </div>
+
                             <h6>Danh sách thành viên hội đồng: </h6>
                             <div>
                                 <table className='table table-bordered'>
@@ -202,81 +253,97 @@ function DataTableTopicSuccessKL() {
                                         <tr>
                                             <th>Thành viên</th>
                                             <th>Họ và tên</th>
+                                            <th>Vai trò</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
                                             <td>Thành viên 1</td>
                                             <td>
-                                                {defaultLecturerId}
+                                                <div className="mb-3">
+                                                    <select className="form-control" id="lecturer1" name="lecturer1" value={councilEdit.lecturer1} onChange={handleChange}>
+                                                        <option value="">Chọn giảng viên</option>
+                                                        {lecturers.map((lecturer, index) => (
+                                                            <option key={index} value={lecturer.lecturerId}>
+                                                                {lecturer.person.firstName} {lecturer.person.lastName}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                Chủ tịch
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>Thành viên 2</td>
                                             <td>
-                                                <select
-                                                    className="form-select"
-                                                    onChange={(e) => handleLecturerChange(e, setLecturer1)}
-                                                    value={lecturer1}
-                                                >
-                                                    <option value="">Chọn giảng viên</option>
-                                                    {lecturerList.map((lecturer) => (
-                                                        <option key={lecturer.lecturerId} value={lecturer.lecturerId}>
-                                                            {lecturer.person.firstName + ' ' + lecturer.person.lastName}
-                                                        </option>
-                                                    ))}
-                                                </select>
+                                                <div className="mb-3">
+                                                    <select className="form-control" id="lecturer2" name="lecturer2" value={councilEdit.lecturer2} onChange={handleChange}>
+                                                        <option value="">Chọn giảng viên</option>
+                                                        {lecturers.map((lecturer, index) => (
+                                                            <option key={index} value={lecturer.lecturerId}>
+                                                                {lecturer.person.firstName} {lecturer.person.lastName}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                Ủy viên
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>Thành viên 3</td>
                                             <td>
-                                                <select
-                                                    className="form-select"
-                                                    onChange={(e) => handleLecturerChange(e, setLecturer2)}
-                                                    value={lecturer2}
-                                                >
-                                                    <option value="">Chọn giảng viên</option>
-                                                    {lecturerList.map((lecturer) => (
-                                                        <option key={lecturer.lecturerId} value={lecturer.lecturerId}>
-                                                            {lecturer.person.firstName + ' ' + lecturer.person.lastName}
-                                                        </option>
-                                                    ))}
-                                                </select>
+                                                <div className="mb-3">
+                                                    <select className="form-control" id="lecturer3" name="lecturer3" value={councilEdit.lecturer3} onChange={handleChange}>
+                                                        <option value="">Chọn giảng viên</option>
+                                                        {lecturers.map((lecturer, index) => (
+                                                            <option key={index} value={lecturer.lecturerId}>
+                                                                {lecturer.person.firstName} {lecturer.person.lastName}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
                                             </td>
-                                        </tr>
-                                        <tr>
+                                            <td>
+                                                Ủy viên
+                                            </td>
+                                        </tr><tr>
                                             <td>Thành viên 4</td>
                                             <td>
-                                                <select
-                                                    className="form-select"
-                                                    onChange={(e) => handleLecturerChange(e, setLecturer3)}
-                                                    value={lecturer3}
-                                                >
-                                                    <option value="">Chọn giảng viên</option>
-                                                    {lecturerList.map((lecturer) => (
-                                                        <option key={lecturer.lecturerId} value={lecturer.lecturerId}>
-                                                            {lecturer.person.firstName + ' ' + lecturer.person.lastName}
-                                                        </option>
-                                                    ))}
-                                                </select>
+                                                <div className="mb-3">
+                                                    <select className="form-control" id="lecturer4" name="lecturer4" value={councilEdit.lecturer4} onChange={handleChange}>
+                                                        <option value="">Chọn giảng viên</option>
+                                                        {lecturers.map((lecturer, index) => (
+                                                            <option key={index} value={lecturer.lecturerId}>
+                                                                {lecturer.person.firstName} {lecturer.person.lastName}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                Ủy viên
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>Thành viên 5</td>
                                             <td>
-                                                <select
-                                                    className="form-select"
-                                                    onChange={(e) => handleLecturerChange(e, setLecturer4)}
-                                                    value={lecturer4}
-                                                >
-                                                    <option value="">Chọn giảng viên</option>
-                                                    {lecturerList.map((lecturer) => (
-                                                        <option key={lecturer.lecturerId} value={lecturer.lecturerId}>
-                                                            {lecturer.person.firstName + ' ' + lecturer.person.lastName}
-                                                        </option>
-                                                    ))}
-                                                </select>
+                                                <div className="mb-3">
+                                                    <select className="form-control" id="lecturer5" name="lecturer5" value={councilEdit.lecturer5} onChange={handleChange}>
+                                                        <option value="">Chọn giảng viên</option>
+                                                        {lecturers.map((lecturer, index) => (
+                                                            <option key={index} value={lecturer.lecturerId}>
+                                                                {lecturer.person.firstName} {lecturer.person.lastName}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                Ủy viên
                                             </td>
                                         </tr>
                                     </tbody>
@@ -284,8 +351,8 @@ function DataTableTopicSuccessKL() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" className="btn btn-primary" onClick={handleFormSubmit}>Save changes</button>
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <button type="button" className="btn btn-primary" onClick={handleSaveChanges}>Lưu thay đổi</button>
                         </div>
                     </div>
                 </div>
@@ -295,4 +362,3 @@ function DataTableTopicSuccessKL() {
 }
 
 export default DataTableTopicSuccessKL;
-

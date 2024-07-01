@@ -11,10 +11,10 @@ function TableApproveBeforePBKL() {
     const [currentPeriod, setCurrentPeriod] = useState(null);
     const [topicName, setTopicName] = useState('');
     const [subjectIdForApproval, setSubjectIdForApproval] = useState(null);
+
     const userToken = getTokenFromUrlAndSaveToStorage();
 
     useEffect(() => {
-        console.log("Token: " + userToken);
         if (userToken) {
             loadTopics();
             loadTimeApprove();
@@ -31,7 +31,6 @@ function TableApproveBeforePBKL() {
                 return currentDateTime >= startTime && currentDateTime <= endTime;
             });
             setCurrentPeriod(currentPeriod);
-            console.log("Thời gian hiện tại: ", currentDateTime);
         }
     }, [timeApprove]);
 
@@ -83,7 +82,6 @@ function TableApproveBeforePBKL() {
 
     const isWithinApprovalPeriod = () => {
         const now = new Date();
-        console.log("now", (now));
         if (currentPeriod) {
             const timeStart = convertStringToDate(currentPeriod.timeStart);
             const timeEnd = convertStringToDate(currentPeriod.timeEnd);
@@ -96,7 +94,6 @@ function TableApproveBeforePBKL() {
         const [datePart, timePart] = dateTimeString.split(' ');
         const [day, month, year] = datePart.split('/');
         const [hour, minute, second] = timePart.split(':');
-        // Chú ý rằng month - 1 vì tháng trong JavaScript bắt đầu từ 0
         return new Date(year, month - 1, day, hour, minute, second);
     }
 
@@ -156,8 +153,8 @@ function TableApproveBeforePBKL() {
                                 Bạn chắc chắn muốn duyệt đề tài {topicName} qua hội đồng không?
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={handleApproveSubject}>Confirm</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={handleApproveSubject}>Xác nhận</button>
                             </div>
                         </div>
                     </div>
@@ -167,4 +164,4 @@ function TableApproveBeforePBKL() {
     );
 }
 
-export default TableApproveBeforePBKL
+export default TableApproveBeforePBKL;
