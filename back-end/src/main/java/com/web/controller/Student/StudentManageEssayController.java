@@ -4,8 +4,10 @@ import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
 import com.web.entity.Person;
 import com.web.entity.Student;
+import com.web.entity.TypeSubject;
 import com.web.repository.PersonRepository;
 import com.web.repository.StudentRepository;
+import com.web.repository.TypeSubjectRepository;
 import com.web.service.FileMaterialService;
 import com.web.service.Student.ManageSubjectService;
 import com.web.service.ViewAndDownloadFileService;
@@ -33,6 +35,8 @@ public class StudentManageEssayController {
     @Autowired
     private PersonRepository personRepository;
     @Autowired
+    private TypeSubjectRepository typeSubjectRepository;
+    @Autowired
     private TokenUtils tokenUtils;
     @Autowired
     private UserUtils userUtils;
@@ -50,10 +54,11 @@ public class StudentManageEssayController {
     public ResponseEntity<?> SubmitReportFifty(@RequestHeader("Authorization") String authorizationHeader,
                                                @RequestParam(value = "fileInput", required = true) MultipartFile files){
         try {
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
             String token = tokenUtils.extractToken(authorizationHeader);
             Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
             Student student = studentRepository.findById(personCurrent.getPersonId()).orElse(null);
-            return new ResponseEntity<>(manageSubjectService.SubmitReportFifty(student.getSubjectId().getSubjectId(),authorizationHeader,files), HttpStatus.OK);
+            return new ResponseEntity<>(manageSubjectService.SubmitReportFifty(student.getSubjectId().getSubjectId(),authorizationHeader,files,typeSubject), HttpStatus.OK);
         }catch (Exception e){
             throw new ExceptionInInitializerError(e);
         }
@@ -64,10 +69,12 @@ public class StudentManageEssayController {
     public ResponseEntity<?> SubmitReportOneHundred(@RequestHeader("Authorization") String authorizationHeader,
                                                @RequestParam(value = "fileInput", required = true) MultipartFile files){
         try {
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+
             String token = tokenUtils.extractToken(authorizationHeader);
             Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
             Student student = studentRepository.findById(personCurrent.getPersonId()).orElse(null);
-            return new ResponseEntity<>(manageSubjectService.SubmitReportOneHundred(student.getSubjectId().getSubjectId(),authorizationHeader,files), HttpStatus.OK);
+            return new ResponseEntity<>(manageSubjectService.SubmitReportOneHundred(student.getSubjectId().getSubjectId(),authorizationHeader,files,typeSubject), HttpStatus.OK);
         }catch (Exception e){
             throw new ExceptionInInitializerError(e);
         }

@@ -245,4 +245,6 @@ public class RegistrationPeriodController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
+
 }

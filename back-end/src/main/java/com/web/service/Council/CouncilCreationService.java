@@ -1,5 +1,6 @@
 package com.web.service.Council;
 
+import com.web.config.CompareTime;
 import com.web.entity.*;
 import com.web.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class CouncilCreationService {
 
     @Autowired
     private CouncilLecturerRepository councilLecturerRepository;
+    @Autowired
+    private CouncilReportTimeRepository councilReportTimeRepository;
 
     @Autowired
     private LecturerRepository lecturerRepository;
@@ -68,6 +71,11 @@ public class CouncilCreationService {
         LocalTime currentEndTime = currentStartTime.plusHours(1);
 
         for (Subject subject : subjects) {
+            List<CouncilReportTime> councilReportTimes = councilReportTimeRepository.findCouncilReportTimeByTypeSubjectAndStatus(subject.getTypeSubject(),true);
+
+            if (!CompareTime.isCouncilTimeWithinAnyCouncilReportTime(councilReportTimes)) {
+                return new ResponseEntity<>("Không nằm trong khoảng thời gian tạo hội đồng", HttpStatus.BAD_GATEWAY);
+            }
             // Kiểm tra xem đề tài đã có hội đồng chưa
             Council existingCouncil = councilRepository.getCouncilBySubject(subject);
 
@@ -96,6 +104,7 @@ public class CouncilCreationService {
                 currentStartTime = morningStartTime;
                 currentEndTime = currentStartTime.plusHours(1);
             }
+
         }
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -125,6 +134,7 @@ public class CouncilCreationService {
             councilLecturer.setLecturer(lecturer);
             councilLecturers.add(councilLecturer);
         }
+
 
         council.setCouncilLecturers(councilLecturers);
         councilRepository.save(council);

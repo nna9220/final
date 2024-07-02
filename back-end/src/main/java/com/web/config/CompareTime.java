@@ -139,5 +139,30 @@ public class CompareTime {
         return false; // Nếu không có TimeBrowsOfHead nào mà startRegistration sau endTimeBrows, trả về false
     }
 
+    public static boolean isCurrentTimeOutsideReportSubmissionTimes(List<ReportSubmissionTime> reportSubmissionTimes) {
+        LocalDateTime now = LocalDateTime.now();
+        boolean isOutside = false;  // Assume current time is outside unless we find one that includes it
+
+        for (ReportSubmissionTime reportSubmissionTime : reportSubmissionTimes) {
+            if (now.isAfter(reportSubmissionTime.getReportTimeStart()) && now.isBefore(reportSubmissionTime.getReportTimeEnd())) {
+                isOutside = true;  // Current time is within one of the time windows
+                break;
+            }
+        }
+        return isOutside;
+    }
+
+    public static boolean isCouncilTimeWithinAnyCouncilReportTime(List<CouncilReportTime> councilReportTimes) {
+        LocalDateTime currentTime = LocalDateTime.now();
+        for (CouncilReportTime councilReportTime : councilReportTimes) {
+            LocalDateTime reportStart = councilReportTime.getReportTimeStart();
+            LocalDateTime reportEnd = councilReportTime.getReportTimeEnd();
+
+            if (currentTime.isAfter(reportStart) && currentTime.isBefore(reportEnd)) {
+                return true;  // Thời gian của Council nằm trong khoảng thời gian của CouncilReportTime.
+            }
+        }
+        return false;  // Thời gian của Council không nằm trong bất kỳ khoảng thời gian nào của CouncilReportTime.
+    }
 
 }

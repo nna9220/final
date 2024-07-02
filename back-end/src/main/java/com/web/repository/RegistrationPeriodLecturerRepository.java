@@ -14,7 +14,7 @@ import java.util.List;
 
 @Repository
 public interface RegistrationPeriodLecturerRepository extends JpaRepository<RegistrationPeriodLectuer, Integer> {
-    @Query("select p from RegistrationPeriodLectuer p where p.typeSubjectId=:typeSubject")
+    @Query("select p from RegistrationPeriodLectuer p where p.typeSubjectId=:typeSubject and p.status=true")
     public List<RegistrationPeriodLectuer> findAllPeriodEssay(TypeSubject typeSubject);
 
     @Modifying

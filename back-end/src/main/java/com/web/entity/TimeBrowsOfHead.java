@@ -2,6 +2,7 @@ package com.web.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,5 +39,12 @@ public class TimeBrowsOfHead implements Serializable {
 
     @Column(name="status")
     private Boolean status;
+
+    @OneToOne
+    @JoinColumn(name="period_id")
+    private RegistrationPeriodLectuer registrationPeriodLecturer;
+
+    @OneToOne(mappedBy = "timeBrowsOfHead", cascade = CascadeType.ALL, orphanRemoval = true)
+    private RegistrationPeriod registrationPeriod;
 
 }

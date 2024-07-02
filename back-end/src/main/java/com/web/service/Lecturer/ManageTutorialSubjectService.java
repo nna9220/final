@@ -1,6 +1,7 @@
 package com.web.service.Lecturer;
 
 import com.web.config.CheckRole;
+import com.web.config.CompareTime;
 import com.web.config.TokenUtils;
 import com.web.entity.*;
 import com.web.repository.*;
@@ -23,6 +24,8 @@ public class ManageTutorialSubjectService {
     private LecturerRepository lecturerRepository;
     @Autowired
     private AuthorityRepository authorityRepository;
+    @Autowired
+    private ReportSubmissionTimeRepository reportSubmissionTimeRepository;
     @Autowired
     private StudentRepository studentRepository;
     @Autowired
@@ -49,13 +52,22 @@ public class ManageTutorialSubjectService {
     private EvaluationCriteriaRepository evaluationCriteriaRepository;
 
     //Thông báo nộp 50%
-    public ResponseEntity<?> NoticeOfFiftyReportSubmission(int id,@RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<?> NoticeOfFiftyReportSubmission(int id,@RequestHeader("Authorization") String authorizationHeader, TypeSubject typeSubject){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Subject existedSubject = subjectRepository.findById(id).orElse(null);
             List<String> emailPerson = new ArrayList<>();
             if (existedSubject!=null){
+
+                List<ReportSubmissionTime> reportSubmissionTimes = reportSubmissionTimeRepository.findReportTimeTypeSubjectAndStatus(typeSubject, true);
+
+                if (reportSubmissionTimes==null){
+                    return new ResponseEntity<>("Không tồn tại report time thỏa mãn", HttpStatus.NOT_MODIFIED);
+                }
+                if (!CompareTime.isCurrentTimeOutsideReportSubmissionTimes(reportSubmissionTimes)) {
+                    return new ResponseEntity<>("Outside of report submission time window", HttpStatus.NOT_ACCEPTABLE);
+                }
                 existedSubject.setActive((byte)2);
                 var newSubject = subjectRepository.save(existedSubject);
                 LocalDate today = LocalDate.now();
@@ -115,6 +127,13 @@ public class ManageTutorialSubjectService {
             LocalDate today = LocalDate.now();
             LocalDate nextWeek = today.plusDays(7);
             for (Subject existedSubject:existedSubjects) {
+                List<ReportSubmissionTime> reportSubmissionTimes = reportSubmissionTimeRepository.findReportTimeTypeSubjectAndStatus(typeSubject, true);
+                if (reportSubmissionTimes==null){
+                    return new ResponseEntity<>("Không tồn tại report time thỏa mãn", HttpStatus.NOT_MODIFIED);
+                }
+                if (!CompareTime.isCurrentTimeOutsideReportSubmissionTimes(reportSubmissionTimes)) {
+                    return new ResponseEntity<>("Outside of report submission time window", HttpStatus.NOT_ACCEPTABLE);
+                }
                 existedSubject.setActive((byte)2);
                 var newSubject = subjectRepository.save(existedSubject);
                 String subject = "ĐẾN THỜI GIAN NỘP BÁO CÁO 50%";
@@ -158,12 +177,19 @@ public class ManageTutorialSubjectService {
         }
     }
     //Thông báo nộp 100%
-    public ResponseEntity<?> NoticeOfOneHundredReportSubmission(int id,@RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<?> NoticeOfOneHundredReportSubmission(int id,@RequestHeader("Authorization") String authorizationHeader,TypeSubject typeSubject){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Subject existedSubject = subjectRepository.findById(id).orElse(null);
             if (existedSubject!=null){
+                List<ReportSubmissionTime> reportSubmissionTimes = reportSubmissionTimeRepository.findReportTimeTypeSubjectAndStatus(typeSubject, true);
+                if (reportSubmissionTimes==null){
+                    return new ResponseEntity<>("Không tồn tại report time thỏa mãn", HttpStatus.NOT_MODIFIED);
+                }
+                if (!CompareTime.isCurrentTimeOutsideReportSubmissionTimes(reportSubmissionTimes)) {
+                    return new ResponseEntity<>("Outside of report submission time window", HttpStatus.NOT_ACCEPTABLE);
+                }
                 existedSubject.setActive((byte)4);
                 var newSubject = subjectRepository.save(existedSubject);
                 LocalDate today = LocalDate.now();
@@ -219,6 +245,13 @@ public class ManageTutorialSubjectService {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             List<Subject> existedSubjects = subjectRepository.findSubjectByInstructorAndStatusAndActiveAndTypeSubject(existedLecturer,true,typeSubject,(byte)3);
             for (Subject existedSubject:existedSubjects) {
+                List<ReportSubmissionTime> reportSubmissionTimes = reportSubmissionTimeRepository.findReportTimeTypeSubjectAndStatus(typeSubject, true);
+                if (reportSubmissionTimes==null){
+                    return new ResponseEntity<>("Không tồn tại report time thỏa mãn", HttpStatus.NOT_MODIFIED);
+                }
+                if (!CompareTime.isCurrentTimeOutsideReportSubmissionTimes(reportSubmissionTimes)) {
+                    return new ResponseEntity<>("Outside of report submission time window", HttpStatus.NOT_ACCEPTABLE);
+                }
                 existedSubject.setActive((byte)4);
                 var newSubject = subjectRepository.save(existedSubject);
                 LocalDate today = LocalDate.now();
