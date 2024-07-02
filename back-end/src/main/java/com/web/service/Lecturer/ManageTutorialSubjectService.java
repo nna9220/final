@@ -551,7 +551,6 @@ public class ManageTutorialSubjectService {
                     }
                     response.put("student2",student2);
                     response.put("scoreStudent2",score2);
-
                 }
                 if (existedSubject.getStudent3() != null) {
                     Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);

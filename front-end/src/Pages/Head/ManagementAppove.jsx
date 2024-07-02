@@ -73,7 +73,7 @@ function ManagementAppove() {
                 <Navbar unreadCount={unreadCount} />
                 <hr></hr>
                 <div className='context-menu'>
-                <div className='home-head'>
+                    <div className='home-head'>
                         <div className='title-head'>
                             <h5>DUYỆT ĐỀ TÀI</h5>
                         </div>

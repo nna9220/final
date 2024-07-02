@@ -383,7 +383,7 @@ function DataTable() {
 
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'id', headerName: 'ID', width: 130 },
         { field: 'studentId', headerName: 'MSSV', width: 130 },
         { field: 'fullName', headerName: 'Họ và tên', width: 200 },
         { field: 'gender', headerName: 'Giới tính', width: 130 },
@@ -717,7 +717,7 @@ function DataTable() {
                     </div>
                 </div>
 
-                <div class="modal fade" id="delete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal fade" id="delete" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">

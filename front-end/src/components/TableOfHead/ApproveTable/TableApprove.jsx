@@ -175,35 +175,11 @@ function TableApprove() {
         },
     ];
 
-    const handleExport = () => {
-        console.log(userToken);
-        axiosInstance.get('/head/subject/export', {
-            responseType: 'blob',  // Specify the response type as blob
-            headers: {
-                'Authorization': `Bearer ${userToken}`,
-            },
-        })
-        .then(response => {
-            const blob = new Blob([response.data], { type: 'application/octet-stream' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `subject_${new Date().toISOString()}.xls`; // Adjust filename if needed
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        })
-        .catch(error => {
-            console.error("Error exporting data:", error);
-            toast.error("Error exporting data!");
-        });
-    }
-    
+   
 
     return (
         <div className='body-table'>
             <ToastContainer />
-            <button type="button" class="btn btn-primary"  onClick = {handleExport}><FileDownloadOutlinedIcon/>Export</button>
             {isApprovalPeriod && (
                 <button className='button-listDelete-approve' onClick={() => setShowTable(!showTable)}>
                     {showTable ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách đề tài đã xóa</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách đề tài chờ duyệt</>}

@@ -3,7 +3,7 @@ import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import axiosInstance from '../../../API/axios';
-
+import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 function CriteriaForTL() {
     const userToken = getTokenFromUrlAndSaveToStorage();
     const [criterias, setCriterias] = useState([]);
@@ -122,7 +122,7 @@ function CriteriaForTL() {
         <div>
             <div className='add-criteria'>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    Add
+                    <AddOutlinedIcon/>
                 </button>
 
                 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -201,6 +201,7 @@ function CriteriaForTL() {
                         <th scope="col">#</th>
                         <th scope="col">Tiêu chí đánh giá</th>
                         <th scope="col">Điểm</th>
+                        <th scope="col">Năm</th>
                         <th scope="col">Action</th>
                     </tr>
                 </thead>
@@ -210,6 +211,7 @@ function CriteriaForTL() {
                             <th scope='row'>{index + 1}</th>
                             <td>{item.criteriaName}</td>
                             <td>{item.criteriaScore}</td>
+                            <td>{item.year ? item.year : 'Chưa có'}</td>
                             <td>
                                 <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#editCriteria" style={{ marginRight: '10px' }} onClick={() => handleEditClick(item)}>
                                     <ModeEditOutlineOutlinedIcon />

@@ -10,6 +10,7 @@ import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import './Home.scss';
+import Chatbot from './ChatBot/Chatbot';
 
 const columns = [
     { field: 'id', headerName: '#', width: 70 },
@@ -77,6 +78,9 @@ function Home() {
             <div className="card text-bg-white">
                 <img src="/assets/Home_logo.jpg" className="card-img" alt="..." style={{ width: '100%', height: '50%' }} />
                 <hr />
+                <button>
+                    <Chatbot/>
+                </button>
                 <div>
                     {!showTable && !showPDF ? (
                         <div className='container text-center'>

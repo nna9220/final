@@ -1,35 +1,110 @@
-.drawer-content {
-    padding: 16px;
-    width: 100%; /* Chiều rộng cố định */
-    background-color: #ffffff; /* Màu nền */
-    color: #333333; /* Màu chữ */
-    font-size: 14px; /* Cỡ chữ */
+/* General Styles */
+body {
+    font-family: 'Roboto', sans-serif; /* Thay Arial bằng font chữ hiện đại hơn */
+    color: #4a4a4a; /* Sử dụng màu xám đậm hơn */
+    background-color: #f4f4f4; /* Màu nền sáng cho toàn bộ trang */
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+/* Headings */
+h4 {
+    margin: 0 0 16px;
+    color: #34495e; /* Sử dụng màu xám xanh đậm hơn */
+    font-weight: 500; /* Tạo cảm giác nhẹ nhàng hơn với font-weight vừa phải */
+}
+
+/* Breadcrumbs */
+.breadcrumbList {
+    padding: 16px 20px;
+    font-size: 15px; /* Tăng kích thước chữ một chút để dễ đọc hơn */
+    background: #fff; /* Thêm nền trắng cho breadcrumbs */
+    border-radius: 4px; /* Bo góc nhẹ để mềm mại hơn */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Thêm bóng nhẹ để nổi bật hơn */
+}
+
+.breadcrumbList a {
+    color: #1872ae; /* Sử dụng màu xanh lam tươi sáng */
+    text-decoration: none;
+    font-weight: 600; /* Đảm bảo liên kết nổi bật hơn với font-weight vừa phải */
+}
+
+.breadcrumbList a:hover {
+    text-decoration: underline;
+}
+
+/* Detail Content */
+.detail-content {
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bóng mờ đậm hơn để nổi bật */
 }
 
 .detail-item {
-    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    margin-right: 20px;
 }
 
 .detail-item strong {
-    display: inline-block;
-    width: 200px; /* Độ rộng của nhãn */
-    font-weight: bold;
+    flex: 0 0 250px; /* Điều chỉnh độ rộng cho các nhãn */
+    color: #34495e;
+    font-weight: 500; /* Làm cho nhãn nổi bật hơn */
 }
 
-.student-list {
-    margin-top: 8px;
-    margin-left: 16px;
+.detail-item span,
+.detail-item a {
+    flex: 1;
+    color: #7f8c8d; /* Sử dụng màu xám nhẹ để không làm mất tập trung */
 }
 
-.student-list div {
-    margin-bottom: 4px;
+.detail-table {
+    align-items: center;
+    margin-bottom: 12px;
+    margin-right: 20px;
+}
+
+.detail-table strong {
+    flex: 0 0 250px; /* Điều chỉnh độ rộng cho các nhãn */
+    color: #34495e;
+    font-weight: 500; /* Làm cho nhãn nổi bật hơn */
+}
+
+.detail-table span,
+.detail-table a {
+    color: #7f8c8d; /* Sử dụng màu xám nhẹ để không làm mất tập trung */
 }
 
 .content-link {
-    color: #007bff; /* Màu chữ link */
-    text-decoration: none;
+    color: #3498db;
+    font-weight: 500; /* Tạo sự nổi bật hơn cho liên kết */
 }
 
 .content-link:hover {
     text-decoration: underline;
+}
+
+/* Result Table */
+.result-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    background: #fff; /* Thêm nền trắng để bảng trông sáng hơn */
+    border-radius: 8px; /* Bo góc nhẹ cho bảng */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm bóng nhẹ để bảng nổi bật */
+}
+
+.result-table th,
+.result-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.result-table th {
+    background: #f1f1f1; /* Thay màu nền tiêu đề bảng */
+    color: #2c3e50; /* Màu chữ tiêu đề bảng để nổi bật */
 }

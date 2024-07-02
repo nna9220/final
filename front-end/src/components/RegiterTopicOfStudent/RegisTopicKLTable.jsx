@@ -23,14 +23,14 @@ function RegisTopicKLTable() {
                 if (!tokenSt) {
                     sessionStorage.setItem('userToken', userToken);
                 }
-    
+
                 try {
                     const response = await axiosInstance.get('/student/subjectGraduation', {
                         headers: {
                             'Authorization': `Bearer ${userToken}`,
                         },
                     });
-    
+
                     const result = response.data;
                     if (result.person) {
                         if (result.subjectList) {
@@ -60,10 +60,10 @@ function RegisTopicKLTable() {
                 }
             }
         };
-    
+
         fetchTopics();
     }, []);
-    
+
 
     const registerTopic = async (subjectId) => {
         const userToken = getTokenFromUrlAndSaveToStorage();
@@ -96,6 +96,7 @@ function RegisTopicKLTable() {
                 <span role="status">Loading...</span>
             </button>
         </div>;
+
     }
 
     return (
@@ -156,30 +157,36 @@ function RegisTopicKLTable() {
                                     <form className="form-card">
                                         <h5 className="text-center mb-4 tille-name-topic">THÔNG TIN ĐỀ TÀI</h5>
                                         <div className='items-content-topic'>
-                                            <label>Tên đề tài: <span className='content-name'>{topic.subjectName}</span></label><br />
-                                            <label>Loại đề tài: <span className='content-name'>{topic.typeSubject?.typeName}</span></label><br />
-                                            <label>Giảng viên hướng dẫn: <span className='content-name'>{`${topic.instructorId?.person?.firstName} ${topic.instructorId?.person?.lastName}`}</span></label><br />
-                                            <label>
-                                                Giảng viên phản biện:
-                                                <span className='content-name'>
-                                                    {topic.thesisAdvisorId?.person
-                                                        ? `${topic.thesisAdvisorId.person.firstName} ${topic.thesisAdvisorId.person.lastName}`
-                                                        : 'Chưa có'}
-                                                </span>
-                                            </label><br />
-                                            <span>Nhóm sinh viên thực hiện</span><br />
-                                            <label>Sinh viên 1: <span className='content-name'>{topic.student1}</span></label><br />
-                                            <label>Sinh viên 2: <span className='content-name'>{topic.student2}</span></label><br />
-                                            <label>Sinh viên 3: <span className='content-name'>{topic.student3}</span></label><br />
-                                            <label>Yêu cầu: <span className='content-name'>{topic.requirement}</span></label>
+                                            <div className='label'>1. Tên đề tài:</div>
+                                            <span className='content-name'>{topic.subjectName}</span>
+
+                                            <div className='label'>2. Loại đề tài:</div>
+                                            <span className='content-name'>{topic.typeSubject?.typeName}</span>
+
+                                            <div className='label'>3. Giảng viên hướng dẫn:</div>
+                                            <span className='content-name'>{`${topic.instructorId?.person?.firstName} ${topic.instructorId?.person?.lastName}`}</span>
+
+                                            <div className='label'>4. Giảng viên phản biện:</div>
+                                            <span className='content-name'>
+                                                {topic.thesisAdvisorId?.person
+                                                    ? `${topic.thesisAdvisorId.person.firstName} ${topic.thesisAdvisorId.person.lastName}`
+                                                    : 'Chưa có'}
+                                            </span>
+                                            <div className='label'>5. Nhóm sinh viên thực hiện:</div>
+                                            <br/>
+                                            
+                                            <div className='label'style={{marginLeft:'40px'}}>Sinh viên 1:</div>
+                                            <span className='content-name'>{topic.student1}</span>
+
+                                            <div className='label' style={{marginLeft:'40px'}}>Sinh viên 2:</div>
+                                            <span className='content-name'>{topic.student2}</span>
+
+                                            <div className='label' style={{marginLeft:'40px'}}>Sinh viên 3:</div>
+                                            <span className='content-name'>{topic.student3}</span>
+
+                                            <div className='label'>6. Yêu cầu:</div>
+                                            <span className='content-name'>{topic.requirement}</span>
                                         </div>
-                                        {topic.active !== 0 && (
-                                            <div style={{ float: 'right' }}>
-                                                <NavLink to="/managermentTopicGraduationStudent">
-                                                    <button type="button" className="btn btn-mana btn-success" style={{ backgroundColor: '#4eb09b', fontSize: 'medium', border: 'none' }}>Quản lý đề tài</button>
-                                                </NavLink>
-                                            </div>
-                                        )}
                                     </form>
                                 </div>
                             </div>
@@ -192,15 +199,15 @@ function RegisTopicKLTable() {
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="exampleModalLabel">Thông báo xác nhận</h1>
+                            <h5 className="modal-title" id="exampleModalLabel">Đăng ký đề tài</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                            Bạn chắc chắn muốn đăng ký đề tài {currentTopic?.subjectName} không?
+                            <p>Bạn có muốn đăng ký đề tài <strong>{currentTopic?.subjectName}</strong> không?</p>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => registerTopic(currentTopic?.subjectId)}>Xác nhận</button>
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="button" className="btn btn-primary" onClick={() => registerTopic(currentTopic?.subjectId)}>Đăng ký</button>
                         </div>
                     </div>
                 </div>
