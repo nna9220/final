@@ -4,7 +4,6 @@ import CompleteTopicKL from '../../components/TableOfHead/CompleteTopic/Complete
 import Navbar from '../../components/Navbar/Navbar'
 import { useEffect, useState, useContext } from 'react'
 import SidebarHead from '../../components/Sidebar/SidebarHead';
-import { NotificationContext } from './NotificationContext';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
 import { Navigate} from 'react-router-dom';
@@ -14,12 +13,12 @@ function ManagementComplete() {
         document.title = "Đề tài đã thực hiện";
     }, []);
     const [selectedTitle, setSelectedTitle] = useState("Tiểu luận chuyên ngành");
-    const { notifications, unreadCount } = useContext(NotificationContext);
+    const [unreadCount, setUnreadCount] = useState(0);
 
     const handleDropdownChange = (e) => {
         setSelectedTitle(e.target.value);
     };
-
+    const userToken = getTokenFromUrlAndSaveToStorage();
     const [authorized, setAuthorized] = useState(true);
 
     useEffect(() => {
@@ -61,15 +60,37 @@ function ManagementComplete() {
         checkAuthorization();
     }, []);
     
+    useEffect(() => {
+        const fetchNotifications = async () => {
+          if (userToken) {
+            try {
+              const response = await axiosInstance.get('/head/notification', {
+                headers: {
+                  'Authorization': `Bearer ${userToken}`,
+                },
+              });
+              const notifications = response.data;
+              const readNotifications = new Set(JSON.parse(localStorage.getItem('readNotifications')) || []);
+              const unreadCount = notifications.filter(notification => !readNotifications.has(notification.notificationId)).length;
+              setUnreadCount(unreadCount);
+            } catch (error) {
+              console.error(error);
+            }
+          }
+        };
+    
+        fetchNotifications();
+      }, [userToken]);
+
     if (!authorized) {
         return <Navigate to="/" />;
     }
     
     return (
         <div className='homeHead'>
-            <SidebarHead />
+      <SidebarHead unreadCount={unreadCount} />
             <div className='context'>
-            <Navbar unreadCount={unreadCount} />
+            <Navbar/>
                 <hr></hr>
                 <div className='context-menu'>
                 <div className='home-head'>
@@ -79,7 +100,7 @@ function ManagementComplete() {
                     </div>
                     <div className='context-nd'>
                         <div className='card-nd'>
-                            <label htmlFor="selectTitle" style={{ marginTop: '20px', marginLeft: '30px' }}>Chọn loại đề tài</label>
+                            <label htmlFor="selectTitle" style={{ marginTop: '5px', marginLeft: '30px' }}>Chọn loại đề tài</label>
                             <div className="dropdown">
                                 <select id="selectTitle" className="form-se" aria-label="Default select example" onChange={handleDropdownChange}>
                                     <option className='optionSe' value="Tiểu luận chuyên ngành">Tiểu luận chuyên ngành</option>

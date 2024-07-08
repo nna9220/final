@@ -9,6 +9,7 @@ import { Navigate } from 'react-router-dom';
 
 function HomeHead() {
   const [authorized, setAuthorized] = useState(true);
+  const [unreadCount, setUnreadCount] = useState(0);
   const userToken = getTokenFromUrlAndSaveToStorage();
 
   useEffect(() => {
@@ -42,7 +43,7 @@ function HomeHead() {
 
   return (
     <div className='homeHead'>
-      <SidebarHead />
+      <SidebarHead unreadCount={unreadCount} />
       <div className='context'>
         <Navbar/>
         <hr />
@@ -52,7 +53,7 @@ function HomeHead() {
               <h5>TRANG CỦA BẠN</h5>
             </div>
           </div>
-          <NotificationOfHeader />
+          <NotificationOfHeader onUpdateUnreadCount={setUnreadCount} />
         </div>
       </div>
     </div>

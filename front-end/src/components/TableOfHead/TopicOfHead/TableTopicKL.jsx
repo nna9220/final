@@ -5,7 +5,6 @@ import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import ViewComfyAltOutlinedIcon from '@mui/icons-material/ViewComfyAltOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import axiosInstance from '../../../API/axios';
-import Booard from '../../KanbanOfLecturer/Booard';
 import ChevronLeftOutlinedIcon from '@mui/icons-material/ChevronLeftOutlined';
 import './TableTopic.scss'
 import BoardKL from '../../KanbanOfHead/Graduation/BoardKL';

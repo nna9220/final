@@ -491,7 +491,7 @@ function DatatableLec() {
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                                 <button type="submit" className="btn btn-primary">
                                     Cập nhật
                                 </button>
@@ -577,9 +577,9 @@ function DatatableLec() {
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModalAdd(false)}>Close</button>
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModalAdd(false)}>Hủy</button>
                                 <button type="submit" className="btn btn-primary">
-                                    Add
+                                    Lưu
                                 </button>
                             </div>
                         </form>

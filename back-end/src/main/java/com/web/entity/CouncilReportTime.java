@@ -2,6 +2,8 @@ package com.web.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,6 +46,7 @@ public class CouncilReportTime implements Serializable {
     @JoinColumn(name="type_subject_id")
     private TypeSubject typeSubjectId;
 
-    @OneToOne(mappedBy = "councilReportTime")
+    @OneToOne(mappedBy = "councilReportTime",cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private ReportSubmissionTime reportSubmissionTime;
 }

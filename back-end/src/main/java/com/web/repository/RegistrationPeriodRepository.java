@@ -17,7 +17,7 @@ public interface RegistrationPeriodRepository extends JpaRepository<Registration
     @Query("select p from RegistrationPeriod p")
     public List<RegistrationPeriod> findAllPeriod();
 
-    @Query("select p from RegistrationPeriod p where p.status=true and p.typeSubjectId=:typeSubject")
+    @Query("select p from RegistrationPeriod p where p.typeSubjectId=:typeSubject")
     public List<RegistrationPeriod> getListPeriodBYStatusAndType(TypeSubject typeSubject);
 
     @Query("select p from RegistrationPeriod p where p.typeSubjectId=:typeSubject")

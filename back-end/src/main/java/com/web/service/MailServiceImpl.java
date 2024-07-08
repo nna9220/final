@@ -101,6 +101,19 @@ public class MailServiceImpl {
 
 
     public void sendMailWithAttachment(List<String> to, String subject, String text, String pathToAttachment) {
+        if (to == null || to.isEmpty()) {
+            throw new IllegalArgumentException("Recipient email list is null or empty");
+        }
+        if (subject == null || subject.isEmpty()) {
+            throw new IllegalArgumentException("Email subject is null or empty");
+        }
+        if (text == null || text.isEmpty()) {
+            throw new IllegalArgumentException("Email text is null or empty");
+        }
+        if (pathToAttachment == null || pathToAttachment.isEmpty()) {
+            throw new IllegalArgumentException("File path to attachment is null or empty");
+        }
+
         MimeMessagePreparator preparator = mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
             messageHelper.setSubject(subject);
@@ -108,8 +121,18 @@ public class MailServiceImpl {
             messageHelper.setTo(to.toArray(new String[0]));
 
             FileSystemResource file = new FileSystemResource(pathToAttachment);
-            messageHelper.addAttachment(file.getFilename(), file);
+            if (file.exists()) {
+                messageHelper.addAttachment(file.getFilename(), file);
+            } else {
+                throw new RuntimeException("Attachment file does not exist at path: " + pathToAttachment);
+            }
         };
-        mailSender.send(preparator);
+
+        try {
+            mailSender.send(preparator);
+        } catch (Exception e) {
+            throw new RuntimeException("Error occurred while sending email with attachment: " + e.getMessage(), e);
+        }
     }
+
 }

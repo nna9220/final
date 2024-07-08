@@ -5,15 +5,17 @@ import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
 import './SidebarStudent.scss';
+import { useNavigate } from 'react-router-dom';
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
 import SourceOutlinedIcon from '@mui/icons-material/SourceOutlined';
 import { FcReading } from "react-icons/fc";
 
-function SidebarStudent() {
+function SidebarStudent({unreadCount}) {
   const [student, setStudent] = useState({});
   const [expand, setExpand] = useState(true);
   const [isAvatarVisible, setIsAvatarVisible] = useState(false);
+  const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setExpand(!expand);
@@ -32,7 +34,6 @@ function SidebarStudent() {
             },
           })
           .then((response) => {
-            console.log("infor:", response.data);
             setStudent(response.data);
           })
           .catch((error) => {
@@ -73,9 +74,11 @@ function SidebarStudent() {
                   <HomeOutlinedIcon />
                 </i>
                 <span>Trang chủ</span>
-                <span className="position-absolute top-0 start-50 badge rounded-pill bg-danger">
-                  99+
-                </span>
+                {unreadCount > 0 && (
+                  <span className="position-absolute top-0 start-50 badge rounded-pill bg-danger">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
               </a>
             </li>
             <li className="sidebar-item">

@@ -78,12 +78,9 @@ function Home() {
             <div className="card text-bg-white">
                 <img src="/assets/Home_logo.jpg" className="card-img" alt="..." style={{ width: '100%', height: '50%' }} />
                 <hr />
-                <button>
-                    <Chatbot/>
-                </button>
                 <div>
                     {!showTable && !showPDF ? (
-                        <div className='container text-center'>
+                        <div className='container text-center' style={{margin:'30px'}}>
                             <div className="row">
                                 <div className="col-lg-4">
                                     <img className="rounded-circle" src="/assets/TieuLuan.png" alt="Generic placeholder image" width="140" height="140" />
@@ -105,7 +102,7 @@ function Home() {
                     ) : showPDF ? (
                         <>
                             <Breadcrumbs aria-label="breadcrumb" style={{ fontSize: '1.2vw' }}>
-                                <button className="btn btn-secondary" style={{ border: 'none', backgroundColor: 'white', color: 'blue', fontWeight: 'bold', display: 'flex', alignItems: 'center' }}
+                                <button className="btn btn-secondary" style={{ border: 'none', backgroundColor: 'white', color: '#6C6A6A', fontWeight: 'bold', display: 'flex', alignItems: 'center' }}
                                     onClick={() => setShowPDF(false)}>
                                     <HomeOutlinedIcon style={{ marginRight: '8px' }} /> Trang chủ
                                 </button>
@@ -128,7 +125,7 @@ function Home() {
                         <div className="content d-flex">
                             <div className="flex-1">
                                 <Breadcrumbs aria-label="breadcrumb" style={{ fontSize: '1.2vw' }}>
-                                    <button className="btn btn-secondary" style={{ border: 'none', backgroundColor: 'white', color: 'blue', fontWeight: 'bold', display: 'flex', alignItems: 'center' }}
+                                    <button className="btn btn-secondary" style={{ border: 'none', backgroundColor: 'white', color: '#6C6A6A', fontWeight: 'bold', display: 'flex', alignItems: 'center' }}
                                         onClick={() => setShowTable(false)}>
                                         <HomeOutlinedIcon style={{ marginRight: '8px' }} /> Trang chủ
                                     </button>
@@ -180,7 +177,7 @@ function Home() {
                                             />
                                         </div>
                                     ) : (
-                                        <Typography variant="h6" style={{ marginTop: '20px' }}>
+                                        <Typography variant="h7" style={{ marginTop: '20px', color:'#6C6A6A'}}>
                                             Không có dữ liệu phù hợp.
                                         </Typography>
                                     )}

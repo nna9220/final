@@ -219,8 +219,11 @@ function EditProfileSt() {
         <div>
             <div class="container">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <h4 class="text-right">TRANG CÁ NHÂN</h4>
-                    <div>
+                    <div className='home-head'>
+                        <div className='title-head'>
+                            <h5>TRANG CÁ NHÂN</h5>
+                        </div>
+                    </div>                    <div>
                         <Toast className='toast align-items-center' show={showSuccessToast} onClose={() => setShowSuccessToast(false)} delay={3000} autohide>
                             <Toast.Header>
                                 <strong className="me-auto">Thông báo</strong>
@@ -247,7 +250,7 @@ function EditProfileSt() {
                                 <div class="account-settings">
                                     <div class="user-profile">
                                         <div class="user-avatar">
-                                            <FcReading size={100}/>
+                                            <FcReading size={100} />
                                         </div>
                                         <h5 class="user-name">{user.firstName + ' ' + user.lastName}</h5>
                                         <h6 class="user-email">{user.username}</h6>

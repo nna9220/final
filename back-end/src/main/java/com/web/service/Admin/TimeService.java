@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -22,6 +25,8 @@ public class TimeService {
     private NotificationRepository notificationRepository;
     @Autowired
     private AuthorityRepository authorityRepository;
+    @Autowired
+    private ImportStudentCheckRegister importStudentCheckRegister;
     @Autowired
     private PersonRepository personRepository;
     @Autowired
@@ -48,9 +53,11 @@ public class TimeService {
         TimeBrowsOfHead timeBrowsOfHead = registrationPeriodLectuer.getTimeBrowsOfHead();
         if (timeBrowsOfHead != null) {
             if (timeBrowsOfHead.getTimeStart().isBefore(regEnd)) {
+                System.out.println("TimeBrowsOfHead phải bắt đầu sau khi RegistrationPeriodLectuer kết thúc");
                 throw new IllegalArgumentException("TimeBrowsOfHead phải bắt đầu sau khi RegistrationPeriodLectuer kết thúc.");
             }
             if (timeBrowsOfHead.getTimeEnd().isBefore(timeBrowsOfHead.getTimeStart())) {
+                System.out.println("Thời gian kết thúc của TimeBrowsOfHead phải sau thời gian bắt đầu");
                 throw new IllegalArgumentException("Thời gian kết thúc của TimeBrowsOfHead phải sau thời gian bắt đầu.");
             }
         }
@@ -58,9 +65,11 @@ public class TimeService {
         RegistrationPeriod registrationPeriod = timeBrowsOfHead != null ? timeBrowsOfHead.getRegistrationPeriod() : null;
         if (registrationPeriod != null) {
             if (registrationPeriod.getRegistrationTimeStart().isBefore(timeBrowsOfHead.getTimeEnd())) {
+                System.out.println("RegistrationPeriodStudent phải bắt đầu sau khi TimeBrowsOfHead kết thúc");
                 throw new IllegalArgumentException("RegistrationPeriod phải bắt đầu sau khi TimeBrowsOfHead kết thúc.");
             }
             if (registrationPeriod.getRegistrationTimeEnd().isBefore(registrationPeriod.getRegistrationTimeStart())) {
+                System.out.println("Thời gian kết thúc của RegistrationPeriodStudent phải sau thời gian bắt đầu");
                 throw new IllegalArgumentException("Thời gian kết thúc của RegistrationPeriod phải sau thời gian bắt đầu.");
             }
         }
@@ -68,9 +77,11 @@ public class TimeService {
         ReportSubmissionTime reportSubmissionTime = registrationPeriod != null ? registrationPeriod.getReportSubmissionTime() : null;
         if (reportSubmissionTime != null) {
             if (reportSubmissionTime.getReportTimeStart().isBefore(registrationPeriod.getRegistrationTimeEnd())) {
+                System.out.println("ReportSubmissionTime phải bắt đầu sau khi RegistrationPeriod kết thúc.");
                 throw new IllegalArgumentException("ReportSubmissionTime phải bắt đầu sau khi RegistrationPeriod kết thúc.");
             }
             if (reportSubmissionTime.getReportTimeEnd().isBefore(reportSubmissionTime.getReportTimeStart())) {
+                System.out.println("Thời gian kết thúc của ReportSubmissionTime phải sau thời gian bắt đầu.");
                 throw new IllegalArgumentException("Thời gian kết thúc của ReportSubmissionTime phải sau thời gian bắt đầu.");
             }
         }
@@ -78,19 +89,23 @@ public class TimeService {
         CouncilReportTime councilReportTime = reportSubmissionTime != null ? reportSubmissionTime.getCouncilReportTime() : null;
         if (councilReportTime != null) {
             if (councilReportTime.getReportTimeStart().isBefore(reportSubmissionTime.getReportTimeEnd())) {
+                System.out.println("CouncilReportTime phải bắt đầu sau khi ReportSubmissionTime kết thúc.");
                 throw new IllegalArgumentException("CouncilReportTime phải bắt đầu sau khi ReportSubmissionTime kết thúc.");
             }
             if (councilReportTime.getReportTimeEnd().isBefore(councilReportTime.getReportTimeStart())) {
+                System.out.println("Thời gian kết thúc của CouncilReportTime phải sau thời gian bắt đầu.");
                 throw new IllegalArgumentException("Thời gian kết thúc của CouncilReportTime phải sau thời gian bắt đầu.");
             }
         }
     }
 
+    @Transactional
     public ResponseEntity<?> getListRegistrationLecturerPeriod(TypeSubject typeSubject) {
         List<RegistrationPeriodLectuer> registrationPeriodLectuers = registrationPeriodLecturerRepository.findAllPeriodEssay(typeSubject);
         return new ResponseEntity<>(registrationPeriodLectuers, HttpStatus.OK);
     }
 
+    @Transactional
     public ResponseEntity<Map<String, Object>> getDetailAllTimeByRegistrationPeriodLecturer(int id) {
         Map<String, Object> response = new HashMap<>();
         RegistrationPeriodLectuer existedRegistrationPeriodLectuer = registrationPeriodLecturerRepository.findById(id).orElse(null);
@@ -141,11 +156,10 @@ public class TimeService {
             return null;
         }
     }
-
     public ResponseEntity<?> createAllTime(
-            String registrationTimeStart,
-            String registrationTimeEnd,
-            String registrationName,
+            String registrationPeriodLecturerStart,
+            String registrationPeriodLecturerEnd,
+            String registrationPeriodLecturerName,
             TypeSubject typeSubjectId,
 
             String timeBrowsOfHeadStart,
@@ -153,20 +167,24 @@ public class TimeService {
 
             String registrationPeriodStart,
             String registrationPeriodEnd,
-            String registrationPeriodName,
 
             String reportSubmissionTimeStart,
             String reportSubmissionTimeEnd,
-            String reportSubmissionTimeName,
 
             String councilReportTimeStart,
             String councilReportTimeEnd,
-            String councilReportTimeName) {
+            MultipartFile file) throws IOException {
+        System.out.println("Data nhận Lecturer: " + registrationPeriodLecturerName + " " + registrationPeriodLecturerStart + " " + registrationPeriodLecturerEnd);
+        System.out.println("Data nhận Student: " + registrationPeriodLecturerName + " " + registrationPeriodStart + " " + registrationPeriodEnd);
+        System.out.println("Data nhận Report: " + registrationPeriodLecturerName + " " + reportSubmissionTimeStart + " " + reportSubmissionTimeEnd);
+        System.out.println("Data nhận Time browse: " + timeBrowsOfHeadStart + " " + timeBrowsOfHeadEnd );
+        System.out.println("Data nhận Council: " + registrationPeriodLecturerName + " " + councilReportTimeStart + " " + councilReportTimeEnd);
+        System.out.println("File: " + file);
 
         RegistrationPeriodLectuer registrationPeriodLectuer = new RegistrationPeriodLectuer();
-        registrationPeriodLectuer.setRegistrationTimeStart(convertToLocalDateTime(registrationTimeStart));
-        registrationPeriodLectuer.setRegistrationTimeEnd(convertToLocalDateTime(registrationTimeEnd));
-        registrationPeriodLectuer.setRegistrationName(registrationName);
+        registrationPeriodLectuer.setRegistrationTimeStart(convertToLocalDateTime(registrationPeriodLecturerStart));
+        registrationPeriodLectuer.setRegistrationTimeEnd(convertToLocalDateTime(registrationPeriodLecturerEnd));
+        registrationPeriodLectuer.setRegistrationName(registrationPeriodLecturerName);
         registrationPeriodLectuer.setStatus(true);
         registrationPeriodLectuer.setTypeSubjectId(typeSubjectId);
 
@@ -179,21 +197,21 @@ public class TimeService {
         RegistrationPeriod registrationPeriod = new RegistrationPeriod();
         registrationPeriod.setRegistrationTimeStart(convertToLocalDateTime(registrationPeriodStart));
         registrationPeriod.setRegistrationTimeEnd(convertToLocalDateTime(registrationPeriodEnd));
-        registrationPeriod.setRegistrationName(registrationPeriodName);
+        registrationPeriod.setRegistrationName(registrationPeriodLecturerName);
         registrationPeriod.setStatus(true);
         registrationPeriod.setTypeSubjectId(typeSubjectId);
 
         ReportSubmissionTime reportSubmissionTime = new ReportSubmissionTime();
         reportSubmissionTime.setReportTimeStart(convertToLocalDateTime(reportSubmissionTimeStart));
         reportSubmissionTime.setReportTimeEnd(convertToLocalDateTime(reportSubmissionTimeEnd));
-        reportSubmissionTime.setReportName(reportSubmissionTimeName);
+        reportSubmissionTime.setReportName(registrationPeriodLecturerName);
         reportSubmissionTime.setTypeSubjectId(typeSubjectId);
         reportSubmissionTime.setStatus(true);
 
         CouncilReportTime councilReportTime = new CouncilReportTime();
         councilReportTime.setReportTimeStart(convertToLocalDateTime(councilReportTimeStart));
         councilReportTime.setReportTimeEnd(convertToLocalDateTime(councilReportTimeEnd));
-        councilReportTime.setReportName(councilReportTimeName);
+        councilReportTime.setReportName(registrationPeriodLecturerName);
         councilReportTime.setStatus(true);
         councilReportTime.setTypeSubjectId(typeSubjectId);
 
@@ -216,7 +234,13 @@ public class TimeService {
 
 
         registrationPeriodLecturerRepository.save(registrationPeriodLectuer);
-
+        timeBrowseHeadRepository.save(timeBrowsOfHead);
+        registrationPeriodRepository.save(registrationPeriod);
+        reportSubmissionTimeRepository.save(reportSubmissionTime);
+        councilReportTimeRepository.save(councilReportTime);
+        if (file != null && !file.isEmpty()) {
+            importStudentCheckRegister.importStudent(file);
+        }
         //GỬI MAIL VÀ THÔNG BÁO CHO SINH VIÊN
         List<Student> studentList = studentRepository.getListStudentActiveTrue();
         List<String> emailStudent = new ArrayList<>();
@@ -284,11 +308,9 @@ public class TimeService {
         String messengerHead = "Thời gian bắt đầu: " + timeBrowsOfHead.getTimeStart()+"\n" +
                 "Thời gian kết thúc: " + timeBrowsOfHead.getTimeEnd() + "\n";
 
-
         String subjectCouncil = "THÔNG BÁO THỜI GIAN CÓ THỂ THÀNH LẬP HỘI ĐỒNG CHO ĐỀ TÀI " +typeSubjectId.getTypeName();
         String messengerCouncil = "Thời gian bắt đầu: " + councilReportTime.getReportTimeStart()+"\n" +
                 "Thời gian kết thúc: " + councilReportTime.getReportTimeEnd() + "\n";
-
 
         if (!emailLecturer.isEmpty()){
             mailService.sendMailToStudents(emailLecturer,subjectLecturer,messengerLecturer);
@@ -359,7 +381,8 @@ public class TimeService {
             String councilReportTimeStart,
             String councilReportTimeEnd,
             String councilReportTimeName,
-            TypeSubject typeSubject) {
+            MultipartFile file,
+            TypeSubject typeSubject) throws IOException {
 
         RegistrationPeriodLectuer existedRegistrationPeriodLectuer = registrationPeriodLecturerRepository.findById(id).orElse(null);
         if (existedRegistrationPeriodLectuer == null) {
@@ -449,6 +472,9 @@ public class TimeService {
         registrationPeriodRepository.save(existedRegistrationPeriod);
         timeBrowseHeadRepository.save(existedTimeBrowsOfHead);
         registrationPeriodLecturerRepository.save(existedRegistrationPeriodLectuer);
+        if (file != null && !file.isEmpty()) {
+            importStudentCheckRegister.importStudent(file);
+        }
 
         //GỬI MAIL VÀ THÔNG BÁO CHO SINH VIÊN
         List<Student> studentList = studentRepository.getListStudentActiveTrue();
@@ -496,7 +522,6 @@ public class TimeService {
         notificationReport.setDateSubmit(now);
         notificationRepository.save(notificationReport);
 
-
         //GỬI MAIL VÀ THÔNG BÁO CHO GIẢNG VIÊN
         List<Lecturer> lecturerList = lecturerRepository.findAll();
         Authority authority = authorityRepository.findByName("ROLE_HEAD");
@@ -517,11 +542,9 @@ public class TimeService {
         String messengerHead = "Thời gian bắt đầu: " + existedTimeBrowsOfHead.getTimeStart()+"\n" +
                 "Thời gian kết thúc: " + existedTimeBrowsOfHead.getTimeEnd() + "\n";
 
-
         String subjectCouncil = "THÔNG BÁO CẬP NHẬT THỜI GIAN CÓ THỂ THÀNH LẬP HỘI ĐỒNG CHO ĐỀ TÀI " +typeSubject.getTypeName();
         String messengerCouncil = "Thời gian bắt đầu: " + existedCouncilReportTime.getReportTimeStart()+"\n" +
                 "Thời gian kết thúc: " + existedCouncilReportTime.getReportTimeEnd() + "\n";
-
 
         if (!emailLecturer.isEmpty()){
             mailService.sendMailToStudents(emailLecturer,subjectLecturer,messengerLecturer);
@@ -553,24 +576,19 @@ public class TimeService {
         notificationLecturer.setDateSubmit(now);
         notificationRepository.save(notificationLecturer);
 
-
         Notification notificationHead = new Notification();
-        notificationHead.setContent(subjectHead);
+        notificationHead.setContent(messengerHead);
         notificationHead.setPersons(personListHead);
-        notificationHead.setTitle(messengerHead);
+        notificationHead.setTitle(subjectHead);
         notificationHead.setDateSubmit(now);
         notificationRepository.save(notificationHead);
 
         Notification notificationHeadCouncil = new Notification();
-        notificationHeadCouncil.setContent(subjectCouncil);
+        notificationHeadCouncil.setContent(messengerCouncil);
         notificationHeadCouncil.setPersons(personListHead);
-        notificationHeadCouncil.setTitle(messengerCouncil);
+        notificationHeadCouncil.setTitle(subjectCouncil);
         notificationHeadCouncil.setDateSubmit(now);
         notificationRepository.save(notificationHeadCouncil);
-
-
-
         return new ResponseEntity<>(existedRegistrationPeriodLectuer, HttpStatus.OK);
     }
-
 }

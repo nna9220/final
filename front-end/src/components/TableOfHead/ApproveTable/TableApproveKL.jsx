@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
+import WarningOutlinedIcon from '@mui/icons-material/WarningOutlined';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { DataGrid } from '@mui/x-data-grid';
@@ -203,7 +204,6 @@ function TableApproveKL() {
     return (
         <div className='body-table'>
             <ToastContainer />
-            <button type="button" class="btn btn-primary"  onClick = {handleExport}><FileDownloadOutlinedIcon/>Export</button>
             {isApprovalPeriod && (
                 <button className='button-listDelete-approve' onClick={() => setShowTable(!showTable)}>
                     {showTable ? <><PlaylistAddCheckOutlinedIcon /> Dánh sách đề tài đã xóa</> : <><PlaylistRemoveOutlinedIcon /> Dánh sách đề tài chờ duyệt</>}
@@ -244,8 +244,8 @@ function TableApproveKL() {
                     )
                 )
             ) : (
-                <div className="alert alert-warning alert-head" role="alert" style={{ backgroundColor: 'white', border: 'none' }}>
-                    {toastMessage}
+                <div className="alert alert-warning alert-head" role="alert" style={{border:'none',backgroundColor:'white', textAlign:'center', fontWeight:'bold' }}>
+                    <WarningOutlinedIcon /> {toastMessage}
                 </div>
             )}
 

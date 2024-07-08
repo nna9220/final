@@ -12,7 +12,8 @@ function HomeLec() {
   useEffect(() => {
     document.title = "Trang chủ giảng viên";
   }, [userToken]);
-  
+  const [unreadCount, setUnreadCount] = useState(0);
+
   const [authorized, setAuthorized] = useState(true);
   useEffect(() => {
     const checkAuthorization = async () => {
@@ -32,18 +33,18 @@ function HomeLec() {
           }
         } catch (error) {
           if (error.response) {
-              console.error("Response error:", error.response.data);
-              console.error("Response status:", error.response.status);
-              console.error("Response headers:", error.response.headers);
-              setAuthorized(false);
+            console.error("Response error:", error.response.data);
+            console.error("Response status:", error.response.status);
+            console.error("Response headers:", error.response.headers);
+            setAuthorized(false);
           } else if (error.request) {
-              console.error("Request error:", error.request);
-              setAuthorized(false);
+            console.error("Request error:", error.request);
+            setAuthorized(false);
           } else {
-              console.error("Axios error:", error.message);
-              setAuthorized(false);
+            console.error("Axios error:", error.message);
+            setAuthorized(false);
           }
-      }
+        }
       } else {
         // Nếu không có token, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
         setAuthorized(false);
@@ -58,15 +59,17 @@ function HomeLec() {
   }
   return (
     <div className='homeLec'>
-      <SidebarLec />
+      <SidebarLec unreadCount={unreadCount} />
       <div className='context'>
         <Navbar />
         <hr />
         <div className='widgets'>
-          <div className='header-notification'>
-            <h4 className='title'>TRANG CỦA BẠN</h4>
+          <div className='home-head'>
+            <div className='title-head'>
+              <h5>TRANG CỦA BẠN</h5>
+            </div>
           </div>
-          <NotificationOfLecturer />
+          <NotificationOfLecturer onUpdateUnreadCount={setUnreadCount} />
         </div>
       </div>
     </div>

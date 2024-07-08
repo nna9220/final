@@ -8,8 +8,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import 'react-toastify/dist/ReactToastify.css';
 import { DataGrid } from '@mui/x-data-grid';
-import Button from '@mui/material/Button';
-import SaveAltIcon from '@mui/icons-material/SaveAlt';
+
 
 function DataClass() {
     const [classes, setClasses] = useState([]);
@@ -18,6 +17,7 @@ function DataClass() {
     const [selectedClass, setSelectedClass] = useState(null);
     const [modalType, setModalType] = useState('');
     const [idClass, setIdClass] = useState(null);
+
     useEffect(() => {
         fetchClasses();
     }, []);
@@ -33,7 +33,8 @@ function DataClass() {
                 .then(response => {
                     const classArray = response.data.listClass || [];
                     console.log("Classes: ", response.data.listClass);
-                    setClasses(classArray);
+                    // Ensure new classes are at the top
+                    setClasses(classArray.reverse());
                 })
                 .catch(error => {
                     console.error("error: ", error);
@@ -55,10 +56,14 @@ function DataClass() {
             },
         })
             .then(response => {
-                setClasses([...classes, response.data]);
+                // Add new class to the top of the list
+                setClasses([response.data, ...classes]);
                 setNewClass('');
                 setShowForm(false);
                 toast.success('Thêm lớp thành công!');
+                document.getElementById('addClass').classList.remove('show');
+                document.body.classList.remove('modal-open');
+                document.querySelector('.modal-backdrop').remove();
             })
             .catch(error => {
                 console.error(error);
@@ -93,6 +98,9 @@ function DataClass() {
                 setNewClass('');
                 setShowForm(false);
                 toast.success('Chỉnh sửa lớp thành công!');
+                document.getElementById('editClass').classList.remove('show');
+                document.body.classList.remove('modal-open');
+                document.querySelector('.modal-backdrop').remove();
             })
             .catch(error => {
                 console.error(error);
@@ -116,6 +124,7 @@ function DataClass() {
             },
         })
             .then(response => {
+                setClasses(classes.filter(item => item.id !== idClass));
                 toast.success('Xóa lớp thành công!');
             })
             .catch(error => {
@@ -133,10 +142,10 @@ function DataClass() {
             width: 150,
             renderCell: (params) => (
                 <>
-                    <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editClass" onClick={() =>  {handleViewClass(params.row);setModalType('edit');}}>
+                    <button type="button" style={{marginRight:'10px', color:'#1572A1', fontWeight:'bolder'}} className="btn" data-bs-toggle="modal" data-bs-target="#editClass" onClick={() =>  {handleViewClass(params.row);setModalType('edit');}}>
                         <EditOutlinedIcon />
                     </button>
-                    <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteClass" onClick={() => { setIdClass(params.row.id); setSelectedClass(params.row) }}>
+                    <button type="button" style={{marginRight:'10px', color:'#FF7878', fontWeight:'bolder'}} className="btn" data-bs-toggle="modal" data-bs-target="#deleteClass" onClick={() => { setIdClass(params.row.id); setSelectedClass(params.row) }}>
                         <DeleteOutlineOutlinedIcon />
                     </button>
                 </>
@@ -163,13 +172,13 @@ function DataClass() {
         <div className="table-classes">
             <ToastContainer />
             <div className="content-table">
-                <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addClass" onClick={() => {
+                <button type="button" className="btn btn-success" style={{marginBottom:'8px'}} data-bs-toggle="modal" data-bs-target="#addClass" onClick={() => {
                     setSelectedClass(null);
                     setNewClass('');
                     setModalType('add');
                     setShowForm(true);
                 }}>
-                    <AddCircleOutlineOutlinedIcon />
+                    <AddCircleOutlineOutlinedIcon /> 
                 </button>
                 <div>
                     <DataGrid
@@ -186,7 +195,7 @@ function DataClass() {
             </div>
 
             <div className="modal fade" id="addClass" tabIndex="-1" aria-labelledby="addClassLabel" aria-hidden="true">
-                <div className="modal-dialog">
+                <div className="modal-dialog modal-dialog-centered">
                     <form className="modal-content" onSubmit={handleSubmit}>
                         <div className="modal-header">
                             <h1 className="modal-title fs-5" id="addClassLabel">Thêm Lớp học</h1>
@@ -214,7 +223,7 @@ function DataClass() {
             </div>
 
             <div className="modal fade" id="editClass" tabIndex="-1" aria-labelledby="editClassLabel" aria-hidden="true">
-                <div className="modal-dialog">
+                <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h1 className="modal-title fs-5" id="editClassLabel">Chỉnh sửa lớp</h1>
@@ -244,7 +253,7 @@ function DataClass() {
             </div>
 
             <div className="modal fade" id="deleteClass" tabIndex="-1" aria-labelledby="deleteClassLabel" aria-hidden="true">
-                <div className="modal-dialog">
+                <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h1 className="modal-title fs-5" id="deleteClassLabel">Xác nhận xóa</h1>
@@ -255,7 +264,7 @@ function DataClass() {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                            <button type="button" className="btn btn-primary" onClick={() => handleDeleteClass(idClass)}>Xác nhận</button>
+                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => handleDeleteClass(idClass)}>Xác nhận</button>
                         </div>
                     </div>
                 </div>

@@ -99,7 +99,7 @@ const Card = ({ task, index }) => {
                 >
                     <div class="dropdown">
                         <label className='title-task-st'>{task.requirement}</label>
-                        <button class="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{ border: 'none', backgroundColor: 'white' }} >
+                        <button class="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{ border: 'none', backgroundColor: 'white', color:'black' }} >
                             <MoreHorizTwoToneIcon />
                         </button>
                         <ul class="dropdown-menu">

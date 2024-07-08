@@ -14,6 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedWriter;
@@ -37,107 +38,110 @@ public class ImportStudentCheckRegister {
     private final StudentClassRepository studentClassRepository;
     private final PersonRepository personRepository;
     private final AuthorityRepository authorityRepository;
-    private  final MailServiceImpl mailService;
+    private final MailServiceImpl mailService;
 
     public String generateStudentListFile(List<Student> students, String filePath) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             writer.write("StudentId,First Name,Last Name,Email\n");
             for (Student student : students) {
-                writer.write(student.getStudentId() + "," + student.getPerson().getFirstName() + "," + student.getPerson().getLastName()+ "," + student.getPerson().getUsername() + "\n");
+                writer.write(student.getStudentId() + "," + student.getPerson().getFirstName() + "," + student.getPerson().getLastName() + "," + student.getPerson().getUsername() + "\n");
             }
         }
         return filePath;
     }
 
+    @Transactional
     public ResponseEntity<?> importStudent(MultipartFile file) throws IOException {
         try {
+            List<Student> students = new ArrayList<>();
+            if (!checkExcelFormat(file)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File upload is not in the correct format, please try again!");
+            }
+            students = toStudents(file.getInputStream());
+
+            List<String> studentIds = students.stream().map(Student::getStudentId).collect(Collectors.toList());
+            List<Student> existingStudents = studentRepository.findAllById(studentIds);
+
             List<Student> updateStudents = new ArrayList<>();
-            if (checkExcelFormat(file)) {
-                List<Student> students = toStudents(file.getInputStream());
-                //Lập một dnah sách
-                List<String> studentIds = students.stream().map(Student::getStudentId).collect(Collectors.toList());
-                for (Student student : students) {
-                    Student oldStudent = studentRepository.findById(student.getStudentId()).orElse(null);
-                    if (oldStudent != null) {
-                        oldStudent.setStatus(true);
-                        updateStudents.add(oldStudent);
-                    } else {
-                        // Thêm logic cho sinh viên mới nếu cần thiết
-                        student.setStatus(true);
-                        updateStudents.add(student);
-                    }
-                }
-                //Các sv k nằm trong ds thì status=false
-                studentRepository.saveAll(updateStudents);
-                //Gửi mail cho các sv này thông báo:
-                List<Student> studentList = studentRepository.getListStudentActiveTrue();
-                List<String> emailLecturer = new ArrayList<>();
-                for (Student student:studentList) {
-                    emailLecturer.add(student.getPerson().getUsername());
-                }
-                String subject = "THÔNG BÁO ĐĂNG NHẬP ";
-                String messenger = "Danh sách sinh viên được đăng ký đề tài trong đợt này đã có, vui lòng truy cập website hcmute.workon.space bằng mail sinh viên để đăng ký đề tài!!";
+            for (Student existingStudent : existingStudents) {
+                existingStudent.setStatus(true);
+                updateStudents.add(existingStudent);
+            }
+            studentRepository.saveAll(updateStudents);
 
-                String filePath = "student_list.csv";
-                generateStudentListFile(studentList, filePath);
+            List<Student> studentsToDeactivate = studentRepository.findAll().stream()
+                    .filter(student -> !studentIds.contains(student.getStudentId()))
+                    .collect(Collectors.toList());
 
-                if (!studentList.isEmpty()) {
-                    mailService.sendMailWithAttachment(emailLecturer, subject, messenger, filePath);
-                }
-                List<Student> allStudents = studentRepository.findAll();
-                List<Student> studentsToUpdate = new ArrayList<>();
-                for (Student student : allStudents) {
-                    if (!studentIds.contains(student.getStudentId())) {
-                        student.setStatus(false);
-                        studentsToUpdate.add(student);
-                    }
-                }
-                studentRepository.saveAll(studentsToUpdate);
+            for (Student student : studentsToDeactivate) {
+                student.setStatus(false);
+            }
+            studentRepository.saveAll(studentsToDeactivate);
 
-                return ResponseEntity.ok("Imported file to list subject successful!");
-            } else
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File upload is not match format, please try again!");
-        }catch (Exception e){
-            throw new RuntimeException("Lỗi r" + e);
+            List<Student> studentList = studentRepository.getListStudentActiveTrue();
+            List<String> emailLecturer = new ArrayList<>();
+            for (Student s:studentList) {
+                System.out.println("Student: " + s.getPerson().getUsername());
+                emailLecturer.add(s.getPerson().getUsername());
+            }
+
+            if (emailLecturer.isEmpty()) {
+                throw new RuntimeException("No valid recipient email addresses found.");
+            }
+
+            String subject = "THÔNG BÁO ĐĂNG NHẬP ";
+            String messenger = "Danh sách sinh viên được đăng ký đề tài trong đợt này đã có, vui lòng truy cập website hcmute.workon.space bằng mail sinh viên để đăng ký đề tài!!";
+
+            String filePath = "student_list.csv";
+            generateStudentListFile(studentList, filePath);
+
+            if (filePath == null || filePath.isEmpty()) {
+                throw new RuntimeException("Generated file path is null or empty.");
+            }
+
+            mailService.sendMailWithAttachment(emailLecturer, subject, messenger, filePath);
+
+            return ResponseEntity.ok("Imported file to list subject successful!");
+        } catch (Exception e) {
+            throw new RuntimeException("Error occurred while importing students: " + e.getMessage(), e);
         }
     }
-
-
-    public boolean checkExcelFormat(MultipartFile file){
+    public boolean checkExcelFormat(MultipartFile file) {
         String contentType = file.getContentType();
         if (contentType == null) throw new AssertionError();
         return contentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     }
-    public List<Student> toStudents(InputStream inputStream){
+
+    public List<Student> toStudents(InputStream inputStream) {
         List<Student> students = new ArrayList<>();
-        try{
+        try {
             XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
             XSSFSheet sheet = workbook.getSheet("student");
             int rowCount = sheet.getPhysicalNumberOfRows();
             for (int i = 1; i < rowCount; i++) {
                 Row row = sheet.getRow(i);
                 if (row != null) {
-                    Student student = new Student(); // Tạo một đối tượng Student và Person cho mỗi hàng
+                    Student student = new Student(); // Tạo một đối tượng Student cho mỗi hàng
                     // Duyệt qua từng ô trong hàng và đọc dữ liệu
                     for (int j = 0; j < row.getLastCellNum(); j++) {
                         Cell cell = row.getCell(j);
+                        if (cell == null) continue;
                         switch (j) {
-                            case 0 -> {//ID
+                            case 0: // ID
                                 student.setStudentId(getCellValueAsString(cell));
-                            }
-                            default -> throw new IllegalStateException("Unsupported column index: " + j);
+                                break;
+                            default:
+                                throw new IllegalStateException("Unsupported column index: " + j);
                         }
                     }
-                    // Sau khi đọc dữ liệu từ một hàng, thêm đối tượng Subject vào danh sách
+                    // Sau khi đọc dữ liệu từ một hàng, thêm đối tượng Student vào danh sách
                     students.add(student);
                 }
             }
-        } catch (Exception e){
-            throw new RuntimeException("Error when convert file csv!" + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException("Error when converting file to students: " + e.getMessage());
         }
-        students.forEach(student -> {
-            System.out.println("ID: " + student.getStudentId());
-        });
+        students.forEach(student -> System.out.println("ID: " + student.getStudentId()));
         return students;
     }
 

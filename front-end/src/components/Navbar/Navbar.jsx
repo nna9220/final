@@ -2,8 +2,11 @@ import React from 'react';
 import './navbar.scss';
 import { SiGravatar } from "react-icons/si";
 import axiosInstance from '../../API/axios';
+import { useNavigate } from 'react-router-dom';
 
 function Navbar() {
+  const navigate = useNavigate();
+
   const handleLogout = () => {
     const token = sessionStorage.getItem('userToken');
     axiosInstance.post('/logout', {}, {
@@ -13,7 +16,7 @@ function Navbar() {
     })
     .then(response => {
         sessionStorage.removeItem('userToken');
-        navigate('/');
+        navigate('/'); // Sử dụng navigate để điều hướng
     })
     .catch(error => {
         console.error('Logout error:', error);

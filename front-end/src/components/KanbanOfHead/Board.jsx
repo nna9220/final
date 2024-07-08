@@ -3,13 +3,11 @@ import axios from 'axios';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import { DragDropContext } from 'react-beautiful-dnd';
 import Column from './Column';
-import './Styles.scss'
+import './styleKanban.scss'
 import axiosInstance from '../../API/axios';
-import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import TimelineOutlinedIcon from '@mui/icons-material/TimelineOutlined';
-import TimeLineOfLecturer from '../Timeline/TimeLineOfLecturer';
 import DnsOutlinedIcon from '@mui/icons-material/DnsOutlined';
-import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
+import TimeLineOfHeader from '../Timeline/TimeLineOfHeader';
 
 const Booard = ({ subjectId }) => {
   const [data, setData] = useState([]);
@@ -47,7 +45,7 @@ const Booard = ({ subjectId }) => {
     const userToken = getTokenFromUrlAndSaveToStorage();
     const fetchData = async () => {
       try {
-        const response = await axiosInstance.get(`/lecturer/subject/listTask/${subjectId}`, {
+        const response = await axiosInstance.get(`/head/manager/listTask/${subjectId}`, {
           headers: {
             'Authorization': `Bearer ${userToken}`,
           },
@@ -86,10 +84,10 @@ const Booard = ({ subjectId }) => {
               </div>
             </DragDropContext>
           )}
-          {showTimeLine && <TimeLineOfLecturer subjectId={subjectId} />}
+          {showTimeLine && <TimeLineOfHeader subjectId={subjectId} />}
         </div>
         <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabIndex="0">
-          {showTimeLine && <TimeLineOfLecturer subjectId={subjectId} />}
+          {showTimeLine && <TimeLineOfHeader subjectId={subjectId} />}
         </div>
       </div>
     </div>

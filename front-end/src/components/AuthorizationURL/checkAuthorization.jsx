@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 
-const checkAuthorization = ({ component: Component, ...rest }) => {
+const CheckAuthorization = ({ component: Component, ...rest }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -39,4 +39,4 @@ const checkAuthorization = ({ component: Component, ...rest }) => {
     return isAuthenticated ? <Component {...rest} /> : <Navigate to="/login" />;
 };
 
-export default checkAuthorization;
+export default CheckAuthorization;

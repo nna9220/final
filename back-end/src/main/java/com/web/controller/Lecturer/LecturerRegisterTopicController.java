@@ -154,8 +154,6 @@ public class LecturerRegisterTopicController {
         }
     }
 
-
-
     @GetMapping("/periodLecturer")
     @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<?> getPeriod(@RequestHeader("Authorization") String authorizationHeader){

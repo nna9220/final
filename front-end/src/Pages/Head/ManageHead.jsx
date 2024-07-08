@@ -4,30 +4,48 @@ import Navbar from '../../components/Navbar/Navbar';
 import './MannageHead.scss';
 import TableApprove from '../../components/TableOfHead/ApproveTable/TableApprove';
 import TableApproveKL from '../../components/TableOfHead/ApproveTable/TableApproveKL';
-import { NotificationContext } from './NotificationContext';
 import { Navigate } from 'react-router-dom';
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import axiosInstance from '../../API/axios';
 
 function MannageHead() {
   useEffect(() => {
-    document.title = "Quản lý đề tài";
+    document.title = "Đề tài của tôi";
   }, []);
+  const [authorized, setAuthorized] = useState(true);
+  const [selectedTitle, setSelectedTitle] = useState("Tiểu luận chuyên ngành");
+  const [unreadCount, setUnreadCount] = useState(0);
 
-  // Sử dụng useContext để lấy giá trị từ context
-  const { notifications, unreadCount } = useContext(NotificationContext);
-
-  const [selectedTitle, setSelectedTitle] = useState({ title1: 'Duyệt đề tài', title2: '', table: null });
-
-  const handleDropdownClick = (title1, title2, table) => {
-    setSelectedTitle({ title1, title2, table });
+  const userToken = getTokenFromUrlAndSaveToStorage();
+  const handleDropdownChange = (e) => {
+    setSelectedTitle(e.target.value);
   };
 
-  const [authorized, setAuthorized] = useState(true);
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      if (userToken) {
+        try {
+          const response = await axiosInstance.get('/head/notification', {
+            headers: {
+              'Authorization': `Bearer ${userToken}`,
+            },
+          });
+          const notifications = response.data;
+          const readNotifications = new Set(JSON.parse(localStorage.getItem('readNotifications')) || []);
+          const unreadCount = notifications.filter(notification => !readNotifications.has(notification.notificationId)).length;
+          setUnreadCount(unreadCount);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    };
+
+    fetchNotifications();
+  }, [userToken]);
+
 
   useEffect(() => {
     const checkAuthorization = async () => {
-      const userToken = getTokenFromUrlAndSaveToStorage(); // Lấy token từ URL hoặc từ bất kỳ nguồn nào khác
       if (userToken) {
         try {
           const response = await axiosInstance.post('/check-authorization/head', null, {
@@ -35,34 +53,21 @@ function MannageHead() {
               'Authorization': `Bearer ${userToken}`,
             },
           });
-          console.log("Nhận : ", response.data);
-          if (response.data == "Authorized") {
+          if (response.data === "Authorized") {
             setAuthorized(true);
           } else {
             setAuthorized(false);
           }
         } catch (error) {
-          if (error.response) {
-            console.error("Response error:", error.response.data);
-            console.error("Response status:", error.response.status);
-            console.error("Response headers:", error.response.headers);
-            setAuthorized(false);
-          } else if (error.request) {
-            console.error("Request error:", error.request);
-            setAuthorized(false);
-          } else {
-            console.error("Axios error:", error.message);
-            setAuthorized(false);
-          }
+          setAuthorized(false);
         }
       } else {
-        // Nếu không có token, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
         setAuthorized(false);
       }
     };
 
     checkAuthorization();
-  }, []);
+  }, [userToken]);
 
   if (!authorized) {
     return <Navigate to="/" />;
@@ -71,10 +76,9 @@ function MannageHead() {
 
   return (
     <div className='homeManagement'>
-      <SidebarHead />
+      <SidebarHead unreadCount={unreadCount} />
       <div className='managementContext'>
-        {/* Truyền unreadCount cho Navbar */}
-        <Navbar unreadCount={unreadCount} />
+        <Navbar  />
         <hr />
         <div className='context-menu'>
           <div className='contaxt-title'>

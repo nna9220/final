@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
+import WarningOutlinedIcon from '@mui/icons-material/WarningOutlined';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { DataGrid } from '@mui/x-data-grid';
@@ -76,16 +77,22 @@ function TableApprove() {
                 'Authorization': `Bearer ${userToken}`,
             },
         })
-            .then(response => {
-                setIsApprovalPeriod(true);
-                loadTopics();
-                loadListDelete();
-            })
-            .catch(error => {
+        .then(response => {
+            setIsApprovalPeriod(true);
+            loadTopics();
+            loadListDelete();
+        })
+        .catch(error => {
+            if (error.response && error.response.status === 400 && error.response.data === "Không nằm trong thời gian duyệt") {
                 setIsApprovalPeriod(false);
                 setToastMessage("Không nằm trong thời gian duyệt đề tài!!!");
-            });
-    };
+            } else if (error.response && error.response.status === 403) {
+                setToastMessage("Không đủ quyền để duyệt đề tài!");
+            } else {
+                setToastMessage("Có lỗi xảy ra!");
+            }
+        });
+    };    
 
     const handleApprove = (id) => {
         axiosInstance.post(`/head/subject/browse/${id}`, null, {
@@ -175,7 +182,7 @@ function TableApprove() {
         },
     ];
 
-   
+
 
     return (
         <div className='body-table'>
@@ -220,8 +227,8 @@ function TableApprove() {
                     )
                 )
             ) : (
-                <div className="alert alert-warning alert-head" role="alert" style={{ backgroundColor: 'white', border: 'none' }}>
-                    {toastMessage}
+                <div className="alert alert-warning alert-head" role="alert" style={{border:'none',backgroundColor:'white', textAlign:'center', fontWeight:'bold' }}>
+                    <WarningOutlinedIcon /> {toastMessage}
                 </div>
             )}
 

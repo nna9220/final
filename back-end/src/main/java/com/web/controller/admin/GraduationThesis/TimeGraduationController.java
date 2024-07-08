@@ -1,6 +1,6 @@
-package com.web.controller.admin;
+package com.web.controller.admin.GraduationThesis;
 
-import com.web.entity.*;
+import com.web.entity.TypeSubject;
 import com.web.repository.TypeSubjectRepository;
 import com.web.service.Admin.ImportStudentCheckRegister;
 import com.web.service.Admin.TimeService;
@@ -11,11 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Map;
 
 @RestController
-@RequestMapping("/api/admin/time")
-public class TimeController {
+@RequestMapping("/api/admin/timeGraduation")
+public class TimeGraduationController {
 
     @Autowired
     private TimeService timeService;
@@ -28,7 +27,7 @@ public class TimeController {
     @GetMapping("/registration-periods")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> getListRegistrationLecturerPeriod() {
-        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
         return timeService.getListRegistrationLecturerPeriod(typeSubject);
     }
 
@@ -52,16 +51,24 @@ public class TimeController {
 
             @RequestParam("registrationPeriodStart") String registrationPeriodStart,
             @RequestParam("registrationPeriodEnd") String registrationPeriodEnd,
+            @RequestParam("registrationPeriodName") String registrationPeriodName,
 
             @RequestParam("reportSubmissionTimeStart") String reportSubmissionTimeStart,
             @RequestParam("reportSubmissionTimeEnd") String reportSubmissionTimeEnd,
+            @RequestParam("reportSubmissionTimeName") String reportSubmissionTimeName,
 
             @RequestParam("councilReportTimeStart") String councilReportTimeStart,
             @RequestParam("councilReportTimeEnd") String councilReportTimeEnd,
+            @RequestParam("councilReportTimeName") String councilReportTimeName,
             //file excel
-            @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
+            @RequestParam("file") MultipartFile file) throws IOException {
 
-        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+        System.out.println("Data nhận Student: " + registrationName + " " + registrationTimeStart + " " + registrationTimeEnd);
+        System.out.println("Data nhận Lecturer: " + registrationPeriodName + " " + registrationPeriodStart + " " + registrationPeriodEnd);
+        System.out.println("Data nhận Report: " + reportSubmissionTimeName + " " + reportSubmissionTimeStart + " " + reportSubmissionTimeEnd);
+        System.out.println("Data nhận Time browse: " + timeBrowsOfHeadStart + " " + timeBrowsOfHeadEnd );
+        System.out.println("Data nhận Council: " + councilReportTimeName + " " + councilReportTimeStart + " " + councilReportTimeEnd);
+        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
         return timeService.createAllTime(
                 registrationPeriodStart, registrationPeriodEnd, registrationName, typeSubject,
                 timeBrowsOfHeadStart, timeBrowsOfHeadEnd,
@@ -97,8 +104,8 @@ public class TimeController {
             @RequestParam(value = "councilReportTimeName", required = false) String councilReportTimeName,
 
             //file excel
-            @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
-        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
+            @RequestParam("file") MultipartFile file) throws IOException {
+        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
 
         // Sửa các thời gian liên quan
         ResponseEntity<?> response = timeService.editAllTime(

@@ -238,7 +238,6 @@ export default function TopicTable() {
                                 <li className="breadcrumb-item active" aria-current="page">{selectedSubjectName}</li>
                             </ol>
                         </nav>
-                        <button data-bs-toggle="modal" data-bs-target="#modalApproval2">Hoàn thành đề tài</button>
                     </div>
                 </>
             )}

@@ -3,6 +3,8 @@ package com.web.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -33,7 +35,13 @@ public class Notification implements Serializable {
 
 
     // Thêm quan hệ nhiều-nhiều với Person
-    @ManyToMany(mappedBy = "notifications")
+    @ManyToMany
+    @JsonIgnore
+    @JoinTable(
+            name = "person_notification",
+            joinColumns = @JoinColumn(name = "notification_id"),
+            inverseJoinColumns = @JoinColumn(name = "person_id")
+    )
     private List<Person> persons;
 
     @Column(name = "date_Submit")

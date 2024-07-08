@@ -26,6 +26,7 @@ function DataTablePeroidGraduation() {
       })
         .then(response => {
           const dataTimeApproveArray = response.data.period || [];
+          console.log("Period: ", dataTimeApproveArray);
           setPeroids(dataTimeApproveArray);
         })
         .catch(error => {

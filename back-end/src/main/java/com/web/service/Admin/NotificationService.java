@@ -28,7 +28,9 @@ public class NotificationService {
     private NotificationRepository notificationRepository;
     public ResponseEntity<?> getListNotification(Person person){
             List<Notification> notifications = notificationRepository.findByPersons(person);
-            return new ResponseEntity<>(notifications,HttpStatus.OK);
+        System.out.println("Notifications: " + notifications);
+
+        return new ResponseEntity<>(notifications,HttpStatus.OK);
     }
 
     public ResponseEntity<?> createNotification(List<String> emailPerson,String authorizationHeader, String content, String title){

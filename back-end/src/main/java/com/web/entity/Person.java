@@ -84,13 +84,7 @@ public class Person {
     @JoinColumn(name = "authority_name")
     private Authority authorities;
 
-    @ManyToMany
-    @JoinTable(
-            name = "person_notification",
-            joinColumns = @JoinColumn(name = "person_id"),
-            inverseJoinColumns = @JoinColumn(name = "notification_id")
-    )
+    @ManyToMany(mappedBy = "persons")
     private List<Notification> notifications;
-
 }
 

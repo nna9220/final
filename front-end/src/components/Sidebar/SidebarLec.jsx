@@ -12,7 +12,7 @@ import axiosInstance from '../../API/axios';
 import './SidebarLec.scss'
 import { FcReadingEbook } from "react-icons/fc";
 
-function SidebarLec() {
+function SidebarLec({ unreadCount }) {
     const [expand, setExpand] = useState(true);
     const [isAvatarVisible, setIsAvatarVisible] = useState(false);
     const [activeItem, setActiveItem] = useState('');
@@ -84,9 +84,11 @@ function SidebarLec() {
                                     <HomeOutlinedIcon />
                                 </i>
                                 <span>Trang chủ</span>
-                                <span className="position-absolute top-0 start-50 badge rounded-pill bg-danger">
-                                    99+
-                                </span>
+                                {unreadCount > 0 && (
+                                    <span className="position-absolute top-0 start-50 badge rounded-pill bg-danger">
+                                        {unreadCount > 99 ? '99+' : unreadCount}
+                                    </span>
+                                )}
                             </a>
                         </li>
                         <li className="sidebar-item">

@@ -319,8 +319,8 @@ function EditProfileLec() {
                                         <div class="text-left">
                                             {editingMode && (
                                                 <>
-                                                    <button type="button" id="cancel" name="cancel" class="btn btn-secondary" onClick={handleCancel} style={{ marginRight: '10px' }}>Cancel</button>
-                                                    <button type="submit" id="update" name="update" class="btn btn-primary" onClick={handleUpdate}>Update</button>
+                                                    <button type="button" id="cancel" name="cancel" class="btn btn-secondary" onClick={handleCancel} style={{ marginRight: '10px' }}>Hủy</button>
+                                                    <button type="submit" id="update" name="update" class="btn btn-primary" onClick={handleUpdate}>Cập nhật</button>
                                                 </>
                                             )}
                                         </div>

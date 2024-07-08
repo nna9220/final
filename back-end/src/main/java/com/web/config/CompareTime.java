@@ -71,12 +71,13 @@ public class CompareTime {
 
     public static boolean isCurrentTimeInBrowseTimeHead(List<TimeBrowsOfHead> timeBrowsOfHeads){
         LocalDateTime currentTime = LocalDateTime.now();
-
+        System.out.println("Current time: " + currentTime);
         for (TimeBrowsOfHead timeBrowsOfHead : timeBrowsOfHeads) {
             if (timeBrowsOfHead != null) {
                 LocalDateTime timeStart = timeBrowsOfHead.getTimeStart();
                 LocalDateTime timeEnd = timeBrowsOfHead.getTimeEnd();
-
+                System.out.println("Start time: " + timeStart);
+                System.out.println("End time: " + timeEnd);
                 // Kiểm tra nếu currentTime nằm trong khoảng thời gian của timeBrowsOfHead
                 if (currentTime.isAfter(timeStart) && currentTime.isBefore(timeEnd)) {
                     System.out.println("Current time " + currentTime + " is within the interval " + timeStart + " - " + timeEnd);

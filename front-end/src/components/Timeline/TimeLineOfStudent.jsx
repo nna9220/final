@@ -86,13 +86,14 @@ const TimeLineOfStudent = ({ subjectId }) => {
         data={firstEvents}
         resources={firstResources}
         height={600}
-        width={1050}
         dragToMove={true}
         eventDelete={true}
         externalDrag={true}
         externalDrop={true}
         onEventCreated={handleFirstCalEventCreated}
         className="md-drag-drop-first-calendar"
+        style={{border:'1px'}}
+        border={true}
       />
       <Toast message={toastText} context={toastContext} isOpen={isToastOpen} onClose={handleCloseToast} />
     </div>

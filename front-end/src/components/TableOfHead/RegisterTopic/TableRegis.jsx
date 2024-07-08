@@ -66,23 +66,25 @@ function TableRegis() {
         console.log("data add: ", formData);
         const userToken = getTokenFromUrlAndSaveToStorage();
         axiosInstance.post('/head/subject/register',
-            formData
-            , {
+            formData, 
+            {
                 headers: {
                     'Authorization': `Bearer ${userToken}`,
                     'Content-Type': 'multipart/form-data',
                 },
             })
             .then(response => {
-                console.log('Đề tài đã được tạo thành công:', response.data);
                 if (response.status === 201) {
                     toast.success("Đăng ký đề tài thành công. Vui lòng chờ TBM duyệt đề tài!");
                     reloadForm();
                 } else if (response.status === 200) {
                     toast.warning("Không trong thời gian đăng ký đề tài hoặc quá hạn đăng ký!");
+                } else if (response.status === 400) {
+                    toast.error("Đăng ký đề tài thất bại! Giảng viên không tồn tại.");
+                } else if (response.status === 403) {
+                    toast.error("Không đủ quyền để đăng ký đề tài!");
                 } else {
                     toast.error("Đăng ký đề tài thất bại!");
-                    setShowErrorToastAdd(true);
                 }
             })
             .catch(error => {
@@ -91,6 +93,7 @@ function TableRegis() {
                 setShowErrorToastAdd(true);
             });
     };
+    
 
 
     const loadStudents = () => {

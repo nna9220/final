@@ -305,6 +305,7 @@ function DataTable() {
                     return student;
                 });
                 setStudents(updatedStudents);
+                setFormData('');
                 toast.success("Chỉnh sửa sinh viên thành công!")
                 setShowModal(false);
             })
@@ -337,6 +338,7 @@ function DataTable() {
         formData.append('file', file);
 
         const userToken = sessionStorage.getItem('userToken');
+        console.log("file",file)
 
         axiosInstance.post('/admin/student/importSV', formData, {
             headers: {
@@ -434,7 +436,7 @@ function DataTable() {
         <div className='homeContainerSt'>
             <div className='content-table'>
                 <ToastContainer />
-                <div className='header-table'>
+                <div className='header-table' style={{marginBottom:'10px'}}>
                     <div className='btn-add'>
                         <button
                             type="button"
@@ -455,10 +457,10 @@ function DataTable() {
                             <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" onChange={handleFileChange} />
                             <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04" onClick={handleImportFile}>Import</button>
                         </div>
-                        <div class="input-group">
+                        {/* <div class="input-group">
                             <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" onChange={handleFileChange} />
                             <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04" onClick={handleImportFileCheckRegister}>Import danh sách sinh viên theo đợt đăng ký</button>
-                        </div>
+                        </div> */}
 
                     </div>
                     <button className='button-listDelete' onClick={() => setShowDeleteStudents(!showDeletedStudents)}>
@@ -718,7 +720,7 @@ function DataTable() {
                 </div>
 
                 <div class="modal fade" id="delete" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h1 class="modal-title fs-5" id="exampleModalLabel">Xóa sinh viên</h1>
@@ -728,8 +730,8 @@ function DataTable() {
                                 Bạn chắc chắc muốn xóa sinh viên {studentName} không?
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={confirmDelete}>Confirm</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={confirmDelete}>Xóa</button>
                             </div>
                         </div>
                     </div>

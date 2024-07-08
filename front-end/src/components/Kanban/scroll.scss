@@ -65,18 +65,25 @@
 .button-submitTopic {
     display: flex;
     justify-content: flex-end;
-    margin: 10px;
-
-    .submit-1 {
-        margin-right: 20px;
+    .submit-report {
         padding: 8px;
         border-radius: 5px;
         border: none;
-        background-color: #59b9e8;
+        background-color: #1572A1;
         color: white;
+        margin-right: 16px;
     }
 
-    .submit-2 {
+    .submit-button {
+        padding: 8px;
+        border-radius: 5px;
+        border: none;
+        background-color: #adabab;
+        color: white;
+        margin-right: 16px;
+    }
+
+    .submit-button:active{
         padding: 8px;
         border-radius: 5px;
         border: none;
@@ -153,12 +160,6 @@
                     font-weight: bold;
                     color: #2d99ae;
                 }
-
-            }
-
-            .body-comment {
-                margin-top: 20px;
-                margin-bottom: 20px;
 
             }
         }
@@ -250,3 +251,44 @@
     background-color: #e0f7fa;
   }
   
+
+/* Căn chỉnh flex cho nav-tabs để các tab nằm ngang */
+.nav-tabs {
+    display: flex;
+    border-bottom: 2px solid transparent; /* Đặt border-bottom mặc định là transparent */
+}
+
+/* Căn chỉnh các item trong nav-tabs */
+.nav-item {
+    flex: 1; /* Các item chiếm đều không gian có sẵn */
+    text-align: center; /* Căn giữa nội dung của các item */
+}
+
+/* Căn chỉnh cho các nút tab */
+.nav-link-list {
+    background-color: white;
+    display: block;
+    width: 100%; /* Đảm bảo nút chiếm toàn bộ không gian của phần tử chứa */
+    padding: 0.5rem 1rem; /* Padding tùy chỉnh để có không gian cho nội dung */
+    text-decoration: none; /* Loại bỏ gạch chân mặc định */
+    color: #555; /* Màu chữ mặc định */
+    font-weight: bold;
+    border: none; /* Loại bỏ border mặc định của nút */
+    border-bottom: 2px solid transparent; /* Border-bottom mặc định là transparent */
+}
+
+.nav-link-list.active {
+    border-bottom: 3px solid darkcyan; 
+    color: darkcyan; 
+}
+
+/* Căn chỉnh khi hover để chỉ có border-bottom hiện lên */
+.nav-link-list:hover {
+    border-bottom: 2px solid darkcyan; /* Màu sắc của border-bottom khi hover */
+    color: darkcyan; /* Màu chữ khi hover */
+}
+
+/* Loại bỏ border-bottom khi không được chọn hoặc không hover */
+.nav-link-list:not(.active) {
+    border-bottom: 2px solid transparent; /* Đảm bảo border-bottom là transparent khi không được chọn */
+}

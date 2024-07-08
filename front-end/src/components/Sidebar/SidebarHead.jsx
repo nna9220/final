@@ -11,7 +11,7 @@ import './SidebarHead.scss'
 import { useNavigate } from 'react-router-dom';
 import { FcReadingEbook } from "react-icons/fc";
 
-function SidebarHead() {
+function SidebarHead({ unreadCount }) {
     const [expand, setExpand] = useState(true);
     const [isAvatarVisible, setIsAvatarVisible] = useState(false);
     const [activeItem, setActiveItem] = useState('');
@@ -43,7 +43,6 @@ function SidebarHead() {
                 })
                     .then(response => {
                         // Xử lý response từ backend (nếu cần)
-                        console.log("DataHead: ", response);
                         setHead(response.data);
                     })
                     .catch(error => {
@@ -84,9 +83,11 @@ function SidebarHead() {
                                     <HomeOutlinedIcon />
                                 </i>
                                 <span>Trang chủ</span>
-                                <span className="position-absolute top-0 start-50 badge rounded-pill bg-danger">
-                                    99+
-                                </span>
+                                {unreadCount > 0 && (
+                                    <span className="position-absolute top-0 start-50 badge rounded-pill bg-danger">
+                                        {unreadCount > 99 ? '99+' : unreadCount}
+                                    </span>
+                                )}
                             </a>
                         </li>
                         <li className="sidebar-item">
@@ -108,7 +109,7 @@ function SidebarHead() {
                                 <span>Quản lý quá trình</span>
                             </a>
                             <ul id="auth" className="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                                <li className="sidebar-item">
+                            <li className="sidebar-item">
                                     <a style={{ marginLeft: '10px' }} href="/managermentHead/approve" className="sidebar-link">Duyệt đề tài</a>
                                 </li>
                                 <li className="sidebar-item">
@@ -153,4 +154,5 @@ function SidebarHead() {
     );
 }
 
-export default SidebarHead
+export default SidebarHead;
+

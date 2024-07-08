@@ -93,7 +93,7 @@ const Card = ({ task, index }) => {
         <div className="card-items" ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
           <div className="dropdown">
             <label className='title-task-st'>{task.requirement}</label>
-            <button className="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{ border: 'none', backgroundColor: 'white' }}>
+            <button className="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{ border: 'none', backgroundColor: 'white', color:'black' }}>
               <MoreHorizTwoToneIcon />
             </button>
             <ul className="dropdown-menu">

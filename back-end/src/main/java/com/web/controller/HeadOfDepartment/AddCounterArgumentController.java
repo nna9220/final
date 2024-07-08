@@ -242,7 +242,7 @@ public class AddCounterArgumentController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
-            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) 1,typeSubject);
+            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) 0,typeSubject);
 
             Map<String,Object> response = new HashMap<>();
             response.put("person", personCurrent);
@@ -441,6 +441,7 @@ public class AddCounterArgumentController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
             List<TimeBrowsOfHead> timeBrowsOfHead = timeBrowseHeadRepository.getListTimeBrowseByStatus(typeSubject);
+            System.out.println("Time Approve" + timeBrowsOfHead);
             if (CompareTime.isCurrentTimeInBrowseTimeHead(timeBrowsOfHead)) {
                 return new ResponseEntity<>(HttpStatus.OK);
             }else {

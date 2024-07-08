@@ -13,6 +13,30 @@ function ProfileLec() {
     document.title = "Trang cá nhân";
   }, []);
   const [authorized, setAuthorized] = useState(true);
+  const userToken = getTokenFromUrlAndSaveToStorage();
+  const [unreadCount, setUnreadCount] = useState(0);
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      if (userToken) {
+        try {
+          const response = await axiosInstance.get('/lecturer/notification', {
+            headers: {
+              'Authorization': `Bearer ${userToken}`,
+            },
+          });
+          const notifications = response.data;
+          const readNotifications = new Set(JSON.parse(localStorage.getItem('readNotifications')) || []);
+          const unreadCount = notifications.filter(notification => !readNotifications.has(notification.notificationId)).length;
+          setUnreadCount(unreadCount);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    };
+
+    fetchNotifications();
+  }, [userToken]);
+
   useEffect(() => {
     const checkAuthorization = async () => {
       const userToken = getTokenFromUrlAndSaveToStorage(); // Lấy token từ URL hoặc từ bất kỳ nguồn nào khác
@@ -31,18 +55,18 @@ function ProfileLec() {
           }
         } catch (error) {
           if (error.response) {
-              console.error("Response error:", error.response.data);
-              console.error("Response status:", error.response.status);
-              console.error("Response headers:", error.response.headers);
-              setAuthorized(false);
+            console.error("Response error:", error.response.data);
+            console.error("Response status:", error.response.status);
+            console.error("Response headers:", error.response.headers);
+            setAuthorized(false);
           } else if (error.request) {
-              console.error("Request error:", error.request);
-              setAuthorized(false);
+            console.error("Request error:", error.request);
+            setAuthorized(false);
           } else {
-              console.error("Axios error:", error.message);
-              setAuthorized(false);
+            console.error("Axios error:", error.message);
+            setAuthorized(false);
           }
-      }
+        }
       } else {
         // Nếu không có token, setAuthorized(false) và chuyển hướng đến trang không được ủy quyền
         setAuthorized(false);
@@ -57,11 +81,11 @@ function ProfileLec() {
   }
   return (
     <div className='homeProfile'>
-      <SidebarLec/>
+      <SidebarLec unreadCount={unreadCount} />
       <div className='context'>
-        <Navbar/>
+        <Navbar />
         <hr></hr>
-        <EditProfileLec/>
+        <EditProfileLec />
       </div>
     </div>
   )

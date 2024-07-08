@@ -6,9 +6,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import { DataGrid } from '@mui/x-data-grid';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import Button from '@mui/material/Button';
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import Button from '@mui/material/Button';
 import './DataYears.scss';
 
 function DataYears() {
@@ -16,8 +16,14 @@ function DataYears() {
     const [newYear, setNewYear] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [selectedYear, setSelectedYear] = useState(null);
+    const [modalType, setModalType] = useState('');
+    const [idYear, setIdYear] = useState(null);
 
     useEffect(() => {
+        fetchYears();
+    }, []);
+
+    const fetchYears = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         if (userToken) {
             axiosInstance.get('/admin/schoolYear', {
@@ -26,15 +32,26 @@ function DataYears() {
                 },
             })
             .then(response => {
-                setYears(response.data.listYear);
+                const yearsList = response.data.listYear || [];
+                setYears(yearsList.reverse());
             })
             .catch(error => {
                 console.error(error);
             });
         }
-    }, []);
+    };
+
+    // Hàm kiểm tra định dạng năm
+    const isValidYearFormat = (year) => {
+        const regex = /^\d{4} - \d{4}$/;
+        return regex.test(year);
+    };
 
     const handleAddYear = () => {
+        if (!isValidYearFormat(newYear)) {
+            toast.error('Định dạng niên khóa không hợp lệ! (Ví dụ: 2016 - 2020)');
+            return;
+        }
         if (!newYear.trim()) {
             toast.error('Tên niên khóa không được để trống!');
             return;
@@ -46,10 +63,13 @@ function DataYears() {
             headers: { 'Authorization': `Bearer ${userToken}` },
         })
         .then(response => {
-            setYears([...years, response.data]);
+            setYears([response.data, ...years]);
             setNewYear('');
             setShowForm(false);
             toast.success('Thêm niên khóa thành công!');
+            document.getElementById('addYear').classList.remove('show');
+            document.body.classList.remove('modal-open');
+            document.querySelector('.modal-backdrop').remove();
         })
         .catch(error => {
             console.error(error);
@@ -58,6 +78,10 @@ function DataYears() {
     };
 
     const handleEditYear = () => {
+        if (!isValidYearFormat(newYear)) {
+            toast.error('Định dạng niên khóa không hợp lệ! (Ví dụ: 2016 - 2020)');
+            return;
+        }
         if (!newYear.trim()) {
             toast.error('Tên niên khóa không được để trống!');
             return;
@@ -82,6 +106,9 @@ function DataYears() {
             setNewYear('');
             setShowForm(false);
             toast.success('Chỉnh sửa niên khóa thành công!');
+            document.getElementById('editYear').classList.remove('show');
+            document.body.classList.remove('modal-open');
+            document.querySelector('.modal-backdrop').remove();
         })
         .catch(error => {
             console.error(error);
@@ -92,12 +119,29 @@ function DataYears() {
     const handleViewYear = (year) => {
         setSelectedYear(year);
         setNewYear(year.year);
+        setModalType('edit');
         setShowForm(true);
     };
 
     const handleDeleteYear = () => {
-
-    }
+        const userToken = getTokenFromUrlAndSaveToStorage();
+        axiosInstance.post(`/admin/schoolYear/delete/${idYear}`, null, {
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+            },
+        })
+        .then(response => {
+            setYears(years.filter(item => item.yearId !== idYear));
+            toast.success('Xóa niên khóa thành công!');
+            document.getElementById('deleteYear').classList.remove('show');
+            document.body.classList.remove('modal-open');
+            document.querySelector('.modal-backdrop').remove();
+        })
+        .catch(error => {
+            console.error(error);
+            toast.error('Xóa niên khóa thất bại!');
+        });
+    };
 
     const handleExport = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
@@ -122,7 +166,7 @@ function DataYears() {
     };
 
     const columns = [
-        { field: 'yearId', headerName: 'ID', width: 100 },
+        { field: 'stt', headerName: 'STT', width: 100 },
         { field: 'year', headerName: 'Tên niên khóa', width: 200 },
         {
             field: 'action',
@@ -130,86 +174,128 @@ function DataYears() {
             width: 150,
             renderCell: (params) => (
                 <>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleEditYear(params.row)}
-                    >
+                    <button type="button" style={{marginRight:'10px', color:'#1572A1', fontWeight:'bolder'}} className="btn" data-bs-toggle="modal" data-bs-target="#editYear" onClick={() => handleViewYear(params.row)}>
                         <EditOutlinedIcon />
-                    </Button>
-                    <Button
-                        variant="contained"
-                        sx={{ backgroundColor: '#F05454', marginLeft: 1 }}
-                        onClick={() => handleDeleteYear(params.row)}
-                    >
+                    </button>
+                    <button type="button" style={{marginRight:'10px', color:'#FF7878', fontWeight:'bolder'}} className="btn" data-bs-toggle="modal" data-bs-target="#deleteYear" onClick={() => { setIdYear(params.row.yearId); setSelectedYear(params.row) }}>
                         <DeleteOutlineOutlinedIcon />
-                    </Button>
+                    </button>
                 </>
             ),
         },
     ];
 
+    const rows = years.map((item, index) => ({
+        id: item.yearId, // Ensure this id is unique
+        stt: index + 1,
+        year: item.year,
+    }));
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (modalType === 'add') {
+            handleAddYear();
+        } else if (modalType === 'edit') {
+            handleEditYear();
+        }
+    };
+
     return (
         <div className='table-years'>
             <ToastContainer />
             <div className='content-table'>
-                <Button
-                    variant="contained"
-                    color="success"
-                    onClick={() => {
-                        setSelectedYear(null);
-                        setNewYear('');
-                        setShowForm(true);
-                    }}
-                >
-                    Add
-                </Button>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<SaveAltIcon />}
-                    onClick={handleExport}
-                    style={{ marginLeft: '10px' }}
-                >
-                    Export
-                </Button>
-                {showForm && (
-                    <Dialog open={showForm} onClose={() => setShowForm(false)}>
-                        <DialogTitle>{selectedYear ? 'CHỈNH SỬA NIÊN KHÓA' : 'THÊM NIÊN KHÓA'}</DialogTitle>
-                        <DialogContent>
-                            <TextField
-                                autoFocus
-                                margin="dense"
-                                label="Tên niên khóa"
-                                type="text"
-                                fullWidth
-                                variant="standard"
-                                required
-                                value={newYear}
-                                onChange={(e) => setNewYear(e.target.value)}
-                            />
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={() => setShowForm(false)}>Cancel</Button>
-                            {selectedYear ? (
-                                <Button onClick={handleEditYear}>Update</Button>
-                            ) : (
-                                <Button onClick={handleAddYear}>Add</Button>
-                            )}
-                        </DialogActions>
-                    </Dialog>
-                )}
+                <button type="button" style={{marginBottom:'10px'}} className="btn btn-success" data-bs-toggle="modal" data-bs-target="#addYear" onClick={() => {
+                    setSelectedYear(null);
+                    setNewYear('');
+                    setModalType('add');
+                    setShowForm(true);
+                }}>
+                    <AddCircleOutlineOutlinedIcon />
+                </button>
                 <div>
                     <DataGrid
-                        rows={years.map((item, index) => ({ ...item, id: index + 1 }))}
+                        rows={rows}
                         columns={columns}
                         pageSize={5}
                         initialState={{
-                            ...years.initialState,
                             pagination: { paginationModel: { pageSize: 10 } },
                         }}
-                        pageSizeOptions={[10, 25, 50]}   
+                        pageSizeOptions={[10, 25, 50]}
                     />
+                </div>
+            </div>
+
+            <div className="modal fade" id="addYear" tabIndex="-1" aria-labelledby="addYearLabel" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered">
+                    <form className="modal-content" onSubmit={handleSubmit}>
+                        <div className="modal-header">
+                            <h1 className="modal-title fs-5" id="addYearLabel">Thêm Niên Khóa</h1>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="form-floating mb-3 mt-3">
+                                <input required
+                                    type="text"
+                                    className="form-control"
+                                    id="yearName"
+                                    placeholder="Nhập tên niên khóa"
+                                    value={newYear}
+                                    onChange={(e) => setNewYear(e.target.value)}
+                                />
+                                <label htmlFor="yearName">Tên Niên Khóa</label>
+                            </div>
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" className="btn btn-primary">Lưu</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div className="modal fade" id="editYear" tabIndex="-1" aria-labelledby="editYearLabel" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered">
+                    <form className="modal-content" onSubmit={handleSubmit}>
+                        <div className="modal-header">
+                            <h1 className="modal-title fs-5" id="editYearLabel">Chỉnh Sửa Niên Khóa</h1>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="form-floating mb-3 mt-3">
+                                <input required
+                                    type="text"
+                                    className="form-control"
+                                    id="yearName"
+                                    placeholder="Nhập tên niên khóa"
+                                    value={newYear}
+                                    onChange={(e) => setNewYear(e.target.value)}
+                                />
+                                <label htmlFor="yearName">Tên Niên Khóa</label>
+                            </div>
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" className="btn btn-primary">Lưu</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div className="modal fade" id="deleteYear" tabIndex="-1" aria-labelledby="deleteYearLabel" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h1 className="modal-title fs-5" id="deleteYearLabel">Xóa Niên Khóa</h1>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            <p>Bạn có chắc chắn muốn xóa niên khóa <strong>{selectedYear ? selectedYear.year : ''}</strong>?</p>
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="button" className="btn btn-primary" onClick={handleDeleteYear}>Xóa</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

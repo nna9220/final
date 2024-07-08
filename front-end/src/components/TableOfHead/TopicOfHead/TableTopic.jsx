@@ -5,9 +5,9 @@ import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import ViewComfyAltOutlinedIcon from '@mui/icons-material/ViewComfyAltOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import axiosInstance from '../../../API/axios';
-import Booard from '../../KanbanOfLecturer/Booard';
 import ChevronLeftOutlinedIcon from '@mui/icons-material/ChevronLeftOutlined';
 import './TableTopic.scss'
+import Booard from '../../KanbanOfHead/Board';
 
 export default function TableTopic() {
     const [topics, setTopics] = useState([]);
@@ -238,7 +238,6 @@ export default function TableTopic() {
                                 <li className="breadcrumb-item active" aria-current="page">{selectedSubjectName}</li>
                             </ol>
                         </nav>
-                        <button data-bs-toggle="modal" data-bs-target="#modalApproval2">Hoàn thành đề tài</button>
                     </div>
                 </>
             )}
