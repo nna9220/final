@@ -10,7 +10,6 @@ import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import './Home.scss';
-import Chatbot from './ChatBot/Chatbot';
 
 const columns = [
     { field: 'id', headerName: '#', width: 70 },
