@@ -28,15 +28,36 @@ function TableRegis() {
         getPeriod();
     }, []);
 
+    const formatDate = (milliseconds) => {
+        const date = new Date(milliseconds);
+    
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hour = String(date.getHours()).padStart(2, '0');
+        const minute = String(date.getMinutes()).padStart(2, '0');
+        const second = String(date.getSeconds()).padStart(2, '0');
+    
+        return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+    }; 
+
     useEffect(() => {
         if (periods.length > 0) {
-            const currentDate = new Date();
-            const currentDateTime = currentDate.getTime();
+            // Lấy thời gian hiện tại bằng mili giây từ Epoch
+            const currentDateTime = Date.now();
+            const formattedCurrentDateTime = formatDate(currentDateTime);
+    
+            // Tìm kỳ hạn hiện tại
             const currentPeriod = periods.find(period => {
-                const startTime = convertStringToDate(period.registrationTimeStart).getTime();
-                const endTime = convertStringToDate(period.registrationTimeEnd).getTime();
-                return currentDateTime >= startTime && currentDateTime <= endTime;
+                const startTime = (period.registrationTimeStart);
+                const endTime = (period.registrationTimeEnd);
+                console.log("start: ",startTime);
+                console.log("end: ",endTime); 
+                return formattedCurrentDateTime >= startTime && formattedCurrentDateTime <= endTime;
+                
+
             });
+    
             setCurrentPeriod(currentPeriod);
             console.log("Thời gian hiện tại: ", currentDateTime);
         }

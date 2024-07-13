@@ -59,7 +59,7 @@ public class TimeController {
             @RequestParam("councilReportTimeStart") String councilReportTimeStart,
             @RequestParam("councilReportTimeEnd") String councilReportTimeEnd,
             //file excel
-            @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
+            @RequestParam(value = "file") MultipartFile file) throws IOException {
 
         TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
         return timeService.createAllTime(

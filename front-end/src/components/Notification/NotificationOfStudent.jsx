@@ -58,7 +58,7 @@ function NotificationOfStudent({ onUpdateUnreadCount }) {
                     </div>
                 ))
             ) : (
-                <p>No notifications available</p>
+                <p>Chưa có thông báo</p>
             )}
         </div>
     );

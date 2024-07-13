@@ -265,8 +265,8 @@ public class AddCounterArgumentGraduationController {
             if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
                 List<RegistrationPeriodLectuer> periodList = registrationPeriodLecturerRepository.findAllPeriodEssay(typeSubject);
                 System.out.println("Sau if check role, trước if check time");
-                System.out.println(CompareTime.isCurrentTimeInPeriodSLecturer(periodList));
-                if (CompareTime.isCurrentTimeInPeriodSLecturer(periodList)) {
+                System.out.println(CompareTime.isCurrentTimeInPeriodSLecturer(periodList,typeSubject));
+                if (CompareTime.isCurrentTimeInPeriodSLecturer(periodList,typeSubject)) {
                     System.out.println("sau if check time");
                     Subject newSubject = new Subject();
                     newSubject.setSubjectName(name);

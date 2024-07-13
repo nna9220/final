@@ -42,12 +42,12 @@ public class RegistrationPeriod implements Serializable {
     @JoinColumn(name="type_subject_id")
     private TypeSubject typeSubjectId;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name="time_id", nullable = false)
     @JsonBackReference
     private TimeBrowsOfHead timeBrowsOfHead;
 
-    @OneToOne(mappedBy = "registrationPeriod")
+    @OneToOne(mappedBy = "registrationPeriod",cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private ReportSubmissionTime reportSubmissionTime;
 }

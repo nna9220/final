@@ -206,11 +206,11 @@ function DataTablePeroid() {
           id: data.RegistrationLecturer.periodId,
         });
         setFormEditData({
-          registrationTimeStart: convertToDateTimeLocalFormat(data.RegistrationLecturer.registrationTimeStart),
-          registrationTimeEnd: convertToDateTimeLocalFormat(data.RegistrationLecturer.registrationTimeEnd),
+          registrationTimeStart: (data.RegistrationLecturer.registrationTimeStart),
+          registrationTimeEnd: (data.RegistrationLecturer.registrationTimeEnd),
           registrationName: data.RegistrationLecturer.registrationName,
-          timeBrowsOfHeadStart: convertToDateTimeLocalFormat(data.TimeBrowseOfHead.timeStart),
-          timeBrowsOfHeadEnd: convertToDateTimeLocalFormat(data.TimeBrowseOfHead.timeEnd),
+          timeBrowsOfHeadStart: (data.TimeBrowseOfHead.timeStart),
+          timeBrowsOfHeadEnd: (data.TimeBrowseOfHead.timeEnd),
           registrationPeriodStart: (data.RegistrationStudent.registrationTimeStart),
           registrationPeriodEnd: (data.RegistrationStudent.registrationTimeEnd),
           registrationPeriodName: data.RegistrationLecturer.registrationName,

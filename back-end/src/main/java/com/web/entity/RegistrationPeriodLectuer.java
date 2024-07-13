@@ -27,11 +27,13 @@ public class RegistrationPeriodLectuer implements Serializable {
     private int periodId;
 
     @Column(name="registration_time_start")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
+    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime registrationTimeStart;
 
     @Column(name="registration_time_end")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
+    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime registrationTimeEnd;
 
     @Column(name="registration_name")
@@ -41,11 +43,13 @@ public class RegistrationPeriodLectuer implements Serializable {
     private Boolean status;
 
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="type_subject_id")
+    @JsonManagedReference
     private TypeSubject typeSubjectId;
 
     @OneToOne(mappedBy = "registrationPeriodLecturer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     private TimeBrowsOfHead timeBrowsOfHead;
 
 }

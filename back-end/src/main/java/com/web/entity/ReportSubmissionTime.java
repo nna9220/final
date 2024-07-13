@@ -45,12 +45,12 @@ public class ReportSubmissionTime implements Serializable {
     @Column(name="status")
     private Boolean status;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name="period_id", nullable = false)
     @JsonBackReference
     private RegistrationPeriod registrationPeriod;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name="id", nullable = false)
     @JsonManagedReference
     private CouncilReportTime councilReportTime;

@@ -317,7 +317,7 @@ public class AddCounterArgumentController {
                 List<RegistrationPeriodLectuer> periodList = registrationPeriodLecturerRepository.findAllPeriodEssay(typeSubject);
                 System.out.println("Period list: " + periodList);
 
-                if (CompareTime.isCurrentTimeInPeriodSLecturer(periodList)) {
+                if (CompareTime.isCurrentTimeInPeriodSLecturer(periodList,typeSubject)) {
                     Subject newSubject = new Subject();
                     newSubject.setSubjectName(name);
                     newSubject.setRequirement(requirement);

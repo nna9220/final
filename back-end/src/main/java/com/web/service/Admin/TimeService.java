@@ -315,7 +315,7 @@ public class TimeService {
         if (!emailLecturer.isEmpty()){
             mailService.sendMailToStudents(emailLecturer,subjectLecturer,messengerLecturer);
             mailService.sendMailToStudents(emailHead,subjectHead,messengerHead);
-            mailService.sendMailToPerson(emailHead,subjectCouncil,messengerCouncil);
+            mailService.sendMailToStudents(emailHead,subjectCouncil,messengerCouncil);
         }
         //Tạo thông báo trên web
         String titleLecturer = "THÔNG BÁO THỜI GIAN ĐĂNG KÝ ĐỀ TÀI " + typeSubjectId.getTypeName()+" CHO GIẢNG VIÊN";
@@ -335,25 +335,31 @@ public class TimeService {
                 personListHead.add(p);
             }
         }
+
+        List<Notification> notifications = new ArrayList<>();
         Notification notificationLecturer = new Notification();
         notificationLecturer.setContent(contentLecturer);
         notificationLecturer.setPersons(personListLecturer);
         notificationLecturer.setTitle(titleLecturer);
         notificationLecturer.setDateSubmit(now);
         notificationRepository.save(notificationLecturer);
-
+        notifications.add(notificationLecturer);
+        for (Person p:personListLecturer) {
+            p.setNotifications(notifications);
+            personRepository.save(p);
+        }
 
         Notification notificationHead = new Notification();
-        notificationHead.setContent(subjectHead);
+        notificationHead.setContent(messengerHead);
         notificationHead.setPersons(personListHead);
-        notificationHead.setTitle(messengerHead);
+        notificationHead.setTitle(subjectHead);
         notificationHead.setDateSubmit(now);
         notificationRepository.save(notificationHead);
 
         Notification notificationHeadCouncil = new Notification();
-        notificationHeadCouncil.setContent(subjectCouncil);
+        notificationHeadCouncil.setContent(messengerCouncil);
         notificationHeadCouncil.setPersons(personListHead);
-        notificationHeadCouncil.setTitle(messengerCouncil);
+        notificationHeadCouncil.setTitle(subjectCouncil);
         notificationHeadCouncil.setDateSubmit(now);
         notificationRepository.save(notificationHeadCouncil);
 
@@ -553,8 +559,8 @@ public class TimeService {
         }
         //Tạo thông báo trên web
         String titleLecturer = "THÔNG BÁO CẬP NHẬT THỜI GIAN ĐĂNG KÝ ĐỀ TÀI " + typeSubject.getTypeName()+" CHO GIẢNG VIÊN";
-        String contentLecturer = "Thời gian bắt đầu: " + existedRegistrationPeriod.getRegistrationTimeStart()+"\n" +
-                "Thời gian kết thúc: " + existedRegistrationPeriod.getRegistrationTimeEnd() + "\n";
+        String contentLecturer = "Thời gian bắt đầu: " + existedRegistrationPeriodLectuer.getRegistrationTimeStart()+"\n" +
+                "Thời gian kết thúc: " + existedRegistrationPeriodLectuer.getRegistrationTimeEnd() + "\n";
         List<Person> personListLecturer = new ArrayList<>();
         for (String s:emailLecturer) {
             Person p = personRepository.findUsername(s);

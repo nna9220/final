@@ -50,21 +50,20 @@ public class CompareTime {
         }
         return false;
     }
-    public static boolean isCurrentTimeInPeriodSLecturer(List<RegistrationPeriodLectuer> periodList) {
-        Date currentTime = new Date(System.currentTimeMillis());
-        if (periodList.size() >= 2) {
-            RegistrationPeriodLectuer period1 = periodList.get(0);
-            LocalDateTime start1 = period1.getRegistrationTimeStart();
-            LocalDateTime end1 = period1.getRegistrationTimeEnd();
-            RegistrationPeriodLectuer period2 = periodList.get(1);
-            LocalDateTime start2 = period2.getRegistrationTimeStart();
-            LocalDateTime end2 = period2.getRegistrationTimeEnd();
-            System.out.println("start 1: " + start1);
-            System.out.println("end 1: " + end1);
-            System.out.println("start 2: " + start2);
-            System.out.println("end 2: " + end2);
+    public static boolean isCurrentTimeInPeriodSLecturer(List<RegistrationPeriodLectuer> periodList,TypeSubject typeSubject) {
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        for (RegistrationPeriodLectuer period : periodList) {
+            LocalDateTime start = period.getRegistrationTimeStart();
+            LocalDateTime end = period.getRegistrationTimeEnd();
+
+            System.out.println("start: " + start);
+            System.out.println("end: " + end);
             System.out.println("current: " + currentTime);
-            return isCurrentTimeInIntervalLecturer(start1, end1) || isCurrentTimeInIntervalLecturer(start2, end2);
+
+            if (isCurrentTimeInIntervalStudent(start, end)) {
+                return true;
+            }
         }
         return false;
     }

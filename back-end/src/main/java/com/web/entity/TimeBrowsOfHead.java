@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -27,11 +28,13 @@ public class TimeBrowsOfHead implements Serializable {
     private int timeId;
 
     @Column(name="time_start")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
+    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timeStart;
 
     @Column(name="time_end")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
+    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timeEnd;
 
     @ManyToOne
@@ -43,11 +46,11 @@ public class TimeBrowsOfHead implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name="period_id")
-    @JsonIgnore
+    @JsonBackReference
     private RegistrationPeriodLectuer registrationPeriodLecturer;
 
     @OneToOne(mappedBy = "timeBrowsOfHead", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @JsonBackReference
     private RegistrationPeriod registrationPeriod;
 
 }

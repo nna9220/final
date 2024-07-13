@@ -171,9 +171,9 @@ public class LecturerRegisterGraduationTopicController {
             if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
                 System.out.println("Sau if check role");
                 List<RegistrationPeriodLectuer> periodList = registrationPeriodLecturerRepository.findAllPeriodEssay(typeSubject);
-                System.out.println("check time: " + CompareTime.isCurrentTimeInPeriodSLecturer(periodList));
+                System.out.println("check time: " + CompareTime.isCurrentTimeInPeriodSLecturer(periodList,typeSubject));
                 System.out.println("period 1: " + periodList);
-                if (CompareTime.isCurrentTimeInPeriodSLecturer(periodList)) {
+                if (CompareTime.isCurrentTimeInPeriodSLecturer(periodList,typeSubject)) {
                     System.out.println("Sau if check time");
                     Subject newSubject = new Subject();
                     newSubject.setSubjectName(name);
