@@ -2,7 +2,6 @@ package com.web.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -46,13 +45,13 @@ public class ReportSubmissionTime implements Serializable {
     @Column(name="status")
     private Boolean status;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne
     @JoinColumn(name="period_id", nullable = false)
-    @JsonIgnore
+    @JsonBackReference
     private RegistrationPeriod registrationPeriod;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne
     @JoinColumn(name="id", nullable = false)
-    @JsonIgnore
+    @JsonManagedReference
     private CouncilReportTime councilReportTime;
 }

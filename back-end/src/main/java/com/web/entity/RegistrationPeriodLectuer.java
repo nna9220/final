@@ -2,7 +2,6 @@ package com.web.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -47,7 +46,6 @@ public class RegistrationPeriodLectuer implements Serializable {
     private TypeSubject typeSubjectId;
 
     @OneToOne(mappedBy = "registrationPeriodLecturer", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     private TimeBrowsOfHead timeBrowsOfHead;
 
 }
