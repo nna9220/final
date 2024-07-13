@@ -408,8 +408,24 @@ public class AddCounterArgumentGraduationController {
     public ResponseEntity<?> deleteSubject(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
             Subject existSubject = subjectRepository.findById(id).orElse(null);
+            if (existSubject.getStudent1()!=null){
+                Student student1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
+                student1.setSubjectGraduationId(null);
+                existSubject.setStudent1(null);
+            }
+            if (existSubject.getStudent2()!=null){
+                Student student1 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
+                student1.setSubjectGraduationId(null);
+                existSubject.setStudent2(null);
+            }
+            if (existSubject.getStudent3()!=null){
+                Student student1 = studentRepository.findById(existSubject.getStudent3()).orElse(null);
+                student1.setSubjectGraduationId(null);
+                existSubject.setStudent3(null);
+            }
             existSubject.setActive((byte) -1);
             subjectRepository.save(existSubject);
 
