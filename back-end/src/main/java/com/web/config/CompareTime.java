@@ -72,7 +72,7 @@ public class CompareTime {
         LocalDateTime currentTime = LocalDateTime.now();
         System.out.println("Current time: " + currentTime);
         for (TimeBrowsOfHead timeBrowsOfHead : timeBrowsOfHeads) {
-            if (timeBrowsOfHead != null) {
+
                 LocalDateTime timeStart = timeBrowsOfHead.getTimeStart();
                 LocalDateTime timeEnd = timeBrowsOfHead.getTimeEnd();
                 System.out.println("Start time: " + timeStart);
@@ -82,7 +82,7 @@ public class CompareTime {
                     System.out.println("Current time " + currentTime + " is within the interval " + timeStart + " - " + timeEnd);
                     return true;
                 }
-            }
+
         }
 
         return false;
