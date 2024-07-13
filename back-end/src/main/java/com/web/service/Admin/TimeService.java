@@ -355,6 +355,10 @@ public class TimeService {
         notificationHead.setTitle(subjectHead);
         notificationHead.setDateSubmit(now);
         notificationRepository.save(notificationHead);
+        for (Person p:personListLecturer) {
+            p.setNotifications(notifications);
+            personRepository.save(p);
+        }
 
         Notification notificationHeadCouncil = new Notification();
         notificationHeadCouncil.setContent(messengerCouncil);
