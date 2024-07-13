@@ -386,7 +386,7 @@ function DataTablePeroid() {
             <Typography color="textPrimary">{selectedPeriod.name}</Typography>
           </Breadcrumbs>
           <h6 style={{ padding: '20px', color: '#1597BB' }}>CHI TIẾT ĐỢT ĐĂNG KÝ</h6>
-          <div style={{ marginLeft: '20px', marginRight: '20px' }}>
+          <div style={{ marginLeft: '20px', marginRight: '20px', marginBottom:'16px'}}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField fullWidth label="Tên đợt" name="registrationName" value={formEditData.registrationName} onChange={handleInputChange} variant="outlined" />
@@ -535,7 +535,7 @@ function DataTablePeroid() {
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-              <button type="button" class="btn btn-primary" onClick={handleAddPeroid}>Lưu</button>
+              <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={handleAddPeroid}>Lưu</button>
             </div>
           </form>
         </div>

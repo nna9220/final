@@ -338,7 +338,7 @@ function DataTable() {
         formData.append('file', file);
 
         const userToken = sessionStorage.getItem('userToken');
-        console.log("file",file)
+        console.log("file", file);
 
         axiosInstance.post('/admin/student/importSV', formData, {
             headers: {
@@ -351,7 +351,25 @@ function DataTable() {
                 console.log('Import response:', response.data);
             })
             .catch(error => {
-                toast.error("Import sinh viên thất bại!");
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    if (error.response.status === 400) {
+                        toast.error("File không đúng format. Vui lòng chọn lại!");
+                    } else if (error.response.status === 409) {
+                        toast.error("Số lượng Person và Student không khớp.");
+                    } else if (error.response.status === 500) {
+                        toast.error("File không đúng định dạng");
+                    } else {
+                        toast.error("Import sinh viên thất bại!");
+                    }
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    toast.error("Không nhận được phản hồi từ máy chủ.");
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    toast.error("Đã xảy ra lỗi khi tạo yêu cầu: " + error.message);
+                }
                 console.error("Import error:", error);
             });
     };
@@ -454,7 +472,7 @@ function DataTable() {
                         </button>
                         
                         <div class="input-group">
-                            <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" onChange={handleFileChange} />
+                            <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" accept=".xlsx, .xls" onChange={handleFileChange} />
                             <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04" onClick={handleImportFile}>Import</button>
                         </div>
                         {/* <div class="input-group">

@@ -126,10 +126,6 @@ public class SchoolYearController {
             existSchoolYear.setYear(schoolYearRequest.getYear());
             schoolYearRepository.save(existSchoolYear);
             String url = Contains.URL + "/api/admin/schoolYear";
-            /*ModelAndView model = new ModelAndView("redirect:" + url);
-
-            model.addObject("successMessage", successMessage);
-            return model;*/
             return new ResponseEntity<>(existSchoolYear, HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

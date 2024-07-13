@@ -135,7 +135,7 @@ function RegisTopicKLTable() {
                 </table>
             ) : topicsRegistered.length === 0 ? (
                 <div>
-                    <h4 style={{ padding: '20px', color: 'red' }}>{errors ? errors : "Hiện tại chưa có đề tài !!!"}</h4>
+                    <h4 style={{color: 'red' }}>{errors ? errors : "Hiện tại chưa có đề tài !!!"}</h4>
                 </div>
             ) : null}
 

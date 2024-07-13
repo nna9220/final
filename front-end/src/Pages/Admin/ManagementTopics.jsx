@@ -73,7 +73,7 @@ function ManagementTopics() {
         <div className="widgets">
           <div className='headMana-class'>
             <div className='titleMana-class'>
-              <h5>Quản lý đợt đăng ký đề tài</h5>
+              <h5>Quản lý đề tài</h5>
             </div>
             <div className='menuMana'>
               <button

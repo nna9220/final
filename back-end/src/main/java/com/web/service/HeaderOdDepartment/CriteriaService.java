@@ -37,24 +37,31 @@ public class CriteriaService {
     private SubjectRepository subjectRepository;
 
     public static LocalDate convertStringToLocalDate(String dateString) {
+        if (dateString == null || dateString.isEmpty()) {
+            System.err.println("Date string is null or empty: " + dateString);
+            return null;
+        }
+
         String pattern = "yyyy/MM/dd";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         try {
             return LocalDate.parse(dateString, formatter);
         } catch (DateTimeParseException e) {
-            System.out.println("Invalid date format: " + e.getMessage());
+            System.err.println("Invalid date format: " + dateString + ". Error: " + e.getMessage());
             return null;
         }
     }
 
-    public ResponseEntity<?> saveCriteria(@RequestHeader("Authorization") String authorizationHeader, TypeSubject typeSubject, String nameCriteria, Double scoreCriteria){
+
+    public ResponseEntity<?> saveCriteria(@RequestHeader("Authorization") String authorizationHeader, TypeSubject typeSubject, String nameCriteria, Double scoreCriteria) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         LocalDate nowDate = LocalDate.now();
+
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            //Tìm kiếm tất cả Đề tài theo chuyên ngành, loại đề tài và set tiêu chí là cái này
-            Set<Subject> subjects = subjectRepository.getSubjectByMajorAnType(existedLecturer.getMajor(),typeSubject);
+
+            Set<Subject> subjects = subjectRepository.getSubjectByMajorAnType(existedLecturer.getMajor(), typeSubject);
             EvaluationCriteria evaluationCriteria = new EvaluationCriteria();
             evaluationCriteria.setMajor(existedLecturer.getMajor());
             evaluationCriteria.setCriteriaName(nameCriteria);
@@ -62,18 +69,28 @@ public class CriteriaService {
             evaluationCriteria.setYear(String.valueOf(nowDate.getYear()));
             evaluationCriteria.setCriteriaScore(scoreCriteria);
             evaluationCriteriaRepository.save(evaluationCriteria);
+
             for (Subject subject : subjects) {
-                LocalDate localDate = convertStringToLocalDate(subject.getYear());
-                if (localDate.getYear()==nowDate.getYear()) {
+                String subjectYear = subject.getYear();
+                System.out.println("Processing subject with year: " + subjectYear);
+
+                LocalDate localDate = convertStringToLocalDate(subjectYear);
+                if (localDate == null) {
+                    System.err.println("Skipping subject due to null LocalDate for year: " + subjectYear);
+                    continue;
+                }
+
+                if (localDate.getYear() == nowDate.getYear()) {
                     subject.getCriteria().add(evaluationCriteria);
                 }
             }
             subjectRepository.saveAll(subjects);
             return new ResponseEntity<>(HttpStatus.CREATED);
-        }else {
+        } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
 
 
     public ResponseEntity<?> updateCriteria(int id, @RequestHeader("Authorization") String authorizationHeader, String nameCriteria, Double scoreCriteria){

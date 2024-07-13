@@ -10,7 +10,7 @@ import axiosInstance from '../../API/axios';
 
 function MannageHead() {
   useEffect(() => {
-    document.title = "Đề tài của tôi";
+    document.title = "Duyệt đề tài";
   }, []);
   const [authorized, setAuthorized] = useState(true);
   const [selectedTitle, setSelectedTitle] = useState("Tiểu luận chuyên ngành");

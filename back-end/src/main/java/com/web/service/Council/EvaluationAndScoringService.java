@@ -26,6 +26,8 @@ public class EvaluationAndScoringService {
     @Autowired
     private TokenUtils tokenUtils;
     @Autowired
+    private CouncilReportTimeRepository councilReportTimeRepository;
+    @Autowired
     private LecturerRepository lecturerRepository;
     @Autowired
     private SubjectRepository subjectRepository;
@@ -60,6 +62,10 @@ public class EvaluationAndScoringService {
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+            List<CouncilReportTime> councilReportTimes = councilReportTimeRepository.findCouncilReportTimeByTypeSubjectAndStatus(typeSubject, true);
+            if (!CompareTime.isCouncilTimeWithinAnyCouncilReportTime(councilReportTimes)) {
+                return new ResponseEntity<>("Không nằm trong khoảng thời gian hội đồng được tổ chức.", HttpStatus.BAD_REQUEST);
+            }
             List<Council> councils = councilRepository.getListCouncilByLecturer(existedLecturer);
             List<Council> councilResponse = new ArrayList<>();
             for (Council council:councils) {

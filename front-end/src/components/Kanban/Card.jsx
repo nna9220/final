@@ -50,6 +50,8 @@ const Card = ({ task, index }) => {
     }
   };
 
+  const MAX_LENGTH = 255; // Thay đổi theo yêu cầu của bạn
+
   const handleSubmitComment = async (e) => {
     e.preventDefault();
     const userToken = getTokenFromUrlAndSaveToStorage();
@@ -63,27 +65,31 @@ const Card = ({ task, index }) => {
       for (const file of commentFiles) {
         formData.append('fileInput', file);
       }
-  
+
+      if (commentContent.length > MAX_LENGTH) {
+        toast.warning(`Comment không được vượt quá ${MAX_LENGTH} ký tự.`);
+        return;
+      } 
       const response = await axiosInstance.post(`/student/comment/create/${task.taskId}`, formData, {
         headers: {
           'Authorization': `Bearer ${userToken}`,
         },
       });
-  
+
       const newComment = response.data;
-  
+
       setDetail(prevDetail => ({
         ...prevDetail,
         listComment: [...prevDetail.listComment, newComment]
       }));
-  
+
       setCommentContent('');
       setCommentFiles([]);
       handleViewTask(task.taskId);
     } catch (error) {
       console.error('Error creating comment:', error);
     }
-  };  
+  };
 
   const modalId = `exampleModal-${task.taskId}`;
 
@@ -93,7 +99,7 @@ const Card = ({ task, index }) => {
         <div className="card-items" ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
           <div className="dropdown">
             <label className='title-task-st'>{task.requirement}</label>
-            <button className="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{ border: 'none', backgroundColor: 'white', color:'black' }}>
+            <button className="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{ border: 'none', backgroundColor: 'white', color: 'black' }}>
               <MoreHorizTwoToneIcon />
             </button>
             <ul className="dropdown-menu">
@@ -143,7 +149,7 @@ const Card = ({ task, index }) => {
                         <input key={commentFiles.length} type="file" className="form-control" id="commentFile" onChange={handleFileChange} multiple />
                       </div>
                       <div className="mb-3">
-                        <button type="submit" className="btn btn-primary" style={{ marginBottom: '10px', display:'flex', justifyContent:'right'}}>Post Comment</button>
+                        <button type="submit" className="btn btn-primary" style={{ marginBottom: '10px', display: 'flex', justifyContent: 'right' }}>Post Comment</button>
                       </div>
                     </form>
                   </div>
@@ -156,7 +162,7 @@ const Card = ({ task, index }) => {
                             <label className='time-post'>{comment.dateSubmit}</label>
                           </div>
                           <div className='body-comment'>
-                            <label className='content'>{comment.content}</label><br />
+                            <label className='content-comment'>{comment.content}</label><br />
                             {file && file.map((files, fileIndex) => {
                               if (files.commentId?.commentId === comment.commentId) {
                                 return (
@@ -175,9 +181,10 @@ const Card = ({ task, index }) => {
                       </div>
                     ))}
                   </div>
+
                 </div>
                 <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                 </div>
               </div>
             </div>

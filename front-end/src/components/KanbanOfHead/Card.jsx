@@ -160,7 +160,7 @@ const Card = ({ task, index }) => {
                                                         <label className='time-post'>{comment.dateSubmit}</label>
                                                     </div>
                                                     <div className='body-comment'>
-                                                        <label className='content'>{comment.content}</label><br />
+                                                        <label className='content-comment'>{comment.content}</label><br />
                                                         {files && files.map((file, fileIndex) => {
                                                             if (file.commentId?.commentId === comment.commentId) {
                                                                 return (

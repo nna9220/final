@@ -43,7 +43,7 @@ function DataYears() {
 
     // Hàm kiểm tra định dạng năm
     const isValidYearFormat = (year) => {
-        const regex = /^\d{4} - \d{4}$/;
+        const regex = /^\d{4}-\d{4}$/;
         return regex.test(year);
     };
 
@@ -79,22 +79,21 @@ function DataYears() {
 
     const handleEditYear = () => {
         if (!isValidYearFormat(newYear)) {
-            toast.error('Định dạng niên khóa không hợp lệ! (Ví dụ: 2016 - 2020)');
+            toast.error('Định dạng niên khóa không hợp lệ! (Ví dụ: 2016-2020)');
             return;
         }
         if (!newYear.trim()) {
             toast.error('Tên niên khóa không được để trống!');
             return;
         }
-
         const userToken = getTokenFromUrlAndSaveToStorage();
-        axiosInstance.post(`/admin/schoolYear/edit/${selectedYear.yearId}`, null, {
+        axiosInstance.post(`/admin/schoolYear/edit/${idYear}`, null, {
             params: {
                 yearId: selectedYear.yearId,
                 year: newYear
             },
             headers: { 'Authorization': `Bearer ${userToken}` },
-        })
+        })        
         .then(response => {
             const updatedYears = years.map(item => {
                 if (item.yearId === selectedYear.yearId) {
@@ -109,6 +108,7 @@ function DataYears() {
             document.getElementById('editYear').classList.remove('show');
             document.body.classList.remove('modal-open');
             document.querySelector('.modal-backdrop').remove();
+            fetchYears();
         })
         .catch(error => {
             console.error(error);
@@ -125,7 +125,8 @@ function DataYears() {
 
     const handleDeleteYear = () => {
         const userToken = getTokenFromUrlAndSaveToStorage();
-        axiosInstance.post(`/admin/schoolYear/delete/${idYear}`, null, {
+        console.log("id:", idYear);
+        axiosInstance.post(`/admin/schoolYear/deleted/${idYear}`, null, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -143,28 +144,6 @@ function DataYears() {
         });
     };
 
-    const handleExport = () => {
-        const userToken = getTokenFromUrlAndSaveToStorage();
-        axiosInstance.get('/admin/schoolYear/export', {
-            responseType: 'blob',
-            headers: { 'Authorization': `Bearer ${userToken}` },
-        })
-        .then(response => {
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'school_years_report.xls');
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            toast.success('Xuất báo cáo thành công!');
-        })
-        .catch(error => {
-            console.error("Export error: ", error);
-            toast.error('Xuất báo cáo thất bại!');
-        });
-    };
-
     const columns = [
         { field: 'stt', headerName: 'STT', width: 100 },
         { field: 'year', headerName: 'Tên niên khóa', width: 200 },
@@ -174,10 +153,10 @@ function DataYears() {
             width: 150,
             renderCell: (params) => (
                 <>
-                    <button type="button" style={{marginRight:'10px', color:'#1572A1', fontWeight:'bolder'}} className="btn" data-bs-toggle="modal" data-bs-target="#editYear" onClick={() => handleViewYear(params.row)}>
+                    <button type="button" style={{marginRight:'10px', color:'#1572A1', fontWeight:'bolder'}} className="btn" data-bs-toggle="modal" data-bs-target="#editYear" onClick={() =>{setIdYear(params.row.id);handleViewYear(params.row)}}>
                         <EditOutlinedIcon />
                     </button>
-                    <button type="button" style={{marginRight:'10px', color:'#FF7878', fontWeight:'bolder'}} className="btn" data-bs-toggle="modal" data-bs-target="#deleteYear" onClick={() => { setIdYear(params.row.yearId); setSelectedYear(params.row) }}>
+                    <button type="button" style={{marginRight:'10px', color:'#FF7878', fontWeight:'bolder'}} className="btn" data-bs-toggle="modal" data-bs-target="#deleteYear" onClick={() => { setIdYear(params.row.id); setSelectedYear(params.row) }}>
                         <DeleteOutlineOutlinedIcon />
                     </button>
                 </>
@@ -186,7 +165,7 @@ function DataYears() {
     ];
 
     const rows = years.map((item, index) => ({
-        id: item.yearId, // Ensure this id is unique
+        id: item.yearId, 
         stt: index + 1,
         year: item.year,
     }));

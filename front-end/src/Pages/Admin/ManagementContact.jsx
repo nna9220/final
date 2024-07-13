@@ -23,7 +23,7 @@ export default function ManagementContact() {
                     <div className="widgets">
                         <div className='headMana-class'>
                             <div className='titleMana-class'>
-                                <h5>Quản lý giảng viên</h5>
+                                <h5>GIẢI ĐÁP - LIÊN HỆ</h5>
                             </div>
                         </div>
                         <div style={{

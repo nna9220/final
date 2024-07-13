@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import axiosInstance from '../../../API/axios';
 import './committe.scss';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function CommitteTable() {
     const [topics, setTopics] = useState([]);
@@ -12,7 +14,7 @@ function CommitteTable() {
     const [subjectIdDetail, setSubjectIdDetail] = useState(null);
     const [subjectId, setSubjectId] = useState(null);
     const userToken = getTokenFromUrlAndSaveToStorage();
-
+    const [error, setError] = useState(null);
     useEffect(() => {
         if (userToken) {
             listTopic();
@@ -32,14 +34,22 @@ function CommitteTable() {
                 'Authorization': `Bearer ${userToken}`,
             }
         })
-        .then(response => {
-            setTopics(response.data || []);
-            console.log("Topic:", response.data)
-        })
-        .catch(error => {
-            console.error(error);
-        });
+            .then(response => {
+                setTopics(response.data || []);
+                setError(null);
+                console.log("Topic:", response.data)
+            })
+            .catch(error => {
+                if (error.response && error.response.status === 400) {
+                    setError("Không nằm trong thời gian tổ chức đề tài");
+                    console.log("time council: ", response.data)
+                } else {
+                    console.error(error);
+                    setError("Có lỗi xảy ra. Vui lòng thử lại sau.");
+                }
+            });
     };
+
 
     const detailTopic = () => {
         axiosInstance.get(`/head/council/detailSubject/${subjectIdDetail}`, {
@@ -47,13 +57,13 @@ function CommitteTable() {
                 'Authorization': `Bearer ${userToken}`,
             }
         })
-        .then(response => {
-            setDetail(response.data.body || null);
-            console.log("Detail: ", response.data);
-        })
-        .catch(error => {
-            console.error('Lỗi lấy chi tiết:', error);
-        });
+            .then(response => {
+                setDetail(response.data.body || null);
+                console.log("Detail: ", response.data);
+            })
+            .catch(error => {
+                console.error('Lỗi lấy chi tiết:', error);
+            });
     };
 
     const listCriteria = () => {
@@ -62,12 +72,12 @@ function CommitteTable() {
                 'Authorization': `Bearer ${userToken}`,
             }
         })
-        .then(response => {
-            setCriterias(response.data.body || []);
-        })
-        .catch(error => {
-            console.error(error);
-        });
+            .then(response => {
+                setCriterias(response.data.body || []);
+            })
+            .catch(error => {
+                console.error(error);
+            });
     };
 
     const handleScoreChange = (studentId, criteriaKey, value) => {
@@ -115,58 +125,75 @@ function CommitteTable() {
                 }
             });
 
-            console.log("Đánh giá và tính điểm thành công: ", response.data);
+            if (response.data.statusCode === 'BAD_REQUEST') {
+                toast.error("Không nằm trong thời gian chấm điểm!");
+            } else {
+                console.log("Đánh giá và tính điểm thành công: ", response.data);
+                toast.success("Đánh giá và chấm điểm thành công!");
+            }
         } catch (error) {
             console.error("Lỗi khi đánh giá và tính điểm: ", error);
+            toast.error("Lỗi khi thực hiện đánh giá và chấm điểm!");
         }
     };
 
+
+
     return (
         <div style={{ margin: '20px' }}>
+            <ToastContainer />
             <div className='body-table-committe'>
-                <table className="table table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Tên đề tài</th>
-                            <th scope='col'>GVHD</th>
-                            <th scope='col'>GVPB</th>
-                            <th scope='col'>SV 1</th>
-                            <th scope='col'>SV 2</th>
-                            <th scope='col'>SV 3</th>
-                            <th scope='col'>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {topics.length === 0 ? (
-                            <tr>
-                                <td colSpan="8" className="text-center">Không có dữ liệu</td>
-                            </tr>
-                        ) : (
-                            topics.map((item, index) => (
-                                <tr key={index}>
-                                    <td>{index + 1}</td>
-                                    <td>{item.subject.subjectName}</td>
-                                    <td>{item.subject?.instructorId?.person?.firstName} {item.subject?.instructorId?.person?.lastName}</td>
-                                    <td>{item.subject?.thesisAdvisorId?.person?.firstName} {item.subject?.thesisAdvisorId?.person?.lastName}</td>
-                                    <td>{item.subject?.student1}</td>
-                                    <td>{item.subject?.student2}</td>
-                                    <td>{item.subject?.student3}</td>
-                                    <td>
-                                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                                            onClick={() => {
-                                                setDetail(item.subject);
-                                                setSubjectIdDetail(item.subject.subjectId);
-                                                setSubjectId(item.subject.subjectId);
-                                            }}>
-                                            Đánh giá
-                                        </button>
-                                    </td>
+                <div>
+                    {error ? (
+                        <div className="alert alert-danger" role="alert">
+                            {error}
+                        </div>
+                    ) : (
+                        <table className="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Tên đề tài</th>
+                                    <th scope='col'>GVHD</th>
+                                    <th scope='col'>GVPB</th>
+                                    <th scope='col'>SV 1</th>
+                                    <th scope='col'>SV 2</th>
+                                    <th scope='col'>SV 3</th>
+                                    <th scope='col'>Hành động</th>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                            </thead>
+                            <tbody>
+                                {topics.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="8" className="text-center">Không có dữ liệu</td>
+                                    </tr>
+                                ) : (
+                                    topics.map((item, index) => (
+                                        <tr key={index}>
+                                            <td>{index + 1}</td>
+                                            <td>{item.subject.subjectName}</td>
+                                            <td>{item.subject?.instructorId?.person?.firstName} {item.subject?.instructorId?.person?.lastName}</td>
+                                            <td>{item.subject?.thesisAdvisorId?.person?.firstName} {item.subject?.thesisAdvisorId?.person?.lastName}</td>
+                                            <td>{item.subject?.student1}</td>
+                                            <td>{item.subject?.student2}</td>
+                                            <td>{item.subject?.student3}</td>
+                                            <td>
+                                                <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                                    onClick={() => {
+                                                        setDetail(item.subject);
+                                                        setSubjectIdDetail(item.subject.subjectId);
+                                                        setSubjectId(item.subject.subjectId);
+                                                    }}>
+                                                    Đánh giá
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
             </div>
 
             <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -179,7 +206,7 @@ function CommitteTable() {
                         <div className="modal-body">
                             {detail && detail.subject ? (
                                 <>
-                                    <h5 style={{color:'#4477CE'}}>Thông tin đề tài</h5>
+                                    <h5 style={{ color: '#4477CE' }}>Thông tin đề tài</h5>
                                     <div>
                                         <table className="table table-bordered">
                                             <tbody>
@@ -221,7 +248,7 @@ function CommitteTable() {
                                         </table>
                                     </div>
                                     <hr />
-                                    <h5 style={{color:'#4477CE'}}>Tiêu chí đánh giá</h5>
+                                    <h5 style={{ color: '#4477CE' }}>Tiêu chí đánh giá</h5>
                                     <table className='table-bordered table criteria-table'>
                                         <thead>
                                             <tr>

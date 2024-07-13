@@ -56,9 +56,13 @@ public class ManageCouncilService {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+            List<CouncilReportTime> councilReportTimes = councilReportTimeRepository.findCouncilReportTimeByTypeSubjectAndStatus(typeSubject, true);
+            if (!CompareTime.isCouncilTimeWithinAnyCouncilReportTime(councilReportTimes)) {
+                return new ResponseEntity<>("Không nằm trong khoảng thời gian hội đồng được tổ chức.", HttpStatus.BAD_REQUEST);
+            }
             Lecturer lecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            List<Subject> subjects = subjectRepository.findSubjectByActiveAndStatusAndMajorAndType((byte)1,lecturer.getMajor(),typeSubject);
-            return new ResponseEntity<>(subjects,HttpStatus.OK);
+            List<Subject> subjects = subjectRepository.findSubjectByActiveAndStatusAndMajorAndType((byte)1, lecturer.getMajor(), typeSubject);
+            return new ResponseEntity<>(subjects, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

@@ -101,7 +101,7 @@ function TableAssign() {
       console.error('LectureId or subjectId is undefined or empty');
       console.log("LectureId: ", lecturerId);
       console.log("SubjectId: ", subjectId);
-      toast.error("LectureId hoặc SubjectId không hợp lệ!");
+      toast.error("Chưa chọn giảng viên phản biện!");
     }
   };
 

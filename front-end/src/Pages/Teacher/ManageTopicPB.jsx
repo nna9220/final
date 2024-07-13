@@ -93,7 +93,7 @@ function ManageTopicPB() {
         <div className='context-menu'>
           <div className='home-head'>
             <div className='title-head'>
-              <h5>ĐỀ TÀI CỦA TÔI PHẢN BIỆN</h5>
+              <h5>ĐỀ TÀI PHẢN BIỆN</h5>
             </div>
           </div>
           <div className='context-nd'>

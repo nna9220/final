@@ -59,34 +59,20 @@ public class HeadBrowseSubjectToThesisController {
         }
     }
 
-    @GetMapping("/timeBrowse")
+
+    //TBM duyệt đề tài qua GVPB
+    @PostMapping("/accept-multiple-subjects")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
-    public ResponseEntity<Map<String,Object>> findAllExisted(@RequestHeader("Authorization") String authorizationHeader){
-        String token = tokenUtils.extractToken(authorizationHeader);
-        Person personCurrent = CheckRole.getRoleCurrent2(token,userUtils,personRepository);
-        if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
-            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
-            List<TimeBrowsOfHead> timeBrowsOfHeads = timeBrowseHeadRepository.findAllPeriodEssay(typeSubject);
-            List<TypeSubject> typeSubjects = typeSubjectRepository.findAll();
-            Map<String,Object> response = new HashMap<>();
-            response.put("timeBrowse",timeBrowsOfHeads);
-            response.put("person",personCurrent);
-            response.put("listTypeSubject", typeSubjects);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    public ResponseEntity<?> completedMultipleSubjectsBrowseToCouncil(
+            @RequestBody List<Integer> subjectIds,
+            @RequestHeader("Authorization") String authorizationHeader
+    ) {
+        try {
+            return new ResponseEntity<>(manageCriticalSubjectService.completedMultipleSubjectsBrowseToThesis(authorizationHeader, subjectIds), HttpStatus.OK);
+        } catch (Exception e) {
+            System.err.println("Error while processing subjects: " + e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    //TBM duyệt đề tài qua GVPB
-    @PostMapping("/accept-subject-to-thesis/{subjectId}")
-    @PreAuthorize("hasAuthority('ROLE_HEAD')")
-    public ResponseEntity<?> CompletedSubjectBrowseToCouncil(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader){
-        try {
-            return new ResponseEntity<>(manageCriticalSubjectService.CompletedSubjectBrowseToThesis(authorizationHeader,subjectId),HttpStatus.OK);
-        }catch (Exception e){
-            System.err.println("Initial SessionFactory creation failed." + e);
-            throw new ExceptionInInitializerError(e);
-        }
-    }
 }

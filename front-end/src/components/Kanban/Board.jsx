@@ -13,6 +13,8 @@ import DnsOutlinedIcon from '@mui/icons-material/DnsOutlined';
 import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined';
 import axiosInstance from '../../API/axios';
 
+const MAX_FILE_SIZE_MB = 5;
+const MAX_FILE_SIZE_KB = MAX_FILE_SIZE_MB * 1024; // Convert MB to KB
 const KanbanBoard = () => {
   const userToken = getTokenFromUrlAndSaveToStorage();
   const [data, setData] = useState([]);
@@ -33,6 +35,8 @@ const KanbanBoard = () => {
   const [report100, setReport100] = useState('');
   const [currentDroppableId, setCurrentDroppableId] = useState('MustDo'); // State lưu trữ droppableId hiện tại
   const [statusSubject, setStatusSubject] = useState(null);
+  const [isFileValid, setIsFileValid] = useState(true); // New state to track file validity
+
   const handleChangeAdd = (e) => {
     const { name, value } = e.target;
     setFormNewTask(prevState => ({
@@ -181,8 +185,19 @@ const KanbanBoard = () => {
   }
 
   const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
+    const selectedFile = event.target.files[0];
+    const allowedTypes = ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/pdf'];
+  
+    if (selectedFile && allowedTypes.includes(selectedFile.type)) {
+      setFile(selectedFile);
+      setIsFileValid(true); // File is valid
+    } else {
+      toast.error('Vui lòng chọn file Word hoặc PDF!');
+      setFile(null);
+      setIsFileValid(false); // File is not valid
+    }
   };
+  
 
   const handleSubmitReportFifty = () => {
     if (file) {
@@ -244,7 +259,7 @@ const KanbanBoard = () => {
             {!error &&
               <div>
                 <div className='group-button'>
-                  <div className='subject-info'style={{marginLeft:'10px'}}>
+                  <div className='subject-info' style={{ marginLeft: '10px' }}>
                     <h6>Đề tài: {subject}</h6>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -254,13 +269,25 @@ const KanbanBoard = () => {
                       </button>
                     </div>
                     <div className='button-submitTopic'>
-                      <button style={{ padding: '5px' }} className={`submit-button ${statusActive === 2 ? 'active' : 'disabled'}`} data-bs-toggle="modal" data-bs-target="#submit50">
+                      <button
+                        style={{ padding: '5px' }}
+                        className={`submit-button ${statusActive === 2 ? 'active' : 'disabled'}`}
+                        data-bs-toggle="modal"
+                        data-bs-target="#submit50"
+                        disabled={statusActive !== 2}
+                      >
                         Nộp báo cáo lần 1
                       </button>
-                      <button className={`submit-button ${statusActive === 4 ? 'active' : 'disabled'}`} data-bs-toggle="modal" data-bs-target="#submit100">
+                      <button
+                        className={`submit-button ${statusActive === 4 ? 'active' : 'disabled'}`}
+                        data-bs-toggle="modal"
+                        data-bs-target="#submit100"
+                        disabled={statusActive !== 4}
+                      >
                         Nộp báo cáo lần 2
                       </button>
                     </div>
+
                   </div>
                 </div>
 
@@ -314,8 +341,8 @@ const KanbanBoard = () => {
                         </div>
                       </div>
                       <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitReportFifty}>Submit</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" disabled={!isFileValid} onClick={handleSubmitReportFifty}>Xác nhận</button>
                       </div>
                     </div>
                   </div>
@@ -331,27 +358,27 @@ const KanbanBoard = () => {
                       <div class="modal-body">
                         <div class="mb-3">
                           <label for="formFile" class="form-label">Chọn file báo cáo : </label>
-                          <input class="form-control" type="file" id="formFile" onChange={handleFileChange} />
+                          <input class="form-control" type="file" id="formFile"  onChange={handleFileChange} />
                         </div>
                       </div>
                       <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitReport100}>Submit</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" disabled={!isFileValid} onClick={handleSubmitReport100}>Xác nhận</button>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <div class="modal fade" id="Reports" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                  <div class="modal-dialog">
+                  <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                       <div class="modal-header">
                         <h1 class="modal-title fs-5" id="exampleModalLabel">Các bài báo cáo của đề tài</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                       <div class="modal-body">
-                        <p>Báo cáo 50%: <span>{report50 ? report50:'Chưa có'}</span></p>
-                        <p>Báo cáo 100%: <span>{report100 ? report100 :'Chưa có'}</span></p>
+                        <p>Báo cáo 50%: <span>{report50 ? report50 : 'Chưa có'}</span></p>
+                        <p>Báo cáo 100%: <span>{report100 ? report100 : 'Chưa có'}</span></p>
                       </div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
@@ -362,26 +389,26 @@ const KanbanBoard = () => {
 
                 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                   <div class="modal-dialog">
-                    <div class="modal-content">
+                    <form class="modal-content" onSubmit={handleAddNewTask}>
                       <div class="modal-header">
                         <h1 class="modal-title fs-5" id="exampleModalLabel">Add task</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                       <div class="modal-body">
                         <div class="form-floating mb-3 mt-3">
-                          <input type="text" class="form-control" id="requirement" placeholder="Enter requirement" name="requirement" value={formNewTask.requirement} onChange={handleChangeAdd} />
+                          <input required type="text" class="form-control" id="requirement" placeholder="Enter requirement" name="requirement" value={formNewTask.requirement} onChange={handleChangeAdd} />
                           <label for="requirement">Tên task</label>
                         </div>
                         <div class="form-floating mb-3 mt-3">
-                          <input type="date" class="form-control" id="timeStart" placeholder="Enter timeStart" name="timeStart" value={formNewTask.timeStart} onChange={handleChangeAdd} />
+                          <input required type="date" class="form-control" id="timeStart" placeholder="Enter timeStart" name="timeStart" value={formNewTask.timeStart} onChange={handleChangeAdd} />
                           <label for="timeStart">Thời gian bắt đầu</label>
                         </div>
                         <div class="form-floating mb-3 mt-3">
-                          <input type="date" class="form-control" id="timeEnd" placeholder="Enter timeEnd" name="timeEnd" value={formNewTask.timeEnd} onChange={handleChangeAdd} />
+                          <input required type="date" class="form-control" id="timeEnd" placeholder="Enter timeEnd" name="timeEnd" value={formNewTask.timeEnd} onChange={handleChangeAdd} />
                           <label for="timeEnd">Thời gian kết thúc</label>
                         </div>
                         <div class="form-floating mb-3 mt-3">
-                          <select class="form-select" id="assignTo" name="assignTo" value={formNewTask.assignTo} onChange={handleChangeAdd}>
+                          <select required class="form-select" id="assignTo" name="assignTo" value={formNewTask.assignTo} onChange={handleChangeAdd}>
                             <option value="" selected disabled>Chọn thành viên</option>
                             {newTask.map((option, index) => (
                               <option key={index} value={option.studentId}>{option.person?.firstName + ' ' + option.person?.lastName} </option>
@@ -391,10 +418,10 @@ const KanbanBoard = () => {
                         </div>
                       </div>
                       <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-success" data-bs-dismiss="modal" onClick={handleAddNewTask}>Add</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-success">Thêm</button>
                       </div>
-                    </div>
+                    </form>
                   </div>
                 </div>
               </div>

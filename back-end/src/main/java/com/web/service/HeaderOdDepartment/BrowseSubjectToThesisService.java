@@ -97,6 +97,55 @@ public class BrowseSubjectToThesisService {
         }
     }
 
+    public ResponseEntity<?> completedMultipleSubjectsBrowseToThesis(String authorizationHeader, List<Integer> subjectIds) {
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+
+        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+            List<Subject> updatedSubjects = new ArrayList<>();
+            List<String> emailPerson = new ArrayList<>();
+
+            for (Integer id : subjectIds) {
+                Subject existedSubject = subjectRepository.findById(id).orElse(null);
+                if (existedSubject != null) {
+                    existedSubject.setActive((byte) 7);
+                    updatedSubjects.add(existedSubject);
+
+                    if (existedSubject.getStudent1() != null) {
+                        Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
+                        if (student1.getPerson().getPersonId() != personCurrent.getPersonId()) {
+                            emailPerson.add(student1.getPerson().getUsername());
+                        }
+                    }
+                    if (existedSubject.getStudent2() != null) {
+                        Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
+                        if (student2.getPerson().getPersonId() != personCurrent.getPersonId()) {
+                            emailPerson.add(student2.getPerson().getUsername());
+                        }
+                    }
+                    if (existedSubject.getStudent3() != null) {
+                        Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
+                        if (student3.getPerson().getPersonId() != personCurrent.getPersonId()) {
+                            emailPerson.add(student3.getPerson().getUsername());
+                        }
+                    }
+                    emailPerson.add(existedSubject.getThesisAdvisorId().getPerson().getUsername());
+                }
+            }
+
+            // Save all updated subjects
+            subjectRepository.saveAll(updatedSubjects);
+
+            // Send email to all relevant persons
+            String subject = "Multiple Topics Approved";
+            String messenger = "The following topics have been approved by the head and sent to the thesis committee. Please check the website for details.";
+            mailService.sendMailToPerson(emailPerson, subject, messenger);
+
+            return new ResponseEntity<>(updatedSubjects, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
 
 
 }

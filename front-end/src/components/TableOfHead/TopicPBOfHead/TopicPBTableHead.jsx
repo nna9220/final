@@ -131,7 +131,7 @@ function TopicPBTableHead() {
                 <div className="modal-dialog modal-xl modal-dialog-scrollable">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="exampleModalLabel">Đánh giá</h1>
+                            <h1 className="modal-title fs-5" id="exampleModalLabel">Chi tiết đề tài</h1>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
@@ -204,7 +204,7 @@ function TopicPBTableHead() {
                                 Đóng
                             </button>
                             <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleAccept}>
-                                Xác nhận
+                                Xác nhận qua hội đòng
                             </button>
                         </div>
                     </div>

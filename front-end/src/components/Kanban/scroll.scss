@@ -62,6 +62,16 @@
     color: #FF6C22;
 }
 
+.content-comment {
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Số dòng tối đa hiển thị */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal; /* Cho phép xuống dòng nếu cần */
+  }
+
+  
 .button-submitTopic {
     display: flex;
     justify-content: flex-end;
@@ -83,7 +93,7 @@
         margin-right: 16px;
     }
 
-    .submit-button:active{
+    .submit-button.active{
         padding: 8px;
         border-radius: 5px;
         border: none;

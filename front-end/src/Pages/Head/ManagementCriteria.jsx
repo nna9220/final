@@ -10,7 +10,7 @@ import { Navigate } from 'react-router-dom';
 
 function ManagementCriteria() {
   useEffect(() => {
-    document.title = "Tiêu chí phản biện";
+    document.title = "Tiêu chí đánh giá";
   }, []);
   const [authorized, setAuthorized] = useState(true);
   const [selectedTitle, setSelectedTitle] = useState("Tiểu luận chuyên ngành");
@@ -80,7 +80,7 @@ function ManagementCriteria() {
         <div className='context-menu'>
           <div className='home-head'>
             <div className='title-head'>
-              <h5>TIÊU CHÍ PHẢN BIỆN</h5>
+              <h5>TIÊU CHÍ ĐÁNH GIÁ, CHẤM ĐIỂM</h5>
             </div>
           </div>
           <div className='context-nd'>

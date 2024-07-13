@@ -321,7 +321,7 @@ function DatatableLec() {
         { field: 'gender', headerName: 'Giới tính', width: 100, valueGetter: (params) => params.row.person?.gender ? 'Nữ' : 'Nam' },
         { field: 'phone', headerName: 'Số điện thoại', width: 200 },
         { field: 'major', headerName: 'Chuyên ngành', width: 200 },
-        { field: 'authority', headerName: 'Role', width: 150 },
+        { field: 'authority', headerName: 'Vai trò', width: 150 },
         {
             field: 'action', headerName: 'Action', width: 200, renderCell: (params) => (
                 <div>
@@ -481,7 +481,7 @@ function DatatableLec() {
                                         </select>
                                     </div>
                                     <div className="col">
-                                        <label htmlFor="author" className="form-label">Role <span className='note-required'>*</span></label>
+                                        <label htmlFor="author" className="form-label">Vai trò <span className='note-required'>*</span></label>
                                         <select required className="form-select" id="author" value={userEdit.authority} onChange={handleAuthorityChange} name="author">
                                             {author.filter(Item => Item.name === "ROLE_LECTURER" || Item.name === "ROLE_HEAD").map((Item, index) => (
                                                 <option key={index} value={Item.name}>{Item.name}</option>
@@ -566,7 +566,7 @@ function DatatableLec() {
                                         </select>
                                     </div>
                                     <div className="col">
-                                        <label htmlFor="author" className="form-label">Role <span className='note-required'>*</span></label>
+                                        <label htmlFor="author" className="form-label">Vai trò <span className='note-required'>*</span></label>
                                         <select required className="form-select" id="author" value={formData.author} onChange={handleChangeAdd} name="author">
                                             <option value="">Chọn ...</option>
                                             {author.filter(Item => Item.name === "ROLE_LECTURER" || Item.name === "ROLE_HEAD").map((Item, index) => (

@@ -184,45 +184,19 @@ export default function TableTopic() {
                 <div>
                     {topics.length > 0 ? (
                         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            <button
-                                className="submit50-all"
-                                style={{ marginRight: '10px' }}
-                                type="button"
-                                data-bs-toggle="modal"
-                                data-bs-target="#submit50"
-                                disabled={topics.every((item) => item.active == 9)}
-                            >
+                            <button className="submit50-all" style={{ marginRight: '10px' }} type="button" data-bs-toggle="modal" data-bs-target="#submit50" disabled={topics.every((item) => item.active == 9)}>
                                 Nộp báo cáo 50%
                             </button>
-                            <button
-                                className="submit100-all"
-                                type="button"
-                                data-bs-toggle="modal"
-                                data-bs-target="#submit100"
-                                disabled={topics.every((item) => item.active == 9)}
-                            >
+                            <button className="submit100-all" type="button" data-bs-toggle="modal" data-bs-target="#submit100" disabled={topics.every((item) => item.active == 9)}>
                                 Nộp báo cáo 100%
                             </button>
                         </div>
                     ) : (
                         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            <button
-                                className="submit50-all"
-                                style={{ marginRight: '10px' }}
-                                type="button"
-                                data-bs-toggle="modal"
-                                data-bs-target="#submit50"
-                                disabled
-                            >
+                            <button className="submit50-all" style={{ marginRight: '10px' }} type="button" data-bs-toggle="modal" data-bs-target="#submit50" disabled>
                                 Nộp báo cáo 50%
                             </button>
-                            <button
-                                className="submit100-all"
-                                type="button"
-                                data-bs-toggle="modal"
-                                data-bs-target="#submit100"
-                                disabled
-                            >
+                            <button className="submit100-all" type="button" data-bs-toggle="modal" data-bs-target="#submit100" disabled>
                                 Nộp báo cáo 100%
                             </button>
                         </div>

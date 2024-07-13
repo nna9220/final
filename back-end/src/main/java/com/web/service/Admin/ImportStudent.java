@@ -78,7 +78,7 @@ public class ImportStudent {
                 studentRepository.saveAll(saveStudents);
                 return ResponseEntity.ok("Imported file to list subject successful!");
             } else
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File upload is not match format, please try again!");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File không đúng format. Vui lòng chọn lại!");
         }catch (Exception e){
             throw new RuntimeException("Lỗi r" + e);
         }

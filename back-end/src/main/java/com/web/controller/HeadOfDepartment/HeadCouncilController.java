@@ -45,6 +45,7 @@ public class HeadCouncilController {
     private ManageCouncilService manageCouncilService;
     @Autowired
     private ManageTutorialSubjectService manageTutorialSubjectService;
+
     @GetMapping("/listSubject")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> getListCouncilOfLecturer(@RequestHeader("Authorization") String authorizationHeader) {
@@ -142,8 +143,6 @@ public class HeadCouncilController {
             throw new ExceptionInInitializerError(e);
         }
     }
-
-
 
 //    @GetMapping("/detailSubject/{subjectId}")
 //    @PreAuthorize("hasAuthority('ROLE_HEAD')")
