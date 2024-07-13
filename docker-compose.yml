@@ -7,7 +7,7 @@ services:
       - /data:/var/lib/mysql
       - ./sql:/docker-entrypoint-initdb.d
       - ./backupfile.sql:/docker-entrypoint-initdb.d/backupfile.sql
-    command: --init-file /docker-entrypoint-initdb.d/backup.sql
+    command: --init-file /docker-entrypoint-initdb.d/backupfile.sql
 
   front-end:
     build:
