@@ -18,6 +18,8 @@
 --
 -- Dumping data for table `authority`
 --
+drop database dataregistertopic;
+create database dataregistertopic;
 
 use dataregistertopic;
 
@@ -105,21 +107,10 @@ UNLOCK TABLES;
 -- Dumping data for table `register_period`
 --
 
-LOCK TABLES `register_period` WRITE;
-/*!40000 ALTER TABLE `register_period` DISABLE KEYS */;
-INSERT INTO `register_period` VALUES (1,'Đợt 1','2024-06-21 02:00:00','2023-12-07 02:00:00',1),(2,'Đợt 2','2024-09-25 02:00:00','2024-09-10 02:00:00',1),(3,'Đợt 1','2024-05-05 00:00:00','2024-01-01 00:00:00',2),(4,'Đợt 2','2024-05-05 00:00:00','2024-01-01 00:00:00',2);
-/*!40000 ALTER TABLE `register_period` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `register_period_lecturer`
 --
-
-LOCK TABLES `register_period_lecturer` WRITE;
-/*!40000 ALTER TABLE `register_period_lecturer` DISABLE KEYS */;
-INSERT INTO `register_period_lecturer` VALUES (1,'Đợt 1','2024-05-04 00:00:00','2023-12-31 00:00:00',1),(2,'Đợt 2','2024-05-05 00:00:00','2024-01-01 00:00:00',1),(3,'Đợt 1','2024-05-05 00:00:00','2024-01-01 00:00:00',2),(4,'Đợt 2','2024-05-05 00:00:00','2024-01-01 00:00:00',2);
-/*!40000 ALTER TABLE `register_period_lecturer` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `result_criteria`
@@ -226,21 +217,11 @@ UNLOCK TABLES;
 -- Dumping data for table `time_add_subject_of_head`
 --
 
-LOCK TABLES `time_add_subject_of_head` WRITE;
-/*!40000 ALTER TABLE `time_add_subject_of_head` DISABLE KEYS */;
-INSERT INTO `time_add_subject_of_head` VALUES (1,'2024-05-05 00:00:00','2024-01-01 00:00:00',1),(2,'2024-05-05 00:00:00','2024-01-01 00:00:00',2);
-/*!40000 ALTER TABLE `time_add_subject_of_head` ENABLE KEYS */;
-UNLOCK TABLES;
+
 
 --
 -- Dumping data for table `time_brows_of_head`
 --
-
-LOCK TABLES `time_brows_of_head` WRITE;
-/*!40000 ALTER TABLE `time_brows_of_head` DISABLE KEYS */;
-INSERT INTO `time_brows_of_head` VALUES (1,'2024-05-05 00:00:00','2024-01-01 00:00:00',1),(2,'2024-05-05 00:00:00','2024-01-01 00:00:00',2);
-/*!40000 ALTER TABLE `time_brows_of_head` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `type_subject`

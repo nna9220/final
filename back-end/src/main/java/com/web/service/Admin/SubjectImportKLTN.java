@@ -110,6 +110,7 @@ public class SubjectImportKLTN {
                         newSubject.setThesisAdvisorId(subject.getThesisAdvisorId());
                         Council newCouncil = new Council();
                         newCouncil.setSubject(newSubject);
+                        newSubject.setCouncil(newCouncil);
                         // Tạo CouncilLecturer của GVPB
                         CouncilLecturer councilCounterArgument = new CouncilLecturer();
                         councilCounterArgument.setLecturer(subject.getThesisAdvisorId());

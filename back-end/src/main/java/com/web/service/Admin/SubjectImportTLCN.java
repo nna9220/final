@@ -36,7 +36,7 @@ public class SubjectImportTLCN {
     private final EvaluationCriteriaRepository evaluationCriteriaRepository;
 
     public ResponseEntity<?> importSubject(MultipartFile file) throws IOException {
-        try {
+
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
 
             List<Subject> saveSub = new ArrayList<>();
@@ -96,6 +96,8 @@ public class SubjectImportTLCN {
                         newSubject.setInstructorId(subject.getInstructorId());
                     }
                     if (subject.getThesisAdvisorId()!=null) {
+                        System.out.println("GVPB subject: " + subject.getThesisAdvisorId());
+                        System.out.println("GVHD subject: " + subject.getInstructorId());
                         Lecturer instructor = subject.getInstructorId();
                         Lecturer thesis = subject.getThesisAdvisorId();
                         newSubject.setThesisAdvisorId(subject.getThesisAdvisorId());
@@ -106,6 +108,7 @@ public class SubjectImportTLCN {
                         councilCounterArgument.setLecturer(subject.getThesisAdvisorId());
                         councilCounterArgument.setRole("Chủ tịch");
                         councilCounterArgument.setCouncil(newCouncil);
+                        newSubject.setCouncil(newCouncil);
 
                         // Tạo CouncilLecturer của GVHD
                         CouncilLecturer councilInstructor = new CouncilLecturer();
@@ -152,9 +155,7 @@ public class SubjectImportTLCN {
                 return ResponseEntity.ok("Imported file to list subject successful!");
             } else
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File upload is not match format, please try again!");
-        }catch (Exception e){
-            throw new RuntimeException("Lỗi r" + e.getMessage());
-        }
+
     }
 
 
@@ -172,6 +173,7 @@ public class SubjectImportTLCN {
             int rowCount = sheet.getPhysicalNumberOfRows();
             for (int i = 1; i < rowCount; i++) { // Bắt đầu từ hàng thứ 2 (hàng đầu tiên chứa tiêu đề)
                 Row row = sheet.getRow(i);
+
                 if (row != null) {
                     Subject subject = new Subject(); // Tạo một đối tượng Subject cho mỗi hàng
 
@@ -185,8 +187,12 @@ public class SubjectImportTLCN {
                                 Student student = studentRepository.findById(getCellValueAsString(cell)).orElse(null);
                                 System.out.println("Student 1: "+ student);
                             }
-                            case 2 -> subject.setStudent2(getCellValueAsString(cell));
-                            case 3 -> subject.setStudent3(getCellValueAsString(cell));
+                            case 2 -> {
+                                subject.setStudent2(getCellValueAsString(cell));
+                            }
+                            case 3 -> {
+                                subject.setStudent3(getCellValueAsString(cell));
+                            }
                             case 4 ->{
                                 Lecturer instructor = lecturerRepository.findById(getCellValueAsString(cell)).orElse(null);
                                 System.out.println("ID instruc: " + getCellValueAsString(cell));
@@ -209,14 +215,14 @@ public class SubjectImportTLCN {
         } catch (Exception e){
             throw new RuntimeException("Error when convert file csv!" + e.getMessage());
         }
-        subjects_TLCN.forEach(subject -> {
+        for (Subject subject : subjects_TLCN) {
             System.out.println("Name: " + subject.getSubjectName());
             System.out.println("Student 1: " + subject.getStudent1());
             System.out.println("Student 2: " + subject.getStudent2());
             System.out.println("Student 3: " + subject.getStudent3());
             System.out.println("TLCN Mã GVHD: " + subject.getInstructorId());
-            System.out.println("TLCN Mã GVPB: " + subject.getThesisAdvisorId() );
-        });
+            System.out.println("TLCN Mã GVPB: " + subject.getThesisAdvisorId());
+        }
         return subjects_TLCN;
     }
 

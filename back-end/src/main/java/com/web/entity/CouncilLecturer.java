@@ -16,11 +16,11 @@ public class CouncilLecturer {
     @Column(name = "id")
     private int id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "council_id")
     private Council council;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "lecturer_id")
     private Lecturer lecturer;
 

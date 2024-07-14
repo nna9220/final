@@ -38,7 +38,7 @@ public class Council {
     @DateTimeFormat(pattern = "HH:mm:ss")
     private LocalTime end;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "subject", unique = true)
     private Subject subject;
 
