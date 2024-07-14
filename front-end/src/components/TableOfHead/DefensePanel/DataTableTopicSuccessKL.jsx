@@ -159,37 +159,44 @@ function DataTableTopicSuccessKL() {
             end: formatTimeToSeconds(councilEdit.end),
             date: formatDate(councilEdit.date)
         };
-
+    
         if (!formattedCouncilEdit.start || !formattedCouncilEdit.end) {
             console.error('Invalid time format for start or end.');
             return;
         }
-
+    
         console.log("Send data: ", formattedCouncilEdit);
+    
+        const formData = new FormData();
+        formData.append('lecturer1', formattedCouncilEdit.lecturer1);
+        formData.append('lecturer2', formattedCouncilEdit.lecturer2);
+        formData.append('lecturer3', formattedCouncilEdit.lecturer3);
+        formData.append('lecturer4', formattedCouncilEdit.lecturer4 ?? null);
+        formData.append('lecturer5', formattedCouncilEdit.lecturer5 ?? null);
+        formData.append('start', formattedCouncilEdit.start);
+        formData.append('end', formattedCouncilEdit.end);
+        formData.append('date', formattedCouncilEdit.date);
+        formData.append('address', formattedCouncilEdit.address);
+    
         try {
-            const response = await axiosInstance.post(`/head/manager/council/edit/${council.subject.subjectId}`, null, {
-                headers: {
-                    'Authorization': `Bearer ${userToken}`,
-                },
-                params: {
-                    lecturer1: formattedCouncilEdit.lecturer1,
-                    lecturer2: formattedCouncilEdit.lecturer2,
-                    lecturer3: formattedCouncilEdit.lecturer3,
-                    lecturer4: formattedCouncilEdit.lecturer4,
-                    lecturer5: formattedCouncilEdit.lecturer5,
-                    start: formattedCouncilEdit.start,
-                    end: formattedCouncilEdit.end,
-                    date: formattedCouncilEdit.date,
-                    address: formattedCouncilEdit.address,
-                },
-            });
+            const response = await axiosInstance.post(
+                `/head/manager/council/edit/${council.subject.subjectId}`,
+                formData,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`,
+                        'Content-Type': 'multipart/form-data',
+                    }
+                }
+            );
             console.log("Save response: ", response.data);
             toast.success('Lập hội đồng thành công!');
         } catch (error) {
-            console.error('Error saving council details:', error);
+            console.error('Error saving council details:', error.response ? error.response.data : error.message);
             toast.error('Lập hội đồng thất bại. Vui lòng thử lại.');
         }
     };
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -371,7 +378,7 @@ function DataTableTopicSuccessKL() {
                                         <td>
                                             <select className="form-select" id="lecturer1" name="lecturer1" value={councilEdit.lecturer1} onChange={handleChange}>
                                                 <option value="">Chọn giảng viên</option>
-                                                {listLecturer.map((lecturer) => (
+                                                {lecturers.map((lecturer) => (
                                                     <option key={lecturer.personId} value={lecturer.personId}>
                                                         {lecturer.person.firstName} {lecturer.person.lastName}
                                                     </option>
