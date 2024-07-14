@@ -38,7 +38,7 @@ public class HeadManageTutorialSubjectGraduationController {
     @Autowired
     private CouncilCreationService councilCreationService;
 
-    @PostMapping("/automationCouncil2")
+    /*@PostMapping("/automationCouncil2")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
     private ResponseEntity<?> automaticCouncilDivision2(@RequestHeader("Authorization") String authorizationHeader,
                                                         @RequestParam("address") String address,
@@ -59,7 +59,7 @@ public class HeadManageTutorialSubjectGraduationController {
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);
         }
-    }
+    }*/
 
     @PostMapping("/fiftyRecent/{subjectId}")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")

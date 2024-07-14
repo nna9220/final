@@ -202,7 +202,7 @@ function DataTableTopicSuccessKL() {
         }
 
         try {
-            const response = await axiosInstance.post('/head/manageTutorial/graduation/automationCouncil2', null, {
+            const response = await axiosInstance.post('/head/manager/council/autoCouncil', null, {
                 headers: {
                     'Authorization': `Bearer ${userToken}`,
                     'Content-Type': 'application/x-www-form-urlencoded',

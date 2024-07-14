@@ -51,11 +51,7 @@ public class HeadManageCouncilController {
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> getListSubject(@RequestHeader("Authorization") String authorizationHeader){
         try {
-            if (tokenUtils == null) {
-                System.err.println("tokenUtils is null!");
-            } else {
-                System.out.println("tokenUtils is not null.");
-            }
+
             String token = tokenUtils.extractToken(authorizationHeader);
             Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
             System.out.println("person: "+personCurrent.getPersonId());
@@ -132,28 +128,16 @@ public class HeadManageCouncilController {
     }
 
 
-    @PostMapping("/automationCouncil2")
+
+
+    @PostMapping("/autoCouncil")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
-    private ResponseEntity<?> automaticCouncilDivision2(@RequestHeader("Authorization") String authorizationHeader,
-                                                       @RequestParam("address") String address,
-                                                       @RequestParam("date") String date){
-        try {
-            System.out.println("Author nhận: "+authorizationHeader);
-            if (tokenUtils == null) {
-                System.err.println("tokenUtils is null!");
-            } else {
-                System.out.println("tokenUtils is not null.");
-            }
-            String token = tokenUtils.extractToken(authorizationHeader);
-            Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-            Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            assert existedLecturer != null;
-            return new ResponseEntity<>(councilCreationService.createCouncils(date,address,existedLecturer),HttpStatus.OK);
-        }catch (Exception e){
-            System.err.println("Initial SessionFactory creation failed." + e);
-            throw new ExceptionInInitializerError(e);
-        }
+    public ResponseEntity<?> autoCouncil(@RequestHeader("Authorization") String authorizationHeader,
+                                         @RequestParam("address") String address,
+                                         @RequestParam("date") String date){
+        return councilCreationService.createCouncils(date,address,authorizationHeader);
     }
+
 
     //thông tin đề tài, council_lecturer
     @GetMapping("/detail/{subjectId}")
