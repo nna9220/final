@@ -1,13 +1,15 @@
 package com.web.service.Council;
 
+import com.web.config.CheckRole;
 import com.web.config.CompareTime;
+import com.web.config.TokenUtils;
 import com.web.entity.*;
 import com.web.repository.*;
+import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -16,7 +18,6 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CouncilCreationService {
@@ -24,6 +25,12 @@ public class CouncilCreationService {
     private CouncilRepository councilRepository;
     @Autowired
     private TypeSubjectRepository typeSubjectRepository;
+    @Autowired
+    private TokenUtils tokenUtils;
+    @Autowired
+    private PersonRepository personRepository;
+    @Autowired
+    private UserUtils userUtils;
 
     @Autowired
     private CouncilLecturerRepository councilLecturerRepository;
@@ -37,7 +44,7 @@ public class CouncilCreationService {
     private SubjectRepository subjectRepository;
 
     public static LocalDate convertStringToLocalDate(String dateString) {
-        String pattern = "dd/MM/yyyy";
+        String pattern = "yyyy-MM-dd";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         try {
             return LocalDate.parse(dateString, formatter);
@@ -47,12 +54,23 @@ public class CouncilCreationService {
         }
     }
 
+    public ResponseEntity<?> getTest(String a){
+        String token = tokenUtils.extractToken(a);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+        return new ResponseEntity<>(existedLecturer,HttpStatus.OK);
+    }
 
-    public ResponseEntity<?> createCouncils(String date, String address, Lecturer lecturer) {
+
+    public ResponseEntity<?> createCouncils(String date, String address,String authen) {
+        String token = tokenUtils.extractToken(authen);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+        assert existedLecturer != null;
         // Phân hội đồng theo chuyên ngành
-        List<Lecturer> lecturers = lecturerRepository.getListLecturerByMajor(lecturer.getMajor());
+        List<Lecturer> lecturers = lecturerRepository.getListLecturerByMajor(existedLecturer.getMajor());
         TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
-        List<Subject> subjects = subjectRepository.findSubjectByTypeSubject(typeSubject,lecturer.getMajor());
+        List<Subject> subjects = subjectRepository.findSubjectByTypeSubject(typeSubject,existedLecturer.getMajor());
 
         // Mỗi ngày bắt đầu từ 7h đến 11h và 13h đến 17h
         LocalTime morningStartTime = LocalTime.of(7, 0);
@@ -148,5 +166,7 @@ public class CouncilCreationService {
         // Xóa hội đồng
         councilRepository.delete(council);
     }
+
+
 }
 

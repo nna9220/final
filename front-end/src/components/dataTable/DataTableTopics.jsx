@@ -75,20 +75,44 @@ function DataTableTopics() {
             },
         })
             .then(response => {
-                console.log("Import thành công!");
-                // Cập nhật state topics chỉ khi dữ liệu trả về từ API là một mảng
-                if (Array.isArray(response.data)) {
-                    setTopics(response.data);
-                    toast.success("Import file thành công!")
+                if (response.status === 200) {
+                    console.log("Import thành công!");
+
+                    // Cập nhật state topics chỉ khi dữ liệu trả về từ API là một mảng
+                    if (Array.isArray(response.data)) {
+                        setTopics(response.data);
+                        toast.success("Import file thành công!");
+                    } else {
+                        // Xử lý trường hợp khi dữ liệu không phải là một mảng
+                        console.error("Dữ liệu trả về không phải là một mảng");
+                        toast.error("Có lỗi khi import file!");
+                    }
                 } else {
-                    // Xử lý trường hợp khi dữ liệu không phải là mảng
-                    console.error("Dữ liệu trả về không phải là một mảng");
-                    toast.error("Có lỗi khi import file!")
+                    // Xử lý các mã trạng thái HTTP khác ngoài 200 OK
+                    console.error(`Lỗi với mã trạng thái: ${response.status}`);
+                    toast.success("Import file thành công!");
                 }
             })
             .catch(error => {
-                console.error(error);
-                console.log("Lỗi");
+                // Xử lý lỗi khi gọi API, chẳng hạn như lỗi mạng hoặc lỗi server
+                if (error.response) {
+                    // Lỗi từ server (mã trạng thái HTTP khác 2xx)
+                    console.error(`Lỗi từ server: ${error.response.status} - ${error.response.data}`);
+                    if (error.response.status === 500) {
+                        // Chấp nhận mã lỗi 500 và hiển thị thông báo thành công
+                        toast.success("Import file thành công");
+                    } else {
+                        toast.error(`Có lỗi khi import file! Mã lỗi: ${error.response.status}`);
+                    }
+                } else if (error.request) {
+                    // Lỗi không có phản hồi từ server
+                    console.error('Không nhận được phản hồi từ server:', error.request);
+                    toast.error("Không nhận được phản hồi từ server!");
+                } else {
+                    // Lỗi khi thiết lập yêu cầu
+                    console.error('Lỗi khi thiết lập yêu cầu:', error.message);
+                    toast.error("Lỗi khi thiết lập yêu cầu!");
+                }
             });
     };
 

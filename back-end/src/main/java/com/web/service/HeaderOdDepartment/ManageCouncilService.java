@@ -353,4 +353,11 @@ public class ManageCouncilService {
         mailService.sendMailToPerson(emailList, subjectMail, message);
     }
 
+    public ResponseEntity<?> getTest(String a){
+        String token = tokenUtils.extractToken(a);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+        return new ResponseEntity<>(existedLecturer,HttpStatus.OK);
+    }
+
 }
