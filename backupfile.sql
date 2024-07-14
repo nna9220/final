@@ -18,6 +18,7 @@
 --
 -- Dumping data for table `authority`
 --
+
 use dataregistertopic;
 
 LOCK TABLES `authority` WRITE;

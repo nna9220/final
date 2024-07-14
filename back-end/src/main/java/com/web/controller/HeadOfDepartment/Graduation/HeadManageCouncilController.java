@@ -178,4 +178,16 @@ public class HeadManageCouncilController {
         }
     }
 
+    @GetMapping("/detailCouncilReportTime")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
+    public ResponseEntity<?> detailCouncilReportTime(@RequestHeader("Authorization") String authorizationHeader){
+        try {
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
+            return manageCouncilService.getDetailCouncilReportTime(typeSubject);
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
 }

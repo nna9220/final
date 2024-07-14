@@ -411,29 +411,33 @@ public class AddCounterArgumentGraduationController {
         TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
             Subject existSubject = subjectRepository.findById(id).orElse(null);
-            if (existSubject.getStudent1()!=null){
-                Student student1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
-                student1.setSubjectGraduationId(null);
-                existSubject.setStudent1(null);
-            }
-            if (existSubject.getStudent2()!=null){
-                Student student1 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
-                student1.setSubjectGraduationId(null);
-                existSubject.setStudent2(null);
-            }
-            if (existSubject.getStudent3()!=null){
-                Student student1 = studentRepository.findById(existSubject.getStudent3()).orElse(null);
-                student1.setSubjectGraduationId(null);
-                existSubject.setStudent3(null);
-            }
-            existSubject.setActive((byte) -1);
-            subjectRepository.save(existSubject);
+            if (existSubject!=null) {
+                if (existSubject.getStudent1() != null) {
+                    Student student1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
+                    student1.setSubjectGraduationId(null);
+                    existSubject.setStudent1(null);
+                }
+                if (existSubject.getStudent2() != null) {
+                    Student student1 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
+                    student1.setSubjectGraduationId(null);
+                    existSubject.setStudent2(null);
+                }
+                if (existSubject.getStudent3() != null) {
+                    Student student1 = studentRepository.findById(existSubject.getStudent3()).orElse(null);
+                    student1.setSubjectGraduationId(null);
+                    existSubject.setStudent3(null);
+                }
+                existSubject.setActive((byte) -1);
+                subjectRepository.save(existSubject);
 
-            String subject = "Topic: " + existSubject.getSubjectName() ;
-            String messenger = "Topic: " + existSubject.getSubjectName() + " đã bị xóa!!";
-            mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
+                String subject = "Topic: " + existSubject.getSubjectName();
+                String messenger = "Topic: " + existSubject.getSubjectName() + " đã bị xóa!!";
+                mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
 
-            return new ResponseEntity<>(HttpStatus.OK);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
