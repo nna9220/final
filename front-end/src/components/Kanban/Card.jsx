@@ -17,12 +17,28 @@ const Card = ({ task, index }) => {
   const [commentContent, setCommentContent] = useState('');
   const [commentFiles, setCommentFiles] = useState([]);
 
+  const MAX_COMMENT_LENGTH = 225; // Giới hạn số ký tự của comment
+  const MAX_FILE_SIZE_MB = 5; // Giới hạn kích thước file tối đa (1MB)
+
   const handleCommentChange = (e) => {
     setCommentContent(e.target.value);
   };
 
   const handleFileChange = (e) => {
-    setCommentFiles(e.target.files);
+    const files = e.target.files;
+    let validFiles = [];
+    let errorMessage = '';
+
+    for (const file of files) {
+      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+        errorMessage = `Tệp "${file.name}" quá lớn. Vui lòng chọn tệp có kích thước tối đa ${MAX_FILE_SIZE_MB}MB.`;
+        toast.error(errorMessage); // Hiển thị thông báo lỗi bằng toast
+        return;
+      } else {
+        validFiles.push(file);
+      }
+    }
+    setCommentFiles(validFiles);
   };
 
   const handleViewTask = async (taskId) => {
@@ -50,13 +66,15 @@ const Card = ({ task, index }) => {
     }
   };
 
-  const MAX_LENGTH = 255; // Thay đổi theo yêu cầu của bạn
-
   const handleSubmitComment = async (e) => {
     e.preventDefault();
     const userToken = getTokenFromUrlAndSaveToStorage();
     if (commentContent.trim() === '' && commentFiles.length === 0) {
       toast.warning('Vui lòng nhập nội dung comment hoặc chọn ít nhất một file.');
+      return;
+    }
+    if (commentContent.length > MAX_COMMENT_LENGTH) {
+      toast.warning(`Comment không được vượt quá ${MAX_COMMENT_LENGTH} ký tự.`);
       return;
     }
     try {
@@ -66,10 +84,6 @@ const Card = ({ task, index }) => {
         formData.append('fileInput', file);
       }
 
-      if (commentContent.length > MAX_LENGTH) {
-        toast.warning(`Comment không được vượt quá ${MAX_LENGTH} ký tự.`);
-        return;
-      } 
       const response = await axiosInstance.post(`/student/comment/create/${task.taskId}`, formData, {
         headers: {
           'Authorization': `Bearer ${userToken}`,
@@ -143,7 +157,7 @@ const Card = ({ task, index }) => {
                     <form onSubmit={handleSubmitComment}>
                       <div className="mb-3">
                         <label htmlFor="commentContent" className="form-label">Comment</label>
-                        <textarea required className="form-control" id="commentContent" rows="3" value={commentContent} onChange={handleCommentChange}></textarea>
+                        <textarea required className="form-control" id="commentContent" rows="3" value={commentContent} onChange={handleCommentChange} maxLength={MAX_COMMENT_LENGTH}></textarea>
                       </div>
                       <div className="mb-3">
                         <input key={commentFiles.length} type="file" className="form-control" id="commentFile" onChange={handleFileChange} multiple />
@@ -181,7 +195,6 @@ const Card = ({ task, index }) => {
                       </div>
                     ))}
                   </div>
-
                 </div>
                 <div className="modal-footer">
                   <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>

@@ -92,6 +92,13 @@
     }
 }
 
+.content-lecturer {
+    white-space: pre-wrap; /* Cho phép ngắt dòng theo văn bản */
+    word-wrap: break-word; /* Ngắt từ nếu từ quá dài */
+}
+
+
+
 .info-modal {
     display: flex;
     justify-content: space-between;

@@ -50,7 +50,7 @@ function RegisTopicTable() {
                         } else if (error.response.status === 406) {
                             setErrors("Bạn chưa đủ điều kiện đăng ký đề tài.");
                         } else {
-                            setErrors("Đã xảy ra lỗi khi lấy dữ liệu từ máy chủ.");
+                            setErrors("Bạn không nằm trong danh sách đăng ký đề tài");
                         }
                     } else {
                         setErrors("Đã xảy ra lỗi không xác định.");
@@ -134,9 +134,10 @@ function RegisTopicTable() {
                     </tbody>
                 </table>
             ) : topicsRegistered.length === 0 ? (
-                <div>
-                    <h4 style={{ padding: '20px', color: 'red' }}>{errors ? errors : "Hiện tại chưa có đề tài !!!"}</h4>
+                <div class="alert alert-warning" style={{backgroundColor:'white', border:'none', fontSize:'medium'}} role="alert">
+                    {errors ? errors : "Hiện tại chưa có đề tài !!!"}
                 </div>
+
             ) : null}
 
             {topicsRegistered.length > 0 && topicsRegistered.map((topic, index) => (
@@ -173,15 +174,15 @@ function RegisTopicTable() {
                                                     : 'Chưa có'}
                                             </span>
                                             <div className='label'>5. Nhóm sinh viên thực hiện:</div>
-                                            <br/>
-                                            
-                                            <div className='label'style={{marginLeft:'40px'}}>Sinh viên 1:</div>
+                                            <br />
+
+                                            <div className='label' style={{ marginLeft: '40px' }}>Sinh viên 1:</div>
                                             <span className='content-name'>{topic.student1}</span>
 
-                                            <div className='label' style={{marginLeft:'40px'}}>Sinh viên 2:</div>
+                                            <div className='label' style={{ marginLeft: '40px' }}>Sinh viên 2:</div>
                                             <span className='content-name'>{topic.student2}</span>
 
-                                            <div className='label' style={{marginLeft:'40px'}}>Sinh viên 3:</div>
+                                            <div className='label' style={{ marginLeft: '40px' }}>Sinh viên 3:</div>
                                             <span className='content-name'>{topic.student3}</span>
 
                                             <div className='label'>6. Yêu cầu:</div>
@@ -207,7 +208,7 @@ function RegisTopicTable() {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                            <button type="button" className="btn btn-primary" onClick={() => registerTopic(currentTopic?.subjectId)}>Đăng ký</button>
+                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => registerTopic(currentTopic?.subjectId)}>Đăng ký</button>
                         </div>
                     </div>
                 </div>
