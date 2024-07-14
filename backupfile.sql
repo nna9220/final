@@ -18,8 +18,6 @@
 --
 -- Dumping data for table `authority`
 --
-drop database dataregistertopic;
-create database dataregistertopic;
 
 use dataregistertopic;
 
