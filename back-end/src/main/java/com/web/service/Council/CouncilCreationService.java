@@ -47,12 +47,12 @@ public class CouncilCreationService {
         }
     }
 
-    @Transactional // Đảm bảo toàn bộ phương thức được thực thi trong một giao dịch
+
     public ResponseEntity<?> createCouncils(String date, String address, Lecturer lecturer) {
         // Phân hội đồng theo chuyên ngành
         List<Lecturer> lecturers = lecturerRepository.getListLecturerByMajor(lecturer.getMajor());
         TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
-        List<Subject> subjects = subjectRepository.findSubjectByTypeSubject(typeSubject);
+        List<Subject> subjects = subjectRepository.findSubjectByTypeSubject(typeSubject,lecturer.getMajor());
 
         // Mỗi ngày bắt đầu từ 7h đến 11h và 13h đến 17h
         LocalTime morningStartTime = LocalTime.of(7, 0);

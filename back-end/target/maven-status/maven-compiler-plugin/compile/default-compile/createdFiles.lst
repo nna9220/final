@@ -9,6 +9,7 @@ com\web\dto\response\RegistrationPeriodResponse.class
 com\web\utils\CloudinaryService.class
 com\web\service\Council\EvaluationAndScoringService.class
 com\web\entity\Person.class
+com\web\entity\ReportSubmissionTime.class
 com\web\repository\NotificationRepository.class
 com\web\controller\Lecturer\HomeLecturerController.class
 com\web\jwt\JwtTokenProvider.class
@@ -40,12 +41,14 @@ com\web\entity\Contact.class
 com\web\utils\FileFactory.class
 com\web\controller\Student\StudentManageEssayController.class
 com\web\controller\admin\CheckRoleController.class
+com\web\entity\CouncilReportTime.class
 com\web\exception\MessageException.class
 com\web\controller\HeadOfDepartment\CRUDCriteriaController.class
 com\web\controller\admin\RegistrationPeriodLecturerController.class
 com\web\exception\RestErrorHandler.class
 com\web\jwt\JWTConfigurer.class
 com\web\service\ViewAndDownloadFileService.class
+com\web\repository\ReportSubmissionTimeRepository.class
 com\web\controller\LoginController.class
 com\web\utils\ExportConfig.class
 com\web\controller\HeadOfDepartment\HeadAddCommentController.class
@@ -110,6 +113,7 @@ com\web\controller\HeadOfDepartment\Graduation\CRUDCriteriaGraduationController.
 com\web\exception\ApplicationException.class
 com\web\mapper\StudentClassMapper.class
 com\web\repository\ResultEssayRepository.class
+com\web\controller\admin\GraduationThesis\TimeGraduationController.class
 com\web\service\SubjectImplService.class
 com\web\service\Admin\TypeSubjectService.class
 com\web\controller\admin\StudentClassController.class
@@ -131,6 +135,7 @@ com\web\mapper\PersonMapper.class
 com\web\controller\HeadOfDepartment\Graduation\HeadEvaluationAndScoringGraduationController.class
 com\web\config\CorsConfig$1.class
 com\web\entity\TimeBrowsOfHead.class
+com\web\controller\admin\TimeController.class
 com\web\entity\RegistrationPeriod.class
 com\web\controller\Student\Graduation\StudentAddCommentGraduationController.class
 com\web\mapper\SubjectMapperImpl.class
@@ -216,6 +221,7 @@ com\web\config\CloudConfig.class
 com\web\dto\response\TaskResponse.class
 com\web\controller\admin\GraduationThesis\RegistrationPeriodGraduationController.class
 com\web\entity\Notification.class
+com\web\repository\CouncilReportTimeRepository.class
 com\web\service\Admin\LecturerService.class
 com\web\utils\ExcelUtils.class
 com\web\controller\HeadOfDepartment\HeadManagerTopicController.class
@@ -236,6 +242,7 @@ com\web\controller\Lecturer\Graduation\LecturerAddCommentGraduationController.cl
 com\web\repository\RegistrationPeriodRepository.class
 com\web\service\HeaderOdDepartment\CriteriaService.class
 com\web\controller\Student\HomeStudentController.class
+com\web\service\Admin\TimeService.class
 com\web\controller\Lecturer\LecturerAddCommentController.class
 com\web\controller\admin\GraduationThesis\TimeAddSubjectGraduationHeadController.class
 com\web\dto\request\StudentClassRequest.class

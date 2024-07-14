@@ -7,6 +7,7 @@ import axiosInstance from '../../API/axios';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import WarningOutlinedIcon from '@mui/icons-material/WarningOutlined';
 
 function RegisTopicKLTable() {
     const [topics, setTopics] = useState([]);
@@ -134,8 +135,8 @@ function RegisTopicKLTable() {
                     </tbody>
                 </table>
             ) : topicsRegistered.length === 0 ? (
-                <div>
-                    <h4 style={{color: 'red' }}>{errors ? errors : "Hiện tại chưa có đề tài !!!"}</h4>
+                <div class="alert alert-warning" style={{backgroundColor:'white', border:'none', fontSize:'medium'}} role="alert">
+                    <WarningOutlinedIcon/> {errors ? errors : "Hiện tại chưa có đề tài !!!"}
                 </div>
             ) : null}
 

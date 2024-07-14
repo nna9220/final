@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import axiosInstance from '../../../API/axios';
-import { format } from 'date-fns'; // Nếu bạn sử dụng date-fns
+import WarningOutlinedIcon from '@mui/icons-material/WarningOutlined';
+import { format } from 'date-fns';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function DataTableTopicSuccess() {
     const [subjects, setSubjects] = useState([]);
+    const [error, setError] = useState(null);
     const userToken = getTokenFromUrlAndSaveToStorage();
     const [council, setCouncil] = useState();
     const [councilLecturers, setCouncilLecturers] = useState([]);
@@ -31,9 +35,17 @@ function DataTableTopicSuccess() {
                     'Authorization': `Bearer ${userToken}`,
                 },
             });
-            setSubjects(Array.isArray(response.data.body) ? response.data.body : []);
+            console.log(response.data);
+
+            if (response.data.statusCodeValue === 400 && response.data.body === "Không nằm trong khoảng thời gian hội đồng được tổ chức.") {
+                setError("Không nằm trong thời gian lập hội đồng");
+            } else {
+                setSubjects(Array.isArray(response.data.body) ? response.data.body : []);
+                setError(null); // Clear any previous error
+            }
         } catch (error) {
             console.error('Error fetching subjects:', error);
+            setError('Đã xảy ra lỗi khi tải dữ liệu');
         }
     };
 
@@ -107,7 +119,6 @@ function DataTableTopicSuccess() {
         }
         return format(parsedDate, 'dd/MM/yyyy');
     };
-    
 
     const handleSaveChanges = async () => {
         const formattedCouncilEdit = {
@@ -138,8 +149,10 @@ function DataTableTopicSuccess() {
                 },
             });
             console.log("Save response: ", response.data);
+            toast.success('Lập hội đồng thành công!');
         } catch (error) {
             console.error('Error saving council details:', error);
+            toast.error('Lập hội đồng thất bại. Vui lòng thử lại.');
         }
     };
 
@@ -155,46 +168,52 @@ function DataTableTopicSuccess() {
     return (
         <div>
             <div style={{ padding: '16px' }} className='body-table-topic'>
-                <table className="table table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope='col'>Tên đề tài</th>
-                            <th scope='col'>GVHD</th>
-                            <th scope='col'>GVPB</th>
-                            <th scope='col'>SV 1</th>
-                            <th scope='col'>SV 2</th>
-                            <th scope='col'>SV 3</th>
-                            <th scope='col'>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {Array.isArray(subjects) && subjects.length === 0 ? (
+                {error ? (
+                    <div className="alert alert-warning" style={{border:'none', backgroundColor:'white', fontSize:'16px', fontWeight:'bolder', textAlign:'center'}} role="alert">
+                        <WarningOutlinedIcon/> {error}
+                    </div>
+                ) : (
+                    <table className="table table-hover">
+                        <thead>
                             <tr>
-                                <td colSpan="8" className="text-center">Không có dữ liệu</td>
+                                <th scope="col">#</th>
+                                <th scope='col'>Tên đề tài</th>
+                                <th scope='col'>GVHD</th>
+                                <th scope='col'>GVPB</th>
+                                <th scope='col'>SV 1</th>
+                                <th scope='col'>SV 2</th>
+                                <th scope='col'>SV 3</th>
+                                <th scope='col'>Hành động</th>
                             </tr>
-                        ) : (
-                            Array.isArray(subjects) && subjects.filter((item) => item.active === 8).map((item, index) => (
-                                <tr key={index}>
-                                    <td>{index + 1}</td>
-                                    <td>{item.subjectName}</td>
-                                    <td>{item.instructorId?.person?.firstName} {item.instructorId?.person?.lastName}</td>
-                                    <td>{item.thesisAdvisorId?.person?.firstName} {item.thesisAdvisorId?.person?.lastName}</td>
-                                    <td>{item.student1}</td>
-                                    <td>{item.student2}</td>
-                                    <td>{item.student3}</td>
-                                    <td>
-                                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => {
-                                            loadCouncilDetails(item.subjectId);
-                                        }}>
-                                            Lập hội đồng
-                                        </button>
-                                    </td>
+                        </thead>
+                        <tbody>
+                            {Array.isArray(subjects) && subjects.length === 0 ? (
+                                <tr>
+                                    <td colSpan="8" className="text-center">Không có dữ liệu</td>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                            ) : (
+                                Array.isArray(subjects) && subjects.filter((item) => item.active === 8).map((item, index) => (
+                                    <tr key={index}>
+                                        <td>{index + 1}</td>
+                                        <td>{item.subjectName}</td>
+                                        <td>{item.instructorId?.person?.firstName} {item.instructorId?.person?.lastName}</td>
+                                        <td>{item.thesisAdvisorId?.person?.firstName} {item.thesisAdvisorId?.person?.lastName}</td>
+                                        <td>{item.student1}</td>
+                                        <td>{item.student2}</td>
+                                        <td>{item.student3}</td>
+                                        <td>
+                                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => {
+                                                loadCouncilDetails(item.subjectId);
+                                            }}>
+                                                Lập hội đồng
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                )}
             </div>
 
             <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -279,11 +298,13 @@ function DataTableTopicSuccess() {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                            <button type="button" className="btn btn-primary" onClick={handleSaveChanges}>Lưu</button>
+                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSaveChanges}>Lưu</button>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <ToastContainer />
         </div>
     );
 }

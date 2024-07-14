@@ -19,7 +19,7 @@ function TopicKLPBTableHead() {
     }, []);
 
     const fetchTopics = () => {
-        axiosInstance.get('/head/counterArgumentSubject', {
+        axiosInstance.get('/head/graduation/manager/counterArgumentSubject', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             },
@@ -38,7 +38,7 @@ function TopicKLPBTableHead() {
         if (userToken) {
             const tokenSt = sessionStorage.getItem(userToken);
             if (!tokenSt) {
-                axiosInstance.get(`/head/counterArgumentSubject/detail/${id}`, {
+                axiosInstance.get(`/head/graduation/manager/counterArgumentSubject/detail/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
                     },
@@ -65,6 +65,7 @@ function TopicKLPBTableHead() {
                 .then(response => {
                     console.log('Đề tài đã được duyệt qua hội đồng', response.data);
                     toast.success("Đề tài đã được duyệt qua hội đồng!")
+                    fetchTopics();
                 })
                 .catch(error => {
                     console.error('Lỗi duyệt đề tài qua hội đồng:', error);
@@ -81,19 +82,20 @@ function TopicKLPBTableHead() {
                     <table className="table table-hover">
                         <thead>
                             <tr>
-                                <th scope="col">#</th>
+                            <th scope="col">#</th>
                                 <th scope="col">Tên đề tài</th>
                                 <th scope="col">Giảng viên hướng dẫn</th>
                                 <th scope="col">Sinh viên 1</th>
                                 <th scope="col">Sinh viên 2</th>
                                 <th scope="col">Sinh viên 3</th>
                                 <th scope="col">Yêu cầu</th>
-                                <th scope='col'>Đánh giá</th>
+                                <th scope="col">Trạng thái</th>
+                                <th scope="col">Đánh giá</th>
                             </tr>
                         </thead>
                         <tbody>
                             {topics.length > 0 ? (
-                                topics.map((item, index) => (
+                                topics.filter((item) => item.active != 9).map((item, index) => (
                                     <tr key={index}>
                                         <th scope="row">{index + 1}</th>
                                         <td>{item.subjectName}</td>
@@ -103,7 +105,14 @@ function TopicKLPBTableHead() {
                                         <td>{item.student3}</td>
                                         <td>{item.requirement}</td>
                                         <td>
-                                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => { detailTopic(item.subjectId); setSubjectIdForAccept(item.subjectId) }} disabled={item.active != 6}>
+                                            <p className={item.active === 8 ? "status-approved" : "status-not-approved"}>                                            
+                                                {item.active === 8 ? "Đã duyệt" : "Chưa duyệt"}
+                                            </p>
+                                        </td>
+                                        <td>
+                                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                                onClick={() => { detailTopic(item.subjectId); setSubjectIdForAccept(item.subjectId) }}
+                                                disabled={item.active !== 7}>
                                                 <CreditScoreOutlinedIcon />
                                             </button>
                                         </td>
@@ -111,7 +120,7 @@ function TopicKLPBTableHead() {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="8" className="text-center">No data</td>
+                                    <td colSpan="9" className="text-center">Không có dữ liệu</td>
                                 </tr>
                             )}
                         </tbody>
@@ -122,11 +131,11 @@ function TopicKLPBTableHead() {
                 <div className="modal-dialog modal-xl modal-dialog-scrollable">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="exampleModalLabel">Đánh giá</h1>
+                            <h1 className="modal-title fs-5" id="exampleModalLabel">Chi tiết đề tài</h1>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                            <h5 className="mb-4" style={{ color: '#4477CE' }}>Thông tin đề tài</h5>
+                            <h5 className="mb-4" style={{color:'#4477CE'}}>Thông tin đề tài</h5>
                             <table className="table table-bordered">
                                 <tbody>
                                     <tr>
@@ -160,7 +169,7 @@ function TopicKLPBTableHead() {
                                 </tbody>
                             </table>
                             <hr className="my-4" />
-                            <h5 className="mb-4" style={{ color: '#4477CE' }}>File báo cáo</h5>
+                            <h5 className="mb-4"  style={{color:'#4477CE'}}>File báo cáo</h5>
                             <table className="table table-bordered">
                                 <tbody>
                                     <tr>
@@ -192,10 +201,10 @@ function TopicKLPBTableHead() {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
-                                Close
+                                Đóng
                             </button>
                             <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleAccept}>
-                                Confirm
+                                Xác nhận qua hội đòng
                             </button>
                         </div>
                     </div>

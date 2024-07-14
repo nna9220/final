@@ -145,8 +145,12 @@ export default function TopicKLTable() {
                 }
             })
                 .then(response => {
-                    console.log('Xác nhận hoàn thành đề tài. Vui lòng chờ TBM duyệt qua phản biện!', response.data);
-                    toast.success("Xác nhận hoàn thành đề tài. Vui lòng chờ TBM duyệt qua phản biện!")
+                    if (response.data.statusCodeValue === 400) {
+                        toast.warning("Đề tài chưa được phân giảng viên phản biện!")
+                    } else {
+                        console.log('Xác nhận hoàn thành đề tài. Vui lòng chờ TBM duyệt qua phản biện!', response.data);
+                        toast.success("Xác nhận hoàn thành đề tài. Vui lòng chờ TBM duyệt qua phản biện!")
+                    }
                 })
                 .catch(error => {
                     console.error('Lỗi khi Xác nhận hoàn thành', error);
@@ -239,7 +243,6 @@ export default function TopicKLTable() {
                                 <li className="breadcrumb-item active" aria-current="page">{selectedSubjectName}</li>
                             </ol>
                         </nav>
-                        <button data-bs-toggle="modal" data-bs-target="#modalApproval2">Hoàn thành đề tài</button>
                     </div>
                 </>
             )}

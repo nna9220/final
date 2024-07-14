@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import MoreHorizTwoToneIcon from '@mui/icons-material/MoreHorizTwoTone';
 import AlarmOnTwoToneIcon from '@mui/icons-material/AlarmOnTwoTone';
@@ -8,6 +8,7 @@ import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurned
 import { getTokenFromUrlAndSaveToStorage } from '../tokenutils';
 import './Styles.scss';
 import axiosInstance from '../../API/axios';
+import { toast } from 'react-toastify';
 
 const Card = ({ task, index }) => {
     const [selectedTask, setSelectedTask] = useState(null);
@@ -21,35 +22,56 @@ const Card = ({ task, index }) => {
     };
 
     const handleFileChange = (e) => {
-        setCommentFiles(e.target.files);
+        const files = e.target.files;
+        let isValid = true;
+        let errorMessage = '';
+
+        for (const file of files) {
+            if (file.size > 5242880) { // 5MB
+                errorMessage = 'File không được quá 5MB';
+                isValid = false;
+                break;
+            }
+        }
+
+        if (isValid) {
+            setCommentFiles(files);
+        } else {
+            e.target.value = null; // Clear file input
+            toast.error(errorMessage); // Hiển thị thông báo lỗi bằng toast
+        }
     };
 
     const handleSubmitComment = async (e) => {
-        const userToken = getTokenFromUrlAndSaveToStorage();
         e.preventDefault();
-        console.log("taskID-post: ", task.taskId);
+        const userToken = getTokenFromUrlAndSaveToStorage();
+        if (!userToken) {
+            toast.error('Cannot retrieve user token.');
+            return;
+        }
+        
         try {
             const formData = new FormData();
             formData.append('content', commentContent);
             for (const file of commentFiles) {
                 formData.append('fileInput', file);
             }
-    
-            console.log("Comment-post: ", formData);
+
             const response = await axiosInstance.post(`/lecturer/comment/create/${task.taskId}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${userToken}`,
                 },
             });
-            console.log('Comment created successfully:', response.data);
+
+            toast.success('Comment created successfully!');
+            
             const newComment = response.data;
             setDetail((prevDetail) => ({
                 ...prevDetail,
-                listComment: [...prevDetail.listComment, newComment],
+                listComment: [newComment, ...prevDetail.listComment], // Add new comment to the top
             }));
-    
-            // Check if response.data.files exists and is iterable before updating files state
+
             if (Array.isArray(response.data.files)) {
                 setFiles((prevFiles) => [
                     ...prevFiles,
@@ -58,15 +80,16 @@ const Card = ({ task, index }) => {
             } else {
                 console.error('Files in response data is not an array:', response.data.files);
             }
-    
+
             setCommentContent('');
             setCommentFiles([]);
             handleViewTask(task.taskId);
         } catch (error) {
             console.error('Error creating comment:', error);
+            toast.error('An error occurred while creating the comment.');
         }
     };
-    
+
     const handleViewTask = (taskId) => {
         setSelectedTask(taskId);
         const userToken = getTokenFromUrlAndSaveToStorage();
@@ -79,12 +102,12 @@ const Card = ({ task, index }) => {
                     },
                 })
                     .then(response => {
-                        console.log("detailTask: ", response.data);
                         setDetail(response.data);
                         setFiles(response.data.listFile);
                     })
                     .catch(error => {
                         console.error(error);
+                        toast.error('An error occurred while loading task details.');
                     });
             }
         }
@@ -95,26 +118,25 @@ const Card = ({ task, index }) => {
     return (
         <Draggable draggableId={task.taskId} index={index}>
             {(provided) => (
-                <div className='card-items' ref={provided.innerRef}{...provided.draggableProps}{...provided.dragHandleProps}
-                >
-                    <div class="dropdown">
+                <div className='card-items' ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                    <div className="dropdown">
                         <label className='title-task-st'>{task.requirement}</label>
-                        <button class="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{ border: 'none', backgroundColor: 'white', color:'black' }} >
+                        <button className="btn-secondary" data-bs-toggle="dropdown" aria-expanded="false" style={{ border: 'none', backgroundColor: 'white', color: 'black' }}>
                             <MoreHorizTwoToneIcon />
                         </button>
-                        <ul class="dropdown-menu">
+                        <ul className="dropdown-menu">
                             <li><a className="dropdown-item" data-bs-toggle="modal" data-bs-target={`#${modalId}`} href="#" onClick={() => handleViewTask(task.taskId)}>View</a></li>
-                            <li><a class="dropdown-item" href="#">Delete</a></li>
+                            <li><a className="dropdown-item" href="#">Delete</a></li>
                         </ul>
                     </div>
-                    <div class="modal fade" id={modalId} tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-scrollable modal-xl">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="exampleModalLabel">{task.requirement}</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div className="modal fade" id={modalId} tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div className="modal-dialog modal-dialog-scrollable modal-xl">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h1 className="modal-title fs-5" id="exampleModalLabel">{task.requirement}</h1>
+                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
-                                <div class="modal-body">
+                                <div className="modal-body">
                                     <div className='info-modal'>
                                         <div>
                                             <div className='lable-items'>
@@ -141,45 +163,49 @@ const Card = ({ task, index }) => {
                                     </div>
                                     <div>
                                         <form onSubmit={handleSubmitComment}>
-                                            <div class="mb-3">
-                                                <label for="commentContent" class="form-label">Comment</label>
-                                                <textarea class="form-control" id="commentContent" rows="3" value={commentContent} onChange={handleCommentChange}></textarea>
+                                            <div className="mb-3">
+                                                <label htmlFor="commentContent" className="form-label">Comment</label>
+                                                <textarea className="form-control" id="commentContent" rows="3" value={commentContent} onChange={handleCommentChange} maxLength="225"></textarea>
                                             </div>
-                                            <div class="mb-3">
-                                                <input type="file" class="form-control" id="commentFile" onChange={handleFileChange} multiple />
+                                            <div className="mb-3">
+                                                <input type="file" className="form-control" id="commentFile" onChange={handleFileChange} multiple />
                                             </div>
-                                            <button type="submit" class="btn btn-primary" style={{marginBottom:'10px'}}>Post Comment</button>
+                                            <button type="submit" className="btn btn-primary" style={{ marginBottom: '10px' }}>Post Comment</button>
                                         </form>
                                     </div>
                                     <div className='comment-items'>
-                                        {detail.listComment && detail.listComment.map((comment, commentIndex) => (
-                                            <div key={commentIndex}>
-                                                <div className='comment-item'>
-                                                    <div className='header-comment'>
-                                                        <label className='name-post'>{comment.poster?.firstName + ' ' + comment.poster?.lastName}</label>
-                                                        <label className='time-post'>{comment.dateSubmit}</label>
-                                                    </div>
-                                                    <div className='body-comment'>
-                                                        <label className='content'>{comment.content}</label><br />
-                                                        {files && files.map((file, fileIndex) => {
-                                                            if (file.commentId?.commentId === comment.commentId) {
-                                                                return (
-                                                                    <div key={fileIndex}>
-                                                                        <a href={file.url}><p>{file.url}</p></a>
-                                                                    </div>
-                                                                );
-                                                            } else {
-                                                                return null;
-                                                            }
-                                                        })}
+                                        {detail.listComment && detail.listComment
+                                            .sort((a, b) => new Date(b.dateSubmit) - new Date(a.dateSubmit)) // Sort comments by date
+                                            .map((comment, commentIndex) => (
+                                                <div key={commentIndex}>
+                                                    <div className='comment-item'>
+                                                        <div className='header-comment'>
+                                                            <label className='name-post'>{comment.poster?.firstName + ' ' + comment.poster?.lastName}</label>
+                                                            <label className='time-post'>{comment.dateSubmit}</label>
+                                                        </div>
+                                                        <div className='body-comment'>
+                                                            <p className='content-lecturer'>
+                                                                {comment.content}
+                                                            </p>
+                                                            {files && files.map((file, fileIndex) => {
+                                                                if (file.commentId?.commentId === comment.commentId) {
+                                                                    return (
+                                                                        <div key={fileIndex}>
+                                                                            <a href={file.url}><p>{file.name}</p></a>
+                                                                        </div>
+                                                                    );
+                                                                } else {
+                                                                    return null;
+                                                                }
+                                                            })}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            ))}
                                     </div>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                 </div>
                             </div>
                         </div>

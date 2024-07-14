@@ -218,7 +218,7 @@ function DataTablePeroidGraduation() {
           reportSubmissionTimeEnd: (data.ReportSubmissionTime.reportTimeEnd),
           reportSubmissionTimeName: data.RegistrationLecturer.registrationName,
           councilReportTimeStart: (data.CouncilReportTime.reportTimeStart),
-          councilReportTimeEnd: (data.CouncilReportTime.reportTimeStart),
+          councilReportTimeEnd: (data.CouncilReportTime.reportTimeEnd),
           councilReportTimeName: data.RegistrationLecturer.registrationName,
           file: null
         });
@@ -437,7 +437,7 @@ function DataTablePeroidGraduation() {
                 <Button type='submit' variant="contained" color="primary" style={{ marginRight: '10px' }} onClick={handleEditPeroid}>
                   Cập nhật
                 </Button>
-                <Button variant="outlined" color="secondary">
+                <Button variant="outlined" color="secondary" onClick={() => setSelectedPeriod(null)}>
                   Đóng
                 </Button>
               </Grid>

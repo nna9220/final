@@ -84,4 +84,18 @@ public class HeadBrowseSubjectGraduationToThesisController {
             throw new ExceptionInInitializerError(e);
         }
     }
+
+    @PostMapping("/accept-multiple-subjects")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
+    public ResponseEntity<?> completedMultipleSubjectsBrowseToCouncil(
+            @RequestBody List<Integer> subjectIds,
+            @RequestHeader("Authorization") String authorizationHeader
+    ) {
+        try {
+            return new ResponseEntity<>(manageCriticalSubjectService.completedMultipleSubjectsBrowseToThesis(authorizationHeader, subjectIds), HttpStatus.OK);
+        } catch (Exception e) {
+            System.err.println("Error while processing subjects: " + e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

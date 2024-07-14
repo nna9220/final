@@ -410,8 +410,9 @@ public class EvaluationAndScoringService {
         // Tiếp tục logic xử lý...
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        System.out.println("Trước check role");
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
-
+            System.out.println("Sau check role");
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
             System.out.println("Council:  " + existedSubject.getCouncil().getAddress());
