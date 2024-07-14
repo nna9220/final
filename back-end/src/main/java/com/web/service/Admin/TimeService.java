@@ -99,6 +99,8 @@ public class TimeService {
         }
     }
 
+
+
     @Transactional
     public ResponseEntity<?> getListRegistrationLecturerPeriod(TypeSubject typeSubject) {
         List<RegistrationPeriodLectuer> registrationPeriodLectuers = registrationPeriodLecturerRepository.findAllPeriodEssay(typeSubject);

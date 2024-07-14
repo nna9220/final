@@ -133,6 +133,13 @@ public class ManageCouncilService {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+    public ResponseEntity<?> getDetailCouncilReportTime(TypeSubject typeSubject){
+        List<CouncilReportTime> existedCouncilReportTime = councilReportTimeRepository.findCouncilReportTimeByTypeSubjectAndStatus(typeSubject,true);
+        if (existedCouncilReportTime.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);//k nằm trong tgian lập hội đồng nào
+        }
+        return new ResponseEntity<>(existedCouncilReportTime,HttpStatus.OK);
+    }
 
     public boolean hasTimeConflict(Council council, List<Council> conflictCouncils) {
         LocalTime start1 = council.getStart();
