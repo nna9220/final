@@ -166,16 +166,13 @@ public class AddCounterArgumentGraduationController {
             // Cập nhật thông tin giảng viên
             List<Council> councils = new ArrayList<>();
             councils.add(council);
+            currentLecturer.getCouncilLecturers().add(councilCounterArgument);  // Thay đổi ở đây
 
-            Lecturer instructor = existedSubject.getInstructorId();
-            instructor.setCouncilLecturers(councilLecturers);
 
-            currentLecturer.setCouncilLecturers(councilLecturers);
             existedSubject.setThesisAdvisorId(currentLecturer);
             existedSubject.setCouncil(council);
 
             lecturerRepository.save(currentLecturer);
-            lecturerRepository.save(instructor);
             subjectRepository.save(existedSubject);
             councilLecturerRepository.save(councilCounterArgument);
             return new ResponseEntity<>(existedSubject, HttpStatus.OK);
@@ -213,7 +210,7 @@ public class AddCounterArgumentGraduationController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
-            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) 1,typeSubject);
+            List<Subject> subjectByCurrentLecturer = subjectRepository.findSubjectByStatusAndMajorAndActive(false,existedLecturer.getMajor(),(byte) 0,typeSubject);
 
             Map<String,Object> response = new HashMap<>();
             response.put("person", personCurrent);
@@ -233,7 +230,7 @@ public class AddCounterArgumentGraduationController {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             if (existedLecturer != null) {
                 Major major = existedLecturer.getMajor();
-                List<Student> studentsSameMajor = studentRepository.findStudentsByMajorAndNoSubject(major);
+                List<Student> studentsSameMajor = studentRepository.findStudentsByMajorAndNoSubjectForKL(major);
                 return new ResponseEntity<>(studentsSameMajor, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Lecturer không tồn tại
@@ -414,17 +411,26 @@ public class AddCounterArgumentGraduationController {
             if (existSubject!=null) {
                 if (existSubject.getStudent1() != null) {
                     Student student1 = studentRepository.findById(existSubject.getStudent1()).orElse(null);
-                    student1.setSubjectGraduationId(null);
+                    if (student1 != null) {
+                        student1.setSubjectGraduationId(null);
+                        studentRepository.save(student1);
+                    }
                     existSubject.setStudent1(null);
                 }
                 if (existSubject.getStudent2() != null) {
-                    Student student1 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
-                    student1.setSubjectGraduationId(null);
+                    Student student2 = studentRepository.findById(existSubject.getStudent2()).orElse(null);
+                    if (student2 != null) {
+                        student2.setSubjectGraduationId(null);
+                        studentRepository.save(student2);
+                    }
                     existSubject.setStudent2(null);
                 }
                 if (existSubject.getStudent3() != null) {
-                    Student student1 = studentRepository.findById(existSubject.getStudent3()).orElse(null);
-                    student1.setSubjectGraduationId(null);
+                    Student student3 = studentRepository.findById(existSubject.getStudent3()).orElse(null);
+                    if (student3 != null) {
+                        student3.setSubjectGraduationId(null);
+                        studentRepository.save(student3);
+                    }
                     existSubject.setStudent3(null);
                 }
                 existSubject.setActive((byte) -1);
@@ -435,10 +441,10 @@ public class AddCounterArgumentGraduationController {
                 mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(), subject, messenger);
 
                 return new ResponseEntity<>(HttpStatus.OK);
-            }else {
+            } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-        }else {
+        } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }

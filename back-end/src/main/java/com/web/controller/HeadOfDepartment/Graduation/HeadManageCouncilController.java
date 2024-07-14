@@ -8,6 +8,7 @@ import com.web.service.Council.CouncilCreationService;
 import com.web.service.Council.EvaluationAndScoringService;
 import com.web.service.HeaderOdDepartment.ManageCouncilService;
 import com.web.utils.UserUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import java.util.Map;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/head/manager/council")
+@RequiredArgsConstructor
 public class HeadManageCouncilController {
     @Autowired
     private EvaluationAndScoringService evaluationAndScoringService;
@@ -45,14 +47,18 @@ public class HeadManageCouncilController {
     private PersonRepository personRepository;
     @Autowired
     private TokenUtils tokenUtils;
-    @Autowired
-    public HeadManageCouncilController(TokenUtils tokenUtils){
-        this.tokenUtils = tokenUtils;
-    }
     @GetMapping("/listSubject")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> getListSubject(@RequestHeader("Authorization") String authorizationHeader){
         try {
+            if (tokenUtils == null) {
+                System.err.println("tokenUtils is null!");
+            } else {
+                System.out.println("tokenUtils is not null.");
+            }
+            String token = tokenUtils.extractToken(authorizationHeader);
+            Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+            System.out.println("person: "+personCurrent.getPersonId());
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
             return new ResponseEntity<>(manageCouncilService.getListSubject(authorizationHeader,typeSubject), HttpStatus.OK);
         }catch (Exception e){
@@ -69,7 +75,8 @@ public class HeadManageCouncilController {
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Subject currentSubject = subjectRepository.findById(subjectId).orElse(null);
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            List<Lecturer> lecturerList = lecturerRepository.getListLecturerNotInstructorAndThesis(currentSubject.getInstructorId().getLecturerId(),currentSubject.getThesisAdvisorId().getLecturerId());
+
+            List<Lecturer> lecturerList = lecturerRepository.getListLecturerNotLecInstructor(currentSubject.getInstructorId().getLecturerId());
             Map<String,Object> response = new HashMap<>();
             response.put("listLecturer", lecturerList);
             response.put("person",personCurrent);
@@ -124,12 +131,19 @@ public class HeadManageCouncilController {
         }
     }
 
-    @PostMapping("/automationCouncil")
+
+    @PostMapping("/automationCouncil2")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
-    private ResponseEntity<?> automaticCouncilDivision(@RequestHeader("Authorization") String authorizationHeader,
-                                                        @RequestParam("address") String address,
+    private ResponseEntity<?> automaticCouncilDivision2(@RequestHeader("Authorization") String authorizationHeader,
+                                                       @RequestParam("address") String address,
                                                        @RequestParam("date") String date){
         try {
+            System.out.println("Author nhận: "+authorizationHeader);
+            if (tokenUtils == null) {
+                System.err.println("tokenUtils is null!");
+            } else {
+                System.out.println("tokenUtils is not null.");
+            }
             String token = tokenUtils.extractToken(authorizationHeader);
             Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);

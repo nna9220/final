@@ -135,7 +135,7 @@ function RegisTopicTable() {
                 </table>
             ) : topicsRegistered.length === 0 ? (
                 <div class="alert alert-warning" style={{backgroundColor:'white', border:'none', fontSize:'medium'}} role="alert">
-                    {errors ? errors : "Hiện tại chưa có đề tài !!!"}
+                    <WarningOutlinedIcon/>{errors ? errors : "Hiện tại chưa có đề tài !!!"}
                 </div>
 
             ) : null}

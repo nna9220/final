@@ -205,7 +205,7 @@ function TopicPBKLTable() {
                                 Đóng
                             </button>
                             <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleAccept}>
-                                Xác nhận
+                                Xác nhận qua hội đồng
                             </button>
                         </div>
                     </div>

@@ -7,6 +7,7 @@ import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined
 import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import axiosInstance from '../../../API/axios';
+import { toast } from 'react-toastify';
 
 const CardKL = ({ task, index }) => {
     const [selectedTask, setSelectedTask] = useState(null);
@@ -20,13 +21,34 @@ const CardKL = ({ task, index }) => {
     };
 
     const handleFileChange = (e) => {
-        setCommentFiles(e.target.files);
+        const files = e.target.files;
+        let isValid = true;
+        let errorMessage = '';
+
+        for (const file of files) {
+            if (file.size > 5242880) { // 5MB
+                errorMessage = 'File không được quá 5MB';
+                isValid = false;
+                break;
+            }
+        }
+
+        if (isValid) {
+            setCommentFiles(files);
+        } else {
+            e.target.value = null; // Clear file input
+            toast.error(errorMessage); // Hiển thị thông báo lỗi bằng toast
+        }
     };
 
     const handleSubmitComment = async (e) => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         e.preventDefault();
         console.log("taskID-post: ", task.taskId);
+        if (!userToken) {
+            toast.error('Cannot retrieve user token.');
+            return;
+        }
         try {
             const formData = new FormData();
             formData.append('content', commentContent);
@@ -45,7 +67,7 @@ const CardKL = ({ task, index }) => {
             const newComment = response.data;
             setDetail((prevDetail) => ({
                 ...prevDetail,
-                listComment: [...prevDetail.listComment, newComment],
+                listComment: [newComment, ...prevDetail.listComment], // Add new comment to the top
             }));
 
             // Check if response.data.files exists and is iterable before updating files state
@@ -147,7 +169,7 @@ const CardKL = ({ task, index }) => {
                                         <form onSubmit={handleSubmitComment}>
                                             <div class="mb-3">
                                                 <label for="commentContent" class="form-label">Comment</label>
-                                                <textarea class="form-control" id="commentContent" rows="3" value={commentContent} onChange={handleCommentChange}></textarea>
+                                                <textarea class="form-control" id="commentContent" rows="3" value={commentContent} onChange={handleCommentChange} maxLength="225"></textarea>
                                             </div>
                                             <div class="mb-3">
                                                 <input type="file" class="form-control" id="commentFile" onChange={handleFileChange} multiple />
@@ -164,7 +186,7 @@ const CardKL = ({ task, index }) => {
                                                         <label className='time-post'>{comment.dateSubmit}</label>
                                                     </div>
                                                     <div className='body-comment'>
-                                                        <label className='content'>{comment.content}</label><br />
+                                                        <label className='content-he'>{comment.content}</label><br />
                                                         {files && files.map((file, fileIndex) => {
                                                             if (file.commentId?.commentId === comment.commentId) {
                                                                 return (

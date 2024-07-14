@@ -8,6 +8,7 @@ import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurned
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import './scroll.scss'
 import axiosInstance from '../../../API/axios';
+import { toast } from 'react-toastify';
 
 const CardKL = ({ task, index }) => {
   const [selectedTask, setSelectedTask] = useState(null);
@@ -16,19 +17,28 @@ const CardKL = ({ task, index }) => {
   const [commentContent, setCommentContent] = useState('');
   const [commentFiles, setCommentFiles] = useState([]);
 
-  const isImageFile = (fileName) => {
-    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
-    const extension = fileName.split('.').pop().toLowerCase();
-    return imageExtensions.includes(extension);
-  };
-  
+  const MAX_COMMENT_LENGTH = 225; // Giới hạn số ký tự của comment
+  const MAX_FILE_SIZE_MB = 5; // Giới hạn kích thước file tối đa (1MB)
 
   const handleCommentChange = (e) => {
     setCommentContent(e.target.value);
   };
 
   const handleFileChange = (e) => {
-    setCommentFiles(e.target.files);
+    const files = e.target.files;
+    let validFiles = [];
+    let errorMessage = '';
+
+    for (const file of files) {
+      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+        errorMessage = `Tệp "${file.name}" quá lớn. Vui lòng chọn tệp có kích thước tối đa ${MAX_FILE_SIZE_MB}MB.`;
+        toast.error(errorMessage); // Hiển thị thông báo lỗi bằng toast
+        return;
+      } else {
+        validFiles.push(file);
+      }
+    }
+    setCommentFiles(validFiles);
   };
 
   const handleViewTask = async (taskId) => {
@@ -62,6 +72,10 @@ const CardKL = ({ task, index }) => {
       toast.warning('Vui lòng nhập nội dung comment hoặc chọn ít nhất một file.');
       return;
     }
+    if (commentContent.length > MAX_COMMENT_LENGTH) {
+      toast.warning(`Comment không được vượt quá ${MAX_COMMENT_LENGTH} ký tự.`);
+      return;
+    }
     try {
       const formData = new FormData();
       formData.append('content', commentContent);
@@ -80,7 +94,7 @@ const CardKL = ({ task, index }) => {
       // Sắp xếp lại listComment để đưa comment mới lên đầu
       setDetail(prevDetail => ({
         ...prevDetail,
-        listComment: [newComment, ...prevDetail.listComment] // Đưa comment mới lên đầu mảng
+        listComment: [...prevDetail.listComment, newComment]
       }));
   
       setCommentContent('');
@@ -144,7 +158,7 @@ const CardKL = ({ task, index }) => {
                     <form onSubmit={handleSubmitComment}>
                       <div className="mb-3">
                         <label htmlFor="commentContent" className="form-label">Comment</label>
-                        <textarea className="form-control" id="commentContent" rows="3" value={commentContent} onChange={handleCommentChange}></textarea>
+                        <textarea className="form-control" id="commentContent" rows="3" value={commentContent} onChange={handleCommentChange} maxLength={MAX_COMMENT_LENGTH}></textarea>
                       </div>
                       <div className="mb-3">
                         <input type="file" className="form-control" id="commentFile" onChange={handleFileChange} multiple />
@@ -163,18 +177,14 @@ const CardKL = ({ task, index }) => {
                             <label className='time-post'>{comment.dateSubmit}</label>
                           </div>
                           <div className='body-comment'>
-                            <label className='content'>{comment.content}</label><br />
+                            <label className='content-comment'>{comment.content}</label><br />
                             {file && file.map((files, fileIndex) => {
                               if (files.commentId?.commentId === comment.commentId) {
                                 return (
                                   <div key={fileIndex}>
-                                    {isImageFile(files.name) ? (
-                                      <img src={files.url} alt={files.name} className='content-image' />
-                                    ) : (
-                                      <a href={files.url} target="_blank" rel="noopener noreferrer" download="" className='content-name'>
-                                        {files.name}
-                                      </a>
-                                    )}
+                                    <a href={files.url} target="_blank" rel="noopener noreferrer" download="" className='content-name'>
+                                      {files.name}
+                                    </a>
                                   </div>
                                 );
                               } else {
@@ -202,4 +212,3 @@ const CardKL = ({ task, index }) => {
 }
 
 export default CardKL;
-

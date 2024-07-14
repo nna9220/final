@@ -1,23 +1,42 @@
+import React, { useState, useEffect } from 'react';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import axiosInstance from '../../../API/axios';
-import { useState, useEffect } from 'react';
+import WarningOutlinedIcon from '@mui/icons-material/WarningOutlined';
+import { format } from 'date-fns';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function DataTableTopicSuccessKL() {
     const [subjects, setSubjects] = useState([]);
+    const [error, setError] = useState(null);
     const userToken = getTokenFromUrlAndSaveToStorage();
     const [council, setCouncil] = useState();
     const [councilLecturers, setCouncilLecturers] = useState([]);
-    const [roles, setRoles] = useState({});
+    const [listLecturer, setListLecturer] = useState([]);
     const [councilEdit, setCouncilEdit] = useState({
         lecturer1: '',
         lecturer2: '',
+        lecturer3: '',
+        lecturer4: '',
+        lecturer5: '',
         start: '',
         end: '',
         date: '',
         address: '',
     });
     const [lecturers, setLecturers] = useState([]);
+    const [autoCouncil, setAutoCouncil] = useState({
+        date: '',
+        address: ''
+    })
 
+    const handleChangeAuto = (e) => {
+        const { name, value } = e.target;
+        setAutoCouncil({
+            ...autoCouncil,
+            [name]: value
+        });
+    };
     useEffect(() => {
         if (userToken) {
             loadData();
@@ -31,9 +50,17 @@ function DataTableTopicSuccessKL() {
                     'Authorization': `Bearer ${userToken}`,
                 },
             });
-            setSubjects(response.data.body || []);
+            console.log(response.data);
+
+            if (response.data.statusCodeValue === 400 && response.data.body === "Không nằm trong khoảng thời gian hội đồng được tổ chức.") {
+                setError("Không nằm trong thời gian lập hội đồng");
+            } else {
+                setSubjects(Array.isArray(response.data.body) ? response.data.body : []);
+                setError(null); // Clear any previous error
+            }
         } catch (error) {
             console.error('Error fetching subjects:', error);
+            setError('Đã xảy ra lỗi khi tải dữ liệu');
         }
     };
 
@@ -47,14 +74,13 @@ function DataTableTopicSuccessKL() {
             const councilDetails = response.data.body.council;
             setCouncil(councilDetails);
             setCouncilLecturers(response.data.body.councilLecturer);
-            setRoles(response.data.body.councilLecturer.reduce((acc, curr) => {
-                acc[curr.lecturer.person.personId] = curr.role;
-                return acc;
-            }, {}));
-            setLecturers (response.data.body.listLecturerOfCouncil);
+            setLecturers(response.data.body.listLecturerOfCouncil);
             setCouncilEdit({
                 lecturer1: councilDetails.lecturer1?.personId || '',
                 lecturer2: councilDetails.lecturer2?.personId || '',
+                lecturer3: councilDetails.lecturer3?.personId || '',
+                lecturer4: councilDetails.lecturer4?.personId || '',
+                lecturer5: councilDetails.lecturer5?.personId || '',
                 start: councilDetails.start || '',
                 end: councilDetails.end || '',
                 date: councilDetails.date || '',
@@ -63,6 +89,20 @@ function DataTableTopicSuccessKL() {
             console.log("Detail: ", response.data);
         } catch (error) {
             handleCouncilDetailError(error);
+        }
+    };
+
+    const loadListLecturer = async (subjectId) => {
+        try {
+            const response = await axiosInstance.get(`/head/manager/council/listLecturer/${subjectId}`, {
+                headers: {
+                    'Authorization': `Bearer ${userToken}`,
+                },
+            });
+            setListLecturer(response.data.listLecturer);
+            console.log("List lecturer ", response.data)
+        } catch (error) {
+            console.log("erorr list lecturer: ", error);
         }
     };
 
@@ -96,28 +136,35 @@ function DataTableTopicSuccessKL() {
         }));
     };
 
-    const handleRoleChange = (e, lecturerId) => {
-        const { value } = e.target;
-        setRoles(prevRoles => ({
-            ...prevRoles,
-            [lecturerId]: value
-        }));
+    const formatTimeToSeconds = (time) => {
+        if (!time) return '00:00:00';
+        const [hours, minutes] = time.split(':');
+        return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:00`;
+    };
+
+    const formatDate = (date) => {
+        if (!date) return '';
+        const parsedDate = new Date(date);
+        if (isNaN(parsedDate.getTime())) {
+            console.error('Invalid date value:', date);
+            return '';
+        }
+        return format(parsedDate, 'dd/MM/yyyy');
     };
 
     const handleSaveChanges = async () => {
-        // Chuyển đổi giá trị start và end thành định dạng HH:mm
         const formattedCouncilEdit = {
             ...councilEdit,
-            start: formatTime(councilEdit.start),
-            end: formatTime(councilEdit.end)
+            start: formatTimeToSeconds(councilEdit.start),
+            end: formatTimeToSeconds(councilEdit.end),
+            date: formatDate(councilEdit.date)
         };
-    
-        // Kiểm tra xem start và end có giá trị hợp lệ sau khi format không
+
         if (!formattedCouncilEdit.start || !formattedCouncilEdit.end) {
             console.error('Invalid time format for start or end.');
             return;
         }
-    
+
         console.log("Send data: ", formattedCouncilEdit);
         try {
             const response = await axiosInstance.post(`/head/manager/council/edit/${council.subject.subjectId}`, null, {
@@ -127,6 +174,9 @@ function DataTableTopicSuccessKL() {
                 params: {
                     lecturer1: formattedCouncilEdit.lecturer1,
                     lecturer2: formattedCouncilEdit.lecturer2,
+                    lecturer3: formattedCouncilEdit.lecturer3,
+                    lecturer4: formattedCouncilEdit.lecturer4,
+                    lecturer5: formattedCouncilEdit.lecturer5,
                     start: formattedCouncilEdit.start,
                     end: formattedCouncilEdit.end,
                     date: formattedCouncilEdit.date,
@@ -134,87 +184,147 @@ function DataTableTopicSuccessKL() {
                 },
             });
             console.log("Save response: ", response.data);
+            toast.success('Lập hội đồng thành công!');
         } catch (error) {
             console.error('Error saving council details:', error);
+            toast.error('Lập hội đồng thất bại. Vui lòng thử lại.');
         }
     };
-    
-    
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const { address, date } = autoCouncil;
+
+        if (!address || !date) {
+            toast.error('Vui lòng nhập đầy đủ địa chỉ và ngày');
+            return;
+        }
+
+        try {
+            const response = await axiosInstance.post('/head/manageTutorial/graduation/automationCouncil2', null, {
+                headers: {
+                    'Authorization': `Bearer ${userToken}`,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                params: {
+                    address,
+                    date,
+                },
+            });
+
+            if (response.status === 200) {
+                toast.success('Tạo hội đồng tự động thành công!');
+                console.log('Response:', response.data);
+            }
+        } catch (error) {
+            console.error('Error creating automatic council:', error);
+            toast.error('Lỗi khi tạo hội đồng tự động. Vui lòng thử lại.');
+        }
+    };
+
     const formatTime = (time) => {
         if (!time) return '';
-        
         const [hours, minutes] = time.split(':');
-        
-        // Kiểm tra xem hours và minutes có phải là số hợp lệ không
         if (isNaN(hours) || isNaN(minutes)) {
             return '';
         }
-        
         return hours.padStart(2, '0') + ':' + minutes.padStart(2, '0');
-    };
-    
-    const handleAutomationCouncil = async () => {
-        try {
-            const response = await axiosInstance.post('/head/manager/council/automationCouncil', null, {
-                headers: {
-                    'Authorization': `Bearer ${userToken}`,
-                },
-                params: {
-                    address: councilEdit.address,
-                    date: councilEdit.date,
-                },
-            });
-            console.log('Automation response:', response.data);
-            // Thực hiện các thay đổi hoặc xử lý sau khi lập hội đồng tự động thành công
-        } catch (error) {
-            console.error('Error automating council:', error);
-        }
     };
 
     return (
         <div>
             <div style={{ padding: '16px' }} className='body-table-topic'>
-            <button type="button" className="btn btn-primary" onClick={handleAutomationCouncil}>Lập hội đồng tự động</button>
-                <table  className="table table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Tên đề tài</th>
-                            <th scope='col'>GVHD</th>
-                            <th scope='col'>GVPB</th>
-                            <th scope='col'>SV 1</th>
-                            <th scope='col'>SV 2</th>
-                            <th scope='col'>SV 3</th>
-                            <th scope='col'>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {subjects.length === 0 ? (
-                            <tr>
-                                <td colSpan="8" className="text-center">Không có dữ liệu</td>
-                            </tr>
-                        ) : (
-                            subjects.filter((item) => item.active === 8).map((item, index) => (
-                                <tr key={index}>
-                                    <td>{index + 1}</td>
-                                    <td>{item.subjectName}</td>
-                                    <td>{item.instructorId?.person?.firstName} {item.instructorId?.person?.lastName}</td>
-                                    <td>{item.thesisAdvisorId?.person?.firstName} {item.thesisAdvisorId?.person?.lastName}</td>
-                                    <td>{item.student1}</td>
-                                    <td>{item.student2}</td>
-                                    <td>{item.student3}</td>
-                                    <td>
-                                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => {
-                                            loadCouncilDetails(item.subjectId);
-                                        }}>
-                                            Lập hội đồng
-                                        </button>
-                                    </td>
+                {error ? (
+                    <div className="alert alert-warning" style={{ border: 'none', backgroundColor: 'white', fontSize: '16px', fontWeight: 'bolder', textAlign: 'center' }} role="alert">
+                        <WarningOutlinedIcon /> {error}
+                    </div>
+                ) : (
+                    <div>
+                        <button type="button" style={{ padding: '8px', border: 'none', backgroundColor: '#3282B8', color: "white", borderRadius: '5px' }} class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#automationCouncil">
+                            Lập hội đồng tự động
+                        </button>
+                        <table className="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope='col'>Tên đề tài</th>
+                                    <th scope='col'>GVHD</th>
+                                    <th scope='col'>GVPB</th>
+                                    <th scope='col'>SV 1</th>
+                                    <th scope='col'>SV 2</th>
+                                    <th scope='col'>SV 3</th>
+                                    <th scope='col'>Hành động</th>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                            </thead>
+                            <tbody>
+                                {Array.isArray(subjects) && subjects.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="8" className="text-center">Không có dữ liệu</td>
+                                    </tr>
+                                ) : (
+                                    Array.isArray(subjects) && subjects.filter((item) => item.active === 8).map((item, index) => (
+                                        <tr key={index}>
+                                            <td>{index + 1}</td>
+                                            <td>{item.subjectName}</td>
+                                            <td>{item.instructorId?.person?.firstName} {item.instructorId?.person?.lastName}</td>
+                                            <td>{item.thesisAdvisorId?.person?.firstName} {item.thesisAdvisorId?.person?.lastName}</td>
+                                            <td>{item.student1}</td>
+                                            <td>{item.student2}</td>
+                                            <td>{item.student3}</td>
+                                            <td>
+                                                <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => {
+                                                    loadCouncilDetails(item.subjectId); loadListLecturer(item.subjectId)
+                                                }}>
+                                                    Lập hội đồng
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
+
+            <div class="modal fade" id="automationCouncil" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <form class="modal-content" onSubmit={handleSubmit}>
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Lập hội đồng tự động</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div className="mb-3">
+                                <label htmlFor="address" className="form-label">Địa chỉ</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    id="address"
+                                    name="address"
+                                    value={autoCouncil.address}
+                                    onChange={handleChangeAuto}
+                                />
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor="date" className="form-label">Ngày</label>
+                                <input
+                                    type="date"
+                                    className="form-control"
+                                    id="date"
+                                    name="date"
+                                    value={autoCouncil.date}
+                                    onChange={handleChangeAuto}
+                                />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-primary">Xác nhận</button>
+                        </div>
+                    </form>
+                </div>
             </div>
 
             <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -246,117 +356,91 @@ function DataTableTopicSuccessKL() {
                                 <input type="text" className="form-control" id="address" name="address" value={councilEdit.address} onChange={handleChange} />
                             </div>
 
-                            <h6>Danh sách thành viên hội đồng: </h6>
-                            <div>
-                                <table className='table table-bordered'>
-                                    <thead>
-                                        <tr>
-                                            <th>Thành viên</th>
-                                            <th>Họ và tên</th>
-                                            <th>Vai trò</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Thành viên 1</td>
-                                            <td>
-                                                <div className="mb-3">
-                                                    <select className="form-control" id="lecturer1" name="lecturer1" value={councilEdit.lecturer1} onChange={handleChange}>
-                                                        <option value="">Chọn giảng viên</option>
-                                                        {lecturers.map((lecturer, index) => (
-                                                            <option key={index} value={lecturer.lecturerId}>
-                                                                {lecturer.person.firstName} {lecturer.person.lastName}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                Chủ tịch
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Thành viên 2</td>
-                                            <td>
-                                                <div className="mb-3">
-                                                    <select className="form-control" id="lecturer2" name="lecturer2" value={councilEdit.lecturer2} onChange={handleChange}>
-                                                        <option value="">Chọn giảng viên</option>
-                                                        {lecturers.map((lecturer, index) => (
-                                                            <option key={index} value={lecturer.lecturerId}>
-                                                                {lecturer.person.firstName} {lecturer.person.lastName}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                Ủy viên
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Thành viên 3</td>
-                                            <td>
-                                                <div className="mb-3">
-                                                    <select className="form-control" id="lecturer3" name="lecturer3" value={councilEdit.lecturer3} onChange={handleChange}>
-                                                        <option value="">Chọn giảng viên</option>
-                                                        {lecturers.map((lecturer, index) => (
-                                                            <option key={index} value={lecturer.lecturerId}>
-                                                                {lecturer.person.firstName} {lecturer.person.lastName}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                Ủy viên
-                                            </td>
-                                        </tr><tr>
-                                            <td>Thành viên 4</td>
-                                            <td>
-                                                <div className="mb-3">
-                                                    <select className="form-control" id="lecturer4" name="lecturer4" value={councilEdit.lecturer4} onChange={handleChange}>
-                                                        <option value="">Chọn giảng viên</option>
-                                                        {lecturers.map((lecturer, index) => (
-                                                            <option key={index} value={lecturer.lecturerId}>
-                                                                {lecturer.person.firstName} {lecturer.person.lastName}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                Ủy viên
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Thành viên 5</td>
-                                            <td>
-                                                <div className="mb-3">
-                                                    <select className="form-control" id="lecturer5" name="lecturer5" value={councilEdit.lecturer5} onChange={handleChange}>
-                                                        <option value="">Chọn giảng viên</option>
-                                                        {lecturers.map((lecturer, index) => (
-                                                            <option key={index} value={lecturer.lecturerId}>
-                                                                {lecturer.person.firstName} {lecturer.person.lastName}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                Ủy viên
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                            <br />
+
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>Vai trò</th>
+                                        <th>Thành viên</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>CHỦ TỊCH</td>
+                                        <td>
+                                            <select className="form-select" id="lecturer1" name="lecturer1" value={councilEdit.lecturer1} onChange={handleChange}>
+                                                <option value="">Chọn giảng viên</option>
+                                                {listLecturer.map((lecturer) => (
+                                                    <option key={lecturer.personId} value={lecturer.personId}>
+                                                        {lecturer.person.firstName} {lecturer.person.lastName}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>ỦY VIÊN 1</td>
+                                        <td>
+                                            <select className="form-select" id="lecturer2" name="lecturer2" value={councilEdit.lecturer2} onChange={handleChange}>
+                                                <option value="">Chọn giảng viên</option>
+                                                {listLecturer.map((lecturer) => (
+                                                    <option key={lecturer.personId} value={lecturer.personId}>
+                                                        {lecturer.person.firstName} {lecturer.person.lastName}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>ỦY VIÊN 2</td>
+                                        <td>
+                                            <select className="form-select" id="lecturer3" name="lecturer3" value={councilEdit.lecturer3} onChange={handleChange}>
+                                                <option value="">Chọn giảng viên</option>
+                                                {listLecturer.map((lecturer) => (
+                                                    <option key={lecturer.personId} value={lecturer.personId}>
+                                                        {lecturer.person.firstName} {lecturer.person.lastName}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </td>
+                                    </tr><tr>
+                                        <td>ỦY VIÊN 3</td>
+                                        <td>
+                                            <select className="form-select" id="lecturer4" name="lecturer4" value={councilEdit.lecturer4} onChange={handleChange}>
+                                                <option value="">Chọn giảng viên</option>
+                                                {listLecturer.map((lecturer) => (
+                                                    <option key={lecturer.personId} value={lecturer.personId}>
+                                                        {lecturer.person.firstName} {lecturer.person.lastName}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </td>
+                                    </tr><tr>
+                                        <td>ỦY VIÊN 4</td>
+                                        <td>
+                                            <select className="form-select" id="lecturer5" name="lecturer5" value={councilEdit.lecturer5} onChange={handleChange}>
+                                                <option value="">Chọn giảng viên</option>
+                                                {listLecturer.map((lecturer) => (
+                                                    <option key={lecturer.personId} value={lecturer.personId}>
+                                                        {lecturer.person.firstName} {lecturer.person.lastName}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                            <button type="button" className="btn btn-primary" onClick={handleSaveChanges}>Lưu thay đổi</button>
+                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSaveChanges}>Lưu</button>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <ToastContainer />
         </div>
     );
 }

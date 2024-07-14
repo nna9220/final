@@ -76,9 +76,9 @@ const BoardKL = ({ subjectId }) => {
           {showListTask && (
             <DragDropContext onDragEnd={onDragEnd}>
               <div className="kanban-board">
-                <Column className='column' title="Must Do" tasks={data.filter(task => task.status === 'MustDo')} droppableId="MustDo" />
-                <Column className='column' title="Doing" tasks={data.filter(task => task.status === 'Doing')} droppableId="Doing" />
-                <Column className='column' title="Closed" tasks={data.filter(task => task.status === 'Closed')} droppableId="Closed" />
+                <ColumnKL className='column' title="Must Do" tasks={data.filter(task => task.status === 'MustDo')} droppableId="MustDo" />
+                <ColumnKL className='column' title="Doing" tasks={data.filter(task => task.status === 'Doing')} droppableId="Doing" />
+                <ColumnKL className='column' title="Closed" tasks={data.filter(task => task.status === 'Closed')} droppableId="Closed" />
               </div>
             </DragDropContext>
           )}

@@ -30,6 +30,6 @@ public interface StudentRepository extends JpaRepository<Student, String> {
     @Query("SELECT s FROM Student s WHERE s.major = :major AND s.subjectId IS NULL AND s.status=true")
     List<Student> findStudentsByMajorAndNoSubject(@Param("major") Major major);
 
-    @Query("SELECT s FROM Student s WHERE s.major = :major AND s.subjectGraduationId IS NULL")
+    @Query("SELECT s FROM Student s WHERE s.major = :major AND s.subjectGraduationId IS NULL AND s.status=true AND s.subjectId!=null")
     List<Student> findStudentsByMajorAndNoSubjectForKL(@Param("major") Major major);
 }

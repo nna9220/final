@@ -15,6 +15,9 @@ public interface PersonRepository extends JpaRepository<Person, String> {
     @Query("SELECT p FROM Person p WHERE p.username = ?1")
     Optional<Person> findByUsername(String username);
 
+    @Query("SELECT p FROM Person p WHERE p.username = ?1")
+    Person findByUsername2(String username);
+
     @Query("SELECT p FROM Person p")
     List<Person> findAllPerson();
 

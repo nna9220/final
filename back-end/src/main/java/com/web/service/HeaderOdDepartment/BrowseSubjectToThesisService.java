@@ -137,8 +137,8 @@ public class BrowseSubjectToThesisService {
             subjectRepository.saveAll(updatedSubjects);
 
             // Send email to all relevant persons
-            String subject = "Multiple Topics Approved";
-            String messenger = "The following topics have been approved by the head and sent to the thesis committee. Please check the website for details.";
+            String subject = "THÔNG BÁO ĐỀ TÀI ĐÃ ĐƯỢC THÔNG QUA PHẢN BIỆN";
+            String messenger = "Đề tài đã được giảng viên phản biện phê duyệt. Sinh viên và Giảng viên chờ thông báo lập hội đồng để tiến hành bảo vệ.";
             mailService.sendMailToPerson(emailPerson, subject, messenger);
 
             return new ResponseEntity<>(updatedSubjects, HttpStatus.OK);

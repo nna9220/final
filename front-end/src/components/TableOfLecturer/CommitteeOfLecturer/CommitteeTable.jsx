@@ -14,6 +14,7 @@ function CommitteTable() {
     const [subjectIdDetail, setSubjectIdDetail] = useState(null);
     const [subjectId, setSubjectId] = useState(null);
     const userToken = getTokenFromUrlAndSaveToStorage();
+    const [timeCouncil, setTimeCouncil] = useState(null);
 
     useEffect(() => {
         if (userToken) {
@@ -52,6 +53,7 @@ function CommitteTable() {
             .then(response => {
                 setDetail(response.data.body || null);
                 console.log("Detail: ", response.data);
+                setTimeCouncil(response.data.body.council.date)
             })
             .catch(error => {
                 console.error('Lỗi lấy chi tiết:', error);
@@ -94,7 +96,7 @@ function CommitteTable() {
         });
         return totalScore.toFixed(2);
     };
-    
+
     const submitEvaluation = async () => {
         try {
             const evaluationData = {
@@ -108,7 +110,7 @@ function CommitteTable() {
                 reviewStudent2: detail.subject.student2 ? (review[detail.subject.student2] || null) : null,
                 reviewStudent3: detail.subject.student3 ? (review[detail.subject.student3] || null) : null,
             };
-    
+
             console.log("Đánh giá: ", evaluationData);
             const response = await axiosInstance.post(`/lecturer/council/evaluation-scoring/${subjectId}`, evaluationData, {
                 headers: {
@@ -116,7 +118,7 @@ function CommitteTable() {
                     'Content-Type': 'multipart/form-data',
                 }
             });
-    
+
             if (response.data.statusCode === 'BAD_REQUEST') {
                 toast.error("Không nằm trong thời gian chấm điểm!");
             } else {
@@ -128,7 +130,6 @@ function CommitteTable() {
             toast.error("Lỗi khi thực hiện đánh giá và chấm điểm!");
         }
     };
-    
 
 
     return (
@@ -189,116 +190,130 @@ function CommitteTable() {
                         <div className="modal-body">
                             {detail && detail.subject ? (
                                 <>
-                                    <h5 style={{ color: '#4477CE' }}>Thông tin đề tài</h5>
-                                    <div>
-                                        <table className="table table-bordered">
-                                            <tbody>
-                                                <tr>
-                                                    <td className="table-key">1. Tên đề tài:</td>
-                                                    <td className="table-value">{detail.subject.subjectName}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="table-key">2. Loại đề tài:</td>
-                                                    <td className="table-value">{detail.subject.typeSubject.typeName}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="table-key">3. Chuyên ngành:</td>
-                                                    <td className="table-value">{detail.subject.major}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="table-key">4. Giảng viên hướng dẫn:</td>
-                                                    <td className="table-value">{detail.subject.instructorId.person.firstName} {detail.subject.instructorId.person.lastName}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="table-key">5. Giảng viên phản biện:</td>
-                                                    <td className="table-value">{detail.subject.thesisAdvisorId.person.firstName} {detail.subject.thesisAdvisorId.person.lastName}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="table-key">6. Yêu cầu:</td>
-                                                    <td className="table-value">{detail.subject.requirement}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="table-key">7. Danh sách thành viên:</td>
-                                                    <td className="table-value">
-                                                        <ul>
-                                                            <li>Sinh viên 1: {detail.subject.student1}</li>
-                                                            <li>Sinh viên 2: {detail.subject.student2}</li>
-                                                            <li>Sinh viên 3: {detail.subject.student3}</li>
-                                                        </ul>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <hr />
-                                    <h5 style={{ color: '#4477CE' }}>Tiêu chí đánh giá</h5>
-                                    <table className='table-bordered table criteria-table'>
-                                        <thead>
-                                            <tr>
-                                                <th className="criteria-column">Tiêu chí đánh giá</th>
-                                                {['student1', 'student2', 'student3'].map((student, index) => (
-                                                    <th key={index} className="student-column">Sinh viên {index + 1}</th>
-                                                ))}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {criterias && criterias.length > 0 ? (
-                                                criterias.map((criteria, criteriaIndex) => (
-                                                    <tr key={criteriaIndex}>
-                                                        <td className='criteria criteria-column'>{criteria.criteriaName}</td>
+                                    {!timeCouncil ? (
+                                        <h6 style={{ textAlign: 'center' }}>Đề tài chưa được lập hội đồng</h6>
+                                    ) : (
+                                        <div>
+                                            <h5 style={{ color: '#4477CE' }}>Thông tin đề tài</h5>
+                                            <div>
+                                                <table className="table table-bordered">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td className="table-key">1. Tên đề tài:</td>
+                                                            <td className="table-value">{detail.subject.subjectName}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td className="table-key">2. Loại đề tài:</td>
+                                                            <td className="table-value">{detail.subject.typeSubject.typeName}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td className="table-key">3. Chuyên ngành:</td>
+                                                            <td className="table-value">{detail.subject.major}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td className="table-key">4. Giảng viên hướng dẫn:</td>
+                                                            <td className="table-value">{detail.subject.instructorId.person.firstName} {detail.subject.instructorId.person.lastName}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td className="table-key">5. Giảng viên phản biện:</td>
+                                                            <td className="table-value">{detail.subject.thesisAdvisorId.person.firstName} {detail.subject.thesisAdvisorId.person.lastName}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td className="table-key">6. Yêu cầu:</td>
+                                                            <td className="table-value">{detail.subject.requirement}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td className="table-key">7. Danh sách thành viên:</td>
+                                                            <td className="table-value">
+                                                                <ul>
+                                                                    <li>Sinh viên 1: {detail.subject.student1}</li>
+                                                                    <li>Sinh viên 2: {detail.subject.student2}</li>
+                                                                    <li>Sinh viên 3: {detail.subject.student3}</li>
+                                                                </ul>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <hr />
+                                            <h5 style={{ color: '#4477CE' }}>Tiêu chí đánh giá</h5>
+                                            <table className='table-bordered table criteria-table'>
+                                                <thead>
+                                                    <tr>
+                                                        <th className="criteria-column">Tiêu chí đánh giá</th>
+                                                        {['student1', 'student2', 'student3'].map((student, index) => (
+                                                            <th key={index} className="student-column">Sinh viên {index + 1}</th>
+                                                        ))}
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {criterias && criterias.length > 0 ? (
+                                                        criterias.map((criteria, criteriaIndex) => (
+                                                            <tr key={criteriaIndex}>
+                                                                <td className='criteria criteria-column'>{criteria.criteriaName}</td>
+                                                                {['student1', 'student2', 'student3'].map((student, studentIndex) => (
+                                                                    <td key={studentIndex} className="student-column">
+                                                                        <input
+                                                                            type='number'
+                                                                            step='0.25'
+                                                                            max={criteria.criteriaScore}
+                                                                            min={0}
+                                                                            value={scores[`${detail.subject[student]}_${criteria.criteriaName}`] || 0}
+                                                                            onChange={(e) => handleScoreChange(detail.subject[student], criteria.criteriaName, e.target.value)}
+                                                                        />
+                                                                    </td>
+                                                                ))}
+                                                            </tr>
+                                                        ))
+                                                    ) : (
+                                                        <tr>
+                                                            <td colSpan={4}>Chưa có tiêu chí đánh giá</td>
+                                                        </tr>
+                                                    )}
+                                                    <tr>
+                                                        <td className='criteria-sum criteria-column'>Tổng</td>
                                                         {['student1', 'student2', 'student3'].map((student, studentIndex) => (
                                                             <td key={studentIndex} className="student-column">
-                                                                <input
-                                                                    type='number'
-                                                                    step='0.25'
-                                                                    max={criteria.criteriaScore}
-                                                                    min={0}
-                                                                    value={scores[`${detail.subject[student]}_${criteria.criteriaName}`] || 0}
-                                                                    onChange={(e) => handleScoreChange(detail.subject[student], criteria.criteriaName, e.target.value)}
+                                                                {detail.subject[student] ? calculateTotalScore(detail.subject[student]) : 'N/A'}
+                                                            </td>
+                                                        ))}
+                                                    </tr>
+                                                    <tr>
+                                                        <td className='criteria-sum criteria-column' id="review">Đánh giá</td>
+                                                        {['student1', 'student2', 'student3'].map((student, studentIndex) => (
+                                                            <td key={studentIndex} className="student-column">
+                                                                <textarea
+                                                                    className="form-control"
+                                                                    value={review[detail.subject[student]] || ''}
+                                                                    onChange={(e) => handleReviewChange(detail.subject[student], e.target.value)}
                                                                 />
                                                             </td>
                                                         ))}
                                                     </tr>
-                                                ))
-                                            ) : (
-                                                <tr>
-                                                    <td colSpan={4}>Chưa có tiêu chí đánh giá</td>
-                                                </tr>
-                                            )}
-                                            <tr>
-                                                <td className='criteria-sum criteria-column'>Tổng</td>
-                                                {['student1', 'student2', 'student3'].map((student, studentIndex) => (
-                                                    <td key={studentIndex} className="student-column">
-                                                        {detail.subject[student] ? calculateTotalScore(detail.subject[student]) : 'N/A'}
-                                                    </td>
-                                                ))}
-                                            </tr>
-                                            <tr>
-                                                <td className='criteria-sum criteria-column' id="review">Đánh giá</td>
-                                                {['student1', 'student2', 'student3'].map((student, studentIndex) => (
-                                                    <td key={studentIndex} className="student-column">
-                                                        <textarea
-                                                            className="form-control"
-                                                            value={review[detail.subject[student]] || ''}
-                                                            onChange={(e) => handleReviewChange(detail.subject[student], e.target.value)}
-                                                        />
-                                                    </td>
-                                                ))}
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    )}
                                 </>
                             ) : (
                                 <p>Loading...</p>
                             )}
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
-                                Đóng
-                            </button>
-                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={submitEvaluation}>
-                                Xác nhận
-                            </button>
+                            {timeCouncil ? (
+                                <div>
+                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
+                                        Đóng
+                                    </button>
+                                    <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={submitEvaluation}>
+                                        Xác nhận
+                                    </button>
+                                </div>
+                            ) : (
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
+                                    Đóng
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -1,10 +1,15 @@
 package com.web.controller.HeadOfDepartment.Graduation;
 
+import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
+import com.web.entity.Lecturer;
+import com.web.entity.Person;
 import com.web.entity.TypeSubject;
 import com.web.repository.LecturerRepository;
+import com.web.repository.PersonRepository;
 import com.web.repository.SubjectRepository;
 import com.web.repository.TypeSubjectRepository;
+import com.web.service.Council.CouncilCreationService;
 import com.web.service.Lecturer.ManageTutorialSubjectService;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +33,33 @@ public class HeadManageTutorialSubjectGraduationController {
     private TokenUtils tokenUtils;
     @Autowired
     private ManageTutorialSubjectService manageTutorialSubjectService;
+    @Autowired
+    private PersonRepository personRepository;
+    @Autowired
+    private CouncilCreationService councilCreationService;
+
+    @PostMapping("/automationCouncil2")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
+    private ResponseEntity<?> automaticCouncilDivision2(@RequestHeader("Authorization") String authorizationHeader,
+                                                        @RequestParam("address") String address,
+                                                        @RequestParam("date") String date){
+        try {
+            System.out.println("Author nhận: "+authorizationHeader);
+            if (tokenUtils == null) {
+                System.err.println("tokenUtils is null!");
+            } else {
+                System.out.println("tokenUtils is not null.");
+            }
+            String token = tokenUtils.extractToken(authorizationHeader);
+            Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+            Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+            assert existedLecturer != null;
+            return new ResponseEntity<>(councilCreationService.createCouncils(date,address,existedLecturer),HttpStatus.OK);
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     @PostMapping("/fiftyRecent/{subjectId}")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")

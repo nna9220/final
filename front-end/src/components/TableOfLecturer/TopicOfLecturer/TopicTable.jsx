@@ -144,8 +144,12 @@ export default function TopicTable() {
                 }
             })
                 .then(response => {
-                    console.log('Xác nhận hoàn thành đề tài. Vui lòng chờ TBM duyệt qua phản biện!', response.data);
-                    toast.success("Xác nhận hoàn thành đề tài. Vui lòng chờ TBM duyệt qua phản biện!")
+                    if (response.data.statusCodeValue === 400) {
+                        toast.warning("Đề tài chưa được phân giảng viên phản biện!")
+                    } else {
+                        console.log('Xác nhận hoàn thành đề tài. Vui lòng chờ TBM duyệt qua phản biện!', response.data);
+                        toast.success("Xác nhận hoàn thành đề tài. Vui lòng chờ TBM duyệt qua phản biện!")
+                    }
                 })
                 .catch(error => {
                     console.error('Lỗi khi Xác nhận hoàn thành', error);

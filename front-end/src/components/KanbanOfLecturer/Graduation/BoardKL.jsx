@@ -62,29 +62,32 @@ const BoardKL = ({ subjectId }) => {
     // Code xử lý kéo và thả task tại đây
   };
   return (
-    <div>
-      <div>
-        <div className='list-button' style={{display:'flex', justifyContent:'flex-end'}}>
-          <div>
-            <button type="button" className='button-add-task' onClick={toggleListTask}>
-              <DnsOutlinedIcon /> List Task
-            </button>
-            <button type="button" className='button-add-task' onClick={toggleTimeline}>
-              <TimelineOutlinedIcon subjectId={subjectId} /> Time Line
-            </button>
-          </div>
+<div>
+      <ul class="nav" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link-list active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" role="tab" aria-controls="home-tab-pane" aria-selected="true" onClick={toggleListTask}>List task</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link-list" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" role="tab" aria-controls="profile-tab-pane" aria-selected="false" onClick={toggleTimeline}>Time Line</button>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabIndex="0">
+          {showListTask && (
+            <DragDropContext onDragEnd={onDragEnd}>
+              <div className="kanban-board">
+                <ColumnKL className='column' title="Must Do" tasks={data.filter(task => task.status === 'MustDo')} droppableId="MustDo" />
+                <ColumnKL className='column' title="Doing" tasks={data.filter(task => task.status === 'Doing')} droppableId="Doing" />
+                <ColumnKL className='column' title="Closed" tasks={data.filter(task => task.status === 'Closed')} droppableId="Closed" />
+              </div>
+            </DragDropContext>
+          )}
+          {showTimeLine && <TimeLineOfLecturerGraduation subjectId={subjectId} />}
+        </div>
+        <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabIndex="0">
+          {showTimeLine && <TimeLineOfLecturerGraduation subjectId={subjectId} />}
         </div>
       </div>
-      {showListTask && (
-        <DragDropContext onDragEnd={onDragEnd}>
-          <div className="kanban-board">
-            <ColumnKL className='column' title="Must Do" tasks={data.filter(task => task.status === 'MustDo')} droppableId="MustDo" />
-            <ColumnKL className='column' title="Doing" tasks={data.filter(task => task.status === 'Doing')} droppableId="Doing" />
-            <ColumnKL className='column' title="Closed" tasks={data.filter(task => task.status === 'Closed')} droppableId="Closed" />
-          </div>
-        </DragDropContext>
-      )}
-      {showTimeLine && <TimeLineOfLecturerGraduation subjectId={subjectId} />}    
     </div>
   )
 }

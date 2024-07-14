@@ -74,12 +74,17 @@ export default function TableTopic() {
                 }
             })
                 .then(response => {
-                    console.log('Yêu cầu nộp báo cáo 50% đã được gửi thành công:', response.data);
-                    toast.success("Yêu cầu nộp báo cáo 50% đã được gửi thành công!")
+                    if (response.data.body === "Outside of report submission time window" && response.data.statusCode === "NOT_ACCEPTABLE") {
+                        // Set trạng thái cho báo cáo nếu đã hết thời gian nộp
+                        toast.warning("Đã hết thời gian nộp báo cáo cho sinh viên!");
+                    } else {
+                        console.log('Yêu cầu nộp báo cáo 50% đã được gửi thành công:', response.data);
+                        toast.success("Yêu cầu nộp báo cáo 50% đã được gửi thành công!");
+                    }
                 })
                 .catch(error => {
                     console.error('Lỗi khi gửi yêu cầu nộp báo cáo 50%:', error);
-                    toast.error("Lỗi khi gửi yêu cầu nộp báo cáo 50%")
+                    toast.error("Lỗi khi gửi yêu cầu nộp báo cáo 50%");
                 });
         }
     };
@@ -93,8 +98,13 @@ export default function TableTopic() {
                 }
             })
                 .then(response => {
-                    console.log('Yêu cầu nộp báo cáo 100% đã được gửi thành công:', response.data);
-                    toast.success("Yêu cầu nộp báo cáo 100% đã được gửi thành công!")
+                    if (response.data.body === "Outside of report submission time window" && response.data.statusCode === "NOT_ACCEPTABLE") {
+                        // Set trạng thái cho báo cáo nếu đã hết thời gian nộp
+                        toast.warning("Đã hết thời gian nộp báo cáo cho sinh viên!");
+                    } else {
+                        console.log('Yêu cầu nộp báo cáo 100% đã được gửi thành công:', response.data);
+                        toast.success("Yêu cầu nộp báo cáo 100% đã được gửi thành công!");
+                    }
                 })
                 .catch(error => {
                     console.error('Lỗi khi gửi yêu cầu nộp báo cáo 100%:', error);
@@ -144,8 +154,12 @@ export default function TableTopic() {
                 }
             })
                 .then(response => {
-                    console.log('Xác nhận hoàn thành đề tài. Vui lòng chờ TBM duyệt qua phản biện!', response.data);
-                    toast.success("Xác nhận hoàn thành đề tài. Vui lòng chờ TBM duyệt qua phản biện!")
+                    if (response.data.statusCodeValue === 400) {
+                        toast.warning("Đề tài chưa được phân giảng viên phản biện!")
+                    } else {
+                        console.log('Xác nhận hoàn thành đề tài. Vui lòng chờ TBM duyệt qua phản biện!', response.data);
+                        toast.success("Xác nhận hoàn thành đề tài. Vui lòng chờ TBM duyệt qua phản biện!")
+                    }
                 })
                 .catch(error => {
                     console.error('Lỗi khi Xác nhận hoàn thành', error);
