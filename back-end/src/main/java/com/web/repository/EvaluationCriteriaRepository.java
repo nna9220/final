@@ -14,6 +14,9 @@ public interface EvaluationCriteriaRepository extends JpaRepository<EvaluationCr
     @Query("SELECT e FROM EvaluationCriteria e where e.typeSubject=:typeSubject and e.major=:major")
     public List<EvaluationCriteria> getEvaluationCriteriaByTypeSubjectAndCriteriaId(TypeSubject typeSubject, Major major);
 
+    @Query("SELECT e FROM EvaluationCriteria e where e.typeSubject=:typeSubject and e.major=:major and e.year=:year")
+    public List<EvaluationCriteria> getEvaluationCriteriaByTypeSubjectAndMajorAndYear(TypeSubject typeSubject, Major major, String year);
+
     @Query("SELECT e FROM EvaluationCriteria e where e.typeSubject=:typeSubject")
     public Set<EvaluationCriteria> getEvaluationCriteriaByTypeSubject(TypeSubject typeSubject);
 

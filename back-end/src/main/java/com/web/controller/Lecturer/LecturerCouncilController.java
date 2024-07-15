@@ -4,6 +4,7 @@ import com.web.entity.TypeSubject;
 import com.web.repository.SubjectRepository;
 import com.web.repository.TypeSubjectRepository;
 import com.web.service.Council.EvaluationAndScoringService;
+import com.web.service.HeaderOdDepartment.WordExportService;
 import com.web.service.Lecturer.ManageTutorialSubjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/lecturer/council")
@@ -22,6 +25,8 @@ public class LecturerCouncilController {
     private TypeSubjectRepository typeSubjectRepository;
     @Autowired
     private SubjectRepository subjectRepository;
+    @Autowired
+    private WordExportService wordExportService;
     @Autowired
     private ManageTutorialSubjectService manageTutorialSubjectService;
     @GetMapping("/listCouncil")
@@ -100,5 +105,6 @@ public class LecturerCouncilController {
             return new ResponseEntity<>("Internal Server Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 }
