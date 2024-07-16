@@ -102,7 +102,7 @@ public class CouncilCreationService {
                 deleteCouncil(existingCouncil);
             }
 
-            int numLecturers = 5;
+            int numLecturers = 3;
 
             // Tạo hội đồng mới trong khung thời gian hiện tại
             createCouncilForTimeFrame(currentDate, currentStartTime, currentEndTime, address, subject, lecturers, numLecturers, lecturerIndex);
@@ -130,9 +130,11 @@ public class CouncilCreationService {
 
     private void createCouncilForTimeFrame(LocalDate date, LocalTime startTime, LocalTime endTime, String address,
                                            Subject subject, List<Lecturer> lecturers, int numLecturers, int lecturerIndex) {
+
         // Tạo hội đồng mới
         Council council = new Council();
         council.setSubject(subject);
+        subject.setCouncil(council);
         council.setAddress(address);
         council.setDate(date);
         council.setStart(startTime);
@@ -164,6 +166,7 @@ public class CouncilCreationService {
         List<CouncilLecturer> councilLecturers = council.getCouncilLecturers();
         councilLecturerRepository.deleteAll(councilLecturers);
         // Xóa hội đồng
+        council.getSubject().setCouncil(null);
         councilRepository.delete(council);
     }
 

@@ -8,6 +8,7 @@ import com.web.service.Council.CouncilCreationService;
 import com.web.service.Council.EvaluationAndScoringService;
 import com.web.service.HeaderOdDepartment.ManageCouncilService;
 import com.web.utils.UserUtils;
+import com.web.service.Lecturer.ManageTutorialSubjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,6 +46,8 @@ public class HeadManageCouncilController {
     private CouncilRepository councilRepository;
     @Autowired
     private PersonRepository personRepository;
+    @Autowired
+    private ManageTutorialSubjectService manageTutorialSubjectService;
     @Autowired
     private TokenUtils tokenUtils;
     @GetMapping("/listSubject")
@@ -98,8 +101,8 @@ public class HeadManageCouncilController {
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> detailCouncil(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader){
         try {
-            return new ResponseEntity<>(evaluationAndScoringService.detailCouncil(authorizationHeader,id),HttpStatus.OK);
-        }catch (Exception e){
+            return new ResponseEntity<>(evaluationAndScoringService.detailCouncil(authorizationHeader, id), HttpStatus.OK);
+        } catch (Exception e) {
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);
         }
@@ -175,6 +178,19 @@ public class HeadManageCouncilController {
             throw new ExceptionInInitializerError(e);
         }
     }
+
+    @GetMapping("/listCriteria")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
+    public ResponseEntity<?> getListCriteria(@RequestHeader("Authorization") String authorizationHeader){
+        try {
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
+            return new ResponseEntity<>(manageTutorialSubjectService.getListCriteria(authorizationHeader,typeSubject),HttpStatus.OK);
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
 
     @GetMapping("/detailCouncilReportTime")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")

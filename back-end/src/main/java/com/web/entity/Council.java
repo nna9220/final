@@ -38,11 +38,11 @@ public class Council {
     @DateTimeFormat(pattern = "HH:mm:ss")
     private LocalTime end;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "subject", unique = true)
     private Subject subject;
 
-    @OneToMany(mappedBy = "council", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "council", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     @JsonIgnore
     private List<CouncilLecturer> councilLecturers;
 }

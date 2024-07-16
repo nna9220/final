@@ -136,36 +136,36 @@ public class EvaluationAndScoringService {
 
 
     //Chi tiết council -- get detail của subject từ council
-    public ResponseEntity<Map<String,Object>> detailCouncil(String authorizationHeader, int id){
+    public Map<String, Object> detailCouncil(String authorizationHeader, int id) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Subject existedSubject = subjectRepository.findById(id).orElse(null);
-            if (existedSubject!=null){
+            if (existedSubject != null) {
                 Council existedCouncil = councilRepository.getCouncilBySubject(existedSubject);
-                if (existedCouncil!=null){
+                if (existedCouncil != null) {
                     List<CouncilLecturer> councilLecturers = councilLecturerRepository.getListCouncilLecturerByCouncil(existedCouncil);
-                    Map<String,Object> response = new HashMap<>();
-                    response.put("subject",existedSubject);
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("subject", existedSubject);
                     List<Lecturer> lecturers = new ArrayList<>();
-                    for (CouncilLecturer c:councilLecturers) {
+                    for (CouncilLecturer c : councilLecturers) {
                         lecturers.add(c.getLecturer());
                     }
-                    response.put("council",existedCouncil);
-                    response.put("councilLecturer",councilLecturers);
+                    response.put("council", existedCouncil);
+                    response.put("councilLecturer", councilLecturers);
                     response.put("listLecturerOfCouncil", lecturers);
-                    return new ResponseEntity<>(response,HttpStatus.OK);
-                }else {
-                    //mã 417
-                    return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+                    return response;
+                } else {
+                    throw new RuntimeException("Council not found for the given subject");
                 }
-            }else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                throw new RuntimeException("Subject not found");
             }
-        }else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } else {
+            throw new RuntimeException("Unauthorized access");
         }
     }
+
 
     public ResponseEntity<Map<String,Object>> detailSubjectLecturerCouncil(String authorizationHeader, int id){
         String token = tokenUtils.extractToken(authorizationHeader);

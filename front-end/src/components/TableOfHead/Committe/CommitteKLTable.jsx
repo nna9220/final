@@ -13,6 +13,7 @@ function CommitteKLTable() {
     const [subjectIdDetail, setSubjectIdDetail] = useState(null);
     const [subjectId, setSubjectId] = useState(null);
     const [id, setId] = useState(null);
+    const [error, setError] = useState();
     const [evaluation, setEvaluation] = useState({
         studentId1: '',
         studentId2: '',
@@ -54,14 +55,18 @@ function CommitteKLTable() {
     };
 
     const listTopic = () => {
-        axiosInstance.get('/head/council/listSubject', {
+        axiosInstance.get('/head/manager/council/listSubject', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             }
         })
             .then(response => {
-                console.log("Danh sách đề tài: ", response.data);
-                setCommitte(response.data);
+                if (response.data.body ==="Không nằm trong khoảng thời gian hội đồng được tổ chức."){
+                    setCommitte();
+                }else{
+                    setCommitte(response.data.body);
+                    console.log("Danh sách đề tài: ", response.data.body);
+                }
             })
             .catch(error => {
                 console.error(error);
@@ -70,14 +75,14 @@ function CommitteKLTable() {
 
     const detailTopic = () => {
         console.log("ID: ", subjectIdDetail);
-        axiosInstance.get(`/head/council/detail/${subjectIdDetail}`, {
+        axiosInstance.get(`/head/manager/council/detailCouncil/${subjectIdDetail}`, {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             }
         })
             .then(response => {
                 console.log("Chi tiết:", response.data);
-                setDetail(response.data.body);
+                setDetail(response.data.body || null);
                 setCriterias(response.data.body.subject.criteria);
             })
             .catch(error => {
@@ -86,7 +91,7 @@ function CommitteKLTable() {
     };
 
     const listCriteria = () => {
-        axiosInstance.get('/head/council/listCriteria', {
+        axiosInstance.get('/head/manager/council/listCriteria', {
             headers: {
                 'Authorization': `Bearer ${userToken}`,
             }
@@ -162,18 +167,18 @@ function CommitteKLTable() {
                         {committe.map((item, index) => (
                             <tr key={index}>
                                 <th scope="row">{index + 1}</th>
-                                <td>{item.subject?.subjectName}</td>
-                                <td>{item.subject?.instructorId?.person?.firstName + ' ' + item.subject?.instructorId?.person?.lastName}</td>
-                                <td>{item.subject?.thesisAdvisorId?.person?.firstName + ' ' + item.subject?.thesisAdvisorId?.person?.lastName}</td>
-                                <td>{item.subject?.student1}</td>
-                                <td>{item.subject?.student2}</td>
-                                <td>{item.subject?.student3}</td>
+                                <td>{item.subjectName}</td>
+                                <td>{item.instructorId?.person?.firstName + ' ' + item.instructorId?.person?.lastName}</td>
+                                <td>{item.thesisAdvisorId?.person?.firstName + ' ' + item.thesisAdvisorId?.person?.lastName}</td>
+                                <td>{item.student1}</td>
+                                <td>{item.student2}</td>
+                                <td>{item.student3}</td>
                                 <td>
                                     <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
                                         onClick={() => {
-                                            setDetail(item.subject.subjectId);
+                                            setDetail(item.subjectId);
                                             setSubjectIdDetail(item.councilId);
-                                            setSubjectId(item.subject.subjectId)
+                                            setSubjectId(item.subjectId)
                                         }}>
                                         Đánh giá
                                     </button>
