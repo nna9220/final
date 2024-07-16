@@ -110,9 +110,12 @@ public class LecturerManageTutorialSubjectGraduationController {
     @PostMapping("/browse/{subjectId}")
     @PreAuthorize("hasAuthority('ROLE_LECTURER')")
     public ResponseEntity<?> browseToThesisAndScoreOfInstructor(@PathVariable int subjectId,
-                                                                @RequestHeader("Authorization") String authorizationHeader){
+                                                                @RequestHeader("Authorization") String authorizationHeader,
+                                                                @RequestParam("reviewContent") String reviewContent, @RequestParam("reviewAdvantage") String reviewAdvantage,
+                                                                @RequestParam("reviewWeakness") String reviewWeakness, @RequestParam("status") Boolean status,
+                                                                @RequestParam("classification") String classification, @RequestParam("score") double score){
         try {
-            return new ResponseEntity<>(manageTutorialSubjectService.BrowseMoveToThesisAdvisorGraduation(subjectId,authorizationHeader),HttpStatus.OK);
+            return new ResponseEntity<>(manageTutorialSubjectService.BrowseMoveToHeadGraduation(subjectId,authorizationHeader,reviewContent,reviewAdvantage,reviewWeakness,status,classification,score),HttpStatus.OK);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);

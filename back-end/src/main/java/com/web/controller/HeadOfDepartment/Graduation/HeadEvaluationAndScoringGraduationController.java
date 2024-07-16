@@ -1,6 +1,11 @@
 package com.web.controller.HeadOfDepartment.Graduation;
 
+import com.web.entity.ReviewByInstructor;
+import com.web.entity.ReviewByThesis;
+import com.web.entity.Subject;
 import com.web.entity.TypeSubject;
+import com.web.repository.ReviewByInstructorRepository;
+import com.web.repository.ReviewByThesisRepository;
 import com.web.repository.SubjectRepository;
 import com.web.repository.TypeSubjectRepository;
 import com.web.service.Council.EvaluationAndScoringService;
@@ -21,6 +26,10 @@ public class HeadEvaluationAndScoringGraduationController {
     private TypeSubjectRepository typeSubjectRepository;
     @Autowired
     private SubjectRepository subjectRepository;
+    @Autowired
+    private ReviewByInstructorRepository reviewByInstructorRepository;
+    @Autowired
+    private ReviewByThesisRepository reviewByThesisRepository;
 
     @GetMapping("/listSubject")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
@@ -60,6 +69,52 @@ public class HeadEvaluationAndScoringGraduationController {
                                                             @RequestParam(value = "reviewStudent3", required = false) String review3){
         try {
             return new ResponseEntity<>(evaluationAndScoringService.evaluationAndScoringGraduation(authorizationHeader,id,studentId1,studentId2,studentId3,review1,review2,review3,score1,score2,score3),HttpStatus.OK);
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    @GetMapping("/reviewInstructor/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
+    public ResponseEntity<?> getDetailReviewInstructor(@PathVariable int subjectId,@RequestHeader("Authorization") String authorizationHeader){
+        try {
+            Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
+            if (existedSubject!=null){
+                ReviewByInstructor existedReview = reviewByInstructorRepository.getReviewByInstructorBySAndSubject(existedSubject);
+                if (existedReview!=null){
+                    return new ResponseEntity<>(existedReview,HttpStatus.OK);
+                }else {
+                    //K tìm thấy đánh giá
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
+            }else {
+                //Không tìm thấy đề tài
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    @GetMapping("/reviewThesis{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
+    public ResponseEntity<?> getDetailReviewThesis(@PathVariable int subjectId,@RequestHeader("Authorization") String authorizationHeader){
+        try {
+            Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
+            if (existedSubject!=null){
+                ReviewByThesis existedReview = reviewByThesisRepository.getReviewByThesisBySAndSubject(existedSubject);
+                if (existedReview!=null){
+                    return new ResponseEntity<>(existedReview,HttpStatus.OK);
+                }else {
+                    //K tìm thấy đánh giá
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
+            }else {
+                //Không tìm thấy đề tài
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);

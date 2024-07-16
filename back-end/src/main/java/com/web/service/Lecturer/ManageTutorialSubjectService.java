@@ -50,6 +50,10 @@ public class ManageTutorialSubjectService {
     private NotificationRepository notificationRepository;
     @Autowired
     private EvaluationCriteriaRepository evaluationCriteriaRepository;
+    @Autowired
+    private ReviewByInstructorRepository reviewByInstructorRepository;
+    @Autowired
+    private ReviewByThesisRepository reviewByThesisRepository;
 
     //Thông báo nộp 50%
     public ResponseEntity<?> NoticeOfFiftyReportSubmission(int id,@RequestHeader("Authorization") String authorizationHeader, TypeSubject typeSubject){
@@ -441,59 +445,128 @@ public class ManageTutorialSubjectService {
 
     //KHÓA LUẬN TN
     @Transactional
-    public ResponseEntity<?> BrowseMoveToThesisAdvisorGraduation(int id,@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<?> BrowseMoveToHeadGraduation(int id, @RequestHeader("Authorization") String authorizationHeader,
+                                                        String reviewContent, String reviewAdvantage, String reviewWeakness,
+                                                        Boolean status,String classification, double score) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Subject existedSubject = subjectRepository.findById(id).orElse(null);
             if (existedSubject != null) {
                 if (existedSubject.getThesisAdvisorId() != null) {
-                    //Set active của đề tài
-                    existedSubject.setActive((byte) 6);
-                    subjectRepository.save(existedSubject);
-                    //Gửi mail
-                    String subject = "Topic: " + existedSubject.getSubjectName();
-                    String messenger = "Topic: " + existedSubject.getSubjectName() + " đã được " + existedSubject.getInstructorId().getPerson().getFirstName() + " " + existedSubject.getInstructorId().getPerson().getLastName() + " duyệt là hoàn thành, truy cập website để xem chi tiết!";
-                    List<String> emailPerson = new ArrayList<>();
-                    Authority authority = authorityRepository.findByName("ROLE_HEAD");
-                    Lecturer head = lecturerRepository.getLecturerISHead(authority,existedSubject.getInstructorId().getMajor());
-                    emailPerson.add(head.getPerson().getUsername());
-                    if (existedSubject.getStudent1()!=null) {
-                        Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
-                        if (student1.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                            emailPerson.add(student1.getPerson().getUsername());
+                    //Tạo mới reviewByInstructor
+                    ReviewByInstructor reviewByInstructor = new ReviewByInstructor();
+                    reviewByInstructor.setSubject(existedSubject);
+                    reviewByInstructor.setInstructorId(existedSubject.getInstructorId());
+                    reviewByInstructor.setReviewContent(reviewContent);
+                    reviewByInstructor.setReviewAdvantage(reviewAdvantage);
+                    reviewByInstructor.setReviewWeakness(reviewWeakness);
+                    reviewByInstructor.setStatus(status);
+                    reviewByInstructor.setClassification(classification);
+                    reviewByInstructor.setScore(score);
+                    reviewByInstructorRepository.save(reviewByInstructor);
+                    existedSubject.getInstructorId().getReviewByInstructors().add(reviewByInstructor);
+                    lecturerRepository.save(existedSubject.getInstructorId());
+                    if (status) {
+                        //Set active của đề tài
+                        existedSubject.setActive((byte) 6);
+                        subjectRepository.save(existedSubject);
+                        //Gửi mail
+                        String subject = "Topic: " + existedSubject.getSubjectName();
+                        String messenger = "Topic: " + existedSubject.getSubjectName() + " đã được " + existedSubject.getInstructorId().getPerson().getFirstName() + " " + existedSubject.getInstructorId().getPerson().getLastName() + " duyệt là hoàn thành, truy cập website để xem chi tiết, đợi thông báo từ giảng viên phản biện!";
+                        List<String> emailPerson = new ArrayList<>();
+                        Authority authority = authorityRepository.findByName("ROLE_HEAD");
+                        Lecturer head = lecturerRepository.getLecturerISHead(authority, existedSubject.getInstructorId().getMajor());
+                        emailPerson.add(head.getPerson().getUsername());
+                        if (existedSubject.getStudent1() != null) {
+                            Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
+                            if (student1.getPerson().getPersonId() != personCurrent.getPersonId()) {
+                                emailPerson.add(student1.getPerson().getUsername());
+                            }
                         }
-                    }
-                    if (existedSubject.getStudent2()!=null) {
-                        Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
-                        if (student2.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                            emailPerson.add(student2.getPerson().getUsername());
+                        if (existedSubject.getStudent2() != null) {
+                            Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
+                            if (student2.getPerson().getPersonId() != personCurrent.getPersonId()) {
+                                emailPerson.add(student2.getPerson().getUsername());
+                            }
                         }
-                    }
-                    if (existedSubject.getStudent3()!=null) {
-                        Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
-                        if (student3.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                            emailPerson.add(student3.getPerson().getUsername());
+                        if (existedSubject.getStudent3() != null) {
+                            Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
+                            if (student3.getPerson().getPersonId() != personCurrent.getPersonId()) {
+                                emailPerson.add(student3.getPerson().getUsername());
+                            }
                         }
-                    }
-                    if (!emailPerson.isEmpty()){
-                        mailService.sendMailToPerson(emailPerson,subject,messenger);
-                    }
-                    List<Person> personList = new ArrayList<>();
-                    for (String s:emailPerson) {
-                        Person p = personRepository.findUsername(s);
-                        if (p!=null){
-                            personList.add(p);
+                        if (!emailPerson.isEmpty()) {
+                            mailService.sendMailToPerson(emailPerson, subject, messenger);
                         }
+                        List<Person> personList = new ArrayList<>();
+                        for (String s : emailPerson) {
+                            Person p = personRepository.findUsername(s);
+                            if (p != null) {
+                                personList.add(p);
+                            }
+                        }
+                        Notification notification = new Notification();
+                        LocalDateTime now = LocalDateTime.now();
+                        notification.setDateSubmit(now);
+                        notification.setPersons(personList);
+                        notification.setTitle(subject);
+                        notification.setContent(messenger);
+                        for (Person p : personList) {
+                            p.getNotifications().add(notification);
+                        }
+                        notificationRepository.save(notification);
+                        personRepository.saveAll(personList);
+                        return new ResponseEntity<>(existedSubject, HttpStatus.OK);
+                    }else {
+                        existedSubject.setActive((byte) -1);
+                        subjectRepository.save(existedSubject);
+                        String subject = "Topic: " + existedSubject.getSubjectName();
+                        String messenger = "Topic: " + existedSubject.getSubjectName() + "không đủ điều kiện tham gia phản biện, đề tài bị đánh rớt" + "\n" +
+                                "Điểm: " + reviewByInstructor.getScore() + "\n" +
+                                "Xếp  loại: " + reviewByInstructor.getClassification();
+                        List<String> emailPerson = new ArrayList<>();
+                        if (existedSubject.getStudent1()!=null) {
+                            Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
+                            if (student1.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                                emailPerson.add(student1.getPerson().getUsername());
+                            }
+                        }
+                        if (existedSubject.getStudent2()!=null) {
+                            Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
+                            if (student2.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                                emailPerson.add(student2.getPerson().getUsername());
+                            }
+                        }
+                        if (existedSubject.getStudent3()!=null) {
+                            Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
+                            if (student3.getPerson().getPersonId()!=personCurrent.getPersonId()) {
+                                emailPerson.add(student3.getPerson().getUsername());
+                            }
+                        }
+                        if (!emailPerson.isEmpty()) {
+                            mailService.sendMailToPerson(emailPerson, subject, messenger);
+                        }
+                        List<Person> personList = new ArrayList<>();
+                        for (String s:emailPerson) {
+                            Person p = personRepository.findUsername(s);
+                            if (p!=null){
+                                personList.add(p);
+                            }
+                        }
+                        Notification notification = new Notification();
+                        LocalDateTime now = LocalDateTime.now();
+                        notification.setDateSubmit(now);
+                        notification.setPersons(personList);
+                        notification.setTitle(subject);
+                        notification.setContent(messenger);
+                        for (Person p : personList) {
+                            p.getNotifications().add(notification);
+                        }
+                        notificationRepository.save(notification);
+                        personRepository.saveAll(personList);
+                        return new ResponseEntity<>(existedSubject, HttpStatus.OK);
                     }
-                    Notification notification = new Notification();
-                    LocalDateTime now = LocalDateTime.now();
-                    notification.setDateSubmit(now);
-                    notification.setPersons(personList);
-                    notification.setTitle(subject);
-                    notification.setContent(messenger);
-                    notificationRepository.save(notification);
-                    return new ResponseEntity<>(existedSubject, HttpStatus.OK);
                 }else {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
@@ -535,6 +608,15 @@ public class ManageTutorialSubjectService {
             Subject existedSubject = subjectRepository.findById(id).orElse(null);
             Map<String,Object> response = new HashMap<>();
             if (existedSubject!=null) {
+                //Tìm review theo subject
+                ReviewByInstructor existedReviewInstructor = reviewByInstructorRepository.getReviewByInstructorBySAndSubject(existedSubject);
+                ReviewByThesis existedReviewThesis = reviewByThesisRepository.getReviewByThesisBySAndSubject(existedSubject);
+                if (existedReviewThesis!=null) {
+                    response.put("reviewThesis", existedReviewThesis);
+                }
+                if (existedReviewInstructor!=null) {
+                    response.put("reviewInstructor", existedReviewInstructor);
+                }
                 response.put("subject",existedSubject);
                 if (existedSubject.getStudent1() != null) {
                     Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
@@ -554,8 +636,7 @@ public class ManageTutorialSubjectService {
                         for (ScoreGraduation s : scoreGraduations) {
                             scoreCouncil = scoreCouncil + s.getScore();
                         }
-                        scoreCouncil = scoreCouncil / countLecturer;
-                        score1 = scoreCouncil + resultGraduation.getScoreInstructor() / 2;
+                        score1 = scoreCouncil / countLecturer;
                     }
                     response.put("student1",student1);
                     response.put("scoreStudent1",score1);
@@ -579,8 +660,7 @@ public class ManageTutorialSubjectService {
                         for (ScoreGraduation s : scoreGraduations) {
                             scoreCouncil = scoreCouncil + s.getScore();
                         }
-                        scoreCouncil = scoreCouncil / countLecturer;
-                        score2 = scoreCouncil + resultGraduation.getScoreInstructor() / 2;
+                        score3 = scoreCouncil / countLecturer;
                     }
                     response.put("student2",student2);
                     response.put("scoreStudent2",score2);
@@ -603,8 +683,7 @@ public class ManageTutorialSubjectService {
                         for (ScoreGraduation s : scoreGraduations) {
                             scoreCouncil = scoreCouncil + s.getScore();
                         }
-                        scoreCouncil = scoreCouncil / countLecturer;
-                        score3 = scoreCouncil + resultGraduation.getScoreInstructor() / 2;
+                        score3 = scoreCouncil / countLecturer;
                     }
                     response.put("student3",student3);
                     response.put("scoreStudent3",score3);

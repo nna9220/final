@@ -47,6 +47,8 @@ public class EvaluationAndScoringService {
     private CouncilRepository councilRepository;
     @Autowired
     private ScoreGraduationRepository scoreGraduationRepository;
+    @Autowired
+    private ReviewByInstructorRepository reviewByInstructorRepository;
 
     //Của GV trong hội đồng
     //Sau khi GVPB duyệt active =7
@@ -141,31 +143,39 @@ public class EvaluationAndScoringService {
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Subject existedSubject = subjectRepository.findById(id).orElse(null);
-            if (existedSubject != null) {
+            if (existedSubject!=null){
                 Council existedCouncil = councilRepository.getCouncilBySubject(existedSubject);
-                if (existedCouncil != null) {
+                if (existedCouncil!=null){
                     List<CouncilLecturer> councilLecturers = councilLecturerRepository.getListCouncilLecturerByCouncil(existedCouncil);
-                    Map<String, Object> response = new HashMap<>();
-                    response.put("subject", existedSubject);
+                    //Tìm Review instructor bằng subject
+                    ReviewByInstructor existedReview = reviewByInstructorRepository.getReviewByInstructorBySAndSubject(existedSubject);
+                    Map<String,Object> response = new HashMap<>();
+                    response.put("subject",existedSubject);
                     List<Lecturer> lecturers = new ArrayList<>();
-                    for (CouncilLecturer c : councilLecturers) {
+                    for (CouncilLecturer c:councilLecturers) {
                         lecturers.add(c.getLecturer());
                     }
-                    response.put("council", existedCouncil);
-                    response.put("councilLecturer", councilLecturers);
+                    if (existedReview!=null){
+                        response.put("reviewInstructor",existedReview);
+                    }else {
+                        //k tìm thy review của GVHD
+                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                    }
+                    response.put("council",existedCouncil);
+                    response.put("councilLecturer",councilLecturers);
                     response.put("listLecturerOfCouncil", lecturers);
-                    return response;
-                } else {
-                    throw new RuntimeException("Council not found for the given subject");
+                    return new ResponseEntity<>(response,HttpStatus.OK);
+                }else {
+                    //mã 417
+                    return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
                 }
-            } else {
-                throw new RuntimeException("Subject not found");
+            }else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-        } else {
-            throw new RuntimeException("Unauthorized access");
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
-
 
     public ResponseEntity<Map<String,Object>> detailSubjectLecturerCouncil(String authorizationHeader, int id){
         String token = tokenUtils.extractToken(authorizationHeader);

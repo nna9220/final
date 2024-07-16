@@ -40,6 +40,10 @@ public class ReportService {
     private ResultGraduationRepository resultGraduationRepository;
     @Autowired
     private TypeSubjectRepository typeSubjectRepository;
+    @Autowired
+    private ReviewByThesisRepository reviewByThesisRepository;
+    @Autowired
+    private ReviewByInstructorRepository reviewByInstructorRepository;
 
 
     public void generateExcel(HttpServletResponse response, HttpSession session, TypeSubject typeSubject) throws IOException {
@@ -88,6 +92,8 @@ public class ReportService {
         for (Subject subject:filteredSubjects){
             Lecturer instructor = lecturerRepository.findById(subject.getInstructorId().getLecturerId()).orElse(null);
             Lecturer thesis = lecturerRepository.findById(subject.getInstructorId().getLecturerId()).orElse(null);
+            ReviewByThesis reviewByThesis = reviewByThesisRepository.getReviewByThesisBySAndSubject(subject);
+            ReviewByInstructor reviewByInstructor = reviewByInstructorRepository.getReviewByInstructorBySAndSubject(subject);
             HSSFRow dataRow =  sheet.createRow(dataRowIndex);
             dataRow.createCell(0).setCellValue(subject.getSubjectId());
             dataRow.createCell(1).setCellValue(subject.getSubjectName());
@@ -118,7 +124,7 @@ public class ReportService {
                         scoreCouncil = scoreCouncil+s.getScore();
                     }
                     scoreCouncil = scoreCouncil/countLecturer;
-                    score1 = scoreCouncil+resultGraduation.getScoreInstructor()/2;
+                    score1 = (scoreCouncil+reviewByInstructor.getScore() + reviewByThesis.getScore())/3;
                 }
                 dataRow.createCell(3).setCellValue(subject.getStudent1());
                 dataRow.createCell(4).setCellValue(student1.getPerson().getFirstName() + " " + student1.getPerson().getLastName());
@@ -144,7 +150,7 @@ public class ReportService {
                         scoreCouncil = scoreCouncil+s.getScore();
                     }
                     scoreCouncil = scoreCouncil/countLecturer;
-                    score2 = scoreCouncil+resultGraduation.getScoreInstructor()/2;
+                    score2 = (scoreCouncil+reviewByInstructor.getScore() + reviewByThesis.getScore())/3;
                 }
                 dataRow.createCell(5).setCellValue(subject.getStudent1());
                 dataRow.createCell(6).setCellValue(student2.getPerson().getFirstName() + " " + student2.getPerson().getLastName());
@@ -170,7 +176,7 @@ public class ReportService {
                         scoreCouncil = scoreCouncil+s.getScore();
                     }
                     scoreCouncil = scoreCouncil/countLecturer;
-                    score3 = scoreCouncil+resultGraduation.getScoreInstructor()/2;
+                    score3 = (scoreCouncil+reviewByInstructor.getScore() + reviewByThesis.getScore())/3;
                 }
                 dataRow.createCell(7).setCellValue(subject.getStudent1());
                 dataRow.createCell(8).setCellValue(student3.getPerson().getFirstName() + " " + student3.getPerson().getLastName());

@@ -68,37 +68,37 @@ public class WordExportService {
 
         // Lấy dữ liệu từ cơ sở dữ liệu
         Subject subject = subjectRepository.findById(subjectId).orElse(null);
-        if (subject!=null) {
-            //Tìm kết quả theo đề tài
-            if (subject.getStudent1()!=null){
+        if (subject != null) {
+            // Tìm kết quả theo đề tài
+            if (subject.getStudent1() != null) {
                 Student student1 = studentRepository.findById(subject.getStudent1()).orElse(null);
-                if (student1!=null) {
-                    replaceTextInDocument(document, "Họ và tên Sinh viên 1 :", student1.getPerson().getFirstName() + " " + student1.getPerson().getLastName());
-                    replaceTextInDocument(document, "MSSV 1:", student1.getStudentId());
+                if (student1 != null) {
+                    appendTextAfterKeyword(document, "Họ và tên Sinh viên 1 :", student1.getPerson().getFirstName() + " " + student1.getPerson().getLastName());
+                    appendTextAfterKeyword(document, "MSSV 1:", student1.getStudentId());
                 }
             }
-            if (subject.getStudent2()!=null){
+            if (subject.getStudent2() != null) {
                 Student student2 = studentRepository.findById(subject.getStudent2()).orElse(null);
-                if (student2!=null) {
-                    replaceTextInDocument(document, "Họ và tên Sinh viên 2 :", student2.getPerson().getFirstName() + " " + student2.getPerson().getLastName());
-                    replaceTextInDocument(document, "MSSV 2:", student2.getStudentId());
+                if (student2 != null) {
+                    appendTextAfterKeyword(document, "Họ và tên Sinh viên 2 :", student2.getPerson().getFirstName() + " " + student2.getPerson().getLastName());
+                    appendTextAfterKeyword(document, "MSSV 2:", student2.getStudentId());
                 }
             }
-            if (subject.getStudent3()!=null){
+            if (subject.getStudent3() != null) {
                 Student student3 = studentRepository.findById(subject.getStudent3()).orElse(null);
-                if (student3!=null) {
-                    replaceTextInDocument(document, "Họ và tên Sinh viên 3 :", student3.getPerson().getFirstName() + " " + student3.getPerson().getLastName());
-                    replaceTextInDocument(document, "MSSV 3:", student3.getStudentId());
+                if (student3 != null) {
+                    appendTextAfterKeyword(document, "Họ và tên Sinh viên 3 :", student3.getPerson().getFirstName() + " " + student3.getPerson().getLastName());
+                    appendTextAfterKeyword(document, "MSSV 3:", student3.getStudentId());
                 }
             }
 
 
             // Thay thế dữ liệu trong file mẫu
-            replaceTextInDocument(document, "Tên đề tài:", subject.getSubjectName());
+            appendTextAfterKeyword(document, "Tên đề tài:", subject.getSubjectName());
 
-            if (subject.getInstructorId()!=null) {
+            if (subject.getInstructorId() != null) {
                 Lecturer lecturer = subject.getInstructorId();
-                replaceTextInDocument(document, "Họ và tên Giáo viên hướng dẫn:", lecturer.getPerson().getFirstName()+" " + lecturer.getPerson().getLastName());
+                appendTextAfterKeyword(document, "Họ và tên Giáo viên hướng dẫn:", lecturer.getPerson().getFirstName() + " " + lecturer.getPerson().getLastName());
             }
 
             // Lưu file đã chỉnh sửa
@@ -106,6 +106,20 @@ public class WordExportService {
             document.write(fos);
             fos.close();
             inputStream.close();
+        }
+    }
+
+    private void appendTextAfterKeyword(XWPFDocument document, String keyword, String textToAdd) {
+        for (XWPFParagraph paragraph : document.getParagraphs()) {
+            for (XWPFRun run : paragraph.getRuns()) {
+                String text = run.getText(0);
+                if (text != null && text.contains(keyword)) {
+                    int pos = text.indexOf(keyword) + keyword.length();
+                    String newText = text.substring(0, pos) + " " + textToAdd + text.substring(pos);
+                    run.setText(newText, 0);
+                    return; // Đã tìm thấy và thêm văn bản, không cần tiếp tục
+                }
+            }
         }
     }
 
@@ -117,36 +131,37 @@ public class WordExportService {
 
         // Lấy dữ liệu từ cơ sở dữ liệu
         Subject subject = subjectRepository.findById(subjectId).orElse(null);
-        if (subject!=null) {
-            if (subject.getStudent1()!=null){
+        if (subject != null) {
+            // Tìm kết quả theo đề tài
+            if (subject.getStudent1() != null) {
                 Student student1 = studentRepository.findById(subject.getStudent1()).orElse(null);
-                if (student1!=null) {
-                    replaceTextInDocument(document, "Họ và tên Sinh viên 1 :", student1.getPerson().getFirstName() + " " + student1.getPerson().getLastName());
-                    replaceTextInDocument(document, "MSSV 1:", student1.getStudentId());
+                if (student1 != null) {
+                    appendTextAfterKeyword(document, "Họ và tên Sinh viên 1 :", student1.getPerson().getFirstName() + " " + student1.getPerson().getLastName());
+                    appendTextAfterKeyword(document, "MSSV 1:", student1.getStudentId());
                 }
             }
-            if (subject.getStudent2()!=null){
+            if (subject.getStudent2() != null) {
                 Student student2 = studentRepository.findById(subject.getStudent2()).orElse(null);
-                if (student2!=null) {
-                    replaceTextInDocument(document, "Họ và tên Sinh viên 2 :", student2.getPerson().getFirstName() + " " + student2.getPerson().getLastName());
-                    replaceTextInDocument(document, "MSSV 2:", student2.getStudentId());
+                if (student2 != null) {
+                    appendTextAfterKeyword(document, "Họ và tên Sinh viên 2 :", student2.getPerson().getFirstName() + " " + student2.getPerson().getLastName());
+                    appendTextAfterKeyword(document, "MSSV 2:", student2.getStudentId());
                 }
             }
-            if (subject.getStudent3()!=null){
+            if (subject.getStudent3() != null) {
                 Student student3 = studentRepository.findById(subject.getStudent3()).orElse(null);
-                if (student3!=null) {
-                    replaceTextInDocument(document, "Họ và tên Sinh viên 3 :", student3.getPerson().getFirstName() + " " + student3.getPerson().getLastName());
-                    replaceTextInDocument(document, "MSSV 3:", student3.getStudentId());
+                if (student3 != null) {
+                    appendTextAfterKeyword(document, "Họ và tên Sinh viên 3 :", student3.getPerson().getFirstName() + " " + student3.getPerson().getLastName());
+                    appendTextAfterKeyword(document, "MSSV 3:", student3.getStudentId());
                 }
             }
 
 
             // Thay thế dữ liệu trong file mẫu
-            replaceTextInDocument(document, "Tên đề tài:", subject.getSubjectName());
+            appendTextAfterKeyword(document, "Tên đề tài:", subject.getSubjectName());
 
-            if (subject.getThesisAdvisorId()!=null) {
+            if (subject.getThesisAdvisorId() != null) {
                 Lecturer lecturer = subject.getThesisAdvisorId();
-                replaceTextInDocument(document, "Họ và tên Giáo viên phản biện:", lecturer.getPerson().getFirstName()+" " + lecturer.getPerson().getLastName());
+                appendTextAfterKeyword(document, "Họ và tên Giáo viên phản biện:", lecturer.getPerson().getFirstName() + " " + lecturer.getPerson().getLastName());
             }
 
             // Lưu file đã chỉnh sửa
