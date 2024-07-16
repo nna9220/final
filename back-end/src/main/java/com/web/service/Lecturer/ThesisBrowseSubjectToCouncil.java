@@ -32,6 +32,8 @@ public class ThesisBrowseSubjectToCouncil {
     private MailServiceImpl mailService;
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private ReviewByThesisRepository reviewByThesisRepository;
 
     //Danh sách các đề tài có active=7
     public ResponseEntity<?> getListOfSubjectWasHeadBrowse(String authorizationHeader, TypeSubject typeSubject){

@@ -1,9 +1,6 @@
 package com.web.controller.HeadOfDepartment.Graduation;
 
-import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
-import com.web.entity.Lecturer;
-import com.web.entity.Person;
 import com.web.entity.TypeSubject;
 import com.web.repository.LecturerRepository;
 import com.web.repository.PersonRepository;
@@ -12,6 +9,7 @@ import com.web.repository.TypeSubjectRepository;
 import com.web.service.Council.CouncilCreationService;
 import com.web.service.Lecturer.ManageTutorialSubjectService;
 import com.web.utils.UserUtils;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -138,9 +136,12 @@ public class HeadManageTutorialSubjectGraduationController {
     @PostMapping("/browse/{subjectId}")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> browseToThesisAndScoreOfInstructor(@PathVariable int subjectId,
-                                                                @RequestHeader("Authorization") String authorizationHeader){
+                                                                @RequestHeader("Authorization") String authorizationHeader,
+                                                                @RequestParam("reviewContent") String reviewContent, @RequestParam("reviewAdvantage") String reviewAdvantage,
+                                                                @RequestParam("reviewWeakness") String reviewWeakness, @RequestParam("status") Boolean status,
+                                                                @RequestParam("classification") String classification, @RequestParam("score") double score){
         try {
-            return new ResponseEntity<>(manageTutorialSubjectService.BrowseMoveToThesisAdvisorGraduation(subjectId,authorizationHeader),HttpStatus.OK);
+            return new ResponseEntity<>(manageTutorialSubjectService.BrowseMoveToHeadGraduation(subjectId,authorizationHeader,reviewContent,reviewAdvantage,reviewWeakness,status,classification,score),HttpStatus.OK);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);

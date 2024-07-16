@@ -48,4 +48,12 @@ public class Lecturer implements Serializable {
     @JsonIgnore
     private List<CouncilLecturer> councilLecturers;
 
+    @OneToMany(mappedBy = "instructorId", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<ReviewByInstructor> reviewByInstructors;
+
+    @OneToMany(mappedBy = "thesisId", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<ReviewByThesis> reviewByTheses;
+
 }

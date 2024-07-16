@@ -47,6 +47,8 @@ public class EvaluationAndScoringService {
     private CouncilRepository councilRepository;
     @Autowired
     private ScoreGraduationRepository scoreGraduationRepository;
+    @Autowired
+    private ReviewByInstructorRepository reviewByInstructorRepository;
 
     //Của GV trong hội đồng
     //Sau khi GVPB duyệt active =7
@@ -145,11 +147,19 @@ public class EvaluationAndScoringService {
                 Council existedCouncil = councilRepository.getCouncilBySubject(existedSubject);
                 if (existedCouncil!=null){
                     List<CouncilLecturer> councilLecturers = councilLecturerRepository.getListCouncilLecturerByCouncil(existedCouncil);
+                    //Tìm Review instructor bằng subject
+                    ReviewByInstructor existedReview = reviewByInstructorRepository.getReviewByInstructorBySAndSubject(existedSubject);
                     Map<String,Object> response = new HashMap<>();
                     response.put("subject",existedSubject);
                     List<Lecturer> lecturers = new ArrayList<>();
                     for (CouncilLecturer c:councilLecturers) {
                         lecturers.add(c.getLecturer());
+                    }
+                    if (existedReview!=null){
+                        response.put("reviewInstructor",existedReview);
+                    }else {
+                        //k tìm thy review của GVHD
+                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
                     response.put("council",existedCouncil);
                     response.put("councilLecturer",councilLecturers);
