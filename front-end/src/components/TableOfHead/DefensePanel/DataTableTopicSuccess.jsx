@@ -56,10 +56,10 @@ function DataTableTopicSuccess() {
                     'Authorization': `Bearer ${userToken}`,
                 },
             });
-            const councilDetails = response.data.body.council;
+            const councilDetails = response.data.council;
             setCouncil(councilDetails);
-            setCouncilLecturers(response.data.body.councilLecturer);
-            setLecturers(response.data.body.listLecturerOfCouncil);
+            setCouncilLecturers(response.data.councilLecturer);
+            setLecturers(response.data.listLecturerOfCouncil);
             setCouncilEdit({
                 lecturer1: councilDetails.lecturer1?.personId || '',
                 lecturer2: councilDetails.lecturer2?.personId || '',

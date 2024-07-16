@@ -51,9 +51,9 @@ function CommitteTable() {
             }
         })
             .then(response => {
-                setDetail(response.data.body || null);
+                setDetail(response.data || null);
                 console.log("Detail: ", response.data);
-                setTimeCouncil(response.data.body.council.date)
+                setTimeCouncil(response.data.council.date)
             })
             .catch(error => {
                 console.error('Lỗi lấy chi tiết:', error);
