@@ -6,6 +6,7 @@ import com.web.entity.*;
 import com.web.repository.*;
 import com.web.service.Council.EvaluationAndScoringService;
 import com.web.service.HeaderOdDepartment.ManageCouncilService;
+import com.web.service.HeaderOdDepartment.WordExportService;
 import com.web.service.Lecturer.ManageTutorialSubjectService;
 import com.web.utils.UserUtils;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +28,8 @@ import java.util.Map;
 public class HeadCouncilController {
     @Autowired
     private UserUtils userUtils;
+    @Autowired
+    private WordExportService wordExportService;
     @Autowired
     private CouncilLecturerRepository councilLecturerRepository;
     @Autowired
@@ -188,5 +192,7 @@ public class HeadCouncilController {
 //            throw new ExceptionInInitializerError(e);
 //        }
 //    }
+
+
 
 }
