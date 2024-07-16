@@ -6,10 +6,7 @@ import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
@@ -31,20 +28,20 @@ public class WordExportService {
     @Autowired
     private StudentRepository studentRepository;
 
-    public void exportWordFile(String outputPath, Major major, TypeSubject typeSubject) throws IOException {
+    public byte[] exportWordFile(Major major, TypeSubject typeSubject) throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream("template/Mau-2-Rubric-KLTN-Edit.docx");
         XWPFDocument document = new XWPFDocument(inputStream);
         LocalDate nowDate = LocalDate.now();
 
-        // Lấy tiêu ch theo loại ề tài, nằm và chuyên ngành
-        List<EvaluationCriteria> criteriaList = evaluationCriteriaRepository.getEvaluationCriteriaByTypeSubjectAndMajorAndYear(typeSubject,major, String.valueOf(nowDate.getYear()));
+        // Lấy tiêu chí theo loại đề tài, năm và chuyên ngành
+        List<EvaluationCriteria> criteriaList = evaluationCriteriaRepository.getEvaluationCriteriaByTypeSubjectAndMajorAndYear(typeSubject, major, String.valueOf(nowDate.getYear()));
 
         // Điền dữ liệu bộ môn
         replaceTextInDocument(document, "Bộ Môn :", String.valueOf(major));
 
         // Điền tiêu chí và thang điểm
-        XWPFTable table = document.getTables().get(0);
+        XWPFTable table = document.getTables().get(1);
         for (int i = 0; i < criteriaList.size(); i++) {
             EvaluationCriteria criteria = criteriaList.get(i);
             XWPFTableRow row = table.createRow();
@@ -53,11 +50,14 @@ public class WordExportService {
             row.getCell(2).setText(criteria.getCriteriaScore().toString());
         }
 
-        // Lưu file đã chỉnh sửa
-        FileOutputStream fos = new FileOutputStream(outputPath);
-        document.write(fos);
-        fos.close();
+        // Lưu tài liệu vào ByteArrayOutputStream
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        document.write(byteArrayOutputStream);
+        byteArrayOutputStream.close();
         inputStream.close();
+
+        // Trả về nội dung của tài liệu dưới dạng byte array
+        return byteArrayOutputStream.toByteArray();
     }
 
     public void exportReviewByInstructorFile(String outputPath, int subjectId) throws IOException {

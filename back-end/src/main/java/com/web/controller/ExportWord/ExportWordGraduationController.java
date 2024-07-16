@@ -19,9 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 
 @RestController
 @CrossOrigin
@@ -42,17 +40,25 @@ public class ExportWordGraduationController {
     private LecturerRepository lecturerRepository;
     //EXPOET TIÊU CHÍ CHẤM ĐIỂM -CHO CẢ GVHD VÀ GVPB - NẰM Ở SIDERBAR HỘI ĐỒNG BÁO CÁO
     @GetMapping("/criteria")
-    public ResponseEntity<?> exportWord(
-            @RequestHeader("Authorization") String authorizationHeader,
-            @RequestParam("outputPath") String outputPath) {
+    public ResponseEntity<?> exportWord(@RequestHeader("Authorization") String authorizationHeader) {
         try {
+            // Lấy thông tin về loại đề tài và giảng viên hiện tại
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
             String token = tokenUtils.extractToken(authorizationHeader);
             Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
             Lecturer currentLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+
             if (currentLecturer != null) {
-                wordExportService.exportWordFile(outputPath, currentLecturer.getMajor(), typeSubject);
-                return ResponseEntity.ok("File exported successfully to " + outputPath);
+                // Gọi phương thức để lấy nội dung tệp
+                byte[] fileContent = wordExportService.exportWordFile(currentLecturer.getMajor(), typeSubject);
+                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(fileContent);
+                InputStreamResource resource = new InputStreamResource(byteArrayInputStream);
+
+                // Trả về tệp như một phần của phản hồi
+                return ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=exported-file.docx")
+                        .body(resource);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }

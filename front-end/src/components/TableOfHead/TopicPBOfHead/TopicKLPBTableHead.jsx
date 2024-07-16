@@ -74,6 +74,28 @@ function TopicKLPBTableHead() {
         }
     }
 
+
+    const exportFile = (subjectId) => {
+        const userToken = getTokenFromUrlAndSaveToStorage();
+        console.log("Token: " + userToken);
+        if (userToken) {
+            const tokenSt = sessionStorage.getItem(userToken);
+            if (!tokenSt) {
+                axiosInstance.get(`/graduation/export/reviewThesis/${subjectId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`,
+                    },
+                })
+                    .then(response => {
+                        console.log("export file success");
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            }
+        }
+    }
+
     return (
         <div style={{ display: 'grid' }}>
             <ToastContainer />
@@ -115,6 +137,8 @@ function TopicKLPBTableHead() {
                                                 disabled={item.active !== 7}>
                                                 <CreditScoreOutlinedIcon />
                                             </button>
+                                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#export"
+                                                onClick={() => exportFile(item.subjectId)}>Xuât file nhận xét</button>
                                         </td>
                                     </tr>
                                 ))

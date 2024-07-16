@@ -283,8 +283,7 @@ export default function TableTopicKL() {
                                                     <ul class="dropdown-menu">
                                                         <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-placement="bottom" onClick={() => { setSubjectIdForSubmit50(item.subjectId); setSubjectName(item.subjectName) }}>Yêu cầu nộp báo cáo 50%</button></li>
                                                         <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal1" data-bs-placement="bottom" onClick={() => { setSubjectIdForSubmit100(item.subjectId); setSubjectName(item.subjectName) }}>Yêu cầu nộp báo cáo 100%</button></li>
-                                                        <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#modalApproval" data-bs-placement="bottom" onClick={() => { setSubjectIdForApproval(item.subjectId); setSubjectName(item.subjectName) }}>Hoàn thành đề tài</button></li>
-                                                        <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#modalRefuse" data-bs-placement="bottom" onClick={() => { setSubjectIdForRefuse(item.subjectId); setSubjectName(item.subjectName) }}>Từ chối đề tài</button></li>
+                                                        <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#modalApproval" data-bs-placement="bottom" onClick={() => { setSubjectIdForApproval(item.subjectId); setSubjectName(item.subjectName) }}>Nhận xét, đánh giá</button></li>
                                                     </ul>
                                                 </div>
                                             </div>
