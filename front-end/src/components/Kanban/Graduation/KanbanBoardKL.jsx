@@ -36,7 +36,9 @@ const KanbanBoardKL = () => {
   const [currentDroppableId, setCurrentDroppableId] = useState('MustDo'); // State lưu trữ droppableId hiện tại
   const [statusSubject, setStatusSubject] = useState(null);
   const [isFileValid, setIsFileValid] = useState(true); // New state to track file validity
-
+  const [subjectId, setSubjectId] = useState(null);
+  const [council, setCouncil] = useState(null);
+  const [listLecturer, setListLecturer] = useState([]);
   const handleChangeAdd = (e) => {
     const { name, value } = e.target;
     setFormNewTask(prevState => ({
@@ -73,10 +75,12 @@ const KanbanBoardKL = () => {
             console.log("list: ", response.data);
             setStatusSubject(response.data.subject.status)
             setSubject(response.data.subject.subjectName)
+            setSubjectId(response.data.subject.subjectId);
             setData(response.data.listTask);
             SetStatusActive(response.data.subject.active);
             setReport50(response.data.subject?.fiftyPercent?.name);
             setReport100(response.data.subject?.oneHundredPercent?.name);
+            getCouncil(response.data.subject.subjectId)
           })
           .catch(error => {
             console.error("Error fetching task list:", error);
@@ -84,6 +88,23 @@ const KanbanBoardKL = () => {
           });
       }
     }
+  }
+
+  const getCouncil = (subjectId) => {
+    const userToken = getTokenFromUrlAndSaveToStorage();
+    axiosInstance.get(`/student/subjectGraduation/detailCouncil/${subjectId}`, {
+      headers: {
+        'Authorization': `Bearer ${userToken}`,
+      },
+    })
+      .then(response => {
+        console.log("council: ", response.data);
+        setCouncil(response.data.council);
+        setListLecturer(response.data.lecturers);
+      })
+      .catch(error => {
+        console.error("Error new task:", error);
+      });
   }
 
   const handleNewTask = () => {
@@ -187,7 +208,7 @@ const KanbanBoardKL = () => {
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     const allowedTypes = ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/pdf'];
-  
+
     if (selectedFile && allowedTypes.includes(selectedFile.type)) {
       setFile(selectedFile);
       setIsFileValid(true); // File is valid
@@ -246,188 +267,235 @@ const KanbanBoardKL = () => {
 
   return (
     <div>
-      {statusActive === 0 || statusActive === 8 || statusActive === 9 ? (
+      {statusActive === 0 || statusActive === 9 ? (
         <div class="alert alert-warning" role="alert">
           Bạn không thể truy cập vào đề tài!!!
         </div>
+      ) : statusActive === 8 ? (
+        <div className="council-container">
+          {council ? (
+            <>
+              <h5>THÔNG TIN HỘI ĐỒNG</h5>
+              <table className="council-table">
+                <tbody>
+                  <tr>
+                    <td className="label">Ngày:</td>
+                    <td>{council.date}</td>
+                  </tr>
+                  <tr>
+                    <td className="label">Thời gian bắt đầu:</td>
+                    <td>{council.start}</td>
+                  </tr>
+                  <tr>
+                    <td className="label">Thời gian kết thúc:</td>
+                    <td>{council.end}</td>
+                  </tr>
+                  <tr>
+                    <td className="label">Địa điểm:</td>
+                    <td>{council.address}</td>
+                  </tr>
+                  <tr>
+                    <td colSpan="2">
+                      <label>Danh sách hội đồng</label>
+                    </td>
+                  </tr>
+                  {listLecturer && listLecturer.length > 0 ? (
+                    listLecturer.map((lecturer, index) => (
+                      <tr key={index}>
+                        <td className="label">Thành viên {index + 1}:</td>
+                        <td>{lecturer.person.firstName + ' ' + lecturer.person.lastName}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="2">Không có thông tin thành viên.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </>
+          ) : (
+            <h5>Không có thông tin hội đồng.</h5>
+          )}
+        </div>
       ) : (
         <>
-        <div>
-          <ToastContainer />
-          {error && <h4 className='elter-error-no-topic'><ReportProblemOutlinedIcon /> {error}</h4>}
-          {!error &&
-            <div>
-              <div className='group-button'>
-                <div className='subject-info' style={{ marginLeft: '10px' }}>
-                  <h6>Đề tài: {subject}</h6>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <div className='button-submitTopic'>
-                    <button type="button" className='submit-report' data-bs-toggle="modal" data-bs-target="#Reports">
-                      <SummarizeOutlinedIcon /> Các bài báo cáo
-                    </button>
+          <div>
+            <ToastContainer />
+            {error && <h4 className='elter-error-no-topic'><ReportProblemOutlinedIcon /> {error}</h4>}
+            {!error &&
+              <div>
+                <div className='group-button'>
+                  <div className='subject-info' style={{ marginLeft: '10px' }}>
+                    <h6>Đề tài: {subject}</h6>
                   </div>
-                  <div className='button-submitTopic'>
-                    <button
-                      style={{ padding: '5px' }}
-                      className={`submit-button ${statusActive === 2 ? 'active' : 'disabled'}`}
-                      data-bs-toggle="modal"
-                      data-bs-target="#submit50"
-                      disabled={statusActive !== 2}
-                    >
-                      Nộp báo cáo lần 1
-                    </button>
-                    <button
-                      className={`submit-button ${statusActive === 4 ? 'active' : 'disabled'}`}
-                      data-bs-toggle="modal"
-                      data-bs-target="#submit100"
-                      disabled={statusActive !== 4}
-                    >
-                      Nộp báo cáo lần 2
-                    </button>
-                  </div>
-
-                </div>
-              </div>
-
-              <div className='list-button'>
-                <button type="button" className='button-add-task' data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={handleNewTask}>
-                  <AddOutlinedIcon /> Thêm
-                </button>
-              </div>
-
-              <ul class="nav" id="myTab" role="tablist">
-                <li class="nav-item" role="presentation">
-                  <button class="nav-link-list active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" role="tab" aria-controls="home-tab-pane" aria-selected="true" onClick={toggleListTask}>List task</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                  <button class="nav-link-list" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" role="tab" aria-controls="profile-tab-pane" aria-selected="false" onClick={toggleTimeline}>Time Line</button>
-                </li>
-              </ul>
-              <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabIndex="0">
-                  {!error && (
-                    <React.Fragment>
-                      {showListTask && (
-                        <DragDropContext onDragEnd={handleDragEnd}>
-                          <div className="kanban-board">
-                            <ColumnKL title="Must Do" tasks={data.filter(task => task.status && task.status === 'MustDo')} droppableId="MustDo" currentDroppableId={currentDroppableId} />
-                            <ColumnKL title="Doing" tasks={data.filter(task => task.status && task.status === 'Doing')} droppableId="Doing" currentDroppableId={currentDroppableId} />
-                            <ColumnKL title="Closed" tasks={data.filter(task => task.status && task.status === 'Closed')} droppableId="Closed" currentDroppableId={currentDroppableId} />
-                          </div>
-                        </DragDropContext>
-                      )}
-                      {showTimeLine && <TimeLineOfStudentGraduation />}
-                    </React.Fragment>
-                  )}
-                </div>
-                <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabIndex="0">
-                  {showTimeLine && <TimeLineOfStudentGraduation />}
-                </div>
-              </div>
-
-              <div class="modal fade" id="submit50" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h1 class="modal-title fs-5" id="exampleModalLabel">Nộp báo cáo 50%</h1>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div className='button-submitTopic'>
+                      <button type="button" className='submit-report' data-bs-toggle="modal" data-bs-target="#Reports">
+                        <SummarizeOutlinedIcon /> Các bài báo cáo
+                      </button>
                     </div>
-                    <div class="modal-body">
-                      <div class="mb-3">
-                        <label for="formFile" class="form-label">Chọn file báo cáo : </label>
-                        <input class="form-control" type="file" id="formFile" onChange={handleFileChange} />
+                    <div className='button-submitTopic'>
+                      <button
+                        style={{ padding: '5px' }}
+                        className={`submit-button ${statusActive === 2 ? 'active' : 'disabled'}`}
+                        data-bs-toggle="modal"
+                        data-bs-target="#submit50"
+                        disabled={statusActive !== 2}
+                      >
+                        Nộp báo cáo lần 1
+                      </button>
+                      <button
+                        className={`submit-button ${statusActive === 4 ? 'active' : 'disabled'}`}
+                        data-bs-toggle="modal"
+                        data-bs-target="#submit100"
+                        disabled={statusActive !== 4}
+                      >
+                        Nộp báo cáo lần 2
+                      </button>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div className='list-button'>
+                  <button type="button" className='button-add-task' data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={handleNewTask}>
+                    <AddOutlinedIcon /> Thêm
+                  </button>
+                </div>
+
+                <ul class="nav" id="myTab" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link-list active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" role="tab" aria-controls="home-tab-pane" aria-selected="true" onClick={toggleListTask}>List task</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link-list" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" role="tab" aria-controls="profile-tab-pane" aria-selected="false" onClick={toggleTimeline}>Time Line</button>
+                  </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                  <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabIndex="0">
+                    {!error && (
+                      <React.Fragment>
+                        {showListTask && (
+                          <DragDropContext onDragEnd={handleDragEnd}>
+                            <div className="kanban-board">
+                              <ColumnKL title="Must Do" tasks={data.filter(task => task.status && task.status === 'MustDo')} droppableId="MustDo" currentDroppableId={currentDroppableId} />
+                              <ColumnKL title="Doing" tasks={data.filter(task => task.status && task.status === 'Doing')} droppableId="Doing" currentDroppableId={currentDroppableId} />
+                              <ColumnKL title="Closed" tasks={data.filter(task => task.status && task.status === 'Closed')} droppableId="Closed" currentDroppableId={currentDroppableId} />
+                            </div>
+                          </DragDropContext>
+                        )}
+                        {showTimeLine && <TimeLineOfStudentGraduation />}
+                      </React.Fragment>
+                    )}
+                  </div>
+                  <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabIndex="0">
+                    {showTimeLine && <TimeLineOfStudentGraduation />}
+                  </div>
+                </div>
+
+                <div class="modal fade" id="submit50" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Nộp báo cáo 50%</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" disabled={!isFileValid} onClick={handleSubmitReportFifty}>Xác nhận</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="modal fade" id="submit100" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h1 class="modal-title fs-5" id="exampleModalLabel">Nộp báo cáo 100%</h1>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                      <div class="mb-3">
-                        <label for="formFile" class="form-label">Chọn file báo cáo : </label>
-                        <input class="form-control" type="file" id="formFile"  onChange={handleFileChange} />
+                      <div class="modal-body">
+                        <div class="mb-3">
+                          <label for="formFile" class="form-label">Chọn file báo cáo : </label>
+                          <input class="form-control" type="file" id="formFile" onChange={handleFileChange} />
+                        </div>
                       </div>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" disabled={!isFileValid} onClick={handleSubmitReport100}>Xác nhận</button>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" disabled={!isFileValid} onClick={handleSubmitReportFifty}>Xác nhận</button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div class="modal fade" id="Reports" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h1 class="modal-title fs-5" id="exampleModalLabel">Các bài báo cáo của đề tài</h1>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                      <p>Báo cáo 50%: <span>{report50 ? report50 : 'Chưa có'}</span></p>
-                      <p>Báo cáo 100%: <span>{report100 ? report100 : 'Chưa có'}</span></p>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <div class="modal fade" id="submit100" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Nộp báo cáo 100%</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="mb-3">
+                          <label for="formFile" class="form-label">Chọn file báo cáo : </label>
+                          <input class="form-control" type="file" id="formFile" onChange={handleFileChange} />
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" disabled={!isFileValid} onClick={handleSubmitReport100}>Xác nhận</button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                  <form class="modal-content" onSubmit={handleAddNewTask}>
-                    <div class="modal-header">
-                      <h1 class="modal-title fs-5" id="exampleModalLabel">Add task</h1>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                      <div class="form-floating mb-3 mt-3">
-                        <input required type="text" class="form-control" id="requirement" placeholder="Enter requirement" name="requirement" value={formNewTask.requirement} onChange={handleChangeAdd} />
-                        <label for="requirement">Tên task</label>
+                <div class="modal fade" id="Reports" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Các bài báo cáo của đề tài</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
-                      <div class="form-floating mb-3 mt-3">
-                        <input required type="date" class="form-control" id="timeStart" placeholder="Enter timeStart" name="timeStart" value={formNewTask.timeStart} onChange={handleChangeAdd} />
-                        <label for="timeStart">Thời gian bắt đầu</label>
+                      <div class="modal-body">
+                        <p>Báo cáo 50%: <span>{report50 ? report50 : 'Chưa có'}</span></p>
+                        <p>Báo cáo 100%: <span>{report100 ? report100 : 'Chưa có'}</span></p>
                       </div>
-                      <div class="form-floating mb-3 mt-3">
-                        <input required type="date" class="form-control" id="timeEnd" placeholder="Enter timeEnd" name="timeEnd" value={formNewTask.timeEnd} onChange={handleChangeAdd} />
-                        <label for="timeEnd">Thời gian kết thúc</label>
-                      </div>
-                      <div class="form-floating mb-3 mt-3">
-                        <select required class="form-select" id="assignTo" name="assignTo" value={formNewTask.assignTo} onChange={handleChangeAdd}>
-                          <option value="" selected disabled>Chọn thành viên</option>
-                          {newTask.map((option, index) => (
-                            <option key={index} value={option.studentId}>{option.person?.firstName + ' ' + option.person?.lastName} </option>
-                          ))}
-                        </select>
-                        <label for="assignTo" class="form-label">Giao cho:</label>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                       </div>
                     </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                      <button type="submit" class="btn btn-success">Thêm</button>
-                    </div>
-                  </form>
+                  </div>
+                </div>
+
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <form class="modal-content" onSubmit={handleAddNewTask}>
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Add task</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="form-floating mb-3 mt-3">
+                          <input required type="text" class="form-control" id="requirement" placeholder="Enter requirement" name="requirement" value={formNewTask.requirement} onChange={handleChangeAdd} />
+                          <label for="requirement">Tên task</label>
+                        </div>
+                        <div class="form-floating mb-3 mt-3">
+                          <input required type="date" class="form-control" id="timeStart" placeholder="Enter timeStart" name="timeStart" value={formNewTask.timeStart} onChange={handleChangeAdd} />
+                          <label for="timeStart">Thời gian bắt đầu</label>
+                        </div>
+                        <div class="form-floating mb-3 mt-3">
+                          <input required type="date" class="form-control" id="timeEnd" placeholder="Enter timeEnd" name="timeEnd" value={formNewTask.timeEnd} onChange={handleChangeAdd} />
+                          <label for="timeEnd">Thời gian kết thúc</label>
+                        </div>
+                        <div class="form-floating mb-3 mt-3">
+                          <select required class="form-select" id="assignTo" name="assignTo" value={formNewTask.assignTo} onChange={handleChangeAdd}>
+                            <option value="" selected disabled>Chọn thành viên</option>
+                            {newTask.map((option, index) => (
+                              <option key={index} value={option.studentId}>{option.person?.firstName + ' ' + option.person?.lastName} </option>
+                            ))}
+                          </select>
+                          <label for="assignTo" class="form-label">Giao cho:</label>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-success">Thêm</button>
+                      </div>
+                    </form>
+                  </div>
                 </div>
               </div>
-            </div>
-          }
-        </div>
-      </>
-        )}
+            }
+          </div>
+        </>
+      )}
     </div>
   );
 };

@@ -244,3 +244,51 @@
     background-color: #e0f7fa;
   }
   
+
+  .council-container {
+    max-width: 800px; /* Đặt chiều rộng tối đa cho bảng */
+    margin: 0 auto; /* Căn giữa bảng */
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(181, 180, 180, 0.3); /* Đổ bóng đỏ */
+    margin-bottom: 20px;
+    margin-top: 20px;
+  }
+  
+  .council-container h5 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #3282B8;
+    text-align: center; /* Căn giữa tiêu đề */
+  }
+  
+  .council-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .council-table td {
+    padding: 12px 8px;
+    vertical-align: top;
+  }
+  
+  .council-table .label {
+    font-weight: bold;
+    color: #555;
+    width: 30%;
+  }
+  
+  .council-table tr:not(:last-child) td {
+    border-bottom: 1px solid #eee;
+  }
+  
+  .council-table label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+    color: #333;
+  }
+  
