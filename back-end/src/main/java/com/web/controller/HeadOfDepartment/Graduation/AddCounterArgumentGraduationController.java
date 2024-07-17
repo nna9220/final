@@ -68,14 +68,14 @@ public class AddCounterArgumentGraduationController {
 
     @GetMapping("/export")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
-    public void generateExcelReport(HttpServletResponse response, HttpSession session) throws Exception{
+    public void generateExcelReport(HttpServletResponse response, @RequestHeader("Authorization") String authorizationHeader) throws Exception{
         TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
         response.setContentType("application/octet-stream");
         LocalDate nowDate = LocalDate.now();
         String headerKey = "Content-Disposition";
         String headerValue = "attachment;filename=subject_" +nowDate+ ".xls";
         response.setHeader(headerKey, headerValue);
-        reportService.generateExcel(response, session,typeSubject);
+        reportService.generateExcel(response, authorizationHeader,typeSubject);
         response.flushBuffer();
     }
 

@@ -1,12 +1,11 @@
 package com.web.service;
 
 import com.web.config.CheckRole;
+import com.web.config.TokenUtils;
 import com.web.entity.*;
 import com.web.repository.*;
 import com.web.utils.UserUtils;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,50 +43,57 @@ public class ReportService {
     private ReviewByThesisRepository reviewByThesisRepository;
     @Autowired
     private ReviewByInstructorRepository reviewByInstructorRepository;
+    @Autowired
+    private TokenUtils tokenUtils;
 
 
-    public void generateExcel(HttpServletResponse response, HttpSession session, TypeSubject typeSubject) throws IOException {
-        Person current = CheckRole.getRoleCurrent(session,userUtils,personRepository);
-        Lecturer lec = lecturerRepository.findById(current.getPersonId()).orElse(null);
-        List<Subject> subjects  = subjectRepository.getSubjectByMajor(lec.getMajor(),typeSubject,(byte)9);
+
+    public void generateExcel(HttpServletResponse response, String authorizationHeader, TypeSubject typeSubject) throws IOException {
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        Lecturer lec = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+        List<Subject> subjects = subjectRepository.getSubjectByMajor(lec.getMajor(), typeSubject, (byte) 9);
         List<Subject> filteredSubjects = new ArrayList<>();
         for (Subject subject : subjects) {
-            // Kiểm tra xem có sinh viên nào trong đề tài này có trạng thái true không
             boolean hasActiveStudent = false;
             Student student1 = studentRepository.findById(subject.getStudent1()).orElse(null);
-            if (student1.getStatus() == true) {
+            if (student1.getStatus()) {
                 hasActiveStudent = true;
             }
-            // Nếu có sinh viên với trạng thái true, thêm đề tài này vào danh sách đã lọc
             if (hasActiveStudent) {
                 filteredSubjects.add(subject);
             }
         }
+
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet(typeSubject.getTypeName());
+
+        // Tạo CellStyle cho tiêu đề
+        HSSFCellStyle headerStyle = workbook.createCellStyle();
+        HSSFFont headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setFontName("Arial");
+        headerStyle.setFont(headerFont);
+
+        // Tạo CellStyle cho dữ liệu
+        HSSFCellStyle dataStyle = workbook.createCellStyle();
+        HSSFFont dataFont = workbook.createFont();
+        dataFont.setFontName("Times New Roman");
+        dataStyle.setFont(dataFont);
+
+        // Tạo hàng tiêu đề
         HSSFRow row = sheet.createRow(0);
-        row.createCell(0).setCellValue("MÃ ĐỀ TÀI");
-        row.createCell(1).setCellValue("TÊN ĐỀ TÀI");
-        row.createCell(2).setCellValue("CHUYÊN NGÀNH");
-        row.createCell(3).setCellValue("MÃ SINH VIÊN 1");
-        row.createCell(4).setCellValue("TÊN SVTH 1");
-        row.createCell(5).setCellValue("MÃ SINH VIÊN 2");
-        row.createCell(6).setCellValue("TÊN SVTH 2");
-        row.createCell(7).setCellValue("MÃ SINH VIÊN 3");
-        row.createCell(8).setCellValue("TÊN SVTH 3");
-        row.createCell(9).setCellValue("MÃ GIẢNG VIÊN HƯỚNG DẪN");
-        row.createCell(10).setCellValue("TÊN GIẢNG VIÊN HƯỚNG DẪN");
-        row.createCell(11).setCellValue("MÃ GIẢNG VIÊN PHẢN BIỆN");
-        row.createCell(12).setCellValue("TÊN GIẢNG VIÊN PHẢN BIỆN");
-        row.createCell(13).setCellValue("YÊU CẦU");
-        row.createCell(14).setCellValue("MONG MUỐN");
-        row.createCell(15).setCellValue("ĐIỂM SV1");
-        row.createCell(16).setCellValue("ĐIỂM SV2");
-        row.createCell(17).setCellValue("ĐIỂM SV3");
+        String[] headers = {"MÃ ĐỀ TÀI", "TÊN ĐỀ TÀI", "CHUYÊN NGÀNH", "MÃ SINH VIÊN 1", "TÊN SVTH 1", "MÃ SINH VIÊN 2", "TÊN SVTH 2", "MÃ SINH VIÊN 3", "TÊN SVTH 3", "MÃ GIẢNG VIÊN HƯỚNG DẪN", "TÊN GIẢNG VIÊN HƯỚNG DẪN", "MÃ GIẢNG VIÊN PHẢN BIỆN", "TÊN GIẢNG VIÊN PHẢN BIỆN", "YÊU CẦU", "MONG MUỐN", "ĐIỂM SV1", "ĐIỂM SV2", "ĐIỂM SV3"};
+        for (int i = 0; i < headers.length; i++) {
+            HSSFCell cell = row.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+        }
+
         double score1 = 0;
         double score2 = 0;
         double score3 = 0;
-        int dataRowIndex= 1;
+        int dataRowIndex = 1;
 
         for (Subject subject:filteredSubjects){
             Lecturer instructor = lecturerRepository.findById(subject.getInstructorId().getLecturerId()).orElse(null);
@@ -184,6 +190,10 @@ public class ReportService {
             }
 
         }
+        for (int i = 0; i <= 17; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
         ServletOutputStream ops = response.getOutputStream();
         workbook.write(ops);
         workbook.close();;
