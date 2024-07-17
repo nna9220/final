@@ -65,20 +65,7 @@ public class BrowseSubjectToThesisService {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             Subject existedSubject = subjectRepository.findById(id).orElse(null);
             if (existedSubject!=null){
-                //create reviewByThesis
-                ReviewByThesis reviewByThesis = new ReviewByThesis();
-                reviewByThesis.setSubject(existedSubject);
-                reviewByThesis.setThesisId(existedSubject.getThesisAdvisorId());
-                reviewByThesis.setReviewContent(reviewContent);
-                reviewByThesis.setReviewAdvantage(reviewAdvantage);
-                reviewByThesis.setReviewWeakness(reviewWeakness);
-                reviewByThesis.setStatus(status);
-                reviewByThesis.setClassification(classification);
-                reviewByThesis.setScore(score);
-                existedSubject.getThesisAdvisorId().getReviewByTheses().add(reviewByThesis);
-                reviewByThesisRepository.save(reviewByThesis);
-                lecturerRepository.save(existedSubject.getThesisAdvisorId());
-                if (status) {
+
                     existedSubject.setActive((byte) 7);
                     subjectRepository.save(existedSubject);
                     //Kiểm tra xem đã có hội đồng chưa
@@ -125,55 +112,6 @@ public class BrowseSubjectToThesisService {
                     notificationRepository.save(notification);
                     personRepository.saveAll(personList);
                     return new ResponseEntity<>(existedSubject, HttpStatus.OK);
-                }else {
-                    existedSubject.setActive((byte) -1);
-                    subjectRepository.save(existedSubject);
-                    String subject = "Topic: " + existedSubject.getSubjectName();
-                    String messenger = "Topic: " + existedSubject.getSubjectName() + "không đủ điều kiện tham gia phản biện, đề tài bị đánh rớt" + "\n" +
-                            "Điểm: " + reviewByThesis.getScore() + "\n" +
-                            "Xếp  loại: " + reviewByThesis.getClassification();
-                    List<String> emailPerson = new ArrayList<>();
-                    if (existedSubject.getStudent1()!=null) {
-                        Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
-                        if (student1.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                            emailPerson.add(student1.getPerson().getUsername());
-                        }
-                    }
-                    if (existedSubject.getStudent2()!=null) {
-                        Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
-                        if (student2.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                            emailPerson.add(student2.getPerson().getUsername());
-                        }
-                    }
-                    if (existedSubject.getStudent3()!=null) {
-                        Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
-                        if (student3.getPerson().getPersonId()!=personCurrent.getPersonId()) {
-                            emailPerson.add(student3.getPerson().getUsername());
-                        }
-                    }
-                    if (!emailPerson.isEmpty()) {
-                        mailService.sendMailToPerson(emailPerson, subject, messenger);
-                    }
-                    List<Person> personList = new ArrayList<>();
-                    for (String s:emailPerson) {
-                        Person p = personRepository.findUsername(s);
-                        if (p!=null){
-                            personList.add(p);
-                        }
-                    }
-                    Notification notification = new Notification();
-                    LocalDateTime now = LocalDateTime.now();
-                    notification.setDateSubmit(now);
-                    notification.setPersons(personList);
-                    notification.setTitle(subject);
-                    notification.setContent(messenger);
-                    for (Person p : personList) {
-                        p.getNotifications().add(notification);
-                    }
-                    notificationRepository.save(notification);
-                    personRepository.saveAll(personList);
-                    return new ResponseEntity<>(existedSubject, HttpStatus.OK);
-                }
             }else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }

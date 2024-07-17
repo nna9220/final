@@ -73,20 +73,6 @@ public class HeadBrowseSubjectGraduationToThesisController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
-    //TBM duyệt ề tài qua cho GVPB
-    @PostMapping("/accept-subject-to-thesis/{subjectId}")
-    @PreAuthorize("hasAuthority('ROLE_HEAD')")
-    public ResponseEntity<?> CompletedSubjectBrowseToCouncil(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader,
-                                                             @RequestParam("reviewContent") String reviewContent, @RequestParam("reviewAdvantage") String reviewAdvantage,
-                                                             @RequestParam("reviewWeakness") String reviewWeakness, @RequestParam("status") Boolean status,
-                                                             @RequestParam("classification") String classification, @RequestParam("score") double score){
-        try {
-            return new ResponseEntity<>(manageCriticalSubjectService.CompletedSubjectBrowseToThesis(authorizationHeader,subjectId,reviewContent,reviewAdvantage,reviewWeakness,status,classification,score),HttpStatus.OK);
-        }catch (Exception e){
-            System.err.println("Initial SessionFactory creation failed." + e);
-            throw new ExceptionInInitializerError(e);
-        }
-    }
 
     @PostMapping("/accept-multiple-subjects")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")

@@ -35,9 +35,12 @@ public class LecturerManageCriticalSubjectController {
     //GVPB duyệt đề tài qua Hội đồng
     @PostMapping("/accept-subject-to-council/{subjectId}")
     @PreAuthorize("hasAuthority('ROLE_LECTURER')")
-    public ResponseEntity<?> CompletedSubjectBrowseToCouncil(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<?> CompletedSubjectBrowseToCouncil(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader,
+                                                             @RequestParam("reviewContent") String reviewContent, @RequestParam("reviewAdvantage") String reviewAdvantage,
+                                                             @RequestParam("reviewWeakness") String reviewWeakness, @RequestParam("status") Boolean status,
+                                                             @RequestParam("classification") String classification, @RequestParam("score") double score){
         try {
-            return new ResponseEntity<>(thesisBrowseSubjectToCouncil.CompletedSubjectBrowseToCouncil(authorizationHeader,subjectId),HttpStatus.OK);
+            return thesisBrowseSubjectToCouncil.CompletedSubjectBrowseToCouncil(authorizationHeader,subjectId,reviewContent,reviewAdvantage,reviewWeakness,status,classification,score);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);
