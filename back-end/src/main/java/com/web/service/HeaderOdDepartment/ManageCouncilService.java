@@ -42,6 +42,8 @@ public class ManageCouncilService {
     @Autowired
     private TokenUtils tokenUtils;
     @Autowired
+    private StudentRepository studentRepository;
+    @Autowired
     private CouncilLecturerRepository councilLecturerRepository;
     @Autowired
     private SubjectRepository subjectRepository;
@@ -344,8 +346,22 @@ public class ManageCouncilService {
         List<String> emailList = council.getCouncilLecturers().stream()
                 .map(cl -> cl.getLecturer().getPerson().getUsername())
                 .collect(Collectors.toList());
-        String subjectMail = "CẬP NHẬT HỘI ĐỒNG PHẢN BIỆN ĐỀ TÀI " + council.getSubject().getSubjectName();
-        String message = "Đã cập nhật hội đồng phản biện đề tài: " + council.getSubject().getSubjectName();
+        Subject subject = subjectRepository.findSubjectByCouncil(council);
+        if (subject.getStudent1()!=null){
+            Student student = studentRepository.findById(subject.getStudent1()).orElse(null);
+            emailList.add(student.getPerson().getUsername());
+        }
+        if (subject.getStudent2()!=null){
+            Student student = studentRepository.findById(subject.getStudent2()).orElse(null);
+            emailList.add(student.getPerson().getUsername());
+        }
+        if (subject.getStudent3()!=null){
+            Student student = studentRepository.findById(subject.getStudent3()).orElse(null);
+            emailList.add(student.getPerson().getUsername());
+        }
+        String subjectMail = "CẬP NHẬT THỜI GIAN BÁO CÁO CỦA HỘI ĐỒNG PHẢN BIỆN ĐỀ TÀI " + council.getSubject().getSubjectName();
+        String message = "Đã cập nhật hội đồng phản biện đề tài: " + council.getSubject().getSubjectName() + "\n"
+                +"Vào lúc: " + council.getStart() + "-" + council.getEnd() + "ngày " + council.getDate();
         mailService.sendMailToPerson(emailList, subjectMail, message);
     }
 

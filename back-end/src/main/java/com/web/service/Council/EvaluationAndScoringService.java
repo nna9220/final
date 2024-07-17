@@ -12,10 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class EvaluationAndScoringService {
@@ -684,7 +681,8 @@ public class EvaluationAndScoringService {
     public ResponseEntity<?> evaluationAndScoringGraduation(String authorizationHeader, int subjectId,
                                                             String studentId1,String studentId2,String studentId3,
                                                             String reviewStudent1, String reviewStudent2, String reviewStudent3,
-                                                            Double scoreStudent1, Double scoreStudent2, Double scoreStudent3){
+                                                            Double scoreStudent1, Double scoreStudent2, Double scoreStudent3,
+                                                            String editSuggestions){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
@@ -696,8 +694,22 @@ public class EvaluationAndScoringService {
                 List<CouncilLecturer> councilLecturerByCouncil = councilLecturerRepository.getListCouncilLecturerByCouncil(existedSubject.getCouncil());
                 int countLecturers = councilLecturerByCouncil.size();
                 if (existedSubject != null) {
+                    List<String> emailStudent = new ArrayList<>();
+                    if (existedSubject.getStudent1()!=null){
+                        Student student = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
+                        emailStudent.add(student.getPerson().getUsername());
+                    }
+                    if (existedSubject.getStudent2()!=null){
+                        Student student = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
+                        emailStudent.add(student.getPerson().getUsername());
+                    }
+                    if (existedSubject.getStudent3()!=null){
+                        Student student = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
+                        emailStudent.add(student.getPerson().getUsername());
+                    }
                     //Kiểm tra xem có tồn tại SVTH k - Student 1
                     if (existedSubject.getStudent1() != null) {
+                        existedSubject.getEditSuggestions().add(editSuggestions);
                         //Tìm Sv
                         Student student1 = studentRepository.findById(studentId1).orElse(null);
                         if (student1 != null) {
@@ -766,7 +778,6 @@ public class EvaluationAndScoringService {
                                         existedSubject.setActive((byte) 9);
                                     }
                                     subjectRepository.save(existedSubject);
-
                                 } else {
                                     //Trả về mã 302 - Thông báo đã chấm điểm
                                     return new ResponseEntity<>(HttpStatus.FOUND);
@@ -912,7 +923,59 @@ public class EvaluationAndScoringService {
                             }
                         }
                     }
+                    double score1 = 0;
+                    double score2 = 0;
+                    double score3 = 0;
+                    if (existedSubject.getStudent1() != null) {
+                        Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
 
+                        ResultGraduation resultGraduation = resultGraduationRepository.findResultGraduationByStudentAndSubject(student1, existedSubject);
+                        List<ScoreGraduation> scoreGraduations = scoreGraduationRepository.getScoreGraduationByResultGraduation(resultGraduation);
+                        int countLecturer = scoreGraduations.size();
+                        double scoreCouncil = 0;
+                        for (ScoreGraduation s : scoreGraduations) {
+                            scoreCouncil = scoreCouncil + s.getScore();
+                        }
+                        score1 = scoreCouncil / countLecturer;
+                    }
+                    if (existedSubject.getStudent2() != null) {
+                        Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
+
+                        ResultGraduation resultGraduation = resultGraduationRepository.findResultGraduationByStudentAndSubject(student2, existedSubject);
+                        List<ScoreGraduation> scoreGraduations = scoreGraduationRepository.getScoreGraduationByResultGraduation(resultGraduation);
+                        int countLecturer = scoreGraduations.size();
+                        double scoreCouncil = 0;
+                        for (ScoreGraduation s : scoreGraduations) {
+                            scoreCouncil = scoreCouncil + s.getScore();
+                        }
+                        score2 = scoreCouncil / countLecturer;
+                    }
+                    if (existedSubject.getStudent3() != null) {
+                        Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
+                        ResultGraduation resultGraduation = resultGraduationRepository.findResultGraduationByStudentAndSubject(student3, existedSubject);
+                        List<ScoreGraduation> scoreGraduations = scoreGraduationRepository.getScoreGraduationByResultGraduation(resultGraduation);
+                        int countLecturer = scoreGraduations.size();
+                        double scoreCouncil = 0;
+                        for (ScoreGraduation s : scoreGraduations) {
+                            scoreCouncil = scoreCouncil + s.getScore();
+                        }
+                        score3 = scoreCouncil / countLecturer;
+                    }
+                    String subjectStudent = "";
+                    String messengerStudent = "";
+                    if (existedSubject.getActive()==9) {
+                        subjectStudent = "THƯ CHÚC MỪNG HOÀN THÀNH ĐỀ TÀI KHÓA LUẬN TỐT NGHIỆP ";
+                        messengerStudent = "Chúc mừng đề tài " + existedSubject.getSubjectName()+" của nhóm các bạn đã thành công với số điểm của hội đồng như sau: " + "\n"
+                        +"MSSV " + existedSubject.getStudent1() +" : " + score1 + "\n"
+                                +"MSSV " + existedSubject.getStudent2() +" : " + score2 + "\n"
+                                +"MSSV " + existedSubject.getStudent3() +" : " + score3 + "\n"
+                        +"Còn sau đây là một số gợi ý chỉnh sửa báo cáo cho nhóm bạn: " + existedSubject.getEditSuggestions();
+                    }else if (existedSubject.getActive()==-1){
+                        subjectStudent = "THƯ BÁO KHÔNG HOÀN THÀNH ĐỀ TÀI";
+                        messengerStudent="Đề tài " + existedSubject.getSubjectName() + " của nhóm bạn không đủ điều kiện vượt qua môn";
+                    }
+
+                    mailService.sendMailToPerson(emailStudent,subjectStudent,messengerStudent);
                     return new ResponseEntity<>(existedSubject, HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
