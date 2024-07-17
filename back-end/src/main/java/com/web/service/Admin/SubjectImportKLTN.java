@@ -3,6 +3,7 @@ package com.web.service.Admin;
 import com.web.config.TokenUtils;
 import com.web.entity.*;
 import com.web.repository.*;
+import com.web.service.MailServiceImpl;
 import com.web.utils.UserUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
@@ -36,6 +37,7 @@ public class SubjectImportKLTN {
     private final TokenUtils tokenUtils;
     private final EvaluationCriteriaRepository evaluationCriteriaRepository;
     private final CouncilRepository councilRepository;
+    private final MailServiceImpl mailService;
 
     public ResponseEntity<?> importSubject(MultipartFile file) throws IOException {
         try {
@@ -48,6 +50,7 @@ public class SubjectImportKLTN {
             LocalDate nowYear = LocalDate.now();
             if (checkExcelFormat(file)) {
                 List<Subject> tlcn = toSubjects(file.getInputStream());
+                List<Student> mailStudent = new ArrayList<>();
                 tlcn.forEach(subject -> {
                     Subject newSubject = new Subject();
                     newSubject.setSubjectName(subject.getSubjectName());
@@ -63,6 +66,7 @@ public class SubjectImportKLTN {
                                 student1.setSubjectGraduationId(newSubject);
                                 newSubject.setMajor(student1.getMajor());
                                 saveStudent.add(student1);
+                                mailStudent.add(student1);
                             }
                         }
                     }else {
@@ -75,6 +79,7 @@ public class SubjectImportKLTN {
                                 newSubject.setStudent2(subject.getStudent2());
                                 student2.setSubjectGraduationId(newSubject);
                                 saveStudent.add(student2);
+                                mailStudent.add(student2);
                             }
                         }
                     }else {
@@ -89,6 +94,7 @@ public class SubjectImportKLTN {
                                 newSubject.setStudent3(subject.getStudent3());
                                 student3.setSubjectGraduationId(newSubject);
                                 saveStudent.add(student3);
+                                mailStudent.add(student3);
                             }
                         }
                     }else {
@@ -131,6 +137,14 @@ public class SubjectImportKLTN {
                         councilLecturers.add(councilCounterArgument);
                     }
                     saveSub.add(newSubject);
+                    List<String> mailPerson = new ArrayList<>();
+                    for (Student student:mailStudent) {
+                        mailPerson.add(student.getPerson().getUsername());
+                    }
+                    mailPerson.add(subject.getInstructorId().getPerson().getUsername());
+                    String subjectStudent = "ĐĂNG KÝ ĐỀ TÀI KHÓA LUẬN TỐT NGHIỆP THÀNH CÔNG" ;
+                    String messengerStudent = "Topic: " + newSubject.getSubjectName() + " đã đăng ký thành công, vui lòng truy cập website để thực hiện quản lý!!";
+                    mailService.sendMailToPerson(mailPerson,subjectStudent,messengerStudent);
                     System.out.println("Luu KLTN Thanh Cong");
                 });
                 subjectRepository.saveAll(saveSub);

@@ -5,6 +5,7 @@ import com.web.config.CompareTime;
 import com.web.config.TokenUtils;
 import com.web.entity.*;
 import com.web.repository.*;
+import com.web.service.MailServiceImpl;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,11 @@ public class CouncilCreationService {
     @Autowired
     private PersonRepository personRepository;
     @Autowired
+    private MailServiceImpl mailService;
+    @Autowired
     private UserUtils userUtils;
+    @Autowired
+    private StudentRepository studentRepository;
 
     @Autowired
     private CouncilLecturerRepository councilLecturerRepository;
@@ -137,7 +142,7 @@ public class CouncilCreationService {
         council.setDate(date);
         council.setStart(startTime);
         council.setEnd(endTime);
-
+        List<String> listStudent = new ArrayList<>();
         // Phân bổ giảng viên cho hội đồng
         List<CouncilLecturer> councilLecturers = new ArrayList<>();
         for (int i = 0; i < numLecturers; i++) { // Mỗi hội đồng có 5 giảng viên dựa trên typesubject
@@ -151,12 +156,28 @@ public class CouncilCreationService {
             councilLecturer.setCouncil(council);
             councilLecturer.setLecturer(lecturer);
             councilLecturers.add(councilLecturer);
+            listStudent.add(lecturer.getPerson().getUsername());
         }
 
-
+        if (subject.getStudent1()!=null){
+            Student student = studentRepository.findById(subject.getStudent1()).orElse(null);
+            listStudent.add(student.getPerson().getUsername());
+        }
+        if (subject.getStudent2()!=null){
+            Student student = studentRepository.findById(subject.getStudent2()).orElse(null);
+            listStudent.add(student.getPerson().getUsername());
+        }
+        if (subject.getStudent3()!=null){
+            Student student = studentRepository.findById(subject.getStudent3()).orElse(null);
+            listStudent.add(student.getPerson().getUsername());
+        }
         council.setCouncilLecturers(councilLecturers);
         councilRepository.save(council);
         councilLecturerRepository.saveAll(councilLecturers);
+        String subjectStudent = "THÔNG BÁO THÀNH LẬP HỘI ĐỒNG CHO ĐỀ TÀI "+ subject.getSubjectName();
+        String messengerStudent = "Topic: " + subject.getSubjectName() + " đã được thành lập hội đồng. Chi tiết vui lòng truy cập website." + "\n"
+                + "Thời gian: " + startTime + "-" + endTime + "Ngày " + date;
+        mailService.sendMailToPerson(listStudent,subjectStudent,messengerStudent);
     }
 
     private void deleteCouncil(Council council) {

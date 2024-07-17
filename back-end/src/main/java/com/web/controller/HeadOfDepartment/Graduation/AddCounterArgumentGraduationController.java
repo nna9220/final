@@ -372,10 +372,6 @@ public class AddCounterArgumentGraduationController {
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD") ) {
             subjectService.browseSubject(id);
-            Subject existSubject = subjectRepository.findById(id).orElse(null);
-            String subject = "Topic: " + existSubject.getSubjectName() ;
-            String messenger = "Topic: " + existSubject.getSubjectName() + " đã được duyệt!!";
-            mailService.sendMailStudent(existSubject.getInstructorId().getPerson().getUsername(),subject,messenger);
             return new ResponseEntity<>(HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

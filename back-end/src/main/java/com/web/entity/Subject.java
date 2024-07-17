@@ -104,6 +104,8 @@ public class Subject implements Serializable {
     private Set<EvaluationCriteria> criteria = new HashSet<>();
 
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> editSuggestions;
 
     public void removeCriteria(EvaluationCriteria evaluationCriteria) {
         criteria.remove(evaluationCriteria);

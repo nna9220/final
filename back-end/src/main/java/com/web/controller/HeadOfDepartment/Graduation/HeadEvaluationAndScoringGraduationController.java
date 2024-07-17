@@ -66,9 +66,10 @@ public class HeadEvaluationAndScoringGraduationController {
                                                             @RequestParam(value = "scoreStudent3",required = false) Double score3,
                                                             @RequestParam("reviewStudent1") String review1,
                                                             @RequestParam(value = "reviewStudent2",required = false) String review2,
-                                                            @RequestParam(value = "reviewStudent3", required = false) String review3){
+                                                            @RequestParam(value = "reviewStudent3", required = false) String review3,
+                                                            @RequestParam(value = "editSuggestions", required = false) String editSuggestion){
         try {
-            return new ResponseEntity<>(evaluationAndScoringService.evaluationAndScoringGraduation(authorizationHeader,id,studentId1,studentId2,studentId3,review1,review2,review3,score1,score2,score3),HttpStatus.OK);
+            return new ResponseEntity<>(evaluationAndScoringService.evaluationAndScoringGraduation(authorizationHeader,id,studentId1,studentId2,studentId3,review1,review2,review3,score1,score2,score3,editSuggestion),HttpStatus.OK);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);
