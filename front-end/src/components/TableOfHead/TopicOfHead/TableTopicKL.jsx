@@ -8,6 +8,7 @@ import axiosInstance from '../../../API/axios';
 import ChevronLeftOutlinedIcon from '@mui/icons-material/ChevronLeftOutlined';
 import './TableTopic.scss'
 import BoardKL from '../../KanbanOfHead/Graduation/BoardKL';
+import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
 
 export default function TableTopicKL() {
     const [topics, setTopics] = useState([]);
@@ -197,6 +198,32 @@ export default function TableTopicKL() {
         handleChangeApprove(e);
     };
 
+    const exportFile =  (subjectId) => {
+        try {
+            const response = axiosInstance.get(`/graduation/export/reviewInstructor/${subjectId}`, {
+                headers: {
+                    'Authorization': `Bearer ${userToken}`,
+                },
+                responseType: 'blob', // Quan trọng: Để nhận dữ liệu file binary
+            });
+
+            // Tạo URL để tải file
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `review_instructor_${subjectId}.docx`); // Tên file khi tải về
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            toast.success("Xuất file thành công");
+            console.log("Export file success");
+        } catch (error) {
+            console.error("Lỗi xuất file:", error);
+            toast.error("Có lỗi xảy ra khi xuất file");
+        }
+    };
+
     return (
         <div className='home-table-myTopicLec'>
             <ToastContainer />
@@ -273,7 +300,6 @@ export default function TableTopicKL() {
                             <th scope="col">Sinh viên 1</th>
                             <th scope="col">Sinh viên 2</th>
                             <th scope="col">Sinh viên 3</th>
-                            <th scope='col'>Loại đề tài</th>
                             <th scope="col">Action</th>
                         </tr>
                     </thead>
@@ -288,7 +314,6 @@ export default function TableTopicKL() {
                                         <td>{item.student1 || ''}</td>
                                         <td>{item.student2 || ''}</td>
                                         <td>{item.student3 || ''}</td>
-                                        <td>{item.typeSubject?.typeName || ''}</td>
                                         <td>
                                             <div style={{ display: 'flex' }}>
                                                 <button className="management" type="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Đi đến chi tiết để quản lý đề tài" onClick={() => handleShowManagementTask(item.subjectId, item.subjectName)}><ViewComfyAltOutlinedIcon /></button>
@@ -300,6 +325,7 @@ export default function TableTopicKL() {
                                                         <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-placement="bottom" onClick={() => { setSubjectIdForSubmit50(item.subjectId); setSubjectName(item.subjectName) }}>Yêu cầu nộp báo cáo 50%</button></li>
                                                         <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal1" data-bs-placement="bottom" onClick={() => { setSubjectIdForSubmit100(item.subjectId); setSubjectName(item.subjectName) }}>Yêu cầu nộp báo cáo 100%</button></li>
                                                         <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#modalApproval" data-bs-placement="bottom" onClick={() => { setSubjectIdForApproval(item.subjectId); setSubjectName(item.subjectName) }}>Hoàn thành đề tài</button></li>
+                                                        <li><button class="dropdown-item" type="button" onClick={() => {exportFile(item.subjectId)}}>Xuất file đánh giá</button></li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -415,7 +441,7 @@ export default function TableTopicKL() {
                                     <textarea class="form-control" id="reviewWeakness" name="reviewWeakness" value={formDataAprrove.reviewWeakness} onChange={handleChangeApprove} rows="3"></textarea>
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="status" className="form-label">4. Đề nghị cho bảo vệ hay không?</label>
+                                    <label htmlFor="status" className="form-label">4. Đề nghị cho phản biện hay không?</label>
                                     <div id="status" style={{ display: 'flex' }}>
                                         <div className="form-check" style={{ marginRight: '30px' }}>
                                             <input className="form-check-input" type="radio" id="defenseYes" name="status" value="true" checked={formDataAprrove.status === 'true'} onChange={handleChangeApprove} />

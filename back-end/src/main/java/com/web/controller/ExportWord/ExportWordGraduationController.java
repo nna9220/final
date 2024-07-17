@@ -69,19 +69,37 @@ public class ExportWordGraduationController {
 
     @GetMapping("/reviewInstructor/{subjectId}")
     public ResponseEntity<InputStreamResource> exportReviewInstructor(
-            @PathVariable int subjectId,
-            @RequestParam("outputPath") String outputPath) throws IOException {
-        wordExportService.exportReviewByInstructorFile(outputPath, subjectId);
+            @PathVariable int subjectId) throws IOException {
 
-        File file = new File(outputPath);
-        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+            String tempDir = System.getProperty("java.io.tmpdir");
+            String outputPath = tempDir + "reviewInstructor_" + subjectId + ".docx";
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + file.getName())
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .contentLength(file.length())
-                .body(resource);
+
+        // Gọi dịch vụ để xuất tệp
+            wordExportService.exportReviewByInstructorFile(outputPath, subjectId);
+
+            // Đọc tệp đã tạo
+            File file = new File(outputPath);
+
+            // Kiểm tra xem tệp có tồn tại không
+            if (!file.exists()) {
+                throw new FileNotFoundException("File not found with id: " + subjectId);
+            }
+
+            // Tạo InputStreamResource từ tệp
+            InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+
+            // Trả về phản hồi với tệp đính kèm
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .contentLength(file.length())
+                    .body(resource);
+
+
     }
+
+
 
     @GetMapping("/reviewThesis/{subjectId}")
     public ResponseEntity<InputStreamResource> exportReviewThesis(

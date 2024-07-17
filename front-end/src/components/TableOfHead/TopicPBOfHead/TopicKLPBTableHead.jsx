@@ -13,6 +13,7 @@ function TopicKLPBTableHead() {
     const [criterias, setCriterias] = useState([]);
     const userToken = getTokenFromUrlAndSaveToStorage();
     const [subjectIdForAccept, setSubjectIdForAccept] = useState(null);
+    const [subjectIdForApproval, setSubjectIdForApproval] = useState(null);
     const [formDataAprrove, setFormDataApprove] = useState({
         reviewContent: '',
         reviewAdvantage: '',
@@ -76,27 +77,6 @@ function TopicKLPBTableHead() {
         }
     }
 
-    const handleAccept = () => {
-        console.log(subjectIdForAccept);
-        if (subjectIdForAccept) {
-            axiosInstance.post(`/head/manageCritical/graduation/accept-subject-to-council/${subjectIdForAccept}`, {}, {
-                headers: {
-                    'Authorization': `Bearer ${userToken}`,
-                }
-            })
-                .then(response => {
-                    console.log('Đề tài đã được duyệt qua hội đồng', response.data);
-                    toast.success("Đề tài đã được duyệt qua hội đồng!")
-                    fetchTopics();
-                })
-                .catch(error => {
-                    console.error('Lỗi duyệt đề tài qua hội đồng:', error);
-                    toast.error("Lỗi duyệt đề tài qua hội đồng")
-                });
-        }
-    }
-
-
     const exportFile = (subjectId) => {
         const userToken = getTokenFromUrlAndSaveToStorage();
         console.log("Token: " + userToken);
@@ -118,6 +98,39 @@ function TopicKLPBTableHead() {
         }
     }
 
+    const handleSubmitReviewThesis = () => {
+        console.log(subjectIdForApproval);
+
+        if (subjectIdForApproval) {
+            const formDataToSend = {
+                ...formDataAprrove,
+                score: parseFloat(formDataAprrove.score),
+                status: formDataAprrove.status === 'true' // Convert string to boolean
+            };
+
+            console.log("Data send: ", formDataToSend);
+            axiosInstance.post(`/head/manageCritical/graduation/accept-subject-to-council/${subjectIdForApproval}`, null, {
+                headers: {
+                    'Authorization': `Bearer ${userToken}`,
+                },
+                params: formDataToSend
+            })
+                .then(response => {
+                    // Handle success
+                    console.log('Success:', response);
+                    toast.success("Xác nhận đề tài thành công!")
+                })
+                .catch(error => {
+                    // Handle error
+                    console.error('Error:', error);
+                    if(error.code === "ERR_BAD_REQUEST" && error.response.status === 400) {
+                        toast.warning("Chưa phân giảng viên phản biện!");
+                    }else{
+                        toast.error("Lỗi !!!")
+                    }
+                });
+        }
+    };
     const handleScoreInput = (e) => {
         const value = parseFloat(e.target.value);
         if (value > 10) {
@@ -165,12 +178,12 @@ function TopicKLPBTableHead() {
                                         </td>
                                         <td>
                                             <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                                                onClick={() => { detailTopic(item.subjectId); setSubjectIdForAccept(item.subjectId) }}
+                                                onClick={() => { detailTopic(item.subjectId); setSubjectIdForApproval(item.subjectId) }}
                                                 disabled={item.active !== 7}>
                                                 <CreditScoreOutlinedIcon />
                                             </button>
-                                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#export"
-                                                onClick={() => exportFile(item.subjectId)}>Xuât file nhận xét</button>
+                                            {/* <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#export"
+                                                onClick={() => exportFile(item.subjectId)}>Xuât file nhận xét</button> */}
                                         </td>
                                     </tr>
                                 ))
@@ -438,7 +451,7 @@ function TopicKLPBTableHead() {
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
                                 Đóng
                             </button>
-                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleAccept}>
+                            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitReviewThesis}>
                                 Xác nhận qua hội đòng
                             </button>
                         </div>

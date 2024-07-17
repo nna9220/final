@@ -34,6 +34,8 @@ public class HeadManageCriticalSubjectGraduationController {
     @Autowired
     private TimeBrowseHeadRepository timeBrowseHeadRepository;
     @Autowired
+    private ReviewByInstructorRepository reviewByInstructorRepository;
+    @Autowired
     private ThesisBrowseSubjectToCouncil thesisBrowseSubjectToCouncil;
     private final TokenUtils tokenUtils;
     @Autowired
@@ -78,7 +80,7 @@ public class HeadManageCriticalSubjectGraduationController {
         if (personCurrent != null && personCurrent.getAuthorities().getName().equals("ROLE_LECTURER")) {
             Lecturer currentLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
-            List<Subject> listSubject = subjectRepository.findSubjectsByThesisAdvisorId(currentLecturer,typeSubject);
+            List<Subject> listSubject = subjectRepository.findSubjectsByThesisAdvisorId(currentLecturer,typeSubject,(byte)7);
             Map<String,Object> response = new HashMap<>();
             response.put("person", personCurrent);
             response.put("lec",currentLecturer);
