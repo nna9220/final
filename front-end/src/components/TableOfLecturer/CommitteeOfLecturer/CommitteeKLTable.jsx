@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { getTokenFromUrlAndSaveToStorage } from '../../tokenutils';
 import axiosInstance from '../../../API/axios';
+import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
+import { toast, ToastContainer } from 'react-toastify';
 
 function CommitteeKLTable() {
     const [topics, setTopics] = useState([]);
@@ -126,9 +128,39 @@ function CommitteeKLTable() {
         }
     };
 
+    const handleExport = async () => {
+        try {
+            const response = await axiosInstance.get('/graduation/export/criteria', {
+                responseType: 'blob', // Đảm bảo rằng phản hồi được nhận dưới dạng blob
+                headers: {
+                    'Authorization': `Bearer ${userToken}`,
+                }
+            });
+
+            // Tạo URL cho tệp tải xuống
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+
+            // Đặt tên tệp mặc định
+            link.setAttribute('download', 'exported-file.docx');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            toast.success('Xuất file thành công!');
+        } catch (error) {
+            toast.error('Lỗi xuất file !');
+        }
+    };
+
     return (
         <div style={{ margin: '20px' }}>
+            <ToastContainer/>
             <div className='body-table-committe'>
+                <button onClick={handleExport} style={{ backgroundColor: 'white', border: 'none', borderRadius: '5px', fontWeight: 'bolder', color: '#00337C' }}>
+                    <DownloadOutlinedIcon /> Xuất file tiêu chí đánh giá
+                </button>
                 <table className="table table-hover">
                     <thead>
                         <tr>
@@ -195,57 +227,57 @@ function CommitteeKLTable() {
                                     <hr />
                                     <h5>Tiêu chí đánh giá</h5>
                                     <tbody>
-                                            {criterias.length > 0 ? (
-                                                criterias.map((criteria, criteriaIndex) => (
-                                                    <tr key={criteriaIndex}>
-                                                        <td className='criteria'>{criteria.criteriaName}</td>
-                                                        {['student1', 'student2', 'student3'].map((student, studentIndex) => (
-                                                            <td key={studentIndex}>
-                                                                <input
-                                                                    type='number'
-                                                                    step='0.25'
-                                                                    max={criteria.criteriaScore}
-                                                                    min={0}
-                                                                    value={scores[`${detail.subject[student]}_${criteria.criteriaName}`] || 0}
-                                                                    onChange={(e) => handleScoreChange(detail.subject[student], criteria.criteriaName, e.target.value)}
-                                                                />
-                                                            </td>
-                                                        ))}
-                                                    </tr>
-                                                ))
-                                            ) : (
-                                                <tr>
-                                                    <td colSpan={4}>Chưa có tiêu chí đánh giá</td>
+                                        {criterias.length > 0 ? (
+                                            criterias.map((criteria, criteriaIndex) => (
+                                                <tr key={criteriaIndex}>
+                                                    <td className='criteria'>{criteria.criteriaName}</td>
+                                                    {['student1', 'student2', 'student3'].map((student, studentIndex) => (
+                                                        <td key={studentIndex}>
+                                                            <input
+                                                                type='number'
+                                                                step='0.25'
+                                                                max={criteria.criteriaScore}
+                                                                min={0}
+                                                                value={scores[`${detail.subject[student]}_${criteria.criteriaName}`] || 0}
+                                                                onChange={(e) => handleScoreChange(detail.subject[student], criteria.criteriaName, e.target.value)}
+                                                            />
+                                                        </td>
+                                                    ))}
                                                 </tr>
-                                            )}
+                                            ))
+                                        ) : (
                                             <tr>
-                                                <td className='criteria-sum'>Tổng</td>
-                                                {['student1', 'student2', 'student3'].map((student, studentIndex) => (
-                                                    <td key={studentIndex}>
-                                                        <input
-                                                            type='number'
-                                                            step='0.25'
-                                                            className='score'
-                                                            readOnly
-                                                            value={(parseFloat(scores[detail.subject[student]]) || 0).toFixed(2)}
-                                                        />
-                                                    </td>
-                                                ))}
+                                                <td colSpan={4}>Chưa có tiêu chí đánh giá</td>
                                             </tr>
-                                            <tr>
-                                                <td className='criteria-sum' id="review">Đánh giá</td>
-                                                {['student1', 'student2', 'student3'].map((student, studentIndex) => (
-                                                    <td key={studentIndex}>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            value={review[detail.subject[student]] || ''}
-                                                            onChange={(e) => handleReviewChange(detail.subject[student], e.target.value)}
-                                                        />
-                                                    </td>
-                                                ))}
-                                            </tr>
-                                        </tbody>
+                                        )}
+                                        <tr>
+                                            <td className='criteria-sum'>Tổng</td>
+                                            {['student1', 'student2', 'student3'].map((student, studentIndex) => (
+                                                <td key={studentIndex}>
+                                                    <input
+                                                        type='number'
+                                                        step='0.25'
+                                                        className='score'
+                                                        readOnly
+                                                        value={(parseFloat(scores[detail.subject[student]]) || 0).toFixed(2)}
+                                                    />
+                                                </td>
+                                            ))}
+                                        </tr>
+                                        <tr>
+                                            <td className='criteria-sum' id="review">Đánh giá</td>
+                                            {['student1', 'student2', 'student3'].map((student, studentIndex) => (
+                                                <td key={studentIndex}>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        value={review[detail.subject[student]] || ''}
+                                                        onChange={(e) => handleReviewChange(detail.subject[student], e.target.value)}
+                                                    />
+                                                </td>
+                                            ))}
+                                        </tr>
+                                    </tbody>
                                 </>
                             ) : (
                                 <p>Loading...</p>

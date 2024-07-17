@@ -159,21 +159,21 @@ public class EvaluationAndScoringService {
                         response.put("reviewInstructor",existedReview);
                     }else {
                         //k tìm thy review của GVHD
-                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                        return (Map<String, Object>) new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
                     response.put("council",existedCouncil);
                     response.put("councilLecturer",councilLecturers);
                     response.put("listLecturerOfCouncil", lecturers);
-                    return new ResponseEntity<>(response,HttpStatus.OK);
+                    return (Map<String, Object>) new ResponseEntity<>(response,HttpStatus.OK);
                 }else {
                     //mã 417
-                    return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+                    return (Map<String, Object>) new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
                 }
             }else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return (Map<String, Object>) new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         }else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            return (Map<String, Object>) new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
 

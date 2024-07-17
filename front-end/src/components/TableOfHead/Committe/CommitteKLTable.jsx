@@ -157,8 +157,6 @@ function CommitteKLTable() {
       toast.success('Xuất file thành công!');
     } catch (error) {
       toast.error('Lỗi xuất file !');
-    } finally {
-      setLoading(false);
     }
   };
 
