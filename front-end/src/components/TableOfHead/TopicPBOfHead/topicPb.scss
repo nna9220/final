@@ -36,3 +36,42 @@
         }
     }
 }
+
+/* tabs.css */
+
+/* Định dạng chung cho danh sách các tab */
+.nav-tabs {
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 1rem;
+}
+
+/* Định dạng cho các mục tab */
+.nav-tabs .nav-item {
+    margin-right: 1rem;
+    margin-bottom: 20px;
+}
+
+/* Định dạng cho liên kết của tab */
+.nav-tabs .nav {
+    padding: 0.5rem 1rem;
+    border: none;
+    color: #105193;
+    background-color: #f8f9fa;
+    text-decoration: none;
+    text-align: center;
+}
+
+/* Định dạng cho tab đang hoạt động */
+.nav-tabs .nav.active {
+    color: #007bff;
+    border-bottom: 3px solid #4c67c8;
+    font-weight: bolder;
+    font-size: medium;
+    text-transform: none;
+}
+
+/* Định dạng khi di chuột qua tab */
+.nav-tabs .nav:hover {
+    background-color: #e2e6ea;
+    color: #0056b3;
+}

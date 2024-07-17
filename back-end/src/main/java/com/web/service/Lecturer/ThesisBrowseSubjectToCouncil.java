@@ -42,7 +42,7 @@ public class ThesisBrowseSubjectToCouncil {
         System.out.println("");
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
-            List<Subject> existedSubjects = subjectRepository.findSubjectByThesisAndStatusAndActiveAndTypeSubject(existedLecturer,true,typeSubject,(byte)8);
+            List<Subject> existedSubjects = subjectRepository.findSubjectByThesisAndStatusAndActiveAndTypeSubject(existedLecturer,true,typeSubject,(byte)7);
             for (Subject subject: existedSubjects) {
                 System.out.println(subject.getSubjectName());
             }

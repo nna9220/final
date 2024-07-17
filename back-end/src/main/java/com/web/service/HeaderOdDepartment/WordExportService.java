@@ -37,17 +37,34 @@ public class WordExportService {
         // Lấy tiêu chí theo loại đề tài, năm và chuyên ngành
         List<EvaluationCriteria> criteriaList = evaluationCriteriaRepository.getEvaluationCriteriaByTypeSubjectAndMajorAndYear(typeSubject, major, String.valueOf(nowDate.getYear()));
 
-        // Điền dữ liệu bộ môn
-        replaceTextInDocument(document, "Bộ Môn :", String.valueOf(major));
 
-        // Điền tiêu chí và thang điểm
-        XWPFTable table = document.getTables().get(1);
-        for (int i = 0; i < criteriaList.size(); i++) {
-            EvaluationCriteria criteria = criteriaList.get(i);
-            XWPFTableRow row = table.createRow();
-            row.getCell(0).setText(String.valueOf(i + 1));
-            row.getCell(1).setText(criteria.getCriteriaName());
-            row.getCell(2).setText(criteria.getCriteriaScore().toString());
+        // Tìm bảng tiêu chí
+        XWPFTable criteriaTable = null;
+        for (XWPFTable table : document.getTables()) {
+            XWPFTableRow headerRow = table.getRow(0);
+            if (headerRow != null && headerRow.getCell(1) != null && headerRow.getCell(1).getText().equals("Tiêu chí")) {
+                criteriaTable = table;
+                break;
+            }
+        }
+
+        // Điền tiêu chí và thang điểm vào bảng tiêu chí
+        if (criteriaTable != null) {
+            // Xóa các hàng cũ trong bảng tiêu chí, trừ hàng tiêu đề
+            int numberOfRows = criteriaTable.getNumberOfRows();
+            for (int i = numberOfRows - 1; i > 0; i--) {
+                criteriaTable.removeRow(i);
+            }
+
+            // Thêm các tiêu chí mới
+            for (int i = 0; i < criteriaList.size(); i++) {
+                EvaluationCriteria criteria = criteriaList.get(i);
+                XWPFTableRow row = criteriaTable.createRow();
+                row.getCell(0).setText(String.valueOf(i + 1));
+                row.getCell(1).setText(criteria.getCriteriaName());
+                row.getCell(2).setText(criteria.getCriteriaScore().toString());
+
+            }
         }
 
         // Lưu tài liệu vào ByteArrayOutputStream
@@ -91,7 +108,6 @@ public class WordExportService {
                     appendTextAfterKeyword(document, "MSSV 3:", student3.getStudentId());
                 }
             }
-
 
             // Thay thế dữ liệu trong file mẫu
             appendTextAfterKeyword(document, "Tên đề tài:", subject.getSubjectName());
@@ -155,7 +171,6 @@ public class WordExportService {
                 }
             }
 
-
             // Thay thế dữ liệu trong file mẫu
             appendTextAfterKeyword(document, "Tên đề tài:", subject.getSubjectName());
 
@@ -169,20 +184,6 @@ public class WordExportService {
             document.write(fos);
             fos.close();
             inputStream.close();
-        }
-    }
-
-
-
-    private void replaceTextInDocument(XWPFDocument document, String findText, String replaceText) {
-        for (XWPFParagraph p : document.getParagraphs()) {
-            for (XWPFRun r : p.getRuns()) {
-                String text = r.getText(0);
-                if (text != null && text.contains(findText)) {
-                    text = text.replace(findText, replaceText);
-                    r.setText(text, 0);
-                }
-            }
         }
     }
 }

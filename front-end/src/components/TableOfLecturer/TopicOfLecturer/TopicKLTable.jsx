@@ -28,6 +28,22 @@ export default function TopicKLTable() {
     const [subjectName, setSubjectName] = useState('');
     const [refusalReason, setRefusalReason] = useState("");
     const [activeSubject, setActiveSubject] = useState(null);
+    const [formDataAprrove, setFormDataApprove] = useState({
+        reviewContent: '',
+        reviewAdvantage: '',
+        reviewWeakness: '',
+        status: '',
+        classification: '',
+        score: ''
+    })
+
+    const handleChangeApprove = (e) => {
+        const { name, value } = e.target;
+        setFormDataApprove((prevData) => ({
+            ...prevData,
+            [name]: value
+        }));
+    };
     useEffect(() => {
         listTopic();
     }, [userToken]);
@@ -138,49 +154,47 @@ export default function TopicKLTable() {
 
     const handleSubmitApproval = () => {
         console.log(subjectIdForApproval);
-        if (subjectIdForApproval) {
-            axiosInstance.post(`/lecturer/manageTutorial/graduation/browse/${subjectIdForApproval}`, {}, {
-                headers: {
-                    'Authorization': `Bearer ${userToken}`,
-                }
-            })
-                .then(response => {
-                    if (response.data.statusCodeValue === 400) {
-                        toast.warning("Đề tài chưa được phân giảng viên phản biện!")
-                    } else {
-                        console.log('Xác nhận hoàn thành đề tài. Vui lòng chờ TBM duyệt qua phản biện!', response.data);
-                        toast.success("Xác nhận hoàn thành đề tài. Vui lòng chờ TBM duyệt qua phản biện!")
-                    }
-                })
-                .catch(error => {
-                    console.error('Lỗi khi Xác nhận hoàn thành', error);
-                    toast.error("Xác nhận hoàn thành thất bại!")
-                });
-        }
-    };
 
-    const handleSubmitRefuse = () => {
-        console.log(subjectIdForRefuse);
-        if (subjectIdForRefuse) {
-            axiosInstance.post(`/lecturer/manageTutorial/graduation/refuse/${subjectIdForRefuse}`, null, {
+        if (subjectIdForApproval) {
+            const formDataToSend = {
+                ...formDataAprrove,
+                score: parseFloat(formDataAprrove.score),
+                status: formDataAprrove.status === 'true' // Convert string to boolean
+            };
+
+            console.log("Data send: ", formDataToSend);
+            axiosInstance.post(`/lecturer/manageTutorial/graduation/browse/${subjectIdForApproval}`, null, {
                 headers: {
                     'Authorization': `Bearer ${userToken}`,
                 },
-                params: {
-                    reason: refusalReason
-                }
+                params: formDataToSend
             })
                 .then(response => {
-                    console.log('Đề tài đã bị từ chối thành công!', response.data);
-                    toast.success("Đề tài đã bị từ chối thành công!")
+                    // Handle success
+                    console.log('Success:', response);
+                    toast.success("Xác nhận đề tài thành công!")
                 })
                 .catch(error => {
-                    console.error('Lỗi khi từ chối đề tài:', error);
-                    toast.error("Lỗi khi từ chối đề tài")
+                    // Handle error
+                    console.error('Error:', error);
+                    if(error.code === "ERR_BAD_REQUEST" && error.response.status === 400) {
+                        toast.warning("Chưa phân giảng viên phản biện!");
+                    }else{
+                        toast.error("Lỗi !!!")
+                    }
                 });
         }
     };
 
+    const handleScoreInput = (e) => {
+        const value = parseFloat(e.target.value);
+        if (value > 10) {
+            e.target.value = 10;
+        } else if (value < 0) {
+            e.target.value = 0;
+        }
+        handleChangeApprove(e);
+    };
 
     return (
         <div className='home-table-myTopicLec'>
@@ -285,7 +299,6 @@ export default function TopicKLTable() {
                                                         <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-placement="bottom" onClick={() => { setSubjectIdForSubmit50(item.subjectId); setSubjectName(item.subjectName) }}>Yêu cầu nộp báo cáo 50%</button></li>
                                                         <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal1" data-bs-placement="bottom" onClick={() => { setSubjectIdForSubmit100(item.subjectId); setSubjectName(item.subjectName) }}>Yêu cầu nộp báo cáo 100%</button></li>
                                                         <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#modalApproval" data-bs-placement="bottom" onClick={() => { setSubjectIdForApproval(item.subjectId); setSubjectName(item.subjectName) }}>Hoàn thành đề tài</button></li>
-                                                        <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#modalRefuse" data-bs-placement="bottom" onClick={() => { setSubjectIdForRefuse(item.subjectId); setSubjectName(item.subjectName) }}>Từ chối đề tài</button></li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -380,58 +393,96 @@ export default function TopicKLTable() {
                 </div>
 
                 <div className="modal fade" id="modalApproval" tabIndex="-1" aria-labelledby="exampleModalApproval" aria-hidden="true">
-                    <div className="modal-dialog">
+                    <div className="modal-dialog modal-dialog-scrollable modal-lg">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h1 className="modal-title fs-5" id="exampleModalApproval">Hoàn thành đề tài</h1>
+                                <h1 className="modal-title fs-5" id="exampleModalApproval">Nhận xét, đánh giá</h1>
                                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div className="modal-body">
-                                Xác nhận hoàn thành đề tài {subjectName} và chờ duyệt qua phản biện!
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitApproval}>Xác nhận</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="modal fade" id="modalRefuse" tabIndex="-1" aria-labelledby="exampleModalRefuse" aria-hidden="true">
-                    <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h1 className="modal-title fs-5" id="exampleModalRefuse">Từ chối đề tài</h1>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div className="modal-body">
-                                Đề tài {subjectName}
+                                <h5>Đề tài: {subjectName}</h5>
                                 <div class="mb-3">
-                                    <label for="reason" class="form-label">Lý do từ chối</label>
-                                    <input type="text" class="form-control" id="reason" value={refusalReason} onChange={(e) => setRefusalReason(e.target.value)} />
+                                    <label for="reviewContent" class="form-label">1.	Về nội dung đề tài & khối lượng thực hiện:</label>
+                                    <textarea id="reviewContent" class="form-control" name="reviewContent" value={formDataAprrove.reviewContent} onChange={handleChangeApprove} rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reviewAdvantage" class="form-label">2.	Ưu điểm:</label>
+                                    <textarea class="form-control" id="reviewAdvantage" name="reviewAdvantage" value={formDataAprrove.reviewAdvantage} onChange={handleChangeApprove} rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reviewWeakness" class="form-label">3.	Nhược điểm:</label>
+                                    <textarea class="form-control" id="reviewWeakness" name="reviewWeakness" value={formDataAprrove.reviewWeakness} onChange={handleChangeApprove} rows="3"></textarea>
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="status" className="form-label">4. Đề nghị cho bảo vệ hay không?</label>
+                                    <div id="status" style={{ display: 'flex' }}>
+                                        <div className="form-check" style={{ marginRight: '30px' }}>
+                                            <input className="form-check-input" type="radio" id="defenseYes" name="status" value="true" checked={formDataAprrove.status === 'true'} onChange={handleChangeApprove} />
+                                            <label className="form-check-label" htmlFor="defenseYes">
+                                                Có
+                                            </label>
+                                        </div>
+                                        <div className="form-check">
+                                            <input className="form-check-input" type="radio" id="defenseNo" name="status" value="false" checked={formDataAprrove.status === 'false'} onChange={handleChangeApprove} />
+                                            <label className="form-check-label" htmlFor="defenseNo">
+                                                Không
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="classification" className="form-label">5. Đánh giá loại:</label>
+                                    <div id="classification" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <div className="form-check">
+                                            <input className="form-check-input" type="radio" id="excellent" name="classification" value="Xuất sắc" checked={formDataAprrove.classification === 'Xuất sắc'} onChange={handleChangeApprove} />
+                                            <label className="form-check-label" htmlFor="excellent">
+                                                Xuất sắc
+                                            </label>
+                                        </div>
+                                        <div className="form-check">
+                                            <input className="form-check-input" type="radio" id="good" name="classification" value="Giỏi" checked={formDataAprrove.classification === 'Giỏi'} onChange={handleChangeApprove} />
+                                            <label className="form-check-label" htmlFor="good">
+                                                Giỏi
+                                            </label>
+                                        </div>
+                                        <div className="form-check">
+                                            <input className="form-check-input" type="radio" id="fair" name="classification" value="Khá" checked={formDataAprrove.classification === 'Khá'} onChange={handleChangeApprove} />
+                                            <label className="form-check-label" htmlFor="fair">
+                                                Khá
+                                            </label>
+                                        </div>
+                                        <div className="form-check">
+                                            <input className="form-check-input" type="radio" id="average" name="classification" value="Trung bình" checked={formDataAprrove.classification === 'Trung bình'} onChange={handleChangeApprove} />
+                                            <label className="form-check-label" htmlFor="average">
+                                                Trung bình
+                                            </label>
+                                        </div>
+                                        <div className="form-check">
+                                            <input className="form-check-input" type="radio" id="weak" name="classification" value="Yếu" checked={formDataAprrove.classification === 'Yếu'} onChange={handleChangeApprove} />
+                                            <label className="form-check-label" htmlFor="weak">
+                                                Yếu
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="score" className="form-label">6. Điểm:</label>
+                                    <input
+                                        type='number'
+                                        id="score"
+                                        max={10}
+                                        min={0}
+                                        step={0.25}
+                                        name='score'
+                                        value={(formDataAprrove.score)}
+                                        onInput={handleScoreInput}
+                                        onChange={() => {handleChangeApprove}}
+                                    />
                                 </div>
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitRefuse}>Xác nhận</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="modal fade" id="confirmSuccess" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h1 className="modal-title fs-5" id="exampleModalLabel">XÁC NHẬN HOÀN THÀNH ĐỀ TÀI</h1>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div className="modal-body">
-                                Bạn chắc chắn muốn hoàn thành đề tài này không?
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                <button type="button" className="btn btn-primary">Xác nhận</button>
+                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmitApproval}>Xác nhận</button>
                             </div>
                         </div>
                     </div>

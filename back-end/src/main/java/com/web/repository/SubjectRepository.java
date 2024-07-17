@@ -18,8 +18,8 @@ public interface SubjectRepository extends JpaRepository<Subject, Integer> {
     @Query("select s from Subject s where s.typeSubject=:type")
     public List<Subject> findAllSubject(TypeSubject type);
 
-    @Query("select s from Subject  s where s.thesisAdvisorId=:id and s.typeSubject=:type")
-    public List<Subject> findSubjectsByThesisAdvisorId(Lecturer id, TypeSubject type);
+    @Query("select s from Subject  s where s.thesisAdvisorId=:id and s.typeSubject=:type and s.active=:active")
+    public List<Subject> findSubjectsByThesisAdvisorId(Lecturer id, TypeSubject type, byte active);
 
     @Query("select s from Subject s where s.instructorId=:id and s.status=:status and s.typeSubject=:typeSubject")
     public List<Subject> findSubjectByLecturerIntro(Lecturer id, Boolean status, TypeSubject typeSubject);

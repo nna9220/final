@@ -473,7 +473,7 @@ public class ManageTutorialSubjectService {
                         subjectRepository.save(existedSubject);
                         //Gửi mail
                         String subject = "Topic: " + existedSubject.getSubjectName();
-                        String messenger = "Topic: " + existedSubject.getSubjectName() + " đã được " + existedSubject.getInstructorId().getPerson().getFirstName() + " " + existedSubject.getInstructorId().getPerson().getLastName() + " duyệt là hoàn thành, truy cập website để xem chi tiết, đợi thông báo từ giảng viên phản biện!";
+                        String messenger = "Topic: " + existedSubject.getSubjectName() + " đã được " + existedSubject.getInstructorId().getPerson().getFirstName() + " " + existedSubject.getInstructorId().getPerson().getLastName() + " duyệt là hoàn thành, truy cập website để xem chi tiết, đợi thông báo từ Truưởng bộ môn!";
                         List<String> emailPerson = new ArrayList<>();
                         Authority authority = authorityRepository.findByName("ROLE_HEAD");
                         Lecturer head = lecturerRepository.getLecturerISHead(authority, existedSubject.getInstructorId().getMajor());

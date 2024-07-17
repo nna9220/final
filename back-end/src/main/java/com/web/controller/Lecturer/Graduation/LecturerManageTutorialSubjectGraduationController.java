@@ -115,7 +115,7 @@ public class LecturerManageTutorialSubjectGraduationController {
                                                                 @RequestParam("reviewWeakness") String reviewWeakness, @RequestParam("status") Boolean status,
                                                                 @RequestParam("classification") String classification, @RequestParam("score") double score){
         try {
-            return new ResponseEntity<>(manageTutorialSubjectService.BrowseMoveToHeadGraduation(subjectId,authorizationHeader,reviewContent,reviewAdvantage,reviewWeakness,status,classification,score),HttpStatus.OK);
+            return manageTutorialSubjectService.BrowseMoveToHeadGraduation(subjectId,authorizationHeader,reviewContent,reviewAdvantage,reviewWeakness,status,classification,score);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);
