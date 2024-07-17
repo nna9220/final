@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -46,6 +48,8 @@ public class EvaluationAndScoringService {
     private ScoreGraduationRepository scoreGraduationRepository;
     @Autowired
     private ReviewByInstructorRepository reviewByInstructorRepository;
+    @Autowired
+    private EvaluationCriteriaRepository evaluationCriteriaRepository;
 
     //Của GV trong hội đồng
     //Sau khi GVPB duyệt active =7
@@ -135,42 +139,52 @@ public class EvaluationAndScoringService {
 
 
     //Chi tiết council -- get detail của subject từ council
-    public Map<String, Object> detailCouncil(String authorizationHeader, int id) {
+    public ResponseEntity<Map<String,Object>> detailCouncil(String authorizationHeader, int id) {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Subject existedSubject = subjectRepository.findById(id).orElse(null);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate date = LocalDate.parse(existedSubject.getYear(), formatter);
+            // Lấy năm từ LocalDate
+            int year = date.getYear();
+            List<EvaluationCriteria> evaluationCriterias = evaluationCriteriaRepository.getEvaluationCriteriaByTypeSubjectAndMajorAndYear(existedSubject.getTypeSubject(),existedSubject.getMajor(), String.valueOf(year));
+            System.out.println("Subject"+existedSubject);
             if (existedSubject!=null){
+                System.out.println("Nhảy vào đây");
                 Council existedCouncil = councilRepository.getCouncilBySubject(existedSubject);
                 if (existedCouncil!=null){
                     List<CouncilLecturer> councilLecturers = councilLecturerRepository.getListCouncilLecturerByCouncil(existedCouncil);
                     //Tìm Review instructor bằng subject
-                    ReviewByInstructor existedReview = reviewByInstructorRepository.getReviewByInstructorBySAndSubject(existedSubject);
                     Map<String,Object> response = new HashMap<>();
                     response.put("subject",existedSubject);
+                    response.put("criterias",evaluationCriterias);
                     List<Lecturer> lecturers = new ArrayList<>();
                     for (CouncilLecturer c:councilLecturers) {
                         lecturers.add(c.getLecturer());
                     }
-                    if (existedReview!=null){
-                        response.put("reviewInstructor",existedReview);
-                    }else {
-                        //k tìm thy review của GVHD
-                        return (Map<String, Object>) new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                    Lecturer lecturerCurrent = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+                    Subject subject  =subjectRepository.findSubjectByCouncil(existedCouncil);
+                    List<Lecturer> lecturerList = lecturerRepository.getListLecturerByMajor(lecturerCurrent.getMajor());
+                    List<Lecturer> lecturerSend = new ArrayList<>();
+                    for (Lecturer lecturer:lecturerList) {
+                        if (lecturer!=existedSubject.getInstructorId()){
+                            lecturerSend.add(lecturer);
+                        }
                     }
                     response.put("council",existedCouncil);
                     response.put("councilLecturer",councilLecturers);
-                    response.put("listLecturerOfCouncil", lecturers);
-                    return (Map<String, Object>) new ResponseEntity<>(response,HttpStatus.OK);
+                    response.put("listLecturer", lecturerSend);
+                    return new ResponseEntity<>(response,HttpStatus.OK);
                 }else {
                     //mã 417
-                    return (Map<String, Object>) new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+                    return  new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
                 }
             }else {
-                return (Map<String, Object>) new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         }else {
-            return (Map<String, Object>) new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
 
@@ -689,6 +703,7 @@ public class EvaluationAndScoringService {
 
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
+            System.out.println("Thời gian hội đồng : " + existedSubject.getCouncil().getDate() + " " + existedSubject.getCouncil().getStart() + " " + existedSubject.getCouncil().getEnd());
             if (CompareTime.isCurrentTimeInCouncilTime(existedSubject.getCouncil())) {
                 //Đếm số luượng giảng viên trong hội đồng - đếm số lượng councillecturer của council đó
                 List<CouncilLecturer> councilLecturerByCouncil = councilLecturerRepository.getListCouncilLecturerByCouncil(existedSubject.getCouncil());
@@ -961,21 +976,48 @@ public class EvaluationAndScoringService {
                         }
                         score3 = scoreCouncil / countLecturer;
                     }
+                    // Kiểm tra nếu tất cả giảng viên trong hội đồng đều đã chấm điểm
+                    // Kiểm tra nếu tất cả giảng viên trong hội đồng đều đã chấm điểm
+                    boolean allLecturersScored = true;
+                    List<ResultGraduation> allResults = resultGraduationRepository.findResultGraduationBySubject(existedSubject);
+                    int lecturersScored = 0;
+
+                    List<CouncilLecturer> councilLecturers = councilLecturerRepository.getListCouncilLecturerByCouncil(existedSubject.getCouncil());
+                    boolean gv1 = false;
+                    boolean gv2 = false;
+                    boolean gv3 = false;
+                    CouncilLecturer lecturer1 = councilLecturers.get(0);
+                    CouncilLecturer lecturer2 = councilLecturers.get(1);
+                    CouncilLecturer lecturer3 = councilLecturers.get(2);
+                    for (ResultGraduation resultGraduation : allResults) {
+                        List<ScoreGraduation> scores = scoreGraduationRepository.getScoreGraduationByResultGraduation(resultGraduation);
+
+                        for (ScoreGraduation score : scores) {
+                            if (score.getByLecturer().equals(lecturer1.getLecturer())) {
+                                gv1 = true;
+                            } else if (score.getByLecturer().equals(lecturer2.getLecturer())) {
+                                gv2 = true;
+                            } else if (score.getByLecturer().equals(lecturer3.getLecturer())) {
+                                gv3 = true;
+                            }
+                        }
+                    }
+                    System.out.println("số lượng gv chấm: " +lecturersScored);
                     String subjectStudent = "";
                     String messengerStudent = "";
-                    if (existedSubject.getActive()==9) {
+                    // Nếu tất cả giảng viên đều đã chấm điểm, set active = 9
+                    if (gv1 && gv2 && gv3) {
+                        System.out.println();
+                        existedSubject.setActive((byte) 9);
+                        subjectRepository.save(existedSubject);
                         subjectStudent = "THƯ CHÚC MỪNG HOÀN THÀNH ĐỀ TÀI KHÓA LUẬN TỐT NGHIỆP ";
                         messengerStudent = "Chúc mừng đề tài " + existedSubject.getSubjectName()+" của nhóm các bạn đã thành công với số điểm của hội đồng như sau: " + "\n"
-                        +"MSSV " + existedSubject.getStudent1() +" : " + score1 + "\n"
+                                +"MSSV " + existedSubject.getStudent1() +" : " + score1 + "\n"
                                 +"MSSV " + existedSubject.getStudent2() +" : " + score2 + "\n"
                                 +"MSSV " + existedSubject.getStudent3() +" : " + score3 + "\n"
-                        +"Còn sau đây là một số gợi ý chỉnh sửa báo cáo cho nhóm bạn: " + existedSubject.getEditSuggestions();
-                    }else if (existedSubject.getActive()==-1){
-                        subjectStudent = "THƯ BÁO KHÔNG HOÀN THÀNH ĐỀ TÀI";
-                        messengerStudent="Đề tài " + existedSubject.getSubjectName() + " của nhóm bạn không đủ điều kiện vượt qua môn";
+                                +"Còn sau đây là một số gợi ý chỉnh sửa báo cáo cho nhóm bạn: " + existedSubject.getEditSuggestions();
+                        mailService.sendMailToPerson(emailStudent,subjectStudent,messengerStudent);
                     }
-
-                    mailService.sendMailToPerson(emailStudent,subjectStudent,messengerStudent);
                     return new ResponseEntity<>(existedSubject, HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);

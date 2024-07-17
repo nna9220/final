@@ -41,13 +41,13 @@ public class Student implements Serializable {
     private SchoolYear schoolYear;
 
     //Tiểu luận
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="subject_id")
     @JsonIgnore
     private Subject subjectId;
 
     //Khóa luận
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="subjectGraduation_id")
     @JsonIgnore
     private Subject subjectGraduationId;

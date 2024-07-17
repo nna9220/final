@@ -122,16 +122,27 @@ public class HeadManageCouncilController {
                                           @RequestParam("address") String address,
                                           @RequestParam(value = "lecturer1", required = false)String lecturer1,
                                           @RequestParam(value = "lecturer2", required = false)String lecturer2,
-                                          @RequestParam(value = "lecturer3",required = false)String lecturer3,
-                                          @RequestParam(value = "lecturer4",required = false)String lecturer4,
-                                          @RequestParam(value = "lecturer5",required = false)String lecturer5){
+                                          @RequestParam(value = "lecturer3",required = false)String lecturer3){
         System.out.println("Hello");
         try {
-            return new ResponseEntity<>(manageCouncilService.updateCouncil(subjectId,authorizationHeader,date,timeStart,timeEnd,address,lecturer1,lecturer2,lecturer3,lecturer4,lecturer5),HttpStatus.OK);
+            return new ResponseEntity<>(manageCouncilService.updateCouncil(subjectId,authorizationHeader,date,timeStart,timeEnd,address,lecturer1,lecturer2,lecturer3),HttpStatus.OK);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);
         }
+    }
+
+    @PostMapping("/editCouncil/{subjectId}")
+    public ResponseEntity<?> updateCouncil(@RequestHeader("Authorization") String authorizationHeader,
+                                           @PathVariable int subjectId,
+                                           @RequestParam("timeStart") String timeStart,
+                                           @RequestParam("date") String date,
+                                           @RequestParam("timeEnd") String timeEnd,
+                                           @RequestParam("address") String address,
+                                           @RequestParam(value = "lecturer1", required = false)String lecturer1,
+                                           @RequestParam(value = "lecturer2", required = false)String lecturer2,
+                                           @RequestParam(value = "lecturer3",required = false)String lecturer3){
+        return manageCouncilService.updateCouncil(subjectId,authorizationHeader,date,timeStart,timeEnd,address,lecturer1,lecturer2,lecturer3);
     }
 
 

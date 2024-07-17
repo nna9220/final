@@ -42,7 +42,7 @@ public class Council {
     @JoinColumn(name = "subject", unique = true)
     private Subject subject;
 
-    @OneToMany(mappedBy = "council", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "council", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<CouncilLecturer> councilLecturers;
 }

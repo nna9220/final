@@ -44,7 +44,7 @@ public class Lecturer implements Serializable {
     @JsonIgnore
     private List<ScoreEssay> scoreEssayList;
 
-    @OneToMany(mappedBy = "lecturer", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<CouncilLecturer> councilLecturers;
 

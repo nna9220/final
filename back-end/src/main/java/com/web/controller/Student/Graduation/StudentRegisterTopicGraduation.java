@@ -6,6 +6,7 @@ import com.web.config.TokenUtils;
 import com.web.entity.*;
 import com.web.repository.*;
 import com.web.utils.UserUtils;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,8 @@ import java.util.Optional;
 public class StudentRegisterTopicGraduation {
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private CouncilRepository councilRepository;
 
     @Autowired
     private SubjectRepository subjectRepository;
@@ -120,4 +123,18 @@ public class StudentRegisterTopicGraduation {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
+    @GetMapping("/detailCouncil/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
+    public ResponseEntity<?> getDetailCouncil(@PathVariable int subjectId){
+        Subject subject = subjectRepository.findById(subjectId).orElse(null);
+        Council council = councilRepository.getCouncilBySubject(subject);
+        if (council!=null){
+            return new ResponseEntity<>(council,HttpStatus.OK);
+        }else {
+            //Chưa có hội đồng
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 }

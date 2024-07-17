@@ -12,5 +12,6 @@ public interface CouncilLecturerRepository extends JpaRepository<CouncilLecturer
     @Query("select c from CouncilLecturer c where c.council=:council")
     public List<CouncilLecturer> getListCouncilLecturerByCouncil(Council council);
     //Tìm councillecturer thông qua lecturer và council
-
+    @Query("select c from CouncilLecturer c where c.council=:council and c.lecturer=:lecturer")
+    CouncilLecturer getCouncilLecturerByCouncilAndLecturer(Council council,Lecturer lecturer);
 }

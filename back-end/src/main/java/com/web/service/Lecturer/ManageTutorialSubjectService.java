@@ -512,9 +512,6 @@ public class ManageTutorialSubjectService {
                         notification.setPersons(personList);
                         notification.setTitle(subject);
                         notification.setContent(messenger);
-                        for (Person p : personList) {
-                            p.getNotifications().add(notification);
-                        }
                         notificationRepository.save(notification);
                         personRepository.saveAll(personList);
                         return new ResponseEntity<>(existedSubject, HttpStatus.OK);
@@ -660,7 +657,7 @@ public class ManageTutorialSubjectService {
                         for (ScoreGraduation s : scoreGraduations) {
                             scoreCouncil = scoreCouncil + s.getScore();
                         }
-                        score3 = scoreCouncil / countLecturer;
+                        score2 = scoreCouncil / countLecturer;
                     }
                     response.put("student2",student2);
                     response.put("scoreStudent2",score2);

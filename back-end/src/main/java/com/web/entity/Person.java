@@ -84,7 +84,7 @@ public class Person {
     @JoinColumn(name = "authority_name")
     private Authority authorities;
 
-    @ManyToMany(mappedBy = "persons")
+    @ManyToMany(mappedBy = "persons",cascade = CascadeType.ALL)
     private List<Notification> notifications;
 }
 

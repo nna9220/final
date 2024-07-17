@@ -56,13 +56,13 @@ public interface SubjectRepository extends JpaRepository<Subject, Integer> {
     public List<Subject> findSubjectByMajorAndStatusAndActiveAndTypeSubject(Major major, Boolean status, TypeSubject typeSubject,Byte active);
 
 
-    @Query("select s from Subject s where s.typeSubject=:typeSubject and s.major=:major")
-    public List<Subject> findSubjectByTypeSubject(TypeSubject typeSubject,Major major);
+    @Query("select s from Subject s where s.typeSubject=:typeSubject and s.major=:major and s.active=:active")
+    public List<Subject> findSubjectByTypeSubject(TypeSubject typeSubject,Major major, byte active);
 
     @Query("select s from Subject s where s.active=:active and s.instructorId=:lecturer and s.typeSubject=:typeSubject")
     public List<Subject> findSubjectByActiveAndInstructorIdAndType(Byte active, Lecturer lecturer,TypeSubject typeSubject);
 
-    @Query("select s from Subject s where s.council=:councl")
+    @Query("select s from Subject s where s.council=:council")
     public Subject findSubjectByCouncil(Council council);
 
 }

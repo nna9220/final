@@ -163,8 +163,8 @@ function CommitteKLTable() {
   return (
     <div style={{ margin: '20px' }}>
       <ToastContainer />
-      <button onClick={handleExport} style={{backgroundColor:'white', border:'none', borderRadius:'5px',fontWeight:'bolder', color:'#00337C'}}>
-       <DownloadOutlinedIcon/> Xuất file tiêu chí đánh giá
+      <button onClick={handleExport} style={{ backgroundColor: 'white', border: 'none', borderRadius: '5px', fontWeight: 'bolder', color: '#00337C' }}>
+        <DownloadOutlinedIcon /> Xuất file tiêu chí đánh giá
       </button>
       {!error ? (
         <div className='body-table-committe'>
@@ -291,6 +291,10 @@ function CommitteKLTable() {
                       </tr>
                     </tbody>
                   </table>
+                  <div class="mb-3">
+                    <label for="exampleFormControlTextarea1" class="form-label">Gợi ý chỉnh sửa</label>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                  </div>
                 </>
               ) : (
                 <p>Loading...</p>

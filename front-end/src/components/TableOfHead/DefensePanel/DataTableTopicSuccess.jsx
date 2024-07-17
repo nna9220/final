@@ -41,6 +41,7 @@ function DataTableTopicSuccess() {
                 setError("Không nằm trong thời gian lập hội đồng");
             } else {
                 setSubjects(Array.isArray(response.data.body) ? response.data.body : []);
+                console.log("data: ", response.data)
                 setError(null); // Clear any previous error
             }
         } catch (error) {
@@ -51,15 +52,17 @@ function DataTableTopicSuccess() {
 
     const loadCouncilDetails = async (subjectId) => {
         try {
+            console.log("ID ", subjectId)
             const response = await axiosInstance.get(`/head/council/detailCouncil/${subjectId}`, {
                 headers: {
                     'Authorization': `Bearer ${userToken}`,
                 },
             });
-            const councilDetails = response.data.council;
+            const councilDetails = response.data.body.council;
+            console.log("detail: ", response.data.body.councilLecturer)
             setCouncil(councilDetails);
-            setCouncilLecturers(response.data.councilLecturer);
-            setLecturers(response.data.listLecturerOfCouncil);
+            setCouncilLecturers(response.data.body.councilLecturer);
+            setLecturers(response.data.body.listLecturer);
             setCouncilEdit({
                 lecturer1: councilDetails.lecturer1?.personId || '',
                 lecturer2: councilDetails.lecturer2?.personId || '',
@@ -169,8 +172,8 @@ function DataTableTopicSuccess() {
         <div>
             <div style={{ padding: '16px' }} className='body-table-topic'>
                 {error ? (
-                    <div className="alert alert-warning" style={{border:'none', backgroundColor:'white', fontSize:'16px', fontWeight:'bolder', textAlign:'center'}} role="alert">
-                        <WarningOutlinedIcon/> {error}
+                    <div className="alert alert-warning" style={{ border: 'none', backgroundColor: 'white', fontSize: '16px', fontWeight: 'bolder', textAlign: 'center' }} role="alert">
+                        <WarningOutlinedIcon /> {error}
                     </div>
                 ) : (
                     <table className="table table-hover">
@@ -192,7 +195,7 @@ function DataTableTopicSuccess() {
                                     <td colSpan="8" className="text-center">Không có dữ liệu</td>
                                 </tr>
                             ) : (
-                                Array.isArray(subjects) && subjects.filter((item) => item.active === 8).map((item, index) => (
+                                subjects.map((item, index) => (
                                     <tr key={index}>
                                         <td>{index + 1}</td>
                                         <td>{item.subjectName}</td>
@@ -245,8 +248,8 @@ function DataTableTopicSuccess() {
                                 <input type="text" className="form-control" id="address" name="address" value={councilEdit.address} onChange={handleChange} />
                             </div>
 
-                            <br/>
-                            
+                            <br />
+
                             <table className="table">
                                 <thead>
                                     <tr>
@@ -259,7 +262,18 @@ function DataTableTopicSuccess() {
                                         <td>CHỦ TỊCH</td>
                                         <td>
                                             <select className="form-select" id="lecturer1" name="lecturer1" value={councilEdit.lecturer1} onChange={handleChange}>
-                                                <option value="">Chọn giảng viên</option>
+                                                {councilLecturers.some(c => c.role === "Chủ tịch") ? (
+                                                    (() => {
+                                                        const chairperson = councilLecturers.find(c => c.role === "Chủ tịch").lecturer;
+                                                        return (
+                                                            <option key={chairperson.personId} value={chairperson.personId}>
+                                                                {chairperson.person.firstName} {chairperson.person.lastName}
+                                                            </option>
+                                                        );
+                                                    })()
+                                                ) : (
+                                                    <option value="">Chọn giảng viên</option>
+                                                )}
                                                 {lecturers.map((lecturer) => (
                                                     <option key={lecturer.personId} value={lecturer.personId}>
                                                         {lecturer.person.firstName} {lecturer.person.lastName}
@@ -272,7 +286,18 @@ function DataTableTopicSuccess() {
                                         <td>THƯ KÝ</td>
                                         <td>
                                             <select className="form-select" id="lecturer2" name="lecturer2" value={councilEdit.lecturer2} onChange={handleChange}>
-                                                <option value="">Chọn giảng viên</option>
+                                            {councilLecturers.some(c => c.role === "Ủy viên") ? (
+                                                    (() => {
+                                                        const chairperson = councilLecturers.find(c => c.role === "Ủy viên").lecturer;
+                                                        return (
+                                                            <option key={chairperson.personId} value={chairperson.personId}>
+                                                                {chairperson.person.firstName} {chairperson.person.lastName}
+                                                            </option>
+                                                        );
+                                                    })()
+                                                ) : (
+                                                    <option value="">Chọn giảng viên</option>
+                                                )}
                                                 {lecturers.map((lecturer) => (
                                                     <option key={lecturer.personId} value={lecturer.personId}>
                                                         {lecturer.person.firstName} {lecturer.person.lastName}
