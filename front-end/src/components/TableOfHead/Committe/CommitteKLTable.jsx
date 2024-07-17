@@ -44,14 +44,14 @@ function CommitteKLTable() {
   };
 
   const listTopic = () => {
-    axiosInstance.get('/head/council/listSubject', {
+    axiosInstance.get('/head/council/graduation/listSubject', {
       headers: {
         'Authorization': `Bearer ${userToken}`,
       }
     })
       .then(response => {
         console.log("Danh sách đề tài: ", response.data);
-        setCommitte(response.data);
+        setCommitte(response.data.body);
       })
       .catch(error => {
         console.error(error);
@@ -63,7 +63,7 @@ function CommitteKLTable() {
 
   const detailTopic = () => {
     console.log("ID: ", subjectIdDetail);
-    axiosInstance.get(`/head/council/detail/${subjectIdDetail}`, {
+    axiosInstance.get(`/head/council/graduation/detail/${subjectIdDetail}`, {
       headers: {
         'Authorization': `Bearer ${userToken}`,
       }
@@ -71,7 +71,7 @@ function CommitteKLTable() {
       .then(response => {
         console.log("Chi tiết:", response.data);
         setDetail(response.data.body);
-        setCriterias(response.data.body.subject.criteria);
+        setCriterias(response.data.body.criterias);
       })
       .catch(error => {
         console.error('Lỗi lấy chi tiết:', error);
@@ -79,7 +79,7 @@ function CommitteKLTable() {
   };
 
   const listCriteria = () => {
-    axiosInstance.get('/head/council/listCriteria', {
+    axiosInstance.get('/head/council/graduation/listCriteria', {
       headers: {
         'Authorization': `Bearer ${userToken}`,
       }
@@ -117,7 +117,7 @@ function CommitteKLTable() {
       };
 
       console.log("Data to Submit: ", subjectId);
-      const response = await axiosInstance.post(`/head/council/evaluation-scoring/${subjectId}`, evaluationData, {
+      const response = await axiosInstance.post(`/head/council/graduation/review-score/${subjectId}`, evaluationData, {
         headers: {
           'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
           'Content-Type': 'multipart/form-data',
@@ -195,7 +195,7 @@ function CommitteKLTable() {
                     <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
                       onClick={() => {
                         setDetail(item.subject.subjectId);
-                        setSubjectIdDetail(item.councilId);
+                        setSubjectIdDetail(item.subject.subjectId);
                         setSubjectId(item.subject.subjectId)
                       }}>
                       Đánh giá

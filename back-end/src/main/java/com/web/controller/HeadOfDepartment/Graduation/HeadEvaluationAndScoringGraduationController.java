@@ -9,6 +9,7 @@ import com.web.repository.ReviewByThesisRepository;
 import com.web.repository.SubjectRepository;
 import com.web.repository.TypeSubjectRepository;
 import com.web.service.Council.EvaluationAndScoringService;
+import com.web.service.Lecturer.ManageTutorialSubjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,8 @@ public class HeadEvaluationAndScoringGraduationController {
     private ReviewByInstructorRepository reviewByInstructorRepository;
     @Autowired
     private ReviewByThesisRepository reviewByThesisRepository;
+    @Autowired
+    private ManageTutorialSubjectService manageTutorialSubjectService;
 
     @GetMapping("/listSubject")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
@@ -93,6 +96,18 @@ public class HeadEvaluationAndScoringGraduationController {
                 //Không tìm thấy đề tài
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    @GetMapping("/listCriteria")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
+    public ResponseEntity<?> getListCriteria(@RequestHeader("Authorization") String authorizationHeader){
+        try {
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
+            return new ResponseEntity<>(manageTutorialSubjectService.getListCriteria(authorizationHeader,typeSubject),HttpStatus.OK);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);

@@ -14,10 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/student/subjectGraduation")
@@ -26,7 +23,8 @@ public class StudentRegisterTopicGraduation {
     private StudentRepository studentRepository;
     @Autowired
     private CouncilRepository councilRepository;
-
+    @Autowired
+    private CouncilLecturerRepository councilLecturerRepository;
     @Autowired
     private SubjectRepository subjectRepository;
     @Autowired
@@ -126,13 +124,23 @@ public class StudentRegisterTopicGraduation {
 
     @GetMapping("/detailCouncil/{subjectId}")
     @PreAuthorize("hasAuthority('ROLE_STUDENT')")
-    public ResponseEntity<?> getDetailCouncil(@PathVariable int subjectId){
+    public ResponseEntity<Map<String,Object>> getDetailCouncil(@PathVariable int subjectId){
         Subject subject = subjectRepository.findById(subjectId).orElse(null);
+        System.out.println("Subject: " + subject);
         Council council = councilRepository.getCouncilBySubject(subject);
+        System.out.println("Council: " + council);
+        Map<String,Object> response = new HashMap<>();
         if (council!=null){
-            return new ResponseEntity<>(council,HttpStatus.OK);
-        }else {
-            //Chưa có hội đồng
+            System.out.println("Nhảy vào đây ");
+            response.put("council",council);
+            List<CouncilLecturer> councilLecturers = councilLecturerRepository.getListCouncilLecturerByCouncil(council);
+            List<Lecturer> lecturers = new ArrayList<>();
+            for (CouncilLecturer c:councilLecturers) {
+                lecturers.add(c.getLecturer());
+            }
+            response.put("lecturers",lecturers);
+            return new ResponseEntity<>(response,HttpStatus.OK);
+        }else {//Chưa có hội đồng
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }

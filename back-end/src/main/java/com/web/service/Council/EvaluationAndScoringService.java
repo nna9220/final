@@ -74,7 +74,9 @@ public class EvaluationAndScoringService {
             for (Council council:councils) {
                 Subject subject = council.getSubject();
                 System.out.println("before chẹc type");
-                System.out.println("type: " + council.getSubject().getTypeSubject().getTypeName());
+                System.out.println("type: " + typeSubject.getTypeName());
+                System.out.println(council);
+                System.out.println("Tyoe sub: "+council.getSubject().getTypeSubject().getTypeName());
                 if (council.getSubject().getTypeSubject()==typeSubject){
                     System.out.println("before check status");
                     if (subject.isStatus()) {
