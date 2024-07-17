@@ -17,8 +17,6 @@ function DataTableTopicSuccessKL() {
         lecturer1: '',
         lecturer2: '',
         lecturer3: '',
-        lecturer4: '',
-        lecturer5: '',
         start: '',
         end: '',
         date: '',
@@ -74,7 +72,9 @@ function DataTableTopicSuccessKL() {
             const councilDetails = response.data.body.council;
             setCouncil(councilDetails);
             setCouncilLecturers(response.data.body.councilLecturer);
-            setLecturers(response.data.body.listLecturerOfCouncil);
+            console.log("Data lecturer: ", response.data.body.councilLecturer)
+            setLecturers(response.data.body.listLecturer);
+            console.log("List Lecturer: ", response.data.body.listLecturer);
             setCouncilEdit({
                 lecturer1: councilDetails.lecturer1?.personId || '',
                 lecturer2: councilDetails.lecturer2?.personId || '',
@@ -166,30 +166,35 @@ function DataTableTopicSuccessKL() {
         }
 
         console.log("Send data: ", formattedCouncilEdit);
+
+        const formData = new FormData();
+        formData.append('lecturer1', formattedCouncilEdit.lecturer1);
+        formData.append('lecturer2', formattedCouncilEdit.lecturer2);
+        formData.append('lecturer3', formattedCouncilEdit.lecturer3);
+        formData.append('timeStart', formattedCouncilEdit.start);
+        formData.append('timeEnd', formattedCouncilEdit.end);
+        formData.append('date', formattedCouncilEdit.date);
+        formData.append('address', formattedCouncilEdit.address);
+
         try {
-            const response = await axiosInstance.post(`/head/manager/council/edit/${council.subject.subjectId}`, null, {
-                headers: {
-                    'Authorization': `Bearer ${userToken}`,
-                },
-                params: {
-                    lecturer1: formattedCouncilEdit.lecturer1,
-                    lecturer2: formattedCouncilEdit.lecturer2,
-                    lecturer3: formattedCouncilEdit.lecturer3,
-                    lecturer4: formattedCouncilEdit.lecturer4,
-                    lecturer5: formattedCouncilEdit.lecturer5,
-                    start: formattedCouncilEdit.start,
-                    end: formattedCouncilEdit.end,
-                    date: formattedCouncilEdit.date,
-                    address: formattedCouncilEdit.address,
-                },
-            });
+            const response = await axiosInstance.post(
+                `/head/manager/council/editCouncil/${council.subject.subjectId}`,
+                formData,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`,
+                        'Content-Type': 'multipart/form-data',
+                    }
+                }
+            );
             console.log("Save response: ", response.data);
             toast.success('Lập hội đồng thành công!');
         } catch (error) {
-            console.error('Error saving council details:', error);
+            console.error('Error saving council details:', error.response ? error.response.data : error.message);
             toast.error('Lập hội đồng thất bại. Vui lòng thử lại.');
         }
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -321,7 +326,7 @@ function DataTableTopicSuccessKL() {
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                            <button type="submit" class="btn btn-primary">Xác nhận</button>
+                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Xác nhận</button>
                         </div>
                     </form>
                 </div>
@@ -358,6 +363,8 @@ function DataTableTopicSuccessKL() {
 
                             <br />
 
+                            <br />
+
                             <table className="table">
                                 <thead>
                                     <tr>
@@ -366,69 +373,26 @@ function DataTableTopicSuccessKL() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>CHỦ TỊCH</td>
-                                        <td>
-                                            <select className="form-select" id="lecturer1" name="lecturer1" value={councilEdit.lecturer1} onChange={handleChange}>
-                                                <option value="">Chọn giảng viên</option>
-                                                {listLecturer.map((lecturer) => (
-                                                    <option key={lecturer.personId} value={lecturer.personId}>
-                                                        {lecturer.person.firstName} {lecturer.person.lastName}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>ỦY VIÊN 1</td>
-                                        <td>
-                                            <select className="form-select" id="lecturer2" name="lecturer2" value={councilEdit.lecturer2} onChange={handleChange}>
-                                                <option value="">Chọn giảng viên</option>
-                                                {listLecturer.map((lecturer) => (
-                                                    <option key={lecturer.personId} value={lecturer.personId}>
-                                                        {lecturer.person.firstName} {lecturer.person.lastName}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>ỦY VIÊN 2</td>
-                                        <td>
-                                            <select className="form-select" id="lecturer3" name="lecturer3" value={councilEdit.lecturer3} onChange={handleChange}>
-                                                <option value="">Chọn giảng viên</option>
-                                                {listLecturer.map((lecturer) => (
-                                                    <option key={lecturer.personId} value={lecturer.personId}>
-                                                        {lecturer.person.firstName} {lecturer.person.lastName}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </td>
-                                    </tr><tr>
-                                        <td>ỦY VIÊN 3</td>
-                                        <td>
-                                            <select className="form-select" id="lecturer4" name="lecturer4" value={councilEdit.lecturer4} onChange={handleChange}>
-                                                <option value="">Chọn giảng viên</option>
-                                                {listLecturer.map((lecturer) => (
-                                                    <option key={lecturer.personId} value={lecturer.personId}>
-                                                        {lecturer.person.firstName} {lecturer.person.lastName}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </td>
-                                    </tr><tr>
-                                        <td>ỦY VIÊN 4</td>
-                                        <td>
-                                            <select className="form-select" id="lecturer5" name="lecturer5" value={councilEdit.lecturer5} onChange={handleChange}>
-                                                <option value="">Chọn giảng viên</option>
-                                                {listLecturer.map((lecturer) => (
-                                                    <option key={lecturer.personId} value={lecturer.personId}>
-                                                        {lecturer.person.firstName} {lecturer.person.lastName}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </td>
-                                    </tr>
+                                    {councilLecturers.map((data, index) => (
+                                        <tr key={index}>
+                                            <td>{data.role}</td>
+                                            <td>
+                                                <select
+                                                    className="form-select"
+                                                    name={`lecturer${index + 1}`}
+                                                    value={councilEdit[`lecturer${index + 1}`] || ''}
+                                                    onChange={handleChange}
+                                                >
+                                                    <option disabled>{data.lecturer.person.firstName + ' ' + data.lecturer.person.lastName}</option>
+                                                    {lecturers.map(l => (
+                                                        <option key={l.lecturerId} value={l.lecturerId}>
+                                                            {l.person.firstName + ' ' + l.person.lastName}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>

@@ -23,7 +23,7 @@ public class Subject implements Serializable {
     @Column(name="subject_id")
     private int subjectId;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "council", unique = true)
     @JsonIgnore
     private Council council;
@@ -104,7 +104,7 @@ public class Subject implements Serializable {
     private Set<EvaluationCriteria> criteria = new HashSet<>();
 
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     private List<String> editSuggestions;
 
     public void removeCriteria(EvaluationCriteria evaluationCriteria) {

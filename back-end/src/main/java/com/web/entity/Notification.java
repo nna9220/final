@@ -35,7 +35,7 @@ public class Notification implements Serializable {
 
 
     // Thêm quan hệ nhiều-nhiều với Person
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JsonIgnore
     @JoinTable(
             name = "person_notification",

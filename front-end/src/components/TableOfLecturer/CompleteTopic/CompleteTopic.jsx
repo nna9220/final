@@ -77,10 +77,10 @@ function CompleteTopic() {
         }
         if (detail?.student3) {
             students.push({
-                studentId: detail.student2.person.personId,
-                fullName: `${detail.student2.person.firstName} ${detail.student2.person.lastName}`,
-                className: detail.student2.studentClass ? detail.student2.studentClass.classname : 'Chưa có',
-                score: detail.scoreStudent2 
+                studentId: detail.student3.person.personId,
+                fullName: `${detail.student3.person.firstName} ${detail.student3.person.lastName}`,
+                className: detail.student3.studentClass ? detail.student3.studentClass.classname : 'Chưa có',
+                score: detail.scoreStudent3
             });
         }
         return students;

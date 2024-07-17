@@ -49,11 +49,11 @@ public class Task implements Serializable {
     @Column(name="status")
     private String status;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="instructor_id", columnDefinition = "VARCHAR(255)")
     private Lecturer instructorId;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="assign_to", columnDefinition = "VARCHAR(255)")
     private Student assignTo;
 

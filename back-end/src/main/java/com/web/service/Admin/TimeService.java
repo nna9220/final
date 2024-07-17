@@ -283,9 +283,9 @@ public class TimeService {
         notificationRepository.save(notification);
 
         Notification notificationReport = new Notification();
-        notificationReport.setContent(subjectReport);
+        notificationReport.setContent(messengerReport);
         notificationReport.setPersons(personList);
-        notificationReport.setTitle(messengerReport);
+        notificationReport.setTitle(subjectReport);
         notificationReport.setDateSubmit(now);
         notificationRepository.save(notificationReport);
 

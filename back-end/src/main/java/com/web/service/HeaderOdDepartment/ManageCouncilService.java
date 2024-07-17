@@ -58,10 +58,6 @@ public class ManageCouncilService {
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
-            List<CouncilReportTime> councilReportTimes = councilReportTimeRepository.findCouncilReportTimeByTypeSubjectAndStatus(typeSubject, true);
-            if (!CompareTime.isCouncilTimeWithinAnyCouncilReportTime(councilReportTimes)) {
-                return new ResponseEntity<>("Không nằm trong khoảng thời gian hội đồng được tổ chức.", HttpStatus.BAD_REQUEST);
-            }
             Lecturer lecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             List<Subject> subjects = subjectRepository.findSubjectByActiveAndStatusAndMajorAndType((byte)1, lecturer.getMajor(), typeSubject);
             return new ResponseEntity<>(subjects, HttpStatus.OK);
@@ -147,18 +143,22 @@ public class ManageCouncilService {
         LocalTime start1 = council.getStart();
         LocalTime end1 = council.getEnd();
         LocalDate date1 = council.getDate();
+        System.out.println("End council " + end1);
+        System.out.println("Start council " + start1);
 
         for (Council otherCouncil : conflictCouncils) {
-            LocalDate date2 = otherCouncil.getDate();
-            LocalTime start2 = otherCouncil.getStart();
-            LocalTime end2 = otherCouncil.getEnd();
-
-            // Kiểm tra xem có sự chồng chéo giữa khoảng thời gian start1-end1 và start2-end2
-            if (date1.equals(date2) && start1.isBefore(end2) && start2.isBefore(end1)) {
-                return true; // Có xung đột
+            if (council!=otherCouncil) {
+                LocalDate date2 = otherCouncil.getDate();
+                LocalTime start2 = otherCouncil.getStart();
+                LocalTime end2 = otherCouncil.getEnd();
+                // Kiểm tra xem có sự chồng chéo giữa khoảng thời gian start1-end1 và start2-end2
+                if (date1.equals(date2) && start1.isBefore(end2) && end1.isAfter(start2)) {
+                    System.out.println("Time end list: " + end2);
+                    System.out.println("Time start list: " + start2);
+                    return true; // Có xung đột
+                }
             }
         }
-
         return false; // Không có xung đột
     }
 
@@ -175,7 +175,7 @@ public class ManageCouncilService {
 
     //Chỉnh sửa thêm timeStart and timeEnd, check trong 1 thời gian k được có 2 hội đồng cùng phản biện
     public ResponseEntity<?> updateCouncil(int id,String authorizationHeader, String date,String timeStart, String timeEnd, String addressReport,
-                                              String lecturer1, String lecturer2,String lecturer3,String lecturer4,String lecturer5){
+                                              String lecturer1, String lecturer2,String lecturer3){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
         if (personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
@@ -210,18 +210,20 @@ public class ManageCouncilService {
                     if (hasTimeConflict(council,conflictCouncil)) {
                         return new ResponseEntity<>("Đã tồn tại hội đồng nằm trong khoản tời gian này.", HttpStatus.CONFLICT);
                     }
-                    // Xóa CouncilLecturer cũ của giảng viên nếu có sự thay đổi
-                    removeCouncilLecturerIfNeeded(council, lecturer1);
-                    removeCouncilLecturerIfNeeded(council, lecturer2);
-                    removeCouncilLecturerIfNeeded(council, lecturer3);
-                    removeCouncilLecturerIfNeeded(council, lecturer4);
-                    removeCouncilLecturerIfNeeded(council, lecturer5);
-                    // Thêm giảng viên mới vào CouncilLecturer nếu có sự thay đổi
-                    addOrUpdateCouncilLecturer(council, lecturer1, "Chủ tịch");
-                    addOrUpdateCouncilLecturer(council, lecturer2, "Ủy viên");
-                    addOrUpdateCouncilLecturer(council, lecturer3, "Ủy viên");
-                    addOrUpdateCouncilLecturer(council, lecturer4, "Ủy viên");
-                    addOrUpdateCouncilLecturer(council, lecturer5, "Ủy viên");
+                    Lecturer lecturerSet1 = lecturerRepository.findById(lecturer1).orElse(null);
+                    Lecturer lecturerSet2 = lecturerRepository.findById(lecturer2).orElse(null);
+                    Lecturer lecturerSet3 = lecturerRepository.findById(lecturer3).orElse(null);
+                    List<Lecturer> lecturers = new ArrayList<>();
+                    lecturers.add(0,lecturerSet1);
+                    lecturers.add(1,lecturerSet2);
+                    lecturers.add(2,lecturerSet3);
+                    List<CouncilLecturer> councilLecturer = councilLecturerRepository.getListCouncilLecturerByCouncil(council);
+                    for (int i = 0; i < councilLecturer.size(); i++) {
+                        CouncilLecturer councilLecturer1 = councilLecturer.get(i);
+                        Lecturer lecturer = lecturers.get(i);
+                        councilLecturer1.setLecturer(lecturer);
+                    }
+                    councilLecturerRepository.saveAll(councilLecturer);
                     council.setSubject(subject);
                     councilRepository.save(council);
                     subject.setCouncil(council);
@@ -275,11 +277,11 @@ public class ManageCouncilService {
                         return new ResponseEntity<>("Đã tồn tại hội đồng nằm trong khoản tời gian này.", HttpStatus.CONFLICT);
                     }
                     // Xóa CouncilLecturer cũ của giảng viên nếu có sự thay đổi
-                    removeCouncilLecturerIfNeeded(council, lecturer1);
-                    removeCouncilLecturerIfNeeded(council, lecturer2);
-                    // Thêm giảng viên mới vào CouncilLecturer nếu có sự thay đổi
-                    addOrUpdateCouncilLecturer(council, lecturer1, "Chủ tịch");
-                    addOrUpdateCouncilLecturer(council, lecturer2, "Ủy viên");
+                    List<CouncilLecturer> councilLecturer = councilLecturerRepository.getListCouncilLecturerByCouncil(council);
+                    for (CouncilLecturer c:councilLecturer) {
+
+                    }
+
                     council.setSubject(subject);
                     councilRepository.save(council);
                     subject.setCouncil(council);

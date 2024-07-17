@@ -45,6 +45,7 @@ public class ThesisBrowseSubjectToCouncil {
         System.out.println("");
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+            System.out.println("Lecturer current: " + existedLecturer.getPerson().getFirstName() + existedLecturer.getPerson().getLastName());
             List<Subject> existedSubjects = subjectRepository.findSubjectByThesisAndStatusAndActiveAndTypeSubject(existedLecturer,true,typeSubject,(byte)7);
             for (Subject subject: existedSubjects) {
                 System.out.println(subject.getSubjectName());
@@ -54,6 +55,64 @@ public class ThesisBrowseSubjectToCouncil {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
+    public ResponseEntity<?> CompletedSubjectBrowseToCouncilEssay(String authorizationHeader, int id){
+        String token = tokenUtils.extractToken(authorizationHeader);
+        Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
+        if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
+            Lecturer existedLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
+            Subject existedSubject = subjectRepository.findById(id).orElse(null);
+            if (existedSubject!=null){
+                    existedSubject.setActive((byte) 8);
+                    subjectRepository.save(existedSubject);
+                    List<String> emailPerson = new ArrayList<>();
+                    if (existedSubject.getStudent1() != null) {
+                        Student student1 = studentRepository.findById(existedSubject.getStudent1()).orElse(null);
+                        if (student1.getPerson().getPersonId() != personCurrent.getPersonId()) {
+                            emailPerson.add(student1.getPerson().getUsername());
+                        }
+                    }
+                    if (existedSubject.getStudent2() != null) {
+                        Student student2 = studentRepository.findById(existedSubject.getStudent2()).orElse(null);
+                        if (student2.getPerson().getPersonId() != personCurrent.getPersonId()) {
+                            emailPerson.add(student2.getPerson().getUsername());
+                        }
+                    }
+                    if (existedSubject.getStudent3() != null) {
+                        Student student3 = studentRepository.findById(existedSubject.getStudent3()).orElse(null);
+                        if (student3.getPerson().getPersonId() != personCurrent.getPersonId()) {
+                            emailPerson.add(student3.getPerson().getUsername());
+                        }
+                    }
+                    List<CouncilLecturer> councilLecturers = councilLecturerRepository.getListCouncilLecturerByCouncil(existedSubject.getCouncil());
+                    List<Lecturer> lecturers = new ArrayList<>();
+                    for (CouncilLecturer c : councilLecturers) {
+                        lecturers.add(c.getLecturer());
+                    }
+                    if (existedSubject.getCouncil() != null) {
+                        for (Lecturer lecturer : lecturers) {
+                            if (lecturer != existedLecturer) {
+                                emailPerson.add(lecturer.getPerson().getUsername());
+                            }
+                        }
+                        String subject = "Topic: " + existedSubject.getSubjectName();
+                        String messenger = "Topic: " + existedSubject.getSubjectName() + " đã được giảng viên phản biện thông qua hội đồng, truy cập website để biết thông tin ngày giờ, địa điểm bảo vệ";
+                        //Gửi mail cho Hội đồng - SV
+                        mailService.sendMailToPerson(emailPerson, subject, messenger);
+                    } else { //Nếu chưa có thì thông báo truy cập tạo hội đồng
+                        //Kiểm tra nếu mã trả về mã 302 - Check mã rồi ra TB
+                        return new ResponseEntity<>(HttpStatus.FOUND);
+                    }
+                    return new ResponseEntity<>(existedSubject, HttpStatus.OK);
+
+            }else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        }else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
 
     //GVPB duyệt đề tài qua hội đồng
     public ResponseEntity<?> CompletedSubjectBrowseToCouncil(String authorizationHeader, int id,

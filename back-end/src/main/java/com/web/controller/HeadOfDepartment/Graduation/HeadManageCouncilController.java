@@ -9,6 +9,7 @@ import com.web.service.Council.EvaluationAndScoringService;
 import com.web.service.HeaderOdDepartment.ManageCouncilService;
 import com.web.service.HeaderOdDepartment.WordExportService;
 import com.web.utils.UserUtils;
+import com.web.service.Lecturer.ManageTutorialSubjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,6 +50,8 @@ public class HeadManageCouncilController {
     private CouncilRepository councilRepository;
     @Autowired
     private PersonRepository personRepository;
+    @Autowired
+    private ManageTutorialSubjectService manageTutorialSubjectService;
     @Autowired
     private TokenUtils tokenUtils;
     @GetMapping("/listSubject")
@@ -102,8 +105,8 @@ public class HeadManageCouncilController {
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
     public ResponseEntity<?> detailCouncil(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader){
         try {
-            return new ResponseEntity<>(evaluationAndScoringService.detailCouncil(authorizationHeader,id),HttpStatus.OK);
-        }catch (Exception e){
+            return new ResponseEntity<>(evaluationAndScoringService.detailCouncil(authorizationHeader, id), HttpStatus.OK);
+        } catch (Exception e) {
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);
         }
@@ -119,16 +122,27 @@ public class HeadManageCouncilController {
                                           @RequestParam("address") String address,
                                           @RequestParam(value = "lecturer1", required = false)String lecturer1,
                                           @RequestParam(value = "lecturer2", required = false)String lecturer2,
-                                          @RequestParam(value = "lecturer3",required = false)String lecturer3,
-                                          @RequestParam(value = "lecturer4",required = false)String lecturer4,
-                                          @RequestParam(value = "lecturer5",required = false)String lecturer5){
+                                          @RequestParam(value = "lecturer3",required = false)String lecturer3){
         System.out.println("Hello");
         try {
-            return new ResponseEntity<>(manageCouncilService.updateCouncil(subjectId,authorizationHeader,date,timeStart,timeEnd,address,lecturer1,lecturer2,lecturer3,lecturer4,lecturer5),HttpStatus.OK);
+            return new ResponseEntity<>(manageCouncilService.updateCouncil(subjectId,authorizationHeader,date,timeStart,timeEnd,address,lecturer1,lecturer2,lecturer3),HttpStatus.OK);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);
         }
+    }
+
+    @PostMapping("/editCouncil/{subjectId}")
+    public ResponseEntity<?> updateCouncil(@RequestHeader("Authorization") String authorizationHeader,
+                                           @PathVariable int subjectId,
+                                           @RequestParam("timeStart") String timeStart,
+                                           @RequestParam("date") String date,
+                                           @RequestParam("timeEnd") String timeEnd,
+                                           @RequestParam("address") String address,
+                                           @RequestParam(value = "lecturer1", required = false)String lecturer1,
+                                           @RequestParam(value = "lecturer2", required = false)String lecturer2,
+                                           @RequestParam(value = "lecturer3",required = false)String lecturer3){
+        return manageCouncilService.updateCouncil(subjectId,authorizationHeader,date,timeStart,timeEnd,address,lecturer1,lecturer2,lecturer3);
     }
 
 
@@ -179,6 +193,19 @@ public class HeadManageCouncilController {
             throw new ExceptionInInitializerError(e);
         }
     }
+
+    @GetMapping("/listCriteria")
+    @PreAuthorize("hasAuthority('ROLE_HEAD')")
+    public ResponseEntity<?> getListCriteria(@RequestHeader("Authorization") String authorizationHeader){
+        try {
+            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
+            return new ResponseEntity<>(manageTutorialSubjectService.getListCriteria(authorizationHeader,typeSubject),HttpStatus.OK);
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
 
     @GetMapping("/detailCouncilReportTime")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")

@@ -34,6 +34,8 @@ public class HeadManageCriticalSubjectGraduationController {
     @Autowired
     private TimeBrowseHeadRepository timeBrowseHeadRepository;
     @Autowired
+    private ReviewByInstructorRepository reviewByInstructorRepository;
+    @Autowired
     private ThesisBrowseSubjectToCouncil thesisBrowseSubjectToCouncil;
     private final TokenUtils tokenUtils;
     @Autowired
@@ -42,16 +44,12 @@ public class HeadManageCriticalSubjectGraduationController {
     }
 
 
-    @GetMapping("/listSubject")
+
+    @GetMapping("/listSubjectThesis")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
-    public ResponseEntity<?> getListSubject(@RequestHeader("Authorization") String authorizationHeader){
-        try {
-            TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
-            return new ResponseEntity<>(thesisBrowseSubjectToCouncil.getListOfSubjectWasHeadBrowse(authorizationHeader,typeSubject), HttpStatus.OK);
-        }catch (Exception e){
-            System.err.println("Initial SessionFactory creation failed." + e);
-            throw new ExceptionInInitializerError(e);
-        }
+    public ResponseEntity<?> getListSubjectThesis(@RequestHeader("Authorization") String authorizationHeader){
+        TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
+        return thesisBrowseSubjectToCouncil.getListOfSubjectWasHeadBrowse(authorizationHeader,typeSubject);
     }
 
     @GetMapping("/timeBrowse")
@@ -82,7 +80,7 @@ public class HeadManageCriticalSubjectGraduationController {
         if (personCurrent != null && personCurrent.getAuthorities().getName().equals("ROLE_LECTURER")) {
             Lecturer currentLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Khóa luận tốt nghiệp");
-            List<Subject> listSubject = subjectRepository.findSubjectsByThesisAdvisorId(currentLecturer,typeSubject);
+            List<Subject> listSubject = subjectRepository.findSubjectsByThesisAdvisorId(currentLecturer,typeSubject,(byte)7);
             Map<String,Object> response = new HashMap<>();
             response.put("person", personCurrent);
             response.put("lec",currentLecturer);
@@ -98,7 +96,7 @@ public class HeadManageCriticalSubjectGraduationController {
     public ResponseEntity<Map<String,Object>> getDetailCounterArgument(@PathVariable int id, @RequestHeader("Authorization") String authorizationHeader){
         String token = tokenUtils.extractToken(authorizationHeader);
         Person personCurrent = CheckRole.getRoleCurrent2(token, userUtils, personRepository);
-        if (personCurrent != null && personCurrent.getAuthorities().getName().equals("ROLE_LECTURER")) {
+        if (personCurrent != null && personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer currentLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             Subject existSubject = subjectRepository.findById(id).orElse(null);
             Map<String,Object> response = new HashMap<>();
@@ -108,6 +106,30 @@ public class HeadManageCriticalSubjectGraduationController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+
+    @GetMapping("/reviewInstructor/{subjectId}")
+    @PreAuthorize("hasAuthority('ROLE_LECTURER')")
+    public ResponseEntity<?> getDetailReviewInstructor(@PathVariable int subjectId,@RequestHeader("Authorization") String authorizationHeader){
+        try {
+            Subject existedSubject = subjectRepository.findById(subjectId).orElse(null);
+            if (existedSubject!=null){
+                ReviewByInstructor existedReview = reviewByInstructorRepository.getReviewByInstructorBySAndSubject(existedSubject);
+                if (existedReview!=null){
+                    return new ResponseEntity<>(existedReview,HttpStatus.OK);
+                }else {
+                    //K tìm thấy đánh giá
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
+            }else {
+                //Không tìm thấy đề tài
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        }catch (Exception e){
+            System.err.println("Initial SessionFactory creation failed." + e);
+            throw new ExceptionInInitializerError(e);
         }
     }
 
@@ -124,5 +146,4 @@ public class HeadManageCriticalSubjectGraduationController {
             throw new ExceptionInInitializerError(e);
         }
     }
-
 }

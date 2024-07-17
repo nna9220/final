@@ -126,11 +126,11 @@ public class BrowseSubjectToThesisService {
 
         if (personCurrent.getAuthorities().getName().equals("ROLE_LECTURER") || personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             List<Subject> updatedSubjects = new ArrayList<>();
-            List<String> emailPerson = new ArrayList<>();
 
             for (Integer id : subjectIds) {
                 Subject existedSubject = subjectRepository.findById(id).orElse(null);
                 if (existedSubject != null) {
+                    List<String> emailPerson = new ArrayList<>();
                     existedSubject.setActive((byte) 7);
                     updatedSubjects.add(existedSubject);
 
@@ -153,6 +153,9 @@ public class BrowseSubjectToThesisService {
                         }
                     }
                     emailPerson.add(existedSubject.getThesisAdvisorId().getPerson().getUsername());
+                    String subject = "THÔNG BÁO ĐỀ TÀI " + existedSubject.getSubjectName() + " ĐÃ ĐƯỢC THÔNG QUA PHẢN BIỆN";
+                    String messenger = "Đề tài " + existedSubject.getSubjectName()+ "  đã được trưởng bộ môn phê duyệt. Sinh viên và Giảng viên phản biện truy cập website để xem thông tin chi tiết.";
+                    mailService.sendMailToPerson(emailPerson, subject, messenger);
                 }
             }
 
@@ -160,9 +163,6 @@ public class BrowseSubjectToThesisService {
             subjectRepository.saveAll(updatedSubjects);
 
             // Send email to all relevant persons
-            String subject = "THÔNG BÁO ĐỀ TÀI ĐÃ ĐƯỢC THÔNG QUA PHẢN BIỆN";
-            String messenger = "Đề tài đã được giảng viên phản biện phê duyệt. Sinh viên và Giảng viên chờ thông báo lập hội đồng để tiến hành bảo vệ.";
-            mailService.sendMailToPerson(emailPerson, subject, messenger);
 
             return new ResponseEntity<>(updatedSubjects, HttpStatus.OK);
         } else {

@@ -88,7 +88,7 @@ public class HomeHeadController {
         if (personCurrent != null && personCurrent.getAuthorities().getName().equals("ROLE_HEAD")) {
             Lecturer currentLecturer = lecturerRepository.findById(personCurrent.getPersonId()).orElse(null);
             TypeSubject typeSubject = typeSubjectRepository.findSubjectByName("Tiểu luận chuyên ngành");
-            List<Subject> listSubject = subjectRepository.findSubjectsByThesisAdvisorId(currentLecturer,typeSubject);
+            List<Subject> listSubject = subjectRepository.findSubjectsByThesisAdvisorId(currentLecturer,typeSubject,(byte)7);
 
             Map<String,Object> response = new HashMap<>();
             response.put("person", personCurrent);

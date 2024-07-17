@@ -17,7 +17,7 @@
         "@fullcalendar/react": "^6.1.14",
         "@mobiscroll/react": "npm:@mobiscroll/react-next-trial@^5.31.2",
         "@mui/icons-material": "^5.15.11",
-        "@mui/material": "^5.16.1",
+        "@mui/material": "^5.16.4",
         "@mui/x-data-grid": "^6.19.5",
         "@mui/x-data-grid-premium": "^7.7.0",
         "@phuocng/react-pdf-viewer": "^1.7.0",
