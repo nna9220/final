@@ -30,6 +30,10 @@ public class WordExportService {
     private LecturerRepository lecturerRepository;
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private ReviewByInstructorRepository reviewByInstructorRepository;
+    @Autowired
+    private ReviewByThesisRepository reviewByThesisRepository;
 
     public void exportWordFile(String outputPath, Major major, TypeSubject typeSubject) throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
@@ -43,32 +47,23 @@ public class WordExportService {
         // Điền dữ liệu bộ môn
         appendTextAfterKeyword(document, "Bộ Môn :", String.valueOf(major));
 
-        // Tìm bảng tiêu chí
-        XWPFTable criteriaTable = null;
-        for (XWPFTable table : document.getTables()) {
-            XWPFTableRow headerRow = table.getRow(0);
-            if (headerRow != null && headerRow.getCell(1) != null && headerRow.getCell(1).getText().equals("Tiêu chí")) {
-                criteriaTable = table;
-                break;
-            }
+        // Điền tiêu chí và thang điểm
+        XWPFTable table = document.getTables().get(1); // Lấy bảng thứ hai
+        // Xóa nội dung các ô trong cột STT, Tiêu chí và Điểm
+        for (int i = 1; i < table.getNumberOfRows(); i++) {
+            XWPFTableRow row = table.getRow(i);
+            row.getCell(0).removeParagraph(0); // Ô STT
+            row.getCell(1).removeParagraph(0); // Ô Tiêu chí
+            row.getCell(2).removeParagraph(0); // Ô Điểm
         }
 
-        // Điền tiêu chí và thang điểm vào bảng tiêu chí
-        if (criteriaTable != null) {
-            // Xóa các hàng cũ trong bảng tiêu chí, trừ hàng tiêu đề
-            int numberOfRows = criteriaTable.getNumberOfRows();
-            for (int i = numberOfRows - 1; i > 0; i--) {
-                criteriaTable.removeRow(i);
-            }
-
-            // Thêm các tiêu chí mới
-            for (int i = 0; i < criteriaList.size(); i++) {
-                EvaluationCriteria criteria = criteriaList.get(i);
-                XWPFTableRow row = criteriaTable.createRow();
-                row.getCell(0).setText(String.valueOf(i + 1));
-                row.getCell(1).setText(criteria.getCriteriaName());
-                row.getCell(2).setText(criteria.getCriteriaScore().toString());
-            }
+        // Điền lại tiêu chí và thang điểm
+        for (int i = 0; i < criteriaList.size(); i++) {
+            EvaluationCriteria criteria = criteriaList.get(i);
+            XWPFTableRow row = (i < table.getNumberOfRows() - 1) ? table.getRow(i + 1) : table.createRow();
+            row.getCell(0).setText(String.valueOf(i + 1));
+            row.getCell(1).setText(criteria.getCriteriaName());
+            row.getCell(2).setText(criteria.getCriteriaScore().toString());
         }
 
         // Lưu file đã chỉnh sửa
@@ -81,41 +76,84 @@ public class WordExportService {
     public void exportReviewByInstructorFile(String outputPath, int subjectId) throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream("template/NhanXetGVHD.docx");
-
         XWPFDocument document = new XWPFDocument(inputStream);
-
         // Lấy dữ liệu từ cơ sở dữ liệu
         Subject subject = subjectRepository.findById(subjectId).orElse(null);
         if (subject != null) {
-            // Tìm kết quả theo đề tài
-            if (subject.getStudent1() != null) {
-                Student student1 = studentRepository.findById(subject.getStudent1()).orElse(null);
-                if (student1 != null) {
-                    appendTextAfterKeyword(document, "Họ và tên Sinh viên 1 :", student1.getPerson().getFirstName() + " " + student1.getPerson().getLastName());
-                    appendTextAfterKeyword(document, "MSSV 1:", student1.getStudentId());
+            //Tìm kiếm đánh giá của gvhd theo đề tài
+            ReviewByInstructor reviewByInstructor = reviewByInstructorRepository.getReviewByInstructorBySAndSubject(subject);
+            if (reviewByInstructor==null) {
+                // Tìm kết quả theo đề tài
+                if (subject.getStudent1() != null) {
+                    Student student1 = studentRepository.findById(subject.getStudent1()).orElse(null);
+                    if (student1 != null) {
+                        appendTextAfterKeyword(document, "Họ và tên Sinh viên 1 :", student1.getPerson().getFirstName() + " " + student1.getPerson().getLastName());
+                        appendTextAfterKeyword(document, "MSSV 1:", student1.getStudentId());
+                    }
                 }
-            }
-            if (subject.getStudent2() != null) {
-                Student student2 = studentRepository.findById(subject.getStudent2()).orElse(null);
-                if (student2 != null) {
-                    appendTextAfterKeyword(document, "Họ và tên Sinh viên 2 :", student2.getPerson().getFirstName() + " " + student2.getPerson().getLastName());
-                    appendTextAfterKeyword(document, "MSSV 2:", student2.getStudentId());
+                if (subject.getStudent2() != null) {
+                    Student student2 = studentRepository.findById(subject.getStudent2()).orElse(null);
+                    if (student2 != null) {
+                        appendTextAfterKeyword(document, "Họ và tên Sinh viên 2 :", student2.getPerson().getFirstName() + " " + student2.getPerson().getLastName());
+                        appendTextAfterKeyword(document, "MSSV 2:", student2.getStudentId());
+                    }
                 }
-            }
-            if (subject.getStudent3() != null) {
-                Student student3 = studentRepository.findById(subject.getStudent3()).orElse(null);
-                if (student3 != null) {
-                    appendTextAfterKeyword(document, "Họ và tên Sinh viên 3 :", student3.getPerson().getFirstName() + " " + student3.getPerson().getLastName());
-                    appendTextAfterKeyword(document, "MSSV 3:", student3.getStudentId());
+                if (subject.getStudent3() != null) {
+                    Student student3 = studentRepository.findById(subject.getStudent3()).orElse(null);
+                    if (student3 != null) {
+                        appendTextAfterKeyword(document, "Họ và tên Sinh viên 3 :", student3.getPerson().getFirstName() + " " + student3.getPerson().getLastName());
+                        appendTextAfterKeyword(document, "MSSV 3:", student3.getStudentId());
+                    }
                 }
-            }
 
-            // Thay thế dữ liệu trong file mẫu
-            appendTextAfterKeyword(document, "Tên đề tài:", subject.getSubjectName());
+                // Thay thế dữ liệu trong file mẫu
+                appendTextAfterKeyword(document, "Tên đề tài:", subject.getSubjectName());
 
-            if (subject.getInstructorId() != null) {
-                Lecturer lecturer = subject.getInstructorId();
-                appendTextAfterKeyword(document, "Họ và tên Giáo viên hướng dẫn:", lecturer.getPerson().getFirstName() + " " + lecturer.getPerson().getLastName());
+                if (subject.getInstructorId() != null) {
+                    Lecturer lecturer = subject.getInstructorId();
+                    appendTextAfterKeyword(document, "Họ và tên Giáo viên hướng dẫn:", lecturer.getPerson().getFirstName() + " " + lecturer.getPerson().getLastName());
+                }
+            }else {
+                // Tìm kết quả theo đề tài
+                if (subject.getStudent1() != null) {
+                    Student student1 = studentRepository.findById(subject.getStudent1()).orElse(null);
+                    if (student1 != null) {
+                        appendTextAfterKeyword(document, "Họ và tên Sinh viên 1 :", student1.getPerson().getFirstName() + " " + student1.getPerson().getLastName());
+                        appendTextAfterKeyword(document, "MSSV 1:", student1.getStudentId());
+                    }
+                }
+                if (subject.getStudent2() != null) {
+                    Student student2 = studentRepository.findById(subject.getStudent2()).orElse(null);
+                    if (student2 != null) {
+                        appendTextAfterKeyword(document, "Họ và tên Sinh viên 2 :", student2.getPerson().getFirstName() + " " + student2.getPerson().getLastName());
+                        appendTextAfterKeyword(document, "MSSV 2:", student2.getStudentId());
+                    }
+                }
+                if (subject.getStudent3() != null) {
+                    Student student3 = studentRepository.findById(subject.getStudent3()).orElse(null);
+                    if (student3 != null) {
+                        appendTextAfterKeyword(document, "Họ và tên Sinh viên 3 :", student3.getPerson().getFirstName() + " " + student3.getPerson().getLastName());
+                        appendTextAfterKeyword(document, "MSSV 3:", student3.getStudentId());
+                    }
+                }
+
+                // Thay thế dữ liệu trong file mẫu
+                appendTextAfterKeyword(document, "Tên đề tài:", subject.getSubjectName());
+
+                if (subject.getInstructorId() != null) {
+                    Lecturer lecturer = subject.getInstructorId();
+                    appendTextAfterKeyword(document, "Họ và tên Giáo viên hướng dẫn:", lecturer.getPerson().getFirstName() + " " + lecturer.getPerson().getLastName());
+                }
+                appendTextAfterKeyword(document,"1.\tVề nội dung đề tài & khối lượng thực hiện: ",reviewByInstructor.getReviewContent());
+                appendTextAfterKeyword(document,"2.\tƯu điểm: ",reviewByInstructor.getReviewAdvantage());
+                appendTextAfterKeyword(document,"3.\tKhuyết điểm: ",reviewByInstructor.getReviewWeakness());
+                if (reviewByInstructor.getStatus()){
+                    appendTextAfterKeyword(document,"4.\tĐề nghị cho bảo vệ hay không ?","Có");
+                }else {
+                    appendTextAfterKeyword(document,"4.\tĐề nghị cho bảo vệ hay không ?","Không");
+                }
+                appendTextAfterKeyword(document,"5.\tĐánh giá loại : ",reviewByInstructor.getClassification());
+                appendTextAfterKeyword(document,"6.\tĐiểm : ", String.valueOf(reviewByInstructor.getScore()));
             }
 
             // Lưu file đã chỉnh sửa
@@ -149,35 +187,79 @@ public class WordExportService {
         // Lấy dữ liệu từ cơ sở dữ liệu
         Subject subject = subjectRepository.findById(subjectId).orElse(null);
         if (subject != null) {
-            // Tìm kết quả theo đề tài
-            if (subject.getStudent1() != null) {
-                Student student1 = studentRepository.findById(subject.getStudent1()).orElse(null);
-                if (student1 != null) {
-                    appendTextAfterKeyword(document, "Họ và tên Sinh viên 1 :", student1.getPerson().getFirstName() + " " + student1.getPerson().getLastName());
-                    appendTextAfterKeyword(document, "MSSV 1:", student1.getStudentId());
+            //Tìm đánh giá của gvpb
+            ReviewByThesis reviewByThesis = reviewByThesisRepository.getReviewByThesisBySAndSubject(subject);
+            if (reviewByThesis==null) {
+                // Tìm kết quả theo đề tài
+                if (subject.getStudent1() != null) {
+                    Student student1 = studentRepository.findById(subject.getStudent1()).orElse(null);
+                    if (student1 != null) {
+                        appendTextAfterKeyword(document, "Họ và tên Sinh viên 1 :", student1.getPerson().getFirstName() + " " + student1.getPerson().getLastName());
+                        appendTextAfterKeyword(document, "MSSV 1:", student1.getStudentId());
+                    }
                 }
-            }
-            if (subject.getStudent2() != null) {
-                Student student2 = studentRepository.findById(subject.getStudent2()).orElse(null);
-                if (student2 != null) {
-                    appendTextAfterKeyword(document, "Họ và tên Sinh viên 2 :", student2.getPerson().getFirstName() + " " + student2.getPerson().getLastName());
-                    appendTextAfterKeyword(document, "MSSV 2:", student2.getStudentId());
+                if (subject.getStudent2() != null) {
+                    Student student2 = studentRepository.findById(subject.getStudent2()).orElse(null);
+                    if (student2 != null) {
+                        appendTextAfterKeyword(document, "Họ và tên Sinh viên 2 :", student2.getPerson().getFirstName() + " " + student2.getPerson().getLastName());
+                        appendTextAfterKeyword(document, "MSSV 2:", student2.getStudentId());
+                    }
                 }
-            }
-            if (subject.getStudent3() != null) {
-                Student student3 = studentRepository.findById(subject.getStudent3()).orElse(null);
-                if (student3 != null) {
-                    appendTextAfterKeyword(document, "Họ và tên Sinh viên 3 :", student3.getPerson().getFirstName() + " " + student3.getPerson().getLastName());
-                    appendTextAfterKeyword(document, "MSSV 3:", student3.getStudentId());
+                if (subject.getStudent3() != null) {
+                    Student student3 = studentRepository.findById(subject.getStudent3()).orElse(null);
+                    if (student3 != null) {
+                        appendTextAfterKeyword(document, "Họ và tên Sinh viên 3 :", student3.getPerson().getFirstName() + " " + student3.getPerson().getLastName());
+                        appendTextAfterKeyword(document, "MSSV 3:", student3.getStudentId());
+                    }
                 }
-            }
 
-            // Thay thế dữ liệu trong file mẫu
-            appendTextAfterKeyword(document, "Tên đề tài:", subject.getSubjectName());
+                // Thay thế dữ liệu trong file mẫu
+                appendTextAfterKeyword(document, "Tên đề tài:", subject.getSubjectName());
 
-            if (subject.getThesisAdvisorId() != null) {
-                Lecturer lecturer = subject.getThesisAdvisorId();
-                appendTextAfterKeyword(document, "Họ và tên Giáo viên phản biện:", lecturer.getPerson().getFirstName() + " " + lecturer.getPerson().getLastName());
+                if (subject.getThesisAdvisorId() != null) {
+                    Lecturer lecturer = subject.getThesisAdvisorId();
+                    appendTextAfterKeyword(document, "Họ và tên Giáo viên phản biện:", lecturer.getPerson().getFirstName() + " " + lecturer.getPerson().getLastName());
+                }
+            }else {
+                if (subject.getStudent1() != null) {
+                    Student student1 = studentRepository.findById(subject.getStudent1()).orElse(null);
+                    if (student1 != null) {
+                        appendTextAfterKeyword(document, "Họ và tên Sinh viên 1 :", student1.getPerson().getFirstName() + " " + student1.getPerson().getLastName());
+                        appendTextAfterKeyword(document, "MSSV 1:", student1.getStudentId());
+                    }
+                }
+                if (subject.getStudent2() != null) {
+                    Student student2 = studentRepository.findById(subject.getStudent2()).orElse(null);
+                    if (student2 != null) {
+                        appendTextAfterKeyword(document, "Họ và tên Sinh viên 2 :", student2.getPerson().getFirstName() + " " + student2.getPerson().getLastName());
+                        appendTextAfterKeyword(document, "MSSV 2:", student2.getStudentId());
+                    }
+                }
+                if (subject.getStudent3() != null) {
+                    Student student3 = studentRepository.findById(subject.getStudent3()).orElse(null);
+                    if (student3 != null) {
+                        appendTextAfterKeyword(document, "Họ và tên Sinh viên 3 :", student3.getPerson().getFirstName() + " " + student3.getPerson().getLastName());
+                        appendTextAfterKeyword(document, "MSSV 3:", student3.getStudentId());
+                    }
+                }
+
+                // Thay thế dữ liệu trong file mẫu
+                appendTextAfterKeyword(document, "Tên đề tài:", subject.getSubjectName());
+
+                if (subject.getThesisAdvisorId() != null) {
+                    Lecturer lecturer = subject.getThesisAdvisorId();
+                    appendTextAfterKeyword(document, "Họ và tên Giáo viên phản biện:", lecturer.getPerson().getFirstName() + " " + lecturer.getPerson().getLastName());
+                }
+                appendTextAfterKeyword(document,"1.\tVề nội dung đề tài & khối lượng thực hiện: ",reviewByThesis.getReviewContent());
+                appendTextAfterKeyword(document,"2.\tƯu điểm: ",reviewByThesis.getReviewAdvantage());
+                appendTextAfterKeyword(document,"3.\tKhuyết điểm: ",reviewByThesis.getReviewWeakness());
+                if (reviewByThesis.getStatus()){
+                    appendTextAfterKeyword(document,"4.\tĐề nghị cho bảo vệ hay không ?","Có");
+                }else {
+                    appendTextAfterKeyword(document,"4.\tĐề nghị cho bảo vệ hay không ?","Không");
+                }
+                appendTextAfterKeyword(document,"5.\tĐánh giá loại : ",reviewByThesis.getClassification());
+                appendTextAfterKeyword(document,"6.\tĐiểm : ", String.valueOf(reviewByThesis.getScore()));
             }
 
             // Lưu file đã chỉnh sửa
