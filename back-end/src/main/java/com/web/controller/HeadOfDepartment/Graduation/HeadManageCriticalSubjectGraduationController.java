@@ -4,6 +4,7 @@ import com.web.config.CheckRole;
 import com.web.config.TokenUtils;
 import com.web.entity.*;
 import com.web.repository.*;
+import com.web.service.HeaderOdDepartment.BrowseSubjectToThesisService;
 import com.web.utils.UserUtils;
 import com.web.service.Lecturer.ThesisBrowseSubjectToCouncil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +33,14 @@ public class HeadManageCriticalSubjectGraduationController {
     private UserUtils userUtils;
     @Autowired
     private TimeBrowseHeadRepository timeBrowseHeadRepository;
+    @Autowired
+    private ThesisBrowseSubjectToCouncil thesisBrowseSubjectToCouncil;
     private final TokenUtils tokenUtils;
     @Autowired
     public HeadManageCriticalSubjectGraduationController(TokenUtils tokenUtils){
         this.tokenUtils = tokenUtils;
     }
 
-    private ThesisBrowseSubjectToCouncil thesisBrowseSubjectToCouncil;
 
     @GetMapping("/listSubject")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
@@ -108,14 +110,19 @@ public class HeadManageCriticalSubjectGraduationController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
     @PostMapping("/accept-subject-to-council/{subjectId}")
     @PreAuthorize("hasAuthority('ROLE_HEAD')")
-    public ResponseEntity<?> CompletedSubjectBrowseToCouncil(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<?> CompletedSubjectBrowseToCouncil(@PathVariable int subjectId, @RequestHeader("Authorization") String authorizationHeader,
+                                                             @RequestParam("reviewContent") String reviewContent, @RequestParam("reviewAdvantage") String reviewAdvantage,
+                                                             @RequestParam("reviewWeakness") String reviewWeakness, @RequestParam("status") Boolean status,
+                                                             @RequestParam("classification") String classification, @RequestParam("score") double score){
         try {
-            return new ResponseEntity<>(thesisBrowseSubjectToCouncil.CompletedSubjectBrowseToCouncil(authorizationHeader,subjectId),HttpStatus.OK);
+            return thesisBrowseSubjectToCouncil.CompletedSubjectBrowseToCouncil(authorizationHeader,subjectId,reviewContent,reviewAdvantage,reviewWeakness,status,classification,score);
         }catch (Exception e){
             System.err.println("Initial SessionFactory creation failed." + e);
             throw new ExceptionInInitializerError(e);
         }
     }
+
 }
