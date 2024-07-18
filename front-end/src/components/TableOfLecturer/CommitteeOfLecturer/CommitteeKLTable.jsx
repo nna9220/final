@@ -136,6 +136,7 @@ function CommitteeKLTable() {
 
             console.log("Đánh giá và tính điểm thành công: ", response.data);
             // Có thể thêm các xử lý sau khi gửi đánh giá và tính điểm thành công
+            toast.success("Đánh giá đề tài thành công!")
         } catch (error) {
             console.error("Lỗi khi đánh giá và tính điểm: ", error);
             // Có thể thêm các xử lý khi có lỗi xảy ra

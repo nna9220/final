@@ -108,3 +108,32 @@ h4 {
     background: #f1f1f1; /* Thay màu nền tiêu đề bảng */
     color: #2c3e50; /* Màu chữ tiêu đề bảng để nổi bật */
 }
+
+
+.nav-menu {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    padding: 8px;
+    list-style-type: none;
+    background-color: #f0f0f0;
+  }
+  
+  .nav-itemm {
+    text-align: center;
+  }
+  
+  .nav {
+    border: none;
+    text-decoration: none;
+    padding: 8px;
+    position: relative;
+    color: #2c3e50;
+  }
+  
+  .nav.active {
+    color: #1872ae;
+    font-weight: bold;
+    font-size: larger;
+  }
+  

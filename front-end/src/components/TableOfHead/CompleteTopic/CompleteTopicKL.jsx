@@ -120,9 +120,7 @@ function CompleteTopicKL() {
         console.log(userToken);
         axiosInstance.get('/head/subjectGraduation/export', {
             responseType: 'blob',  // Specify the response type as blob
-            headers: {
-                'Authorization': `Bearer ${userToken}`,
-            },
+        
         })
             .then(response => {
                 const blob = new Blob([response.data], { type: 'application/octet-stream' });
@@ -151,28 +149,28 @@ function CompleteTopicKL() {
                         <Typography color="textPrimary">{detail?.subject?.subjectName}</Typography>
                     </Breadcrumbs>
 
-                    <ul className="nav nav-tabs">
-                        <li className="nav-item">
+                    <ul className="nav-menu">
+                        <li className="nav-itemm">
                             <a
-                                className={`nav-link ${activeTab === 'detail' ? 'active' : ''}`}
+                                className={`nav ${activeTab === 'detail' ? 'active' : ''}` } 
                                 href="#"
                                 onClick={() => handleTabClick('detail')}
                             >
                                 Chi tiết đề tài
                             </a>
                         </li>
-                        <li className="nav-item">
+                        <li className="nav-itemm">
                             <a
-                                className={`nav-link ${activeTab === 'instructor' ? 'active' : ''}`}
+                                className={`nav ${activeTab === 'instructor' ? 'active' : ''}`}
                                 href="#"
                                 onClick={() => handleTabClick('instructor')}
                             >
                                 Nhận xét của GVHD
                             </a>
                         </li>
-                        <li className="nav-item">
+                        <li className="nav-itemm">
                             <a
-                                className={`nav-link ${activeTab === 'thesisadvsor' ? 'active' : ''}`}
+                                className={`nav ${activeTab === 'thesisadvsor' ? 'active' : ''}`}
                                 href="#"
                                 onClick={() => handleTabClick('thesisadvsor')}
                             >

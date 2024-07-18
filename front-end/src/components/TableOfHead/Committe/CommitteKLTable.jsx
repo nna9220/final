@@ -43,6 +43,17 @@ function CommitteKLTable() {
     }));
   };
 
+  const handleChangeSuggestion = (event) => {
+    const { name, value } = event.target;
+    setDetail(prevDetail => ({
+        ...prevDetail,
+        subject: {
+            ...prevDetail.subject,
+            [name]: value.split(',') // Chia chuỗi thành mảng nếu cần
+        }
+    }));
+};
+
   const listTopic = () => {
     axiosInstance.get('/head/council/graduation/listSubject', {
       headers: {
@@ -108,15 +119,16 @@ function CommitteKLTable() {
         studentId1: detail.subject.student1,
         studentId2: detail.subject.student2,
         studentId3: detail.subject.student3,
-        score1Student: detail.subject.student1 ? parseFloat(calculateTotalScore(detail.subject.student1)) : null,
-        score2Student: detail.subject.student2 ? parseFloat(calculateTotalScore(detail.subject.student2)) : null,
-        score3Student: detail.subject.student3 ? parseFloat(calculateTotalScore(detail.subject.student3)) : null,
+        scoreStudent1: parseFloat(calculateTotalScore(detail.subject.student1)),
+        scoreStudent2: detail.subject.student2 ? parseFloat(calculateTotalScore(detail.subject.student2)) : null,
+        scoreStudent3: detail.subject.student3 ? parseFloat(calculateTotalScore(detail.subject.student3)) : null,
         reviewStudent1: detail.subject.student1 ? (reviews[detail.subject.student1] || null) : null,
         reviewStudent2: detail.subject.student2 ? (reviews[detail.subject.student2] || null) : null,
         reviewStudent3: detail.subject.student3 ? (reviews[detail.subject.student3] || null) : null,
+        editSuggestions: Array.isArray(detail.subject.editSuggestions) ? detail.subject.editSuggestions.join(',') : detail.subject.editSuggestions,
       };
 
-      console.log("Data to Submit: ", subjectId);
+      console.log("Data to Submit: ", evaluationData);
       const response = await axiosInstance.post(`/head/council/graduation/review-score/${subjectId}`, evaluationData, {
         headers: {
           'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
@@ -222,66 +234,93 @@ function CommitteKLTable() {
                 <>
                   <h5>Thông tin đề tài</h5>
                   <div>
-                    <p>1. Tên đề tài: {detail.subject.subjectName}</p>
-                    <p>2. Loại đề tài: {detail.subject.typeSubject?.typeName}</p>
-                    <p>3. Chuyên ngành: {detail.subject.major}</p>
-                    <p>4. Giảng viên hướng dẫn: {detail.subject.instructorId?.person?.firstName} {detail.subject.instructorId?.person?.lastName}</p>
-                    <p>5. Giảng viên phản biện: {detail.subject.thesisAdvisorId?.person?.firstName} {detail.subject.thesisAdvisorId?.person?.lastName}</p>
-                    <p>6. Yêu cầu: {detail.subject.requirement}</p>
-                    <p>7. Danh sách thành viên</p>
-                    <p> - Sinh viên 1: {detail.subject.student1}</p>
-                    <p> - Sinh viên 2: {detail.subject.student2}</p>
-                    <p> - Sinh viên 3: {detail.subject.student3}</p>
+                    <table className="table table-bordered">
+                      <tbody>
+                        <tr>
+                          <td className="table-key">1. Tên đề tài:</td>
+                          <td className="table-value">{detail.subject.subjectName}</td>
+                        </tr>
+                        <tr>
+                          <td className="table-key">2. Loại đề tài:</td>
+                          <td className="table-value">{detail.subject.typeSubject.typeName}</td>
+                        </tr>
+                        <tr>
+                          <td className="table-key">3. Chuyên ngành:</td>
+                          <td className="table-value">{detail.subject.major}</td>
+                        </tr>
+                        <tr>
+                          <td className="table-key">4. Giảng viên hướng dẫn:</td>
+                          <td className="table-value">{detail.subject.instructorId.person.firstName} {detail.subject.instructorId.person.lastName}</td>
+                        </tr>
+                        <tr>
+                          <td className="table-key">5. Giảng viên phản biện:</td>
+                          <td className="table-value">{detail.subject.thesisAdvisorId.person.firstName} {detail.subject.thesisAdvisorId.person.lastName}</td>
+                        </tr>
+                        <tr>
+                          <td className="table-key">6. Yêu cầu:</td>
+                          <td className="table-value">{detail.subject.requirement}</td>
+                        </tr>
+                        <tr>
+                          <td className="table-key">7. Danh sách thành viên:</td>
+                          <td className="table-value">
+                            <ul>
+                              <li>Sinh viên 1: {detail.subject.student1}</li>
+                              <li>Sinh viên 2: {detail.subject.student2}</li>
+                              <li>Sinh viên 3: {detail.subject.student3}</li>
+                            </ul>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                   <hr />
-                  <h5>Tiêu chí đánh giá</h5>
-                  <table className='table-bordered table'>
+                  <h5 style={{ color: '#4477CE' }}>Tiêu chí đánh giá</h5>
+                  <table className='table-bordered table criteria-table'>
                     <thead>
                       <tr>
-                        <th>Tiêu chí đánh giá</th>
+                        <th className="criteria-column">Tiêu chí đánh giá</th>
                         {['student1', 'student2', 'student3'].map((student, index) => (
-                          <th key={index}>Sinh viên {index + 1}</th>
+                          <th key={index} className="student-column">Sinh viên {index + 1}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
-                      {criterias.map((criteria, criteriaIndex) => (
-                        <tr key={criteriaIndex}>
-                          <td className='criteria'>{criteria.criteriaName}</td>
-                          {['student1', 'student2', 'student3'].map((student, studentIndex) => (
-                            <td key={studentIndex}>
-                              <input
-                                type='number'
-                                step='0.25'
-                                max={criteria.criteriaScore}
-                                min={0}
-                                value={scores[`${detail.subject[student]}_${criteria.criteriaName}`] || 0}
-                                onChange={(e) => handleScoreChange(detail.subject[student], criteria.criteriaName, e.target.value)}
-                              />
-                            </td>
-                          ))}
+                      {criterias && criterias.length > 0 ? (
+                        criterias.map((criteria, criteriaIndex) => (
+                          <tr key={criteriaIndex}>
+                            <td className='criteria criteria-column'>{criteria.criteriaName}</td>
+                            {['student1', 'student2', 'student3'].map((student, studentIndex) => (
+                              <td key={studentIndex} className="student-column">
+                                <input
+                                  type='number'
+                                  step='0.25'
+                                  max={criteria.criteriaScore}
+                                  min={0}
+                                  value={scores[`${detail.subject[student]}_${criteria.criteriaName}`] || 0}
+                                  onChange={(e) => handleScoreChange(detail.subject[student], criteria.criteriaName, e.target.value)}
+                                />
+                              </td>
+                            ))}
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={4}>Chưa có tiêu chí đánh giá</td>
                         </tr>
-                      ))}
+                      )}
                       <tr>
-                        <td className='criteria-sum'>Tổng</td>
+                        <td className='criteria-sum criteria-column'>Tổng</td>
                         {['student1', 'student2', 'student3'].map((student, studentIndex) => (
-                          <td key={studentIndex}>
-                            <input
-                              type='number'
-                              step='0.25'
-                              className='score'
-                              readOnly
-                              value={(parseFloat(scores[detail.subject[student]]) || 0).toFixed(2)}
-                            />
+                          <td key={studentIndex} className="student-column">
+                            {detail.subject[student] ? calculateTotalScore(detail.subject[student]) : 'N/A'}
                           </td>
                         ))}
                       </tr>
                       <tr>
-                        <td className='criteria-sum' id="review">Đánh giá</td>
+                        <td className='criteria-sum criteria-column' id="review">Đánh giá</td>
                         {['student1', 'student2', 'student3'].map((student, studentIndex) => (
-                          <td key={studentIndex}>
-                            <input
-                              type="text"
+                          <td key={studentIndex} className="student-column">
+                            <textarea
                               className="form-control"
                               value={reviews[detail.subject[student]] || ''}
                               onChange={(e) => handleReviewChange(detail.subject[student], e.target.value)}
@@ -292,8 +331,15 @@ function CommitteKLTable() {
                     </tbody>
                   </table>
                   <div class="mb-3">
-                    <label for="exampleFormControlTextarea1" class="form-label">Gợi ý chỉnh sửa</label>
-                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                    <label for="editSuggestions" class="form-label">Gợi ý chỉnh sửa</label>
+                    <textarea
+                      id="editSuggestions"
+                      name="editSuggestions"
+                      value={detail.subject.editSuggestions.join(',')} // Hiển thị như chuỗi
+                      onChange={handleChangeSuggestion}
+                      className="form-control"
+                      rows="3"
+                    />
                   </div>
                 </>
               ) : (
@@ -312,7 +358,7 @@ function CommitteKLTable() {
               <button
                 type="button"
                 className="btn btn-primary"
-                onClick={submitEvaluation}
+                data-bs-dismiss="modal" onClick={submitEvaluation}
               >
                 Xác nhận
               </button>

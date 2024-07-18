@@ -383,7 +383,7 @@ function DataTableTopicSuccessKL() {
                                                     value={councilEdit[`lecturer${index + 1}`] || ''}
                                                     onChange={handleChange}
                                                 >
-                                                    <option disabled>{data.lecturer.person.firstName + ' ' + data.lecturer.person.lastName}</option>
+                                                    <option>{data.lecturer.person.firstName + ' ' + data.lecturer.person.lastName}</option>
                                                     {lecturers.map(l => (
                                                         <option key={l.lecturerId} value={l.lecturerId}>
                                                             {l.person.firstName + ' ' + l.person.lastName}
